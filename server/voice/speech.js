@@ -239,11 +239,12 @@ export const BANK_HASH = "nobank";
  *   store: "memory"                            never written to asset_cache (the uptake prelude carries a child's words)
  * Without `render`, a style whose engine is "dhd" speaks the plain DragonHD document at the voice's base rate, and any
  * other style speaks exactly as before. A DragonHD failure before the first byte falls back to the character's
- * gpt-4o-mini-tts voice: an IDENTITY CHANGE, logged and counted (voice.expr.engine_fallback) every time.
+ * gpt-4o-mini-tts voice: an IDENTITY CHANGE, sticky for the rest of the reply (`lane`, voiceLane()) and of the lesson
+ * until the breaker closes, logged and counted (voice.expr.engine_fallback) once per lesson switch.
  */
-export function speakChunk(written, style, signal, render) {
+export function speakChunk(written, style, signal, render, lane) {
   const dhd = render ? render.engine === "dhd" : style?.engine === "dhd" && !!style?.dhd;
-  if (dhd) return speakDhd(written, style, signal, render);
+  if (dhd) return speakDhd(written, style, signal, render, lane);
   const text = ttsInput(render?.text ?? written, style);
   const instructions = render?.instructions ?? style.instructions;
   const version = render?.instructions && render.instructions !== style.instructions ? `${style.version}:i${createHash("sha256").update(render.instructions).digest("hex").slice(0, 8)}` : style.version;
@@ -263,26 +264,121 @@ export function speakChunk(written, style, signal, render) {
   });
 }
 
-function speakDhd(written, style, signal, render) {
+// ───────────── one voice per reply, per lesson (sticky DragonHD → mini-tts fallback) ─────────────
+// Fixer 2026-10-05 (w2g-sticky-engine-fallback). The fallback used to be decided per TTS part: DragonHD failing on
+// sentence 2 of 3 gave Diya → marin → Diya inside one utterance (owner priority 2: one consistent teacher), and while
+// DragonHD was degraded every part waited out the 4 s header timeout. Now:
+//   - a circuit breaker per DragonHD voice: one failure opens it for BREAKER_OPEN_MS; then ONE request probes it
+//     (half-open) while every other request speaks mini-tts; a probe that gets headers closes it (a new epoch);
+//   - the breaker is asked at the START of a reply only: once a part spoke DragonHD, the rest of that reply tries it too;
+//   - a reply lane (voiceLane): each part waits until the part before it has CHOSEN its engine (its headers, ~0.3 s,
+//     while that part is still playing: the lookahead hides it), and once any part has fallen back every later part of
+//     that reply goes straight to the character's mini-tts voice;
+//   - a lesson that fell back stays on mini-tts until the breaker closes (a new epoch), so it is never the probe;
+//   - voice.expr.engine_fallback counts lesson switches (one per lesson per epoch; one per reply without a lesson id).
+export const BREAKER_OPEN_MS = 60_000;
+const breakers = new Map(); // dhd voice → { state: "closed" | "open" | "half", until, epoch }
+const stuckLessons = new Map(); // lessonId → { voice, epoch } (LRU-bounded)
+const MAX_STUCK = 2000;
+const breakerOf = (voice) => {
+  let b = breakers.get(voice);
+  if (!b) breakers.set(voice, (b = { state: "closed", until: 0, epoch: 0 }));
+  return b;
+};
+/** May this request try DragonHD for `voice`? "try" (closed), "probe" (the one half-open request), "skip". */
+function admitDhd(voice, now = Date.now()) {
+  const b = breakerOf(voice);
+  if (b.state === "closed") return "try";
+  if (b.state === "open" && now >= b.until) { b.state = "half"; return "probe"; }
+  return "skip";
+}
+function dhdSucceeded(voice) {
+  const b = breakerOf(voice);
+  if (b.state !== "closed") { b.state = "closed"; b.epoch += 1; console.info(`[voice] dhd ${voice} back: breaker closed`); }
+}
+function dhdFailed(voice, now = Date.now()) {
+  const b = breakerOf(voice);
+  b.state = "open";
+  b.until = now + BREAKER_OPEN_MS;
+}
+function lessonStuck(lessonId, voice) {
+  if (!lessonId) return false;
+  const s = stuckLessons.get(lessonId);
+  if (!s || s.voice !== voice) return false;
+  if (breakerOf(voice).epoch !== s.epoch) { stuckLessons.delete(lessonId); return false; }
+  return true;
+}
+/** The reply (lane) moves to mini-tts; counted and logged once per lesson switch. */
+function fallBack(lane, voice, style, why) {
+  if (lane?.fellBack) return;
+  if (lane) lane.fellBack = true;
+  const lessonId = lane?.lessonId;
+  if (lessonId && lessonStuck(lessonId, voice)) return; // this lesson already switched in this epoch
+  if (lessonId) {
+    stuckLessons.delete(lessonId);
+    stuckLessons.set(lessonId, { voice, epoch: breakerOf(voice).epoch });
+    while (stuckLessons.size > MAX_STUCK) stuckLessons.delete(stuckLessons.keys().next().value);
+  }
+  count("engine_fallback");
+  console.warn(`[voice] identity change: dhd ${voice} → oai ${style.voice}${lessonId ? ` for lesson ${String(lessonId).slice(0, 8)}` : ""} (${why})`);
+}
+/**
+ * One reply's engine lane: pass the same lane to every speakChunk of one reply, in order (prewarm.js speakingEntry).
+ * @param {string} [lessonId]
+ */
+export function voiceLane(lessonId) {
+  return { lessonId: lessonId ?? null, fellBack: false, engine: /** @type {"dhd" | null} */ (null), chain: Promise.resolve() };
+}
+/** For the whole-document paths ("Hear"): may DragonHD be tried now, and report how it went. */
+export const dhdBreaker = {
+  admit: (voice) => admitDhd(voice) !== "skip",
+  ok: (voice) => dhdSucceeded(voice),
+  failed: (voice) => dhdFailed(voice),
+};
+/** Tests only. */
+export const __breaker = { reset: () => { breakers.clear(); stuckLessons.clear(); }, state: (voice) => ({ ...breakerOf(voice) }),
+  expire: (voice) => { breakerOf(voice).until = 0; } };
+
+function speakDhd(written, style, signal, render, lane) {
   const ssml = render?.ssml ?? plainSsml(written, style.dhd, style.spoken);
   const spokenLen = ttsInput(written, style).length;
   const key = spokenLen <= CACHE_MAX_CHARS ? cacheKey({ voice: style.dhd.voice, model: "dhd", version: `${style.version}:${BANK_HASH}`, text: ssml }) : null;
+  const voice = style.dhd.voice;
+  // the part before this one in the same reply must have chosen its engine first
+  const before = lane?.chain ?? null;
+  let decided = () => {};
+  if (lane) lane.chain = new Promise((r) => { decided = r; });
+  const oai = async (self, why) => {
+    fallBack(lane, voice, style, why);
+    self.fellBack = true;
+    const { chunks } = await speechStream(ttsInput(written, style), { voice: style.voice, instructions: style.instructions, signal });
+    return chunks;
+  };
   return new Prefetch(async (self) => {
-    if (key) {
-      const pcm = await cacheGet(key, render?.store);
-      if (pcm) { self.cached = true; return [pcm]; }
-    }
     let chunks;
     try {
-      ({ chunks } = await dhdStream(ssml, { signal }));
-    } catch (e) {
-      if (signal?.aborted || e?.code === "aborted") throw e;
-      // identity change: the character's gpt-4o-mini-tts voice speaks this part (no expressive markup: plain words)
-      count("engine_fallback");
-      console.warn(`[voice] identity change: dhd ${style.dhd.voice} → oai ${style.voice} (${e?.code || e?.status || "error"}: ${String(e?.message || e).slice(0, 120)})`);
-      self.fellBack = true;
-      ({ chunks } = await speechStream(ttsInput(written, style), { voice: style.voice, instructions: style.instructions, signal }));
-      return chunks;
+      if (before) await before;
+      if (lane?.fellBack || lessonStuck(lane?.lessonId, voice)) return await oai(self, "reply already on mini-tts");
+      if (key) {
+        const pcm = await cacheGet(key, render?.store);
+        if (pcm) { self.cached = true; if (lane) lane.engine = "dhd"; return [pcm]; }
+      }
+      if (signal?.aborted) throw new AzureError(`dhd_stream ${voice} aborted`, 0, "aborted");
+      // the breaker decides at the START of a reply; once a part of this reply spoke DragonHD, the rest of it tries
+      // DragonHD too (one voice per reply outranks the breaker; a part's own failure still moves the reply over)
+      if (lane?.engine !== "dhd" && admitDhd(voice) === "skip") return await oai(self, "breaker open");
+      try {
+        ({ chunks } = await dhdStream(ssml, { signal }));
+        dhdSucceeded(voice);
+        if (lane) lane.engine = "dhd";
+      } catch (e) {
+        if (signal?.aborted || e?.code === "aborted") throw e;
+        dhdFailed(voice);
+        // identity change: the character's gpt-4o-mini-tts voice speaks this part and the rest of the reply (plain words)
+        return await oai(self, `${e?.code || e?.status || "error"}: ${String(e?.message || e).slice(0, 120)}`);
+      }
+    } finally {
+      decided();
     }
     if (!key) return chunks;
     return (async function* () {

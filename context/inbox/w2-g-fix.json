@@ -1,0 +1,198 @@
+{
+ "nodes": [
+  {
+   "id": "w2gfix-helpline-separator-forms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Helplines are read digit by digit in EVERY separator form a model writes (1098, 1-0-9-8, 1 0 9 8, 10 98, 1–0–9–8, 1.0.9.8, (1098), 1098/14416; same for 14416) in every spoken cell: server/voice/spoken.js safetyRe allows one space / hyphen / en dash per gap, or a dot at every gap, never glued to another digit through - or .; the decimal 10.98 and the expression 10 - 98 stay maths. safetyRegister also matches them (mentionsHelpline). Blocker: '1-0-9-8' had been spoken 'one to zero to nine to eight' and '10 98' 'ten ninety-eight'"
+  },
+  {
+   "id": "w2gfix-sticky-engine-fallback",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The DragonHD → gpt-4o-mini-tts fallback is sticky (server/voice/speech.js): a circuit breaker per DragonHD voice (one failure opens it for 60 s, then one half-open probe; a probe that gets headers closes it, new epoch); a per-reply voice lane (each part waits until the part before has chosen its engine; once any part fell back every later part of the reply speaks mini-tts; once a part spoke DragonHD the rest of the reply tries DragonHD even if the breaker opened meanwhile); a lesson that fell back stays on mini-tts until the breaker closes, so it is never the probe; voice.expr.engine_fallback counts one per lesson switch. Hear obeys the breaker too. Replaces the per-part decision that could switch Diya → marin → Diya inside one utterance and wait 4 s per part while degraded"
+  },
+  {
+   "id": "w2gfix-echo-only-when-prelude-plays",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The uptake echo is stripped from the reply only when the prelude is GUARANTEED to have played: renderParts carries part 0 twice (stripped, and full0 with the echo via align.js withEcho); streamParts speaks full0 when the prelude wrote no audio (prelude_miss); tts-stream without a prewarm renders with prelude:false; Hear compiles withEcho(plan). Before, three paths silently deleted the child-echo words once TAXILA_UPTAKE_PRELUDE=1"
+  },
+  {
+   "id": "w2gfix-prelude-token-closed-class",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The uptake prelude token is screened (server/voice/expressive/prelude.js preludeTokenOk), in align() and in warmPrelude: only a closed class (a 1-4 digit number or simple decimal/fraction, a spoken number word, a spoken-lexicon term, or the caller's answer vocabulary via moment.uptakePrelude.vocab) and clean (no never-rule hit, no direct identifier, never the child's first name). keyTokenOf (W2-E) can return a profanity, a name or a 10-digit phone number; the prelude never passes the reply guard"
+  },
+  {
+   "id": "w2gfix-clause-events-on-player-clock",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The player is the whiteboard's source of timing (src/lesson/ttsStream.ts): PcmStreamPlayer.play(open, {req}) marks clock.ts markLineAudioStart at the scheduled time of the first sample on performance.now(), and the reply's clause onsets (handed to open() as a ClauseSink; fetchSpeechStream and the parked turn-audio fold route them there) are emitted on onTtsEvent when their sample is scheduled, with playAt = when it sounds (start lead, underruns, pause/resume re-emits included). textLink.ts passes req; cascadeLink.ts (W2-E) needs a one-line patch to pass req and the sink (until then it still gets a wildcard line anchor). Without a sink, clause frames are emitted at parse time as before"
+  },
+  {
+   "id": "w2gfix-safety-skips-silence-cap",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The governor's 1.5 s silence cap never trims a safety turn: HV-3's fixed 300 ms between sentences holds at every boundary of a long safeguarding reply"
+  },
+  {
+   "id": "w2gfix-stage-directions-never-spoken",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "compile/dhd.js spokenRun strips [bracketed] and *asterisked* stage directions after speakable() (no maths * is left by then), so a plain-compiled part (lint failure) or an opening / kit / Forge line never sends '[laughs]' to DragonHD, which reads tags aloud (12/12); captions keep the written text"
+  },
+  {
+   "id": "w2gfix-identity-positive-forms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "safetyRegister also matches the plain positive identity answer ('Haan, main AI hoon', 'I am an AI', 'मैं AI हूँ'), excluding role phrases ('main AI teacher hoon', 'I am an AI teacher') so the greeting stays expressive (keeps w2g-identity-predicate-narrowed)"
+  },
+  {
+   "id": "w2gfix-hinglish-roman-fillers",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Hinglish replies get Roman fillers (toh, dekho, achha, hmm, umm, arre, chalo), read by the same en-IN voice; Devanagari fillers only for lang hi. Avoids a single-word <lang hi-IN> switch mid Roman sentence. Unmeasured by ear: on the owner's HV-9 blind page"
+  },
+  {
+   "id": "w2gfix-hinglish-hindi-medium-operators",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Spoken cell hinglish.hindi (a Hinglish child at a Hindi-medium school) keeps Hindi number words but uses the everyday operator words (plus, minus, into, divided by, equals) instead of धन / ऋण / गुणा / भाग / बराबर, which read as formal Hindi inside Roman sentences for classes 4-7; hindi.hindi unchanged. RENDERER_VERSION sp2-2026-10-05 (cache keys move). Unmeasured by ear: on the HV-9 blind page"
+  },
+  {
+   "id": "w2gfix-unmeasured-voice-stays-oai",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "An unprobed DragonHD row (Uma, en-IN-Meera) is not usable: dhdVoiceFor returns usable:false and styleForChild / Hear speak the character's own gpt-4o-mini-tts voice, consistently, until the row is probed (measured) or the owner picks a voice in config (TAXILA_DHD_VOICE_<ID> / TAXILA_VOICES); the unprobed rows are logged once per process"
+  },
+  {
+   "id": "w2gfix-expect-engine-gate",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2g-voice.mjs: TAXILA_EXPECT_ENGINE=dhd turns a mini-tts header frame or a mini-tts Hear (new x-tts-engine response header on /api/tts) into a FAIL instead of a warning; the header documents the AZURE_SPEECH_*_SIN mapping for local runs"
+  },
+  {
+   "id": "w2gfix-tests-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "W2-G fixer tests: tests/voice-expressive-fixer.test.mjs 14/14 (separator forms × 4 cells; sticky fallback part 1 / part 2 of 3; breaker open / probe / no flap; prelude miss keeps the echo; token screen; 8-sentence safety 300 ms; stage strip; identity; fillers; unprobed voice) and tests/voice-player-clock.test.mjs 2/2 (fake AudioContext: line anchor and clause playAt within 10 ms of the scheduled time across an underrun; re-emit on resume). n = unit fixtures, node 22, 2026-10-05"
+  },
+  {
+   "id": "rj-w2g-per-part-engine-fallback",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Deciding the DragonHD → mini-tts fallback per TTS part: one failed sentence changed the voice mid-utterance (Diya → marin → Diya) and every part re-waited the 4 s header timeout while DragonHD was degraded"
+  },
+  {
+   "id": "rj-w2g-strip-echo-before-prelude-known",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Stripping the child's echo from the reply at plan time, before knowing the prelude would play: tts-stream without a prewarm, Hear and a prelude miss all silently dropped the reply's first words; preserved() passed because it counts the stripped text as present"
+  },
+  {
+   "id": "rj-w2g-clause-events-at-parse-time",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Emitting framed-TTS clause events when the frame is parsed, with the server's atMs: client start lead, underrun gaps and pause/resume shift real playback away from atMs, so a whiteboard step keyed to a clause drifts; and nothing marked the line anchor, so the board always ran on its 1.2 s grace clock"
+  },
+  {
+   "id": "rj-w2g-helpline-plain-form-only",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Matching helplines only in the plain form (1098 / 14416): a model writing '1-0-9-8' (a common digit-by-digit style) had it spoken as a range; HV-3 fixtures only used the plain forms"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2gfix-helpline-separator-forms",
+   "rel": "supersedes",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "rj-w2g-helpline-plain-form-only",
+   "rel": "caused_by",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "w2gfix-sticky-engine-fallback",
+   "rel": "supersedes",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "rj-w2g-per-part-engine-fallback",
+   "rel": "caused_by",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "w2gfix-echo-only-when-prelude-plays",
+   "rel": "supersedes",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "rj-w2g-strip-echo-before-prelude-known",
+   "rel": "caused_by",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "w2gfix-prelude-token-closed-class",
+   "rel": "part_of",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "w2gfix-clause-events-on-player-clock",
+   "rel": "supersedes",
+   "dst": "w2g-framed-tts-v2"
+  },
+  {
+   "src": "rj-w2g-clause-events-at-parse-time",
+   "rel": "caused_by",
+   "dst": "w2g-framed-tts-v2"
+  },
+  {
+   "src": "w2gfix-safety-skips-silence-cap",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-stage-directions-never-spoken",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-identity-positive-forms",
+   "rel": "part_of",
+   "dst": "w2g-identity-predicate-narrowed"
+  },
+  {
+   "src": "w2gfix-hinglish-roman-fillers",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-hinglish-hindi-medium-operators",
+   "rel": "part_of",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "w2gfix-unmeasured-voice-stays-oai",
+   "rel": "part_of",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "w2gfix-unmeasured-voice-stays-oai",
+   "rel": "caused_by",
+   "dst": "w2g-base-rate-minus-35"
+  },
+  {
+   "src": "w2gfix-expect-engine-gate",
+   "rel": "part_of",
+   "dst": "w2g-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2gfix-tests-2026-10-05",
+   "rel": "part_of",
+   "dst": "w2g-ci-gates-2026-10-04"
+  }
+ ]
+}

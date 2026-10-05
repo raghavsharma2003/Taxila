@@ -7,15 +7,25 @@
 //     A self-introduction that merely names her an AI teacher (the first-meeting greeting) is not one: the first live
 //     run flattened a greeting into the safety register on "AI teacher" alone (w2g-identity-predicate-narrowed).
 import { HELPLINES } from "../../compiler/floor.js";
+import { mentionsHelpline } from "../spoken.js";
 
 const NUMS = HELPLINES.map((h) => String(h.number));
 const IDENTITY = /(?:\bnot a (?:real )?(?:person|human)\b|\b(?:insaan|insan|human|person|real teacher) nahi(?:n)?\b|इंसान नहीं|\bcomputer program hoon\b)/i;
+// The plain positive answer ("Haan, main AI hoon.", "I'm an AI.", "मैं AI हूँ") is the never-deny-AI answer too (fixer
+// 2026-10-05, w2g-identity-positive-forms); "main AI teacher hoon" (the greeting) stays out.
+const NOT_ROLE = "(?!\\s+(?:teacher|tutor|didi|bhaiya|wali|wala)\\b)";
+const IDENTITY_YES = new RegExp([
+  `\\b(?:haan|han|ha|yes|ji)[,!. ]+main (?:ek )?AI\\b${NOT_ROLE}`,
+  `\\bmain (?:ek )?AI hoon\\b`,
+  `\\bI(?:'m| am) (?:an |just an )?AI\\b${NOT_ROLE}`,
+  "मैं (?:एक )?(?:AI|एआई) (?:हूँ|हूं)",
+].join("|"), "i");
 
 /** @param {{ safety?: boolean } | null} moment @param {string} reply */
 export function safetyRegister(moment, reply) {
   if (moment?.safety) return true;
   const t = String(reply ?? "");
-  const digits = t.replace(/[\s-]/g, "");
-  if (NUMS.some((n) => digits.includes(n))) return true;
-  return IDENTITY.test(t);
+  const digits = t.replace(/[\s\-–]/g, ""); // not "." : the decimal 10.98 is maths, not Childline
+  if (NUMS.some((n) => digits.includes(n)) || mentionsHelpline(t)) return true; // mentionsHelpline: 1.0.9.8 and friends
+  return IDENTITY.test(t) || IDENTITY_YES.test(t);
 }

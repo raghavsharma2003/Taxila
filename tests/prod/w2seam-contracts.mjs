@@ -40,17 +40,14 @@ function w2Shape(where, r) {
 
 await withTestAccount(async ({ api, child }) => {
   const bad = [];
-  // Text lane, a short lesson.
-  const text = await runLesson(api, child.id, { mode: "text", lines: ["haan, ready", "mujhe nahi pata", "teen"] });
-  ok(text.start.status === 201 && typeof text.start.teacherOpening === "string", `text lesson starts (${text.start.ms} ms)`);
-  ok(text.turns.length > 0 && text.turns.every((t) => !!t.move?.kind && typeof t.teacherReply === "string"), `text turns answered (${text.turns.map((t) => t.move?.kind).join(", ")})`);
-  ok(text.end?.status === 200, "text lesson ends 200");
-  bad.push(...w2Shape("text start", text.start), ...text.turns.flatMap((t, i) => w2Shape(`text turn ${i + 1}`, t)));
-
-  // Cascade lane (voice by the server's words), one typed turn.
-  const cas = await runLesson(api, child.id, { mode: "cascade", lines: ["ek bata do"], typed: true });
-  ok(cas.start.status === 201 && cas.turns.length === 1 && typeof cas.turns[0].teacherReply === "string", "cascade lesson starts and answers");
-  bad.push(...w2Shape("cascade start", cas.start), ...cas.turns.flatMap((t) => w2Shape("cascade turn", t)));
+  // One Learn lesson a day ("never one more", W2-A): Practice and Ask never use the day up, so they run first on this
+  // child; the cascade lane and the live call each get a sibling (W2 integration: the old order hit the 409 by design).
+  const sibling = async (firstName) => {
+    const { child: c } = await api("POST", "/api/children", { firstName, classLevel: 5, languagePref: "hinglish", interests: ["cricket"] });
+    await api("POST", "/api/consent", { childId: c.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+    await api("POST", "/api/parent/controls", { childId: c.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
+    return c;
+  };
 
   // Practice and Ask still start through the purpose seam.
   const pr = await runLesson(api, child.id, { mode: "text", purpose: "practice", lines: ["2"] });
@@ -60,8 +57,28 @@ await withTestAccount(async ({ api, child }) => {
   ok(ask.status === 201 && !!ask.topic?.id, `ask starts (topic ${ask.topic?.id})`);
   await api("POST", "/api/lesson/end", { lessonId: ask.lessonId });
 
+  // Text lane, a short lesson (a Practice and an Ask before it did not use the day up).
+  const text = await runLesson(api, child.id, { mode: "text", lines: ["haan, ready", "mujhe nahi pata", "teen"] });
+  ok(text.start.status === 201 && typeof text.start.teacherOpening === "string", `text lesson starts after Practice and Ask (${text.start.ms} ms)`);
+  ok(text.turns.length > 0 && text.turns.every((t) => !!t.move?.kind && typeof t.teacherReply === "string"), `text turns answered (${text.turns.map((t) => t.move?.kind).join(", ")})`);
+  ok(text.end?.status === 200, "text lesson ends 200");
+  bad.push(...w2Shape("text start", text.start), ...text.turns.flatMap((t, i) => w2Shape(`text turn ${i + 1}`, t)));
+  const again = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text" }, [201, 409]);
+  ok(again.status === 409 && again.control === "done", `a second Learn lesson the same day is refused as done (${again.status} ${again.control ?? ""})`);
+  if (again.status === 201) await api("POST", "/api/lesson/end", { lessonId: again.lessonId });
+  const pr2 = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", purpose: "practice" }, [201, 409]);
+  ok(pr2.status === 201, `Practice still starts on a done day (${pr2.status})`);
+  if (pr2.status === 201) await api("POST", "/api/lesson/end", { lessonId: pr2.lessonId });
+
+  // Cascade lane (voice by the server's words), one typed turn.
+  const kid2 = await sibling("Aarav");
+  const cas = await runLesson(api, kid2.id, { mode: "cascade", lines: ["ek bata do"], typed: true });
+  ok(cas.start.status === 201 && cas.turns.length === 1 && typeof cas.turns[0].teacherReply === "string", "cascade lesson starts and answers");
+  bad.push(...w2Shape("cascade start", cas.start), ...cas.turns.flatMap((t) => w2Shape("cascade turn", t)));
+
   // The live-call token: still minted through the realtime seam, logprobs kept (classify's low-ASR gate reads them).
-  const live = await api("POST", "/api/lesson/start", { childId: child.id, mode: "voice" });
+  const kid3 = await sibling("Meher");
+  const live = await api("POST", "/api/lesson/start", { childId: kid3.id, mode: "voice" });
   const tok = await api("POST", "/api/realtime/token", { lessonId: live.lessonId }, [200, 429, 502, 503]);
   if (tok.status === 200) {
     ok(typeof tok.token === "string" && !!tok.base, "realtime token minted");

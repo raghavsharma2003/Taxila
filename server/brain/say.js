@@ -2,6 +2,7 @@
 // instructions string (one compile() for every lane) and guarded on the bytes by code: answer leaks, drift, floor
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
+import { safetyOpeningFor } from "../relational/openings.js";
 import { chat, DEPLOY, isContentFilter } from "../azure.js";
 import { floorViolations, scrubPii } from "../director/safety.js";
 import { upcomingItem } from "../director/state.js";
@@ -11,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
-import { screenContradiction } from "../director/modules.js";
+import { screenContradiction, stripStrayParts } from "../director/modules.js";
 
 /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
 export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
@@ -82,12 +83,18 @@ export const FALLBACK = {
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
 };
-/** The fixed safeguarding line (both helplines) in the child's language and address form. */
+/**
+ * The fixed safeguarding line (both helplines) in the child's language mode and address form: W2-I's vetted opening
+ * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
+ */
+const CHECK_Q = { en: "Are you safe right now?", hinglish: { tum: "Kya tum abhi safe ho?", aap: "Kya aap abhi safe hain?" }, hi: { tum: "क्या तुम अभी सुरक्षित हो?", aap: "क्या आप अभी सुरक्षित हैं?" } };
 export function safeguardLine(ctx = {}) {
-  const line = FALLBACK[ctx.lang === "english" ? "english" : "hinglish"].safeguard;
-  return ctx.address === "aap" && ctx.lang !== "english" ? toAap(line) : line;
+  const open = safetyOpeningFor(ctx.lang, { address: ctx.address });
+  const q = open.mode === "en" ? CHECK_Q.en : CHECK_Q[open.mode][ctx.address === "aap" ? "aap" : "tum"];
+  return `${open.text} ${q}`;
 }
 export function fallbackReply(state, item) {
+  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx);
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
   if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
@@ -267,6 +274,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+      // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
+      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, undefined, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);

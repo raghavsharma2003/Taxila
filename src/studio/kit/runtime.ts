@@ -44,12 +44,15 @@ var port = null, queue = [];
 var send = function (m) { if (port) { try { port.postMessage(m); } catch (e) {} } else if (queue.length < 64) queue.push(m); };
 var onInit = function (e) {
   if (port || !e || e.source !== window.parent || !e.data || e.data.type !== "studio:init" || !e.ports || !e.ports[0]) return;
+  // the init (and its port) is the runtime's alone: no listener the build adds ever sees it (capture phase, registered
+  // before the build runs, and stopped here), so a build cannot answer through the port around Studio.answer's limits
+  if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
   port = e.ports[0];
-  window.removeEventListener("message", onInit);
+  window.removeEventListener("message", onInit, true);
   port.onmessage = function (ev) { var m = ev && ev.data; if (m && m.type === "verdict") deliver(!!m.correct); };
   var q = queue; queue = []; q.forEach(send);
 };
-window.addEventListener("message", onInit);
+window.addEventListener("message", onInit, true);
 var P = ${scriptJson(params)}, S = ${scriptJson(strings)};
 var has = Object.prototype.hasOwnProperty;
 function deep(o) { Object.freeze(o); Object.keys(o).forEach(function (k) { if (o[k] && typeof o[k] === "object") deep(o[k]); }); return o; }

@@ -20,11 +20,11 @@
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
 import { seamSafe } from "../seam-safe.js";
-import { decide as routerDecide, revealable } from "./router.js";
-import { archetype, buildParams, validateParams } from "./archetypes/index.js";
+import { decide as routerDecide, revealable, breaker } from "./router.js";
+import { ARCHETYPES, archetype, buildParams, validateParams } from "./archetypes/index.js";
 import { chooseArchetype, planBuild, q8Strings, planWhiteboard, BY_KIND } from "./plan.js";
 import { gateClient } from "./qa/pool.js";
-import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, retire as retireBuild, excludedArchetypes, spendOf, ensureIdentity, hashOf, cachedStrings, rememberStrings } from "./library.js";
+import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, noteIncident, excludedArchetypes, spendOf, ensureIdentity, hashOf, cachedStrings, rememberStrings } from "./library.js";
 import { getBuild, putBuild } from "./store.js";
 import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./grade.js";
 
@@ -64,8 +64,17 @@ const LANG = { hinglish: "hinglish", english: "en", en: "en", hindi: "hi", hi: "
 
 // ───────────────────────────── lesson registry (process memory; the web app runs one replica: w1d-web-single-replica) ─────────────────────────────
 
-/** @type {Map<string, any>} lessonId → lesson studio state */
+/** @type {Map<string, any>} lessonId → lesson studio state (insertion order = least recently used first) */
 const lessons = new Map();
+/** Mark a lesson as just used (the registry evicts the least recently used one, never an active lesson first). */
+function touch(L) {
+  if (!L) return L;
+  lessons.delete(L.lessonId);
+  lessons.set(L.lessonId, L);
+  return L;
+}
+/** The lesson's state if it is in memory, marked used. */
+const lessonOf = (lessonId) => touch(lessons.get(lessonId) ?? null);
 function lessonState(lessonId, init) {
   let L = lessons.get(lessonId);
   if (!L && init) {
@@ -73,8 +82,13 @@ function lessonState(lessonId, init) {
       purpose: "lesson", bondStage: null, pieces: new Map(), subs: new Set(), turn: 0, lastRevealTurn: -99, liveBuilds: 0, onScreen: null,
       wbPrev: null, excluded: new Set(), redact: [], ...init };
     lessons.set(lessonId, L);
-    if (lessons.size > STUDIO_LIMITS.lessonsInMemory) lessons.delete(lessons.keys().next().value);
-  }
+    // LRU: the least recently used lesson goes; its open wrong items are closed as evidence first (closeLesson)
+    if (lessons.size > STUDIO_LIMITS.lessonsInMemory) {
+      const oldest = lessons.values().next().value;
+      lessons.delete(oldest.lessonId);
+      closeLesson(oldest, "evicted");
+    }
+  } else if (L) touch(L);
   return L ?? null;
 }
 /** Test seam: forget every lesson. */
@@ -184,33 +198,80 @@ export function aboutTopic(archetypeId, kit) {
   return re.test(text);
 }
 
-/** The candidate intents for a lesson (code; no model): misconceptions first (the contrast moment matters most). */
+const FRAC = /\b(\d{1,2})\s*\/\s*(\d{1,2})\b/g;
+const fracsIn = (t) => [...String(t ?? "").matchAll(FRAC)].map((m) => ({ n: +m[1], d: +m[2] })).filter((f) => f.n >= 1 && f.d >= 2 && f.d <= 12 && f.n <= f.d);
+/**
+ * The misconception's OWN truth (W2-H fixer, owner priority 3): the fractions its kit diagnostic states (the right option
+ * first, then the option that carries the belief, then the prompt), as params for the fraction archetypes, plus the
+ * belief's signature (the fractions a child holding it picks). A contrast piece built from these shows exactly the pair
+ * the misconception confuses, not the topic's generic practice numbers. null when the diagnostic states no fractions
+ * (most non-fraction topics): the piece then uses the kit's generic params and only its SELECTION is personal.
+ * @returns {{ truth: Record<string, object>, signature: string[] } | null}
+ */
+export function misconceptionTruth(m) {
+  const dx = m?.diagnostic;
+  if (!dx) return null;
+  const opts = Array.isArray(dx.options) ? dx.options : [];
+  const right = opts.filter((o) => o?.correct === true), belief = opts.filter((o) => o?.misconceptionId && o.misconceptionId === m.id);
+  const rest = opts.filter((o) => !right.includes(o) && !belief.includes(o));
+  const ordered = [...right, ...belief, ...rest].flatMap((o) => fracsIn(o?.text));
+  const all = [...ordered, ...fracsIn(dx.prompt_en)];
+  const seen = new Set(), fr = [];
+  for (const f of all) { const k = `${f.n}/${f.d}`; if (f.n < f.d && !seen.has(k)) { seen.add(k); fr.push(f); } }
+  if (!fr.length) return null;
+  const truth = {};
+  const items = fr.slice(0, 3).map((f, i) => ({ id: `i${i + 1}`, n: f.n, d: f.d }));
+  truth.shade_fraction = { items, picture: items.every((i) => i.d <= 8) ? "pizza" : "bar" };
+  const den = fr[0].d, same = fr.filter((f) => f.d === den).slice(0, 3);
+  if (den <= 10) truth.number_line_jump = { min: 0, max: 1, step: +(1 / den).toFixed(6), labelEvery: den > 6 ? 2 : 1, format: "fraction", den, start: 0,
+    items: same.map((f, i) => ({ id: `t${i + 1}`, target: +(f.n / den).toFixed(6) })) };
+  const signature = [...new Set(belief.flatMap((o) => fracsIn(o?.text)).map((f) => `${f.n}/${f.d}`))];
+  return { truth, signature };
+}
+
+/**
+ * The candidate intents for a lesson (code; no model). The SELECTION is this child's: their own active misconceptions and
+ * open re-teach rows first (only those of THIS topic's kit: a belief from another topic has no diagnostic here), then the
+ * explanation piece, then one of the kit's own diagnostic misconceptions for a child with none (a contrast the kit can
+ * prove), then practice. The PARAMS are personal only for contrast pieces whose diagnostic states its numbers
+ * (misconceptionTruth); every other piece uses the kit's generic params (plan.js paramsFromKit).
+ */
 export function candidateIntents(ctx, { exclude = [] } = {}) {
   const kit = ctx.kit ?? {};
   const band = ctx.band && /^B[1-4]$/.test(ctx.band) ? ctx.band : B4[ctx.child?.class_level] ?? "B3";
   const lang = LANG[ctx.child?.language_pref] ?? "hinglish";
   const skills = (ctx.skillIds?.length ? ctx.skillIds : (kit.skills ?? []).map((s) => s.id)).filter(Boolean);
-  const misIds = [...new Set([...(ctx.activeMisconceptionIds ?? []), ...reteachMis(ctx.reteach)])];
-  const misOf = (id) => (kit.misconceptions ?? []).find((m) => m.id === id);
+  const kitMis = (kit.misconceptions ?? []).filter((m) => m?.id && (!m.skillId || !skills.length || skills.includes(m.skillId)));
+  const misOf = (id) => kitMis.find((m) => m.id === id);
+  const own = [...new Set([...(ctx.activeMisconceptionIds ?? []), ...reteachMis(ctx.reteach)])].filter((id) => !!misOf(id));
   const needs = [];
-  for (const id of misIds) { const m = misOf(id); needs.push({ need: "contrast_misconception", skillId: m?.skillId ?? skills[0], misconceptionId: id }); }
+  for (const id of own) { const m = misOf(id); needs.push({ need: "contrast_misconception", skillId: m?.skillId ?? skills[0], misconceptionId: id, origin: "child" }); }
   if (skills[0]) needs.push({ need: "explain", skillId: skills[0] });
+  // the kit's diagnostic misconceptions (BUILD-PLAN W2-H): for a child with none of their own, one the kit can prove
+  if (!own.length) {
+    const m = kitMis.find((x) => misconceptionTruth(x));
+    if (m) needs.push({ need: "contrast_misconception", skillId: m.skillId ?? skills[0], misconceptionId: m.id, origin: "kit" });
+  }
   if (skills.length) needs.push({ need: "practice", skillId: skills[skills.length - 1] });
   const out = [], seen = new Set();
+  const off = Object.keys(TOPIC_OF).filter((id) => !aboutTopic(id, kit));
   for (const n of needs) {
     if (!n.skillId) continue;
+    const mt = n.misconceptionId ? misconceptionTruth(misOf(n.misconceptionId)) : null;
     for (const kind of KINDS_FOR[n.need] ?? ["game"]) {
       const intent = { intentId: `${ctx.lessonId}:st:${out.length + 1}`, lessonId: ctx.lessonId, kind, skillId: n.skillId, need: n.need,
         ...(n.misconceptionId ? { misconceptionId: n.misconceptionId } : {}), beat: n.need === "contrast_misconception" ? "contrast" : n.need === "practice" ? "practice_set" : "explain",
         neededAtMs: NEEDED_AT[n.need] ?? 300_000, priority: "opportunistic",
         style: { band, lang, motion: band === "B1" ? "calm" : "lively" } };
-      const off = Object.keys(TOPIC_OF).filter((id) => !aboutTopic(id, kit));
-      const pick = chooseArchetype(intent, { kit, exclude: [...exclude, ...off] });
+      const pick = chooseArchetype(intent, { kit, exclude: [...exclude, ...off], ...(mt ? { truth: mt.truth } : {}) });
       if (!pick.archetype) continue;
+      const personal = !!(mt && mt.truth[pick.archetype] && pick.params === mt.truth[pick.archetype]);
+      // a kit misconception (not the child's) earns a piece only when its own numbers make it a real contrast
+      if (n.origin === "kit" && !personal) break;
       const key = `${pick.archetype}:${hashOf(pick.params)}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      out.push({ intent, archetype: pick.archetype, params: pick.params });
+      out.push({ intent, archetype: pick.archetype, params: pick.params, personal, signature: personal ? mt.signature : [] });
       break;
     }
     if (out.length >= STUDIO_LIMITS.piecesPerLesson) break;
@@ -260,6 +321,12 @@ async function runPiece(L, piece) {
     child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety, spendTodayUsd: spend.day, spendMonthUsd: spend.month },
     lesson: { liveBuilds: L.liveBuilds, clockMs: Date.now() - L.startedAt }, library: lib });
   piece.reasons = decision.reasons;
+  // a parent switched Studio off, or a safeguard is on: no piece at all (not even the skeleton-as-activity); the lesson
+  // goes on by voice exactly as before Studio
+  if (decision.reasons.includes("studio.parent_off") || decision.reasons.includes("studio.safety_mode")) {
+    piece.state = "failed"; piece.fallback = "voice"; piece.retired = true; piece.source = null;
+    return;
+  }
   // a library build reuses the strings that already passed with these params (the gate-result cache can then hit)
   const reuse = decision.action === "library" ? await cachedStrings(piece.identity, piece.params).catch(() => null) : null;
   const { plan, strings } = reuse ? { plan: null, strings: reuse } : await stringsFor(L, piece).catch(() => ({ plan: null, strings: {} }));
@@ -282,6 +349,9 @@ async function runPiece(L, piece) {
       onPartial: (_arm, html) => { const t = Date.now(); if (t - (piece.partialAt ?? 0) < 1000) return; piece.partialAt = t; push(L, { t: "partial", intentId: piece.intentId, html: String(html).slice(0, 60_000) }); },
     }).catch(() => null);
     piece.usd = r?.usd ?? 0;
+    // the spend is recorded the moment the race returns, whatever its outcome: a build paid for and never revealed,
+    // retired unrevealed or failed into the skeleton still counts against the child's day and month caps
+    await writeSpend(L, piece).catch(() => {});
     if (r?.ok && r.winner && revealable({ gate: r.winner.gate })) {
       const put = await putBuild({ identity: piece.identity, archetype: a.id, kind: a.kind, fragment: r.winner.html, plan, record: r.winner.record ?? {} }).catch(() => null);
       if (put) {
@@ -332,9 +402,12 @@ export const studioSeam = {
       kit: ctx.kit ?? null, topicId: ctx.topicId ?? null, topicTitle: ctx.kit?.title ?? ctx.topicTitle ?? undefined,
       band: ctx.band && /^B[1-4]$/.test(ctx.band) ? ctx.band : B4[ctx.child?.class_level] ?? "B3",
       lang: LANG[ctx.child?.language_pref] ?? "hinglish", mode: ctx.mode ?? "text", purpose: ctx.purpose ?? "lesson",
-      bondStage: ctx.bond?.stage ?? null, studioControl: ctx.child?.studio_control ?? ctx.studioControl ?? "on",
+      // no bond snapshot (the relational read failed or is not filled): fail safe to a first session (promoted builds only)
+      bondStage: ctx.bond?.stage ?? "meeting", studioControl: ctx.child?.studio_control ?? ctx.studioControl ?? "on",
       redact: [ctx.child?.first_name, ctx.child?.name].filter((x) => typeof x === "string" && x.length > 1),
     });
+    // the child's earlier lesson still in memory has ended: its open wrong items close as evidence now (no lesson-end hook)
+    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); }
     // Quick practice is a short item set (STUDENT-FLOW §6.1): no Studio pieces there.
     if (L.purpose === "practice") return;
     return (async () => {
@@ -344,7 +417,7 @@ export const studioSeam = {
       for (const c of cands) {
         const piece = { intentId: c.intent.intentId, slotId: `${c.intent.intentId}:slot`, kind: archetype(c.archetype).kind, archetype: c.archetype, params: c.params,
           skillId: c.intent.skillId, misconceptionId: c.intent.misconceptionId ?? null, need: c.intent.need, neededAtMs: c.intent.neededAtMs, intent: c.intent,
-          state: "planning", source: null, retired: false, createdAt: Date.now() };
+          personal: !!c.personal, signature: c.signature ?? [], state: "planning", source: null, retired: false, createdAt: Date.now() };
         piece.facts = factsOf(archetype(c.archetype), c.params);
         L.pieces.set(piece.intentId, piece);
       }
@@ -358,15 +431,26 @@ export const studioSeam = {
    * @returns {import("../../shared/studio").StudioTurnView | null}
    */
   statusFacts(lessonId, hint = null) {
-    const L = lessons.get(lessonId);
+    const L = lessonOf(lessonId);
     if (!L) return null;
-    L.turn++;
+    // turns are CONVERSATION turns: a module-only turn (a Studio answer, an activity milestone) does not move the retire /
+    // gap clocks (the call site's hint; without it every call counts, as before)
+    if (!hint?.moduleOnly) L.turn++;
     const pieces = [...L.pieces.values()];
     if (!pieces.length) return null;
     const statuses = pieces.filter((p) => p.kind !== "whiteboard").map(statusOf);
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     const onScreen = on && VISIBLE.has(on.state) ? { ...on.facts, ...(on.lastItemId ? { itemId: on.lastItemId } : {}) } : null;
     const view = { statuses, onScreen };
+    // how the child is doing on the piece on screen, from the HOST's grades (owner priority 1): the teacher reacts to a
+    // wrong answer (re-teach) and to the finished piece; `suggest` is Studio's advice to the Director (the kernel reads it
+    // from W2-E's BR2b; until then it reaches the reply as the facts row's values)
+    if (on && VISIBLE.has(on.state) && on.grade && on.kind !== "whiteboard") {
+      const wrongCount = on.grade.wrongCount, complete = on.grade.complete;
+      view.outcome = { lastVerdict: on.grade.lastVerdict ?? null, wrongCount, complete };
+      if (complete) view.suggest = "advance";
+      else if (wrongCount >= 2) view.suggest = "reteach";
+    }
     const clock = Date.now() - L.startedAt;
     // a ready build nobody reached for in 4 minutes goes back to the library (its slot is freed for the plan)
     for (const p of pieces) if (p.state === "ready" && clock > p.neededAtMs + STUDIO_LIMITS.readyUnrevealedMs) p.retired = true;
@@ -390,12 +474,15 @@ export const studioSeam = {
   /**
    * The Work tray slot this turn shows (UiDirectives.studioSlot), or null: the piece the turn reveals, else the piece
    * already on screen (it stays in the tray across turns until it is retired). Synchronous, in memory.
+   * Hints (the call site's): `beat`, `tray` (the Director's tray this turn), `safety`, and `asking` (the Director's move
+   * poses a question of its own this turn: a NEW piece waits, one task at a time; a piece already on screen stays).
    * @param {string} lessonId @param {import("../../shared/brain").TurnStudio | null} turnStudio
    * @returns {import("../../shared/studio").StudioSlot | null}
    */
   slotFor(lessonId, turnStudio, hint = null) {
-    const L = lessons.get(lessonId);
+    const L = lessonOf(lessonId);
     if (!L) return null;
+    L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
     // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
     if (hint?.safety) { studioSeam.onSafety(lessonId); return null; }
@@ -404,15 +491,39 @@ export const studioSeam = {
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
     if (turnStudio?.reveal) {
       const p = L.pieces.get(turnStudio.reveal);
-      // the turn moved into a beat the piece was not made for, or the tray is the Director's: it waits for its moment;
-      // onReveal skips it on this turn
+      // the turn moved into a beat the piece was not made for, the tray is the Director's, or her move asks its own
+      // question: it waits for its moment; onReveal skips it on this turn
       const beat = typeof hint?.beat === "string" ? hint.beat : null;
-      if (p && !VISIBLE.has(p.state) && (trayTaken || (beat && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
-      else if (p && (isRevealable(p) || VISIBLE.has(p.state))) return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed");
+      if (p && !VISIBLE.has(p.state) && (trayTaken || !!hint?.asking || (beat && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      else if (p && (isRevealable(p) || VISIBLE.has(p.state))) { L.shown = { intentId: p.intentId, revealing: !VISIBLE.has(p.state) }; return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed"); }
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
-    if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") return slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state);
+    if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") { L.shown = { intentId: on.intentId, revealing: false }; return slotOf(on, on.source === "skeleton" ? "fallback_ready" : on.state); }
     return null;
+  },
+
+  /**
+   * The facts row for THIS turn's reply prompt, from the slot the turn actually shows (W2-H fixer, blocker: the row used
+   * to be built before the kernel and slotFor ran, so the reply could point at a piece the kernel refused, slotFor held,
+   * or the Director's tray hid). Called after slotFor with its result; null unless the slot carries a non-whiteboard
+   * artifact (the whiteboard's own values reach the reply through its script). Values only, never prose (director/
+   * modules.js factsRow shape): the piece's on-screen values, the host's verdict on the last answer, the wrong count,
+   * whether it is finished, and `state just shown` on the reveal turn (so her line points at what appeared).
+   * @param {string} lessonId @param {import("../../shared/studio").StudioSlot | null} slot
+   */
+  factsRowForSlot(lessonId, slot) {
+    if (!slot?.artifact || slot.artifact.kind === "whiteboard" || !slot.intentId) return null;
+    const L = lessons.get(lessonId);
+    const p = L?.pieces.get(slot.intentId);
+    if (!p?.facts) return null;
+    const extra = {};
+    if (L.shown?.intentId === p.intentId && L.shown.revealing) extra.state = "just shown";
+    else if (p.grade && VISIBLE.has(p.state)) {
+      if (p.grade.complete) extra.state = "finished";
+      else if (p.grade.lastVerdict) extra["last answer"] = p.grade.lastVerdict;
+      if (p.grade.wrongCount) extra["wrong tries"] = p.grade.wrongCount;
+    }
+    return rowOf({ ...p.facts, onScreen: { ...(p.facts.onScreen ?? {}), ...extra } });
   },
 
   /**
@@ -420,9 +531,11 @@ export const studioSeam = {
    * @param {{ lessonId: string, childId: string, turn: number, studio: import("../../shared/brain").TurnStudio }} ev
    */
   onReveal(ev) {
-    const L = lessons.get(ev?.lessonId);
+    const L = lessonOf(ev?.lessonId);
     if (!L || !ev.studio) return;
     if (ev.studio.retire) retirePiece(L, ev.studio.retire, "beat_exit");
+    // a turn with an incident whose move was not 'safeguard' can still carry an accepted reveal: never after a safety event
+    if (ev.studio.reveal && L.safety) return;
     if (ev.studio.reveal) {
       const p = L.pieces.get(ev.studio.reveal);
       if (!p || !(isRevealable(p) || VISIBLE.has(p.state)) || p.heldTurn === L.turn) return;
@@ -448,6 +561,9 @@ export const studioSeam = {
     if (!lessonId || ask?.intent?.kind !== "whiteboard" || !String(ask?.line?.text ?? "").trim()) return null;
     const L = lessonState(lessonId, {});
     if (L.safety || L.studioControl === "off") return null;
+    // the router's whiteboard rule (rule 2): a parent's "Only ready-made ones" means no model-written board either
+    const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
+    if (decision.action !== "whiteboard") return null;
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return null;
     const intentId = String(ask.intent.intentId);
@@ -458,8 +574,13 @@ export const studioSeam = {
     if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
+    if (ask.mode !== "continue") L.wbBeatHead = null;
     deps.planWhiteboard(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs })
       .then((r) => {
+        // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
+        const usd = Number(r?.usd) || 0;
+        try { breaker.spend(usd); } catch { /* spend accounting never breaks a lesson */ }
+        L.wbUsdPending = (L.wbUsdPending ?? 0) + usd;
         if (r?.ok && r.script) {
           p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
           p.facts = r.script.facts ?? null;
@@ -467,7 +588,17 @@ export const studioSeam = {
           L.wbPrev = r.script;
           push(L, { t: "script", intentId, script: r.script });
           push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts ?? { kind: "whiteboard", archetype: "whiteboard", onScreen: {} } } });
-          if (L.childId) writeMount(L, p, L.childId);
+          // ONE studio_mount row per whiteboard beat (its first board): the Made for you and parent feeds list a beat's
+          // board once, not every line of it; the later boards of the beat add their spend to that row
+          const head = L.wbBeatHead;
+          if (!head) {
+            L.wbBeatHead = p;
+            p.usd = L.wbUsdPending; L.wbUsdPending = 0;
+            if (L.childId) writeMount(L, p, L.childId);
+          } else if (head.mountId && L.wbUsdPending > 0) {
+            const add = L.wbUsdPending; L.wbUsdPending = 0;
+            dbq("update studio_mount set usd = coalesce(usd, 0) + $2 where id = $1", [head.mountId, add]).catch(() => {});
+          }
         } else {
           p.state = "failed"; p.fallback = "voice";
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
@@ -488,8 +619,7 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     if (!on || !VISIBLE.has(on.state) || !on.facts) return null;
-    const parts = [on.facts.archetype, ...Object.entries(on.facts.onScreen ?? {}).map(([k, v]) => `${k} ${v}`)];
-    return `on screen now (values to use when you point at the screen; never what is hidden): ${parts.join(" · ")}`.slice(0, 360);
+    return rowOf(on.facts);
   },
 
   /** Does Studio have something the child can act on right now (director/say.js screenHasTargets reads this)? */
@@ -511,53 +641,118 @@ export const studioSeam = {
 function retirePiece(L, intentId, why) {
   const p = L.pieces.get(intentId);
   if (!p || p.state === "retired") return;
+  const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
   if (L.onScreen === intentId) L.onScreen = null;
   push(L, { t: "status", status: statusOf(p) });
   if (p.mountId) dbq("update studio_mount set outcome = outcome || $2::jsonb where id = $1", [p.mountId, JSON.stringify({ retired: why })]).catch(() => {});
+  // the piece leaves with items the child got wrong and never got right: ONE incorrect event per such item (W2-H fixer):
+  // without it the learner model only ever saw success from Studio. Never on a safeguarding retire (no learning evidence
+  // is drawn from that moment).
+  if (wasVisible && why !== "safety") return closeOpenItems(L, p);
+}
+
+/** The retire-time incorrect events of a piece (same deterministic ids as the correct close: one event per item episode). */
+function closeOpenItems(L, p) {
+  const open = p.grade?.openWrong?.() ?? [];
+  if (!open.length || !L.child) return Promise.resolve();
+  const writes = open.map(({ itemId, wrongs }) => {
+    const ev = evidenceFor(L, p, { itemId, triesBefore: wrongs, outcome: "incorrect", signatureHit: !!p.signatureHits?.has(itemId) });
+    if (!ev) return null;
+    p.grade.noteEvidence(itemId);
+    return Promise.resolve(deps.writeEvidence(L.child, ev)).catch(() => null);
+  }).filter(Boolean);
+  return Promise.all(writes).then(() => {});
+}
+
+/** A lesson leaves memory (its child started another lesson, or the registry evicted it): close what is on screen. */
+function closeLesson(L, why) {
+  try {
+    const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (on && on.kind !== "whiteboard") { const r = retirePiece(L, on.intentId, why); if (r?.catch) r.catch(() => {}); }
+    for (const s of L.subs) { try { s.send({ t: "status", status: { state: "failed", intentId: L.onScreen ?? "", fallback: "voice" } }); } catch { /* closed */ } }
+  } catch (e) { console.warn("[studio] close lesson failed:", e?.message); }
+}
+
+/** The kt_evidence event of one Studio item (correct close or retire-time incorrect close). */
+function evidenceFor(L, p, { itemId, triesBefore, outcome = "correct", signatureHit = false, startedAt }) {
+  const kitItem = (L.kit?.items ?? []).find((i) => i.skillId === p.skillId);
+  return studioEvidenceEvent({ lessonId: L.lessonId, startedAt: startedAt ?? L.startedAt, now: Date.now(), intentId: p.intentId, archetypeId: p.archetype, skillId: p.skillId,
+    itemId, triesBefore, topicType: kitItem?.topicType ?? L.kit?.topicType, kitVerified: L.kit ? L.kit.verified !== false : undefined,
+    outcome, misconceptionId: p.misconceptionId ?? null, signatureHit });
+}
+
+/** Does a wrong answer match the contrast piece's misconception signature (the fraction a child holding the belief picks)? */
+function signatureOf(p, value) {
+  if (!p.signature?.length || !value || typeof value !== "object") return false;
+  const v = /** @type {any} */ (value);
+  if (Number.isFinite(Number(v.n)) && Number.isFinite(Number(v.d))) return p.signature.includes(`${Number(v.n)}/${Number(v.d)}`);
+  if (Number.isFinite(Number(v.value))) return p.signature.some((f) => { const [n, d] = f.split("/").map(Number); return Math.abs(n / d - Number(v.value)) < 1e-6; });
+  return false;
 }
 
 /** One studio_mount row per revealed piece (the Made for you feed, the parent's "Made for {child}", the spend caps). */
 function writeMount(L, p, childId) {
   if (!childId) return Promise.resolve();
-  const row = { facts: p.facts ?? {}, artifact: slotOf(p, "revealed").artifact ?? null, need: p.need ?? null };
+  const row = { facts: p.facts ?? {}, artifact: slotOf(p, "revealed").artifact ?? null, need: p.need ?? null, ...(p.spent && p.source !== "live" ? { shownAs: p.source } : {}) };
+  // a live build's spend row exists already (writeSpend, source 'live' kept for the caps even when it is shown as the
+  // skeleton): the reveal completes it
   return dbq(`insert into studio_mount(lesson_id, intent_id, build_sha, source, kind, archetype, skill_id, topic_id, misconception_id, facts, usd, revealed_at)
               values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, now())
-              on conflict (lesson_id, intent_id) do update set revealed_at = coalesce(studio_mount.revealed_at, now()) returning id`,
-  [L.lessonId, p.intentId, p.buildSha ?? null, p.source ?? "skeleton", p.kind, p.archetype, p.skillId ?? null, L.topicId ?? null, p.misconceptionId ?? null,
+              on conflict (lesson_id, intent_id) do update set revealed_at = coalesce(studio_mount.revealed_at, now()), facts = excluded.facts,
+                build_sha = coalesce(excluded.build_sha, studio_mount.build_sha) returning id`,
+  [L.lessonId, p.intentId, p.buildSha ?? null, p.spent ? "live" : p.source ?? "skeleton", p.kind, p.archetype, p.skillId ?? null, L.topicId ?? null, p.misconceptionId ?? null,
     JSON.stringify(row), p.usd ?? 0])
     .then((rows) => { p.mountId = rows?.[0]?.id ?? null; })
     .catch((e) => console.warn("[studio] mount row failed:", e?.message));
 }
 
+/** The live-build spend row, written when the race returns (revealed_at null until a reveal; Made for you skips it). */
+function writeSpend(L, p) {
+  if (!L.childId) return Promise.resolve();
+  p.spent = true;
+  return dbq(`insert into studio_mount(lesson_id, intent_id, build_sha, source, kind, archetype, skill_id, topic_id, misconception_id, facts, usd, revealed_at)
+              values ($1,$2,null,'live',$3,$4,$5,$6,$7,$8,$9,null)
+              on conflict (lesson_id, intent_id) do update set usd = excluded.usd returning id`,
+  [L.lessonId, p.intentId, p.kind, p.archetype, p.skillId ?? null, L.topicId ?? null, p.misconceptionId ?? null, JSON.stringify({ need: p.need ?? null, spendOnly: true }), p.usd ?? 0])
+    .then((rows) => { p.mountId = rows?.[0]?.id ?? p.mountId ?? null; })
+    .catch((e) => console.warn("[studio] spend row failed:", e?.message));
+}
+
 // ───────────────────────────── host actions (routes/studio.js) ─────────────────────────────
 
 /**
- * Grade a Studio answer by the host (AT-10): the frame's `value` is the child's claim; the grade is ours. Writes the
- * item's kt_evidence event (via 'studio') when the host closes the item. → { correct, complete } | { error }
- * @param {{ lessonId: string, intentId: string, value: unknown, child: any, lesson: { started_at?: any, id: string } }} x
+ * Grade a Studio answer by the host (AT-10): the frame's `value` is the child's claim; the grade is ours. Graded by ITEM
+ * (grade.js): `itemId` names the item the skeleton shows; `mount` is the stage's mount key (a new mount restarts the
+ * host's bookkeeping with the activity on screen). Writes the item's kt_evidence event (via 'studio') the first time the
+ * host closes the item; a re-answer of a closed item is `correct` + `alreadyClosed` and writes nothing.
+ * → { correct, complete, itemId, alreadyClosed? } | { error }
+ * @param {{ lessonId: string, intentId: string, value: unknown, itemId?: string, mount?: string, child: any, lesson: { started_at?: any, id: string } }} x
  */
-export async function hostAnswer({ lessonId, intentId, value, child, lesson }) {
-  const L = lessons.get(lessonId);
+export async function hostAnswer({ lessonId, intentId, value, itemId, mount, child, lesson }) {
+  const L = lessonOf(lessonId);
   const p = L?.pieces.get(intentId);
   if (!p || p.kind === "whiteboard" || !VISIBLE.has(p.state) || !p.grade) return { error: "not_on_screen" };
-  const r = p.grade.grade(value);
+  if (typeof mount === "string") p.grade.mount(mount.slice(0, 80));
+  const r = p.grade.grade(value, typeof itemId === "string" ? { itemId: itemId.slice(0, 24) } : {});
   if (p.state === "revealed") { p.state = "in_use"; push(L, { t: "status", status: statusOf(p) }); }
   p.lastItemId = r.itemId;
+  if (!r.correct && signatureOf(p, value)) (p.signatureHits ??= new Set()).add(r.itemId);
   if (r.complete && p.completeTurn == null) p.completeTurn = L.turn;
+  if (!r.complete) p.completeTurn = null;
   let evidence = null;
   if (r.closedItem && child) {
-    const kitItem = (L.kit?.items ?? []).find((i) => i.skillId === p.skillId);
-    const ev = studioEvidenceEvent({ lessonId, startedAt: lesson?.started_at ?? L.startedAt, now: Date.now(), intentId, archetypeId: p.archetype, skillId: p.skillId,
-      itemId: r.itemId, triesBefore: r.triesBefore, topicType: kitItem?.topicType ?? L.kit?.topicType, kitVerified: L.kit ? L.kit.verified !== false : undefined,
-      misconceptionId: null });
+    const ev = evidenceFor(L, p, { itemId: r.itemId, triesBefore: r.triesBefore, startedAt: lesson?.started_at ?? L.startedAt });
+    p.grade.noteEvidence(r.itemId);
     evidence = await deps.writeEvidence(child, ev);
   }
   if (p.mountId) {
     const o = { answers: p.grade.answers, ...(r.complete ? { complete: true } : {}), last: r.correct ? "right" : "wrong" };
     dbq("update studio_mount set outcome = outcome || $2::jsonb where id = $1", [p.mountId, JSON.stringify(o)]).catch(() => {});
   }
-  return { correct: r.correct, complete: r.complete, itemId: r.itemId, ...(evidence ? { evidence: !!evidence.written } : {}) };
+  // wrong tries on this item so far (the stage turns every second one into a "stuck" milestone: she nudges)
+  const wrongTries = r.correct || r.alreadyClosed ? r.triesBefore : r.triesBefore + 1;
+  return { correct: r.correct, complete: r.complete, itemId: r.itemId, wrongTries, ...(r.alreadyClosed ? { alreadyClosed: true } : {}), ...(evidence ? { evidence: !!evidence.written } : {}) };
 }
 
 /**
@@ -584,18 +779,48 @@ export async function hostFeedback({ lessonId, intentId, action }) {
   return { error: "unknown_action" };
 }
 
-/** A frame reported a runtime error after reveal (§4.4): retire the build from the library; the stage shows the skeleton. */
-export async function hostFrameError({ lessonId, intentId }) {
-  const L = lessons.get(lessonId);
+/** Why a frame could not run (StudioFrame): only a broken build is an incident; a slow device or a missing fetch is not. */
+const INCIDENT_REASONS = new Set(["csp", "runtime", "navigated"]);
+/**
+ * A frame failed on the child's device (§4.4): this child gets the skeleton-as-activity (same params and words). Only a
+ * csp violation, a runtime error or a navigation counts as an incident against the BUILD, and library.js noteIncident
+ * retires it only after incidents from ≥ 2 different lessons (a promoted build goes back to review instead): one slow
+ * low-end phone (`not_ready`) or a dropped fetch (`unavailable`) never removes a reviewed build for every child.
+ */
+export async function hostFrameError({ lessonId, intentId, reason }) {
+  const L = lessonOf(lessonId);
   const p = L?.pieces.get(intentId);
   if (!p || p.source === "skeleton" || p.kind === "whiteboard") return { ok: false };
   const sha = p.buildSha;
   p.source = "skeleton"; p.buildSha = null;
-  if (sha) await retireBuild(sha, "incident").catch(() => {});
+  const why = typeof reason === "string" ? reason : "unknown";
+  if (sha && INCIDENT_REASONS.has(why)) await noteIncident(sha, lessonId).catch(() => {});
   return { ok: true, slot: slotOf(p, "fallback_ready") };
 }
 
 /** The current slot of a piece (the stage's late mount; the SSE stream's snapshot), or null. */
+/**
+ * The whiteboard's sync telemetry (W2-F fixer): per drawn script, how late it reached the board relative to her line's
+ * first audio sample (client clock.ts AnchorTiming; > 0 = she was already speaking). Process memory, the last 500, and
+ * one log line per script (ids and numbers only, never her line or the child).
+ */
+const wbTiming = [];
+export function noteWbTiming(lessonId, { lateMs, source }) {
+  const late = Math.max(-60_000, Math.min(60_000, Math.round(Number(lateMs) || 0)));
+  const src = ["recent", "exact", "event", "grace"].includes(source) ? source : "unknown";
+  wbTiming.push({ at: Date.now(), late, src });
+  if (wbTiming.length > 500) wbTiming.shift();
+  console.info(`[studio] wb_timing late=${late}ms source=${src}`);
+  return { ok: true };
+}
+/** p50 / p90 of the recent whiteboard lateness (ms) and the anchor sources seen. */
+export function wbTimingStats() {
+  const xs = wbTiming.map((x) => x.late).sort((a, b) => a - b);
+  const q = (p) => (xs.length ? xs[Math.min(xs.length - 1, Math.floor(p * xs.length))] : null);
+  const sources = {}; for (const x of wbTiming) sources[x.src] = (sources[x.src] ?? 0) + 1;
+  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources };
+}
+
 export function slotSnapshot(lessonId, intentId) {
   const L = lessons.get(lessonId);
   const p = L?.pieces.get(intentId);
@@ -603,20 +828,37 @@ export function slotSnapshot(lessonId, intentId) {
   return slotOf(p, p.state === "planning" && p.kind === "whiteboard" ? "planning" : p.state);
 }
 
+/** The facts row prefix (director/modules.js FACTS_ROW_PREFIX: one shape for whatever is on screen). */
+export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
+const ROW_MAX = 360;
+/** StudioFacts → one telegraphic row (whole entries only: a value is never cut in half). */
+function rowOf(f) {
+  if (!f?.archetype) return null;
+  let row = STUDIO_ROW_PREFIX + f.archetype;
+  for (const [k, v] of Object.entries(f.onScreen ?? {})) { const part = `${k} ${v}`; if (row.length + part.length + 3 > ROW_MAX) break; row += ` · ${part}`; }
+  return row;
+}
+/** Is this content line a Studio facts row (and not a module's)? The turn strips a stale one before adding this turn's. */
+export function isStudioRow(line) {
+  if (typeof line !== "string" || !line.startsWith(STUDIO_ROW_PREFIX)) return false;
+  const head = line.slice(STUDIO_ROW_PREFIX.length).split(" · ")[0];
+  return ARCHETYPES.has(head) && head !== "whiteboard";
+}
+
 /**
- * The telegraphic facts row for a turn view (both voice lanes; director/modules.js factsRow shape): the piece on screen,
- * else the piece the turn proposes to reveal (only when the kernel accepted that reveal: pass `revealAccepted`).
+ * The telegraphic facts row for a turn view: the piece on screen, else the piece the turn proposes to reveal (only when
+ * the kernel accepted that reveal: pass `revealAccepted`). Kept for callers that have no slot yet; the turn uses
+ * factsRowForSlot after slotFor (the slot is what the child actually sees).
  */
 export function factsRowOfView(view, { revealAccepted = false } = {}) {
   const f = view?.onScreen ?? (revealAccepted ? view?.revealing : null);
-  if (!f) return null;
-  const parts = [f.archetype, ...Object.entries(f.onScreen ?? {}).map(([k, v]) => `${k} ${v}`)];
-  return `on screen now (values to use when you point at the screen; never what is hidden): ${parts.join(" · ")}`.slice(0, 360);
+  return f ? rowOf(f) : null;
 }
 
 /** The seam with every entry point behind seamSafe (the brain's call sites use these through seamSafe anyway). */
 export const safeStudio = {
-  slotFor: (lessonId, ts) => seamSafe("studio.slotFor", () => studioSeam.slotFor(lessonId, ts), null),
+  slotFor: (lessonId, ts, hint) => seamSafe("studio.slotFor", () => studioSeam.slotFor(lessonId, ts, hint), null),
+  factsRowForSlot: (lessonId, slot) => seamSafe("studio.factsRowForSlot", () => studioSeam.factsRowForSlot(lessonId, slot), null),
   factsRow: (lessonId) => seamSafe("studio.factsRow", () => studioSeam.factsRow(lessonId), null),
   hasTargets: (lessonId) => seamSafe("studio.hasTargets", () => studioSeam.hasTargets(lessonId), false),
 };

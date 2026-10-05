@@ -20,6 +20,8 @@ create table if not exists brain_trace (
   lane        text not null,
   move        text not null,
   beat        text,
+  item_id     text,
+  misconception_id text,
   inputs_hash text not null,
   proposals   jsonb not null,
   accepted    jsonb not null,
@@ -32,6 +34,11 @@ create table if not exists brain_trace (
   unique (lesson_id, turn)
 );
 create index if not exists brain_trace_expires on brain_trace (expires_at);
+-- W2-E fixer (2026-10-05): the comprehension trail is answerable from the row (owner priority 1): the kit item on the table
+-- and the misconception the classifier named (kit ids, never words). Idempotent for a database that ran the first 016
+-- (the Neon test branch); on a fresh database the columns already exist from the create above.
+alter table brain_trace add column if not exists item_id text;
+alter table brain_trace add column if not exists misconception_id text;
 
 create table if not exists decision_record (
   id          bigserial primary key,

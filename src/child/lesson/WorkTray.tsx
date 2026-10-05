@@ -8,17 +8,13 @@ import { useEffect, useState } from "react";
 import type { ModuleEvent } from "../../../shared/contracts.ts";
 import type { Floor } from "../../lesson/floor.ts";
 import { ModuleHost, type ModuleCommandSource } from "../../modules/host.tsx";
-import { prewarmWhenIdle } from "../../modules/prewarm.ts";
 import { Art } from "../../ui/Art.tsx";
 import { t } from "../../ui/copy.ts";
 import { Glyph } from "../../ui/icons/state.tsx";
 import { Board } from "./Board.tsx";
 import { StudioStage } from "../../studio/StudioStage.tsx";
+import type { StudioStageEvent } from "../../studio/renderers.ts";
 import type { DeskActions, TrayModel } from "./model.ts";
-
-// W2-B #4: the lesson screen's chunk carries this file, so loading the lesson warms the module frame (runtime + the
-// explain rungs' engine chunks) while the start request and her first line run; the explain beat's mount is then warm.
-prewarmWhenIdle();
 
 export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, onModuleFailed }:
   { tray: TrayModel; floor: Floor; young: boolean; modules?: ModuleCommandSource; lang: string; ageBand: string; actions: DeskActions; onModuleFailed?: () => void }) {
@@ -34,7 +30,7 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
           <ModuleTray modules={modules} lang={lang} ageBand={ageBand} onEvent={actions.moduleEvent} onFailed={onModuleFailed} />
         ) : tray.kind === "studio" && tray.studio ? (
           // W2 seam: the Studio stage (W2-H) reserves a fixed, aspect-fitted box in the tray for every Studio piece.
-          <StudioStage slot={tray.studio} young={young} lang={lang} />
+          <StudioStage slot={tray.studio} young={young} lang={lang} onEvent={(e) => studioToLesson(e, tray.studio?.intentId, actions.moduleEvent)} />
         ) : tray.kind === "board" && tray.board ? (
           <Board board={tray.board} young={young} />
         ) : tray.kind === "tiles" && tray.tiles?.length ? (
@@ -48,6 +44,22 @@ export function WorkTray({ tray, floor, young, modules, lang, ageBand, actions, 
       )}
     </section>
   );
+}
+
+/**
+ * W2-H: the HOST's verdict on a Studio answer reaches the conversation through the same module-event path a module uses
+ * (a milestone fires a module-only turn; the reply reads the host's grade from Studio's facts row, never the client's).
+ * The finished piece is `goal_met` (the Director celebrates the method and carries on); every second wrong try on an
+ * item is `stuck` (the Director's one small nudge on the activity, with "last answer wrong · wrong tries n" on the facts
+ * row); a single wrong try or a right answer on the way rides with the next turn (the piece's own feedback answers it).
+ * Nothing here carries a `correct` the server would read.
+ */
+export function studioToLesson(e: StudioStageEvent, intentId: string | undefined, send: (ev: unknown) => void) {
+  if (e.type !== "graded" || !intentId || e.alreadyClosed) return;
+  const base = { moduleId: intentId, engine: "studio", at: Date.now() };
+  if (e.complete) send({ ...base, type: "goal_met", name: "finished" } satisfies ModuleEvent);
+  else if (!e.correct && (e.wrongTries ?? 0) >= 2 && (e.wrongTries ?? 0) % 2 === 0) send({ ...base, type: "stuck", name: "wrong tries" } satisfies ModuleEvent);
+  else send({ ...base, type: "interaction", name: e.correct ? "right" : "wrong" } satisfies ModuleEvent);
 }
 
 /** The engine frame fills the tray (ModuleHost `fill`): never the iframe's 150 px default (live-content audit 3). */

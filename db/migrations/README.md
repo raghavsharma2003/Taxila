@@ -26,7 +26,7 @@ statement per call).
 --                             (012 set it to dialogue, game, module, callback, weave, late; shared/learner.ts `via` has 'studio')
 --   018_relational.sql  W2-I  rel_state (edit), rel_event, relational_note (no NM-3 column)
 --   019_*.sql           W2-A  home states (homework, test_window, safety_hold), if needed
---   020_*.sql           W2-C  reserved
+--   020_reteach_child_history.sql  W2-C  widens reteach_attempts_chosen_by_check to add 'child_history' (selectReteach step 4b)
 -- Streams apply their file ONLY to the Neon test branch (CONDUCTOR_TEST_DATABASE_URL); production is the integration
 -- step's. 014 was never used (W1-D needed none): it stays a gap. W3 numbers are allotted in the W3 seam commit.
 ```

@@ -1,0 +1,21 @@
+--- a/server/voice/speech.js	2026-10-05 01:06:19.333678280 +0000
++++ b/server/voice/speech.js	2026-10-05 01:06:49.875338368 +0000
+@@ -10,6 +10,7 @@
+ import { dhdStream } from "./azureTts.js";
+ import { plainSsml } from "./expressive/compile/dhd.js";
+ import { count } from "./expressive/telemetry.js";
++import { toDevanagari } from "./translit/index.js";
+ 
+ export const PCM_RATE = 24_000;
+ /** Bytes per second of PCM16 mono at PCM_RATE. */
+@@ -73,7 +74,9 @@
+  */
+ export function ttsInput(text, style) {
+   if (process.env.TAXILA_TTS_SPOKEN === "0") return String(text);
+-  return speakable(text, style?.spoken ?? {});
++  const s = speakable(text, style?.spoken ?? {});
++  // RS-7: Roman Hindi → Devanagari for a voice whose spoken cell asks for it (voice-switch.js spokenFor; safety text never)
++  return style?.spoken?.devanagari ? toDevanagari(s, { force: true, mode: style.spoken.mode ?? "hinglish", written: text }) : s;
+ }
+ 
+ // ───────────── short-phrase cache ─────────────

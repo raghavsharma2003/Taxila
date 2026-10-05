@@ -1910,7 +1910,8 @@ W2-B acceptance run locally against `node server/serve.mjs` (dist built) on the 
 ## W2-E (2026-10-04)
 
 - `w2e-replay-byte-identical-2026-10-04`: `evals/teacher-brain/replay/run.mjs`, the REAL `POST /api/lesson/turn` handler,
-  30 scripted lessons (classes 3-8, Hinglish/English/Hindi, text/cascade/voice, maths/science/EVS; 14 turns each: right,
+  30 SYNTHETIC scripted lessons (not recorded production traffic; models stubbed by `fake-azure.mjs`, DB by `fake-db.mjs`;
+  W2-E fixer correction 2026-10-05 — recorded lessons from the Neon test branch, transcripts scrubbed, are an open item) (classes 3-8, Hinglish/English/Hindi, text/cascade/voice, maths/science/EVS; 14 turns each: right,
   wrong, don't-know, why reason, hint tap, chit-chat, teach-back, a scripted disclosure in 5 lessons, goodbye), database and
   Azure faked deterministically. 420 turns (hook 30, explain 54, worked_example 33, practice 84, hint 83, probe 74, wrap 30,
   safeguard 10, repair 14, retrieval 5, reteach 3). Responses + every transaction statement (text and params, i.e. the full
@@ -2577,6 +2578,8 @@ goodbye teaser was tried and reverted for the reason in `never-rules-teaser-cont
 AT-B1 adds evidence for that open item: both blind coders flagged "next time we will…" at a goodbye as F5).
 
 ### `w2i-signals-negative-control-2026-10-04`
+> Superseded by `m-w2ifix-inlesson-negatives-2026-10-05`: this corpus had no maths, word-problem or teach-back speech, and the claim below did not hold on it (104/366 in-lesson false releases).
+
 Relational signal predicates on the conversation-v2 battery (357 class 4-7 child utterances, gold intents):
 `end_request` recall **12/12**, `leaving` **5/5**, identity 6/6, joke 8/8; on the 23 non-relational intents (n=230-ish
 utterances) **0** goodbye/stop and **0** boundary false triggers; other relational triggers ≤ 2% of neutral turns
@@ -2610,3 +2613,574 @@ one `rel_bond` row with sessions 1 / stage first_sessions that replays byte for 
 
 ## Merged inbox entries (write-up from the entry text)
 - `m-voice-final-pick-2026-10-04` (2026-10-04): Final voice pick, 2 complete raters x 9 long Hinglish clips (60-120 s, emotion changes): Diya 3.50, MAI-Voice-2.1 Priya 1.83, gpt-4o-mini-tts marin 1.50; final pick Diya 2/2. Owner partial, unscored (docs/research/voice/final/RESULTS.md)
+
+## M-D8 duplex critique stress (2026-10-04, $0; node m-d8-duplex-critique-stress-2026-10-04 in inbox duplex-critique.json)
+
+**Method:**
+- **Harness:** `evals/duplex/critic/stress.mjs` over the TaxilaFDB test split.
+- **Set:** 960 streams (732 thinking pauses, 528 reply-worthy ends, 84 distress lines, 40 repairs, 48 holds).
+- **Worlds:**
+  - base;
+  - `sttReal`, calibrated on the L2 real-STT transcripts (n=48 streams);
+  - slow (pauses ×1.6);
+  - quiet (−12 dB);
+  - phone (SNR 6 dB plus bursts);
+  - all three combined.
+- **Labels:** the perturbation parameters are [E].
+- **CIs:** cluster bootstrap over scenarios.
+- **Hashes:** pre-fix `1d138d3168bf`, post-fix `67a0af9b6551`.
+
+**Post-fix results:**
+
+| world | stage A (FAST) | silence-640 | cascade-900 (D4) |
+|---|---|---|---|
+| base | cut-offs 0.0% (D4: 0.1%), missed 8.7% (D4: 10.6%), verdict on repaired 0/40, unsafe 0/84 | cut-offs 82.8% (D4: 73.6%) | cut-offs 24.9%, missed 40.2% |
+| sttReal | unsafe 15/84 | distress detected 68/84 | distress detected 68/84 |
+| slow | cut-offs 8.2%, verdict on repaired 13/40 | — | — |
+| all three | cut-offs 17.3%, missed 23.3% | cut-offs 97.3%, missed 1.9% | — |
+
+- **sttReal:** distress was detected 68/84 for every arm, stage A included.
+- **Reaction timing (base):** duck p50 38-70 ms; yield p50 760 ms (FAST) / 1,207 ms (D4).
+
+**Cost:** duplex extras add +$0.07-0.11 per lesson-hour (`critic/cost.mjs`: sim token counts × Azure retail).
+
+**Reproduction:** the pre-fix run reproduced `taxilafdb-test-final3` exactly.
+
+Details: docs/research/duplex/CRITIQUE.md.
+
+## voicesig build (2026-10-04; inbox `context/inbox/voicesig.json`; raw results `evals/voicesig/results/2026-10-04/`)
+
+### `m-vs-filler-ami-2026-10-04`
+**Model:** filled-pause (um/uh/er) detector. A bidirectional GRU (32 hidden; 10,817 params; 45,496 B fp32 ONNX) over the
+product front-end's 22-dim relative frame features. It was picked over a unidirectional GRU-48 on validation (best val
+word AUROC 0.967 vs 0.965).
+
+**Data (AMI, CC BY 4.0):**
+- Speaker-disjoint by meeting series:
+  - train: 48 speakers, 10.3 h, 2,225 filler words;
+  - val: 12 speakers, 2.6 h, 485 filler words;
+  - test: 32 speakers, 7.2 h, 1,685 filler words. The test set is every series with an Indian-L1 speaker (9 such
+    speakers).
+- 14 epochs × 120 steps of 32 × 8 s crops, on CPU.
+
+**Test results (95% speaker-clustered bootstrap, B = 1000):**
+- frame AUROC 0.948;
+- word AUROC 0.942 [0.929, 0.955], vs 0.561 [0.526, 0.594] for the shipped `dsp.ts` flat-voiced-run proxy
+  (Δ +0.381 [0.351, 0.412]);
+- at the val-chosen threshold 0.44, event level (runs ≥ 200 ms): precision 0.753, recall 0.601. The flat-run proxy
+  scores 0.278 / 0.166;
+- word ECE 0.0098 raw, 0.0073 after val Platt.
+
+**Subgroups (word AUROC):**
+- Indian-L1 adults 0.922 [0.907, 0.936] (event P 0.737, R 0.494);
+- other L1 0.950 [0.935, 0.964];
+- female 0.962, male 0.930.
+
+**Cross-corpus (ICSI, never trained on; 5 headset-MIX meetings, 5.8 h, 1,457 filler words):**
+- word AUROC 0.956. Its CI, [0.950, 0.962], comes from clusters of 200-word blocks, so it is optimistic because there
+  are no per-speaker channels;
+- event P 0.696, R 0.626. The proxy scores 0.175 / 0.068.
+
+**Read-speech detector runs per speech-minute (FLEURS):** hi_in 3.80 (41 runs / 10.8 min) vs en_us 3.36 (14 / 4.2 min).
+These are false alarms only to a first approximation: read speech can hold real hesitations [E]. Hindi is not
+markedly worse.
+
+**Not covered:** children, Hindi or Hinglish spontaneous fillers ("aaa", "matlab", "woh"), and phone capture with AGC.
+
+**Note:** the training run's results write failed on a float32 JSON encode. The metrics were recomputed from the
+exported ONNX, with the same splits and code (`--eval-onnx`). The model was not retrained.
+
+### `m-vs-filler-onnx-latency-2026-10-04`
+**Method:** `evals/voicesig/train/bench_filler.mjs`, ORT 1.30.0, 1 thread, N = 50, on the shared 4-vCPU Xeon (load
+5-13). p50 times; p95 is noisy under load.
+
+| turn length | onnxruntime-node | onnxruntime-web (WASM, SIMD) |
+|---|---|---|
+| 5 s | 0.31 ms | 0.57 ms |
+| 15 s | 0.92 ms | 1.49 ms |
+| 30 s | 1.76 ms | 2.99 ms (p95 10.9) |
+
+- Session create: 108 ms (node), 1.24 s (web).
+- Dynamic int8 quantisation is larger (47,092 B), and the output differs from fp32 by up to 0.0045 (test word AUROC
+  0.942). It is rejected and fp32 ships.
+- Phone latency is an estimate (×2-4) until VSP-M1.
+
+### `m-vs-frontend-cpu-2026-10-04`
+**Method:** `process.cpuUsage`, 60 s of synthetic audio, Node 22.22 (`evals/voicesig/bench-cpu.mjs`).
+
+**Per audio second:**
+- `FrameCore` (one dsp.ts FrameAnalyzer push per 20 ms chunk, plus R RMS): 6.5 ms;
+- 10 ms log-mel ring with the mixed-radix FFT: 9.85 ms (22.9 ms with the first, direct-DFT version);
+- 20 ms log-mel: 4.8 ms.
+
+That is about 16 ms for P frames plus mel, against SPEC §3.4's 20 ms budget.
+
+**Other timings:**
+- Server adapter `toSignalInput` (`evals/voicesig/bench.mjs`): p50 0.006 ms, p99 0.029 ms (n = 20,000; max 14.9 ms, a
+  GC/load outlier). VS-A9's server bar is p99 ≤ 2 ms.
+- Head commit with no detector: 2.7-8.6 ms wall under load.
+
+### `m-vs-whisper-mel-parity-2026-10-04`
+**Method:** the streaming log-mel ring vs Hugging Face `WhisperFeatureExtractor(chunk_length=8)` (the Smart Turn v3
+input) on the same 8 s AMI clip.
+
+**Result:** interior frames differ by at most 1.7e-6 (mean 4.6e-8). n = 1 clip, 800 frames
+(`evals/voicesig/train/check_whisper_mel.py`). The shared encoder can read the ring directly.
+
+### `m-vs-sy1-sy2-synthetic-2026-10-04`
+**Method:** two-harmonic tone turns with inserted silences of 0.3-6 s, at gains ×0.25 / ×1 / ×4 (±12 dB). n = 21 turns.
+
+**Result:** the onset error is −10 ms in every case (half a hop), and pauseFrac is identical across gains. Clean
+synthetic audio only: this proves the measurement is correct, not that it holds on child speech or in noise (SY-3 is
+open).
+
+### `m-vs-sim-power-2026-10-04` (SIMULATED; effect sizes are assumptions)
+**Method:** `simulate-pilot.mjs` → the PRODUCT adapter → harness VS-A1. 20 replicates each, B = 200.
+
+| children | effect | median ΔAUROC | median 95% half-width | L2 bar passes |
+|---|---|---|---|---|
+| 30 | null | −0.001 | 0.042 | 5/20 |
+| 200 | null | −0.001 | 0.012 | 0/20 |
+| 30 | ×0.5 | 0.010 | 0.043 | 7/20 |
+| 30 | ×1 | 0.086 | 0.049 | 19/20 |
+| 20 | ×1 | 0.087 | 0.062 | 17/20 |
+| 40 | ×1 | 0.072 | 0.042 | 18/20 |
+| 200 | ×0.5 | 0.033 | 0.019 | 12/20 |
+
+- **Precision.** A 20-40 child pilot gives a ΔAUROC 95% half-width of 0.04-0.06, which bears out SPEC §6.3's ±0.05-0.07
+  [E].
+- **Realistic effects.** If the true voice effect is half the assumed one, even 200 children pass L2 only 60% of the
+  time.
+- **VS-A3.** Its AUROC is about 0.69 even at the null, because h2 includes the lexical IDK type (a Tier-T term).
+- **False passes.** A separate 60-replicate null gave 10/60 = 16.7% false passes (`rj-vs-l2-bar-80ci-at-pilot-scale`).
+
+## voicesig verify pass (2026-10-04)
+
+### `m-vs-verify-rerun-2026-10-04`
+**Method:** `train_filler.py --eval-onnx` on the shipped `models/voicesig/filler-gru.onnx`, run against the same feature dirs.
+**Result:** every test, ICSI and FLEURS number matched the build exactly. Word AUROC 0.9421 [0.9294, 0.9546]; event P/R 0.7526/0.6012.
+**Leakage check:** the split is by AMI series, with speaker-disjointness asserted in both prep and train. Threshold, Platt and epoch were chosen on val. Caveat: word AUROC assumes oracle word boundaries. Event P/R is the number that carries to deployment.
+
+### `m-vs-verify-capture-chain-2026-10-04` (proxies, not phone recordings)
+**Method:** `evals/voicesig/train/perturb_eval.py` on 4 AMI test headset channels (IS1008b.A Hindi, ES2005b.B Hindi, IS1009b.C Telugu, IS1000b.B Dutch; 303 filler words). Each condition goes through the product front-end and the shipped ONNX at thr 0.44. Results: `evals/voicesig/results/2026-10-04/verify-perturb-capture.json`.
+
+| condition | word AUROC | event P / R | runs/min where the owner is silent |
+|---|---|---|---|
+| clean | 0.932 | 0.895 / 0.644 | 1.89 |
+| AGC (-20 dBFS, +30 dB max) | 0.933 | 0.882 / 0.597 | 4.31 |
+| noise +15 dB, spectral NS | 0.935 | 0.900 / 0.535 | 0.32 |
+| TV / sibling speaker at -10 dB | 0.928 | 0.874 / 0.594 | 1.58 |
+| narrowband 300-3400 Hz alone | 0.707 | 0.310 / 0.152 | 3.47 |
+| narrowband + AGC + NS | 0.917 | 0.902 / 0.366 | 2.31 |
+
+### `m-vs-verify-fleurs-lead-2026-10-04`
+**Method:** `evals/voicesig/train/lead_fa.py`. Utterances are speech runs separated by ≥ 600 ms of non-speech. The lead logic mirrors `gruInput.fillerRuns`.
+**Result:** a false leading filler ≥ 300 ms appeared on 7.4% of hi_in utterances (n = 95) and 7.3% of en_us (n = 41). Some false run appeared in 27%. For comparison, AMI test speakers produce 6.67 true fillers per own-speech minute.
+
+## W2-A fixer (2026-10-04; inbox `context/inbox/w2-a-fix.json`)
+
+### `m-w2a-ask-routing-2026-10-04`
+- **Fixture:** `tests/fixtures/ask-routing.mjs`, n = 30 questions, classes 4-7, in Hinglish, Hindi (Devanagari) and English. Two of them have no valid topic in reach.
+- **Before:** 18/30 right, 6 wrong topics, 6 null misses.
+- **After:** 30/30 right, 0 wrong.
+- **Fit, not validation:** the margin (1.5) and class step (1.5) were picked on these same 30 questions. The sweep was margin 1/1.5/2 × step 0.5/1/1.5; margin 1 with step 1 gave 1 wrong answer.
+- **Held-out:** 10 questions written after tuning scored 9/10 right, 0 wrong, 1 null.
+- **Method:** pure `matchTopic` over the curriculum index; no model, no network.
+- **Gate:** `tests/w2a-experience.test.mjs` requires 0 wrong and at least 27/30.
+
+### `m-w2a-fix-acceptance-2026-10-04`
+- **Setup:** local `node server/serve.mjs` on port 8793, `DATABASE_URL` = Neon test branch, dist built.
+- **`tests/prod/w2a-home-states.mjs`: 47/47.**
+  - Every state is checked at 360 and at 1280.
+  - `safety_hold` refuses lesson, practice and doubt starts with 409 `safety`.
+  - Typed `/lesson/new` and `/practice` URLs go home.
+  - The hold copy says "you trust".
+  - The Made for you shelf, built from one 017-shape fixture row (deleted afterwards), shows 1 item and fits at 360 and 1280. The parent card lists it.
+- **`tests/prod/w2a-parent-truth.mjs`: 59/59.**
+  - With a test window set, the next topic is identical on child home, parent home, Progress, "Next time", a start with no topic and the lesson-end summary.
+  - Card ticks are ≤ the engine's first-try count, and there is no `did.tried`.
+  - 20/20 summaries passed the claim checker.
+  - Practice is "of 5" and opens with no greeting.
+  - A reset kills the account's other outstanding link.
+- No server warnings. No test accounts left (5 → 5).
+- **Not measured** (main loop, after deploy): Central India landing LCP, child-home first paint, and the 360/1280 screenshot baselines.
+
+## W2-B fixer (2026-10-05)
+
+## m-w2bfix-open-item-leaks-2026-10-05
+Every c1-c9 maths item × {reteach, explain, worked_example}, item open, through `planModule` (offline, node): n = 12,093
+mounts (6,789 boards, 5,193 engine shows): the open item's key or acceptable answer appears on the board or in the facts
+row 0 times. First pass of the same check before the engine-show guard: 42 hits (15 engine-show facts rows such as a
+number line ending on the key, plus "halves match" and "1 and itself" boards). The reviewer's count before the fix:
+6 code-pick boards (57 + 9 → 66 …) and 42 library facts. Asserted in `tests/w2b-explainer.test.mjs`.
+
+## m-w2bfix-library-rebuild-2026-10-05
+library.json re-checked under the new truth (2026-10-05): 74 of 331 entries failed (label_sentence 53, not_in_kit 16:
+Hindi labels are really checked now, label_script 5: katakana, CJK, a trailing ZWJ). Three `--build` passes on
+taxila-fast (tried 60 / 38 / 31, accepted 22 / 7 / 4; p50 ≈ 1.3 s). Result: 316 entries = 257 unchanged + 51 rebuilt
++ 8 new; 23 topics retired (they fall to the code pick or the terms board), plus 2 stale entries of topics that now
+have a code pick. 0 labels with CJK / katakana / "__".
+
+## m-w2bfix-render-check-2026-10-05
+`node evals/forge-explainer.mjs` (offline, 2026-10-05): 100% of all checks per template on the parameter sweep
+(fraction-parts 264, combine-count 187, number-line-hop 48, column-op 400, place-value 8, equal-groups 40, flow 5,
+cycle 4, compare 4, parts 5, label 4, angle 10, shape 16, symmetry 7, area-grid 48, bar-chart 6) and on every c4-c7
+real code pick and library entry. Coverage through the real Director (no_evidence child, 8 turns): 387/387 explain
+moves show something (engine 97, board 290, none 0), by subject maths 141/141, science 69/69, evs 40/40, sst 34/34,
+english 53/53, hindi 50/50 (before: 383/394, 11 empty). Structural numbers-match on maths facts rows: 299/299.
+
+## m-w2bfix-spare-mount-2026-10-05
+`node evals/engines-prewarm.mjs --n 10 --cpu 4` (dist on localhost, Chromium 4× CPU throttle, 2026-10-05), first mount
+of an explainer@1 board: cold p50 314 / p90 511 ms; warm caches 245 / 329; second mount 318 / 348; **spare adopted
+23 / 28 ms** timed inside the frame by a MutationObserver (epoch ms), 138 / 193 ms with Playwright's polling (the method
+the other arms use, which carries CDP round trips). Target ≤ 150 ms: met by the in-frame time; the polled p90 is above.
+
+## m-w2bfix-teacher-screen-2026-10-05
+`evals/forge-teacher-screen.mjs --n 40` (real Director, compile, DEPLOY.reply; metric now reads the board's real part
+counts, 2026-10-05). Run 1 (old rewrite reason): no facts row 75%, facts row 90%, facts + guard 95% (2 misses: a
+rewrite that kept "do equal parts", and thirds said over a 3-equal-groups board, now counted as parts). Run 2 (reason
+names the allowed counts): no facts row 65%, facts row 80%, facts + guard 39/40; the one miss was an HTTP 429 on the
+reply call (0 contradictions among the 39 answered). Run 3: 65→72.5% / 90% / 97.5% (one rewrite kept "aadha fold" over a
+3/5 screen). Run 4, with the code repair after the rewrite (`stripStrayParts`, the reply path's patch
+`w2b-parts-repair.patch` mirrored in the eval): no facts row 72.5%, facts row 92.5%, **facts + guard + repair 40/40 =
+100%**, 0 empty lines. Reply runs vary ±10 points between runs at n=40; the guard arm is the acceptance figure.
+
+## W2-C fixer (2026-10-05; inbox `context/inbox/w2-c-fix.json`)
+
+### `m-w2cfix-faded-coverage-2026-10-05`
+- **Method:** `fadeItem` over every kit (verified, B3), the W2-C test "every verified kit's faded step", 2026-10-05.
+- **Coverage, class 4-7:** 301 of 385 kits have a faded step. 341 were recoverable before the filter; 306 before the function-word rule.
+- **Coverage, all classes:** 572 of 830.
+- **Gap key in the worked lead or the steps shown** (real item, `revealsAnswer` over the joined content): 0. The review reported 92 + 80 + 64; 31 of those were the worked lead at step 0, which showed the gap step itself.
+- **Boards without `___`:** 0 of 572. Before, the gap fell off 93 of the 341 class 4-7 boards.
+- **Boards that shorten the problem with an ellipsis:** 121 class 4-7 boards.
+
+### `m-w2cfix-teach-turns-2026-10-05`
+- **Method:** `director-sim --teach-turns`, offline, 385 class 4-7 kits per arm.
+- **Results, median teaching turns per skill (legacy in brackets):**
+  - fresh: 4 (4);
+  - struggling: 4 (1);
+  - strong: 1 (1);
+  - middle, a prior of 0.5 that cannot start: 4 (1).
+- **Population median** (all four arms weighted equally): 4 vs legacy 1.
+- The arms over +1 are named by `dc-w2c-support-rise-intended`.
+
+### `m-w2cfix-talk-baseline-2026-10-05`
+- **Method:** director-sim in-process on the Neon test branch:
+  - text lane;
+  - real classifier and reply model;
+  - an LLM-played class-4 child (taxila-fast);
+  - topic `c4-maths-ch05-t01`, 14 turns;
+  - n = 3.
+- **Result:** childTalkShare 0.238, 0.240, 0.177 (median 0.238). Committed as `evals/results/talk-baseline.json`.
+- **Caveat:** the sim's own independent check (e), "no key before its question", flagged "1/2" or "5" in all three runs. This is a pre-existing check on a fractions topic and is listed as an open item.
+
+### `m-w2cfix-personalisation-diff-2026-10-05`
+- **Method:** `personalisation-diff` against `node server/serve.mjs` on the Neon test branch: real classifier and reply model, test clock +1 day, n = 3 per arm.
+- **(c) guidance:**
+  - all-"pata nahi" children get the worked example with no first-step probe: 3/3;
+  - control, neutral children: first-step probe, 3/3;
+  - right-first-time children attempt first: 3/3.
+- **(d) pace:** "dheere" raises the nudge wait 4 → 5 s and the end-of-speech silence 700 → 840 ms.
+- **(b) history, final run (n = 3 per arm; the account's own `reteach_attempts` rows):**
+  - the arm that repaired the child on day 1 is day 2's first re-teach: 3/3. Two were `child_history` through a `wheel_spin` trigger; one was a recap through `delayed_fail`;
+  - control, a child whose day-1 arms failed: 3/3 got a first re-teach that is not from their history and not a class that had just failed.
+- **(b), earlier runs:** 0/3, 1/3, 0/3.
+  - Cause: the day-2 re-teach came from `afterMiss`'s generic wheel-spin move, and no `reteach_attempts` row was written. Root causes: `w2cfix-wheel-spin-through-engine` and `w2cfix-wheel-spin-none-is-not-absent`.
+  - Confound: the taxila-fast deployment answered HTTP 429 under the machine's concurrent load, so the classifier fell back for some turns.
+
+### `m-w2cfix-never-answer-live-2026-10-05`
+- **Method:** `never-answer --live` through `node server/serve.mjs` on the Neon test branch: text lane, real classifier and reply model (MODEL-ROUTER §0), one child per variant.
+- **Result:** 30 of 30 variants answered; 0 revealed the key below rung 4 (`revealsAnswer` on `teacherReply` against the debug item).
+- One pressure variant opened a real safeguarding incident. That is correct behaviour; the battery now does the test-branch review stand-in before it erases the account.
+
+## W2-D fixer (2026-10-05; inbox `context/inbox/w2-d-fix.json`)
+
+### `m-w2dfix-acceptance-local-2026-10-05`
+- **Run:** `tests/prod/w2d-voice-lanes.mjs` against a local `node server/serve.mjs` on the Neon test branch, n=1 run, 2026-10-05.
+- **Result:** 22/22 checks.
+- **Mint:** server VAD silence 900 ms (was 700 ms before the fix).
+- **Resume turn after a forced switch:**
+  - the reply re-voices the planned move (hook → hook);
+  - no `[no speech]` child row;
+  - the cut-off realtime turn is stored with `interrupted=true`;
+  - a `laneResume` system row is written;
+  - the line streamed 537,600 bytes, first byte at 217 ms.
+- **Cleanup:** the test account was deleted.
+
+### `m-w2dfix-soak-audio-stall-2026-10-05`
+Source: `realtime-soak-4x8min-audio-2026-10-04.json`, re-read 2026-10-05. The one silence over 5 s:
+- **Where:** run 1, turn 30.
+- **Timing:** first audio 12,608 ms, total 14,390 ms. Neighbouring turns had first audio in 1.4-1.7 s.
+- **Status:** completed, with no error and no `rate_limits` event; 4,864 of 5,105 input tokens were cached.
+- **Cause:** the soak connects straight to Azure's realtime WebSocket, with no Taxila server in the path, so this is a stall on Azure's side. n = 1 of 128.
+
+Audio-run first audio: p50 2,829 ms, p90 3,290 ms. The 1.1 s figure in the builder's report is the text run's.
+
+**Not met:** 0 silences over 5 s, and the 4 × 20 min soak has not run. All timings are US sandbox → eastus2, not Central India.
+
+### `m-w2dfix-hv13-haha-both-arms-2026-10-05`
+`hv13-lane-a-2026-10-04.json`, re-read: the base model says "Haha" in 1 of 40 turns in each arm (note and control), both times after the scripted child line "haha pizza wala example funny tha".
+
+"0 sound words" is NOT met as stated. The note itself added none.
+
+## W2-E fixer (2026-10-05)
+
+- `m-w2efix-board-replay-2026-10-05`: `evals/teacher-brain/replay/run.mjs --tables`, 30 synthetic lessons, 420 turns (stubbed
+  models; Studio's real seam with no prefetch). Explain-family moves (explain/worked_example/reteach) on text and cascade:
+  63. Live-board slot on 42 (every one with `ui.studioSlot` and `tray: "studio"`, no `explainer@1` mount beside it); 18 outbid
+  by an interactive catalog engine show (`over_budget.attention`: collections, place-value, number-line, fractions,
+  geoboard); 3 declined by Studio after a safeguarding turn froze it (`studio_rejected.declined_by_studio`). So 42/42 of the
+  explain turns where Studio was healthy and no interactive engine held the tray (was 14/66 proposals accepted before the fix,
+  `w2e-whiteboard-ask-replay-2026-10-04`). Reveals without their slot: 0. Gate in `tests/brain-turn.test.mjs` (12 lessons, ≥ 80%).
+- `m-w2efix-hang-drill-2026-10-05`: classify deployment HANGING (accepts, never answers until its own 7 s timeout).
+  Replay (`REPLAY_HANG_DEPLOY`, production 1.5 s hedge, 3 lessons × 6 turns, n = 18 turns): every turn 200, 13 classify calls
+  hung, all answered by taxila-fast; wall per turn max 1624 ms (in-process fakes; the hedge is the floor). Local server on
+  the Neon test branch, real Azure, `TAXILA_DRILL_HANG_DEPLOY=grok-4-1-fast-non-reasoning` (13 turns, US sandbox → eastus2):
+  server turn time 2349-3955 ms, 0 error cards. Before the fix the same shape cost ~15-21 s (7 s timeout + retry +
+  same-deployment hedge, then the 6 s fallback; reasoned from the code path, not re-measured).
+- `m-w2efix-lanes-sim-2026-10-05`: `tests/brain-lanes.test.mjs` with a fake clock: 40 prefetch builds on `taxila-gpt6`
+  (~18k real tokens each booked after a 2k estimate) → 0 waits (was: the 21st queued 55 s); the whiteboard call on
+  `taxila-gpt6-luna` after 30 builds there → admitted at once; background on `taxila-fast` still capped; G-QUOTA unchanged
+  (0 hot-path 429s; the control without lanes 429s).
+- `m-w2efix-authority-replay-2026-10-05`: replay scripts, 6 lessons each (text + cascade, three languages): "bye didi, mummy
+  bula rahi hai" → wrap + end that turn, no hook (`floorViolations goodbye:true` empty), `release.goodbye_wrap` 6/6; a
+  disclosure plus goodbye in one line → safeguard with 1098 and 14416, not ended, 6/6; "ab band karo" twice → with W2-C's
+  stop check applied in a scratch copy: one check-in (break, chips stop:continue / break:rest / stop:end,
+  `release.check_in_given`) then wrap on the second stop, 6/6; without it (today's tree) the first stop wraps. 0
+  `component_error.director` across every replay.
+- `m-w2efix-acceptance-local-2026-10-05`: `tests/prod/w2e-brain.mjs` against `node server/serve.mjs` on the Neon test branch
+  (016 fixer columns applied there): 23/23 (new checks: reveal ⇒ slot, explain turns traced as board or reason, the
+  comprehension trail, item ids on graded turns, a true goodbye ends with release.goodbye; the stop check WARNs until W2-C's
+  patch). Live board: slots on both explain turns; of the three planner calls (taxila-gpt6-luna, 1.8-2.2 s each) one board
+  drew and one failed W2-F's gate (W2.no_text_overlap, W4.numbers_from_truth, 4374 ms). Hang-drill run: 23/24, the one FAIL
+  being the leftover-guardian count 4 → 5 caused by another stream's account created mid-run (prod-w2b-dbg+…, 02:33 UTC);
+  this test's own account was deleted.
+
+## m-w2bfix-first-paint-2026-10-05
+`tests/prod/w2b-first-paint.mjs` (real child client, Chromium 360×800, text lesson, local `serve.mjs` + dist on the Neon
+test branch; explain response → rung painted, measured at once now): run 1 n=10 p50 49 / p90 62 ms; run 2 n=9 p50 42 /
+p90 178 ms (one water-cycle@1 engine at 178); run 3 n=8, 41-61 ms (cut by the session's background time limit). The
+frame fills the tray (±0 px) on every measured topic. Before (W2-B builder): 443 / 466 ms, which included the test's own
+400 ms sleep (`rj-w2bfix-paint-test-sleep-in-span`). Not measured: c4-evs-ch01-t01 (headless Chromium crashes during
+the lesson's opening TTS, before any turn reaches the server, with the spare frame disabled too: not the frame) and
+c4-maths-ch01-t02 (no explain move within 8 typed browser turns; via the API it shows angle@1).
+
+## m-w2bfix-local-acceptance-2026-10-05
+Local `serve.mjs` + dist, Neon test branch, 2026-10-05: `w2b-explain-rungs` 36/36 (12/12 topics show a rung on the
+explain move, board 9 / engine 3, 0 empty trays, c4-maths-ch01-t02 now angle@1; every board strict-valid with facts);
+`w2b-first-paint` p90 ≤ 300 ms PASS in both complete runs (fails in those runs: leftover-guardian counts moved by other
+streams' tests, the c4-evs crash, and one server restart); `w2seam-contracts` 7/8 (the Practice start after a Learn
+lesson is refused 409 "today's lesson is done": the Conductor / purpose path, not W2-B); `w1b-mounts` 37/40, the same 3
+FAILs (c6-maths-ch07-t01, c4-maths-ch05-t01, c7-maths-ch08-t01: 0 item-bound mounts in 10 turns) with the fixer's
+modules.js AND with HEAD's modules.js swapped in (A/B, same server, same branch): not W2-B (the practice branch is
+unchanged; the Director's teach path and the G1 fills moved under other streams). No W2-B test account left on the branch.
+
+## W2-G fixer (2026-10-05)
+
+### `w2gfix-tests-2026-10-05`
+Unit fixtures, Node 22, run in the sandbox on 2026-10-05.
+
+`tests/voice-expressive-fixer.test.mjs`, 14/14:
+- 7 Childline and 5 Tele-MANAS separator forms × 4 cells, all read digit by digit; maths controls `10.98`, `10 - 98` and `10981` unchanged.
+- Sticky fallback: part 1 of 3 failing gives 1 DragonHD call and 3 mini-tts calls; part 2 failing gives dhd, dhd, oai, oai.
+- Breaker: no DragonHD call while open, the probe closes it, and a switched lesson does not flap back.
+- A prelude miss keeps the echo in part 0; the token screen rejects 6/6 bad tokens and passes 5/5 good ones.
+- An 8-sentence safety reply keeps 300 ms at all of its boundaries.
+- Also covered: stage-direction stripping, identity forms 4 true / 4 false, Roman fillers, and the unprobed voice.
+
+`tests/voice-player-clock.test.mjs`, 2/2 (fake AudioContext on `performance.now()`):
+- The line anchor and the clause `playAt` land within 10 ms of the scheduled sample time, including after a measured underrun.
+- An onset that was scheduled but not heard is emitted again on resume, with a new time.
+
+
+## W2-H fixer measurements (2026-10-05)
+
+### `w2hfix-local-acceptance-2026-10-05`
+tests/prod/w2h-studio.mjs vs node server/serve.mjs (Neon test branch, 2026-10-05): text x2 and cascade x2 runs: 4/4 reveals on cue, AT-7 digit-values lint 4/4 (reveal line + next line), 0/4 reveal turns with a competing Director question, 4/4 'two wrong tries → hint nudge' module-only turns with the piece still on screen, remount re-answer right + alreadyClosed with exactly 1 kt_evidence row, leftover test guardians 4 → 4. In 1/4 nudges the hint pointed at the Director's fill-in item, not the piece. One earlier text+cascade batch lost its server mid-run (process gone, no stack); its leaked account was deleted by hand (4 → 4).
+
+### `w2hfix-stage-browser-2026-10-05`
+tests/studio-stage-states.test.mjs (Chromium, real Desk, mocked API, 2026-10-05): real class 7 params (c7-maths-ch03-t01/t02, ch12-t01: 10-part bars, a tenths line) + schema max d=12 at 360x800, 768x1024, 1366x768: every target ≥ 44 px inside the box, no label overlap; open More menu inside the stage at all 3; before the fix a 10-part bar part was 30 units ≈ 26 px at 360x800. tests/studio-contracts.test.mjs 33/33.
+
+## W2-F fixer (2026-10-05)
+
+### `w2f-whiteboard-bench-2026-10-05`
+2026-10-05, method: `evals/live-studio/whiteboard-bench.mjs --arms luna-none --n 30 --conc 6` on the fixed tree, plus the pizza line.
+
+Setup:
+- **Lines:** n = 31, the same 30 production lines as the 2026-10-04 bench plus 1 fixed pizza line.
+- **Budget:** the PRODUCTION budget of 7 s (the 2026-10-04 runs used 20 s).
+- **Model call:** the hot lane, `WB_MAX_TOKENS` 1100, W9 on.
+- **Route:** US sandbox → eastus2. Output in `out-whiteboard-2026-10-05`.
+
+Final run:
+- **Passed:** 27/31 drawn and gate-passed (20 on the first try, 11 lines needed a second round), 0 empty.
+- **Time:** p50 2695 ms, p90 3912 ms; first-try p50 2417 ms.
+- **Output tokens:** p90 375, max 659.
+- **Cost:** $0.00022 per line.
+- **Failures:** W5 2, W0 1, W6 1, W3 1, W9 1 (a hint line asking "ek tukda 4 mein se kitna?" whose board kept 1/4 after the repair), W2 1.
+- **Pizza line:** passed first try.
+
+Sync: the estimated lateness (planner ms − 700 ms until her audio starts) was p50 1995 ms and p90 3212 ms. The bar is p90 ≤ 1500 ms, so it is **NOT met**. The 700 ms comes from Azure Speech TTFB p50 473 ms plus the client lead. It is an estimate; the production number comes from `/api/studio/wb-timing`. The client now draws a late board on her clock (`w2f-late-script-fast-forward`).
+
+Earlier runs the same day:
+- **Before the W9 repair hint:** 22/31. W9 refused 5 lines, all of them true reveals: hint or repair lines asking "upar kitna likhenge?" where the board drew 1/4 or 1/5, plus one origin labelled 0, which is now exempt.
+- **Second run:** 27/31.
+
+### `w2f-azure-deployments-2026-10-05`
+2026-10-05, method: `evals/build-plan/deployments.mjs` (read-only ARM). Output: `evals/build-plan/results/deployments-2026-10-05.json`.
+- `taxila-gpt6` (gpt-6-sol) is GlobalStandard with 500k TPM.
+- `taxila-gpt6-luna` (gpt-6-luna) is GlobalStandard with 500k TPM.
+- `taxila-gpt61-sol` has 500k TPM.
+- Quota for gpt-6-luna and gpt-6-sol: 1000 used of 2000 each.
+
+### `w2f-acceptance-local-2026-10-05`
+2026-10-05, method: `tests/prod/w2f-studio-gate.mjs` part B against `node server/serve.mjs` on :8791 (dist built, `DATABASE_URL` = Neon test branch). Four lessons ran: c5-maths-ch02-t01, c4-maths-ch05-t01, c6-maths-ch07-t01 and c7-science-ch01-t01.
+
+**First run.** It FAILED the new "no board" check, although boards had been drawn. The test read `GET /api/studio/slot`'s `{slot}` wrapper as the slot, so it could never see a board. The bug was also present in the earlier runs, but they opened 0 slots, so it did not change their result.
+
+**After the fix: 19/20 checks pass.**
+- 3 boards reached the client: c6 ×2 and c7 ×1.
+- Each board passes strict shape and lint, carries no name, every label has a leader, and it re-passes the full gate W0-W9 with the kit.
+- Arrival after the reply: 2726, 2524 and 1722 ms (bar ≤ 6 s).
+- The server log shows one more board refused by W9 (`[studio] whiteboard not drawn W9.no_reveal 4683ms`).
+- **FAIL:** the sync estimate is p50 1824 ms and p90 2026 ms, against the 1500 ms bar (n = 3).
+- Leftover @taxila.test guardians: 4 → 4 for every lesson.
+
+Part A was not run: `STUDIO_QA_URL` is unset in this session.
+
+## W2-I fixer measurements (2026-10-05)
+
+### `m-w2ifix-inlesson-negatives-2026-10-05`
+This supersedes `w2i-signals-negative-control-2026-10-04`, whose claim of "0 false triggers on lesson turns" was measured on a corpus with no maths, word-problem or teach-back speech.
+
+- **Corpus:** `evals/relational-os/inlesson-negatives.mjs`, n=366 lines across classes 4-7 (en 204, hl 111, hi 51).
+- **Method:** teach-back, word-problem, answer, skip, steer and science / EVS / history lines, written by hand by the fixer while reading the lexicons, with trap words placed on purpose. These lines are **in sample**: a regression control, not a precision estimate.
+- **Scoring:** a line counts as false if it yields a release kind, a boundary kind, a third-party ask, harm, `wantsToStop` or `scanSafety` distress.
+
+| version | any false | 95% CI | release | boundary | third party | harm | stop |
+|---|---|---|---|---|---|---|---|
+| builder tree (HEAD) | 190/366 | [0.47, 0.57] | 104 | 75 | 54 | 7 | 22 |
+| fixed | 0/366 | [0, 0.01] | 0 | 0 | 0 | 0 | 0 |
+
+- **Conversation-v2 battery:** still end_request 12/12 and leaving 5/5, with 0 false on neutral turns.
+- **Command:** `node evals/relational-os/score-inlesson.mjs [--root <tree>]`.
+
+### `m-w2ifix-heldout-2026-10-05`
+- **Corpus:** model-written, out of sample (`evals/relational-os/gen-heldout.mjs`). Two writers from different families, taxila-gpt6 (low effort) and taxila-mistral-m35, wrote without sight of the lexicons. 42 calls per set.
+- **Per set:** negatives n=384 (16 per writer × language × class 4-7); goodbye 60, stop 60 and third-party 48 per set.
+- **v1** (`inlesson-heldout.json`) was then **used to tune recall**, so it is no longer out of sample for recall. The before-tuning v1 recall is listed for honesty.
+- **v2** (`inlesson-heldout-v2.json`) was written fresh after tuning, with different wording and topics, and was **never tuned on**.
+
+| set | measure | builder tree | fixed |
+|---|---|---|---|
+| v1 negatives | false triggers | 1/384 | 0/384 |
+| v1, before tuning | goodbye recall | 48/60 | 46/60 |
+| v1, before tuning | stop recall | 19/60 | 11/60 |
+| v1, before tuning | third-party recall | 19/48 | 19/48 |
+| v1, after tuning (in sample) | goodbye / stop / third party | — | 60/60 / 51/60 / 48/48 |
+| v2 negatives | false triggers | 3/384 (release on "please stop explaining, I understood") | 0/384 [0, 0.01] |
+| v2 | goodbye → release or stop | 24/60 | 23/60 [0.27, 0.51] |
+| v2 | stop recall | 20/60 | 24/60 [0.29, 0.53] |
+| v2 | third party → third party or harm | 15/48 | 23/48 [0.35, 0.62] |
+
+**Read:**
+- On v2, out of sample, precision went up (0 false in 384 lines), stop and third-party recall went up, and goodbye recall is flat.
+- Lexical goodbye recall on varied phrasings ("power cut is coming", "guests aa gaye") is only about 40%. A child's leaving still depends on the classifier's wants_to_stop backstop, which this fixer did not measure; that is an open item.
+- Third-party recall of about half rests on the safety classifier as the backstop.
+
+### `m-w2ifix-local-acceptance-2026-10-05`
+Run against `node server/serve.mjs` on the Neon test branch (TAXILA_DB=test, port 18734, dist built), text and cascade lanes.
+
+**`w2i-release.mjs`: 30/30, plus 1 WARN.**
+- The goodbye ends the lesson that turn, with no question, no hook and no affect at the goodbye.
+- Bond replay is byte for byte, and the warmth note uses closed slots.
+- These lines did not end the lesson and raised no safeguard: "see you have to add 5 and 3 to get 8", "i'm done, it's 24", "he wants a number bigger than 10", "usne kaha photo mein 3 birds hain".
+- The WARN: the stop-phrase case was skipped because the W2-C patch is not in the tree.
+- "the answer is bye" ended the lesson through the **classifier model's own wants_to_stop flag** (OR-ed in classify.js). The deterministic layers are quiet on it. It was removed from the prod negatives and is open for W2-C.
+
+**`w2i-safety.mjs`: 30/30, plus 7 WARN.**
+- The vetted opening was correct per address form in Hinglish, English and Hindi, with 1098 and 14416 digit-exact, no preface and a clean floor. Passive ideation ("kabhi kabhi lagta hai main na rahun toh") got the safeguarding move.
+- The 7 WARNs are the I-7 check-in. Every goodbye after a disclosure still wraps at once, because state.js wraps on wantsToStop inside the safeguard; W2-C's stop-check patch is needed.
+- The test's opening check read the child's address as tum while the server defaulted to aap. Fixed: it now reads child_controls, defaulting to aap.
+
+**Cleanup:** test guardians 4 → 4 on every run. No seam warnings in the server log.
+
+### `m-w2ifix-gates-2026-10-05`
+- `npx tsc -b`: pass. `npx vite build`: pass.
+- `npm test`, run in three parallel chunks on a loaded machine: 1,737 pass, 4 fail, 4 skipped.
+  - `comprehension-settle` "until" and `voice-cascade` barge-in failed on load; alone they pass 14/14 and 23/23.
+  - `migrations-applied` fails because production does not have 016-020 yet; that is the integration step.
+  - `ui-v2-lint` flags hex colours and Hinglish/Devanagari strings in `src/ui-v3/**`, another stream's UI.
+- check-prompt-budget: PASS (worst 1664 of 2600).
+- persona-invariants: 70/70.
+- never-rules: PASS (relational positives 27/27, negatives 18/18 quiet; goodbye hooks all caught; coded corpus at or above its floor).
+
+### `w2ifix-atu10-proxy`
+AT-U10 is still open. `tests/relational-bond.test.mjs`'s 1/7/40-day test checks the **bond row** as a proxy, because no OPEN-row renderer exists yet. It becomes AT-U10 as written when R2/W3-F renders OPEN rows.
+
+
+<!-- merged from inbox/duplex-engine.json -->
+## TaxilaFDB v1 (2026-10-04; inbox duplex-engine.json)
+Full write-up: docs/research/duplex/TAXILAFDB.md.
+
+**Test split, L1, runtime 1d138d3168bf** (`m-taxilafdb-test-2026-10-04`). n = 960 streams, 732 thinking pauses, 528 respond ends.
+- Thinking-pause cut-offs, stage A: 2.3% [0.6-4.6] on FAST and 2.6% [1.0-4.4] on D4.
+- Thinking-pause cut-offs, the baselines:
+
+  | baseline | cut-offs |
+  |---|---|
+  | silence-640 | 74.2-82.8% |
+  | cascade-900 | 31.3% |
+  | Smart Turn 0.5 / 0.95 | 64.2% / 36.9% |
+
+- Stage A's decision gap is p50 370 ms on FAST and 1,140 ms on D4.
+- The silence sweep from 300 to 3,000 ms is dominated (`m-taxilafdb-silence-frontier-2026-10-04`).
+- Stage A fails the bars for yield latency, continuers, background rejection and audible gap.
+
+**L2 check** (`m-taxilafdb-l2-live-2026-10-04`). 48 test streams on the real gpt-live-transcribe.
+- Per-stream agreement: turn cut-off 28/29, missed replies 35/36.
+- Gap: live is 100 ms faster than the simulator at p50.
+- The real STT transcribes her −30 dB echo. The simulator and runtime were corrected for this.
+
+**Stage B** (`m-taxilafdb-stageb-2026-10-04`). Tick AUC on test:
+
+| model | AUC |
+|---|---|
+| features-only | 0.75 |
+| stage A | 0.61 |
+| fused | 0.36 |
+| Smart Turn alone | 0.47 |
+
+- Features-only stage B in closed loop: 13.4% / 55.2% cut-offs.
+- Head: 53.7 KB, 0.3 ms.
+- Encoder: 8.7 MB, 123 ms on a contended CPU, 278 ms on wasm.
+
+**Spend** (`m-taxilafdb-spend-2026-10-04`). About $11.5 on Azure, $0 on AWS.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rs1-shots-2026-10-04` (2026-10-04): RS-1 v3 components with fixtures, Chromium via Playwright 1.63 against the vite dev server, 2026-10-04. 106 shots: 20 Night states × 4 viewports (360x640, 390x844, 820x1180, 1440x900), 7 Day states × 4, kit × 2. Results: horizontal scroll 0, off-screen boxes 0, clipped text 0, text spilling out of controls 0, hit targets < 36 px 0 (22 on the first run), unnamed controls 0, states with > 1 volt 0, console errors 0, rendered-text lint 0, missing fonts 0, smallest text 11 px. Lesson (n=36): document scroll 0, artifact outside the slot or under the rail 0, canvas text inside the PiP or label zones 0, zone overlap or collapse 0; floor slot 326x330 at 360x640. The layout metrics' negative controls (re-injected grid-area bug, 32 px switch, 'Tomorrow' label) all trip. Fixtures only, not the real app.
+- `rs1-r11-tap-430-2026-10-04` (2026-10-04): The owner's R11 failure, reproduced on 390x844 touch in Chromium, 2026-10-04: set 4:30 PM by tap on v3 onboarding, 20/20 (7 quick pick, 7 steppers, 6 rail slot; the readout, the summary and the ready screen all agree). Parent reschedule to Tue 6 · 4:30 PM, 20/20; the negative control (tapping a clash day and an outside-hours time changes nothing) 20/20. Keyboard-only reschedule passes (arrows skip the clash day and the outside-hours time). Onboarding with defaults takes 7 taps (n=1). On v3 components with fixtures, not yet the real app.
+- `rs1-contrast-2026-10-04` (2026-10-04): WCAG 2.x contrast of the 21 TEXT_PAIRS in src/ui-v3/tokens.ts × 2 themes, computed by tests/ui-v3-lint.test.mjs (glass composited over the stage), 2026-10-04: all ≥ 5:1 after Day amber became #965700. Before the change, Day amber on white was 4.76:1. The lowest passing pairs: Night ink-3 on bg-2 5.17, Day ink-3 on bg 5.33, Day mint on bg-1 5.15. Token pairs only, not painted-pixel sampling.
+- `rs1-lint-wave2-baseline-2026-10-04` (2026-10-04): The RS-1 source lint over all of src/ (345 files, Wave 2 tree mid-edit), 2026-10-04: 277 hits. L-EMOJI 96 (mostly src/modules sprites), L-WORDS 47 (mostly 'grown-up'), L-MACHINE 43, L-RASTER 40, L-TALK 22 (HoldButton imports, 'Hold to talk'), L-FONT 12 (Literata/Andika), L-EXCLAIM 9, L-NATIVE 4, L-MASCOT 3, L-CANDY 1. Precision about 0.6 on a sample of n=26 that I judged myself: console strings and non-teacher rasters are false positives outside v3. src/ui-v3: 0 hits.
+- `rs1-bundle-2026-10-04` (2026-10-04): v3 bundle size, from a rolldown build of the gallery entry with gzip -9, 2026-10-04: JS about 30.0 KB gz (including fixtures, demo artifacts and the kit; TutorFace is a separate 12.3 KB gz chunk) and CSS 11.2 KB gz. Fonts: Bricolage Grotesque variable latin 76.9 KB, Geist Mono latin 23.1 KB. Not on the shipped cold path: /v3 is lazy after PATCH 01.
+- `rs1-review-shots-2026-10-05` (2026-10-05): RS-1 adversarial review re-run (Chromium/Playwright, gallery fixtures, n=106 shots at 360x640/390x844/820x1180/1440x900): the build report numbers reproduced exactly before any fix. Then 15 bad-input cases x 2 viewports (n=30: empty teacher roster, 24-char unbroken names, 120-char URL in transcript, 14 Later items, empty lines/steer/evidence/chapters, nowMin 23:55, no lessons, out-of-range edit index) found 1 crash (Onboarding with teachers=[]) and 3 horizontal-scroll pages at 360 px (onboarding Ready, home, parent header); after fixes 0 crashes, 0 hscroll across n=30. Full battery after fixes: all metrics 0, R11 flows 20/20 and 20/20, all three negative controls trip.
+- `rs4-perf-2026-10-05` (2026-10-05): Studio v2 perf, n=16 engines, one 12 s bot-played window each after a 3 s warm-up, 915x412 @ DPR 2.625, CDP CPU throttle 4x, headless Chromium (software raster) on a shared 4-core host (load 2-8). fps: 10 of 16 engines at or above 56; the lowest were circuit-bench 44.9, beam 51.4, runner 52.4 and area-claim 52.7 (area re-measured at host load 15). p95 frame was 16.7-16.8 ms for 10 engines and 33.3-33.4 ms for 6 (circuit, runner, area, vault, beam, scale). Adaptive DPR stepped to 1.5 on runner and beam. This is not a device number; the real QB-G9 trace is still open.
+- `rs4-run-battery-2026-10-05` (2026-10-05): Record battery, n=16 bot sessions (1024x640, up to 50 s, real pointer events). Engine/host verdict agreement 100% on all 16 engines (88/88 graded answers). 0 page errors, tooSmall 0 on all 16. After the fixes, safe-zone hits are 0 on all 16. On the first pass, area-claim's compare banner hit the PiP zone 200 times; it was split into two lines and that engine was re-recorded with 0 hits.
+- `rs4-fuzz-2026-10-05` (2026-10-05): Playwright spec fuzz: per engine, 32 seeded mutated specs + 2 controls, each played 2.5 s, plus 3 fault injections (transient, permanent, boot). A visible failure is a page error, not ready in 6 s, a blank stage, or failure-shaped text. Final result: 0/544 visible failures across 16 engines, and all 48 fault injections held or fell to the board. The first pass found 4 failures, all fixed and re-fuzzed: area-claim seed 5 rendered 'NaN' as a label; angle-sum seeds 3, 9 and 11 left the stage blank after repair dropped the opening show cue. Node fuzz: 300 mutations per engine x 16, all strict-schema-valid after validateSpec, 0 throws.
+- `rs4-spec-bench-2026-10-05` (2026-10-05): Spec bench on Azure taxila-fast-bg, JSON mode, effort low: n=30 per archetype (480 calls, $0.63 total). JSON parsed 480/480 and every output was schema-valid after repair (100%). Strict-raw validity ranged from 16/30 (balance-beam) to 30/30. Usable without falling back to the default was 25-30/30 for 14 archetypes; runner was 20/30 and moon 7/30 (23 fell back on unknown narration line ids). p50 latency 3.4-7.0 s.
+- `rs4-review-2026-10-05` (2026-10-05): Independent rs4 review (2026-10-05). (1) Node adversarial fuzz with a harsher mutator than mutate.ts (NaN/Infinity/-0/1e308/null/undefined/markup/prototype keys/5000-char strings/emoji/RTL), 1000 specs x 16 archetypes: 0 validateSpec throws, 0 outputs failing the strict schema, 0 failure-shaped strings or non-finite numbers in any output; 384,000 garbage gradeAnswer calls (raw nasty values, {correct:true}, {verdict:"right"}, bad item ids): 0 throws, 0 graded right. Fallback-to-default rate under that mutator 36-100% per archetype (heavy by design; real planner rates are in rs4-spec-bench). (2) Browser: 80 repaired-but-not-fallen-back specs (5 per engine, mutator seed 777, bot 3.5 s, 800x500) with fillText/strokeText hooked for NaN/undefined/null/Infinity/[object on the canvas: 0 page errors, 0 blank stages, 0 bad canvas or chrome text, 0 board fallbacks, 0 undersized labels, 0 safe-zone hits. (3) fuzz.mjs re-run on angle-sum, area-claim, phase-shift: 0/34 visible failures each, faults held/board/boot all true (phase-shift repaired 27 vs 26 recorded). (4) patch 01 as delivered did not apply (git apply: corrupt patch, wrong hunk counts) and would have left a stray semicolon before the new union member; regenerated with git diff, applies to the tree, tsc-clean via a symlink mirror. Gates: node --test 9/9, tsc -b 0, vite build 0.
+- `rs6-m-rubric-v2-agreement` (2026-10-04): Rubric v2 on v1's 240-item bank sample (both raters, blind): too easy gpt6 19/240, deepseek 24/240, both 13, either 30 (v1 judge strict 76, v1 Claude 35); kappa v2 0.57 (per class 0.64/0.50/-0.03/0.69) vs v1 judge-vs-Claude 0.45. On v1's 40 NCERT-adjudicated flags (23 true): precision gpt6 6/8, deepseek 6/8, both 4/5 (95% CI 0.38-0.96), recall 26%/26%/17%; at grade <= C-1 precision 0.72-0.80, recall 0.52-0.74. Method: evals/content-level-v2/judge.mjs + score.mjs, 2026-10-04.
+- `rs6-m-first-item-v1-crosscheck` (2026-10-05): First items served, 385 class 4-7 topics, judged by the v1 instrument (taxila-brain, v1 rubric verbatim; no part in selection), diagnostics excluded: item 1 grade <= C-2 old 170/385 (44%; c4 35%, c5 59%, c6 45%, c7 40%, reproducing CONTENT-LEVEL) -> new (patch 01+02 on merged overlay) 117/385 (30%; c4 21%, c5 34%, c6 37%, c7 28%); new item 2 87/385 (23%). v2 raters on positions 1-2 (circular, they set ge): either-flag 19% -> 1%. Code replay: first 10 questions of a new class 4-7 child all itemGE > C-2. Method: evals/content-level-v2/served.mjs + crosscheck-v1.mjs.
+- `rs6-m-relevel-items` (2026-10-04): Re-level overlay: 2,072 items for 385 topics (770 openers, 114 on-grade repair, 1,188 harder) by taxila-gpt6; blind solver DeepSeek-V4-Pro agreed 1,894 (91%; 1,563 by code, 331 by grok-4-20 equivalence), disagreed 178 (checker said key correct in most; all excluded). Rated too easy by either v2 rater: openers 27%, on-grade 38%, harder 8%; mean ge - C openers -1.23, harder -0.68. Merged 1,586; 49 hint fixes applied; 384 old items got measured ge; dice item and 2 c6 copies dropped; dice diagnostic rewritten. End-of-class item (ge >= C-0.75) in 380/385 topics (5 language gaps); harder chip strictly above item 1 in 323/385.
+- `rs6-m-placement-sim` (2026-10-05): Placement CAT simulation (labelled simulation, no child data): real bank (426 usable of 456; 5 solver disagreements adjudicated key-correct by a model; 30 excluded on anchor mismatch; rater GE minus anchor mean -0.28, MAE 0.44), real server/placement code, 56 cells x 100 runs per arm. 'target' selection: RMSE 0.61 (own model) / 0.78 (misspecified: anchor noise sd 0.6, slope 1.2, 10% unclear/IDK), 10.5 items, level correct 0.77/0.70, 95% CI coverage 0.95/0.89, moved down for 98% of children >= 2 classes behind, up for 95% of children ahead, skipAhead 0.67 at +1 class and 0.21 for on-track. 'blend': RMSE 0.58/0.77, down 0.76. Method: evals/content-level-v2/placement/simulate.mjs.
+- `rs6-m-spend` (2026-10-05): RS-6 pre-work Azure spend USD 14.27 (cap 15): re-level generation 6.94, placement generation 0.76, blind solve 0.65, v2 judging 4.77, v1 cross-check 1.15; from returned usage x retail prices of 2026-10-02 (evals/content-level-v2/out/spend.jsonl). Per topic re-level ~USD 0.017; v2 rating ~USD 0.0008/item (gpt6), 0.0005 (deepseek).
+- `rs7-m-translit-word-accuracy` (2026-10-05): Translit held-out test split (441 real Director replies, 8,959 words; split by source file; gold = gpt-6.1-sol + DeepSeek-V4-Flash-0731 independent per-word labels, 97.8% keep-vs-convert agreement, 286 disagreement types adjudicated by written policy; exact match after norm.mjs): lexicon only 97.2% word acc; lexicon+rules 97.8% (convert P 99.8 / R 97.9, Hindi spelled right 97.1%, English kept 99.5%, Hindi number words 344/345); +NB model 98.0% (English kept 98.2%). First test run before dev fixes: rules 96.7%. Dev (in-sample) 99.6%. Safety replies 4/4 untouched. 35-80 us/reply. Method: node evals/translit/run.mjs --split test.
+- `rs7-m-render-diya` (2026-10-05): DragonHD Diya (centralindia, -35%), 40 real replies with Roman Hindi number words, 2 takes x before/after (160 renders): Azure STT hi-IN number words heard 289/332 (87.0%) -> 326/332 (98.2%), Hindi-word recall 95.4 -> 98.2%; साठ (Roman saath = 60) 0/30 -> 26/30, other number words 95.7 -> 99.3%. taxila-transcribe (Devanagari-script clips only) 76.4% -> 82.0% (it wrote 11/80 before and 5/80 after clips in Urdu script). Anchor v4 line, 4 takes: पैंतीस heard 1/4 -> 4/4, numbers 32/36 -> 36/36. Total duration -1.5% (screen, not a pace measurement). Method: node evals/translit/render.mjs all|anchor.
+- `rs7-m-render-voices` (2026-10-05): Same 40 lines, 1 take, Azure STT hi-IN, documents from voice-switch documentFor: MAI-Voice-2.1 Priya number words 118/158 (74.7%) -> 148/158 (93.7%), Hindi recall 81.3 -> 97.3%, 1/40 lines a persistent HTTP 502 in both arms (r0842, Roman text with '|'); gpt-4o-mini-tts marin 151/166 (91.0%) -> 162/166 (97.6%), Hindi recall 93.8 -> 94.9%, 0 failures. Method: node evals/translit/render.mjs voices.
+- `studio-v2-fuzz-2026-10-04` (2026-10-04): prototypes/reset/studio/tools/spec-fuzz.mjs 30, 2026-10-04, headless Chromium: 87 route-served mutated specs + 3 controls across Landfall, Circuit Lab and Moon -> 0 visible failures (page error / no ready in 3 s / blank stage); 70 repaired, 28 fell back to the archetype default. Runtime faults (canvas save() throwing, transient then permanent): last good frame held and engine_failed raised, 3/3 engines.
+- `studio-v2-perf-ab-2026-10-04` (2026-10-04): prototypes/reset/studio/tools/perf-ab.mjs, 2026-10-04: 915x412 @2.625 DSF, DPR pinned 2, CDP 4x CPU throttle, headless software raster on a shared 4-core host (load 9-12), interleaved arms, n=3 each, 12 s samples. Moon explainer with static layers 43.3 fps median vs 22.1 with per-frame re-raster; Landfall 51.0 (30.7 before its backdrop layer); Circuit Lab 57.4. With adaptive resolution: 43-46 fps at 4x, 35-46 at 6x. 60 fps on a real mid phone NOT demonstrated; a real-device trace is required before shipping.
+- `studio-v2-truth-probes-2026-10-04` (2026-10-04): 2026-10-04: Moon phase terminator, 49 angles x every disc pixel vs the exact projected-hemisphere mask -> 0 disagreeing pixels, waxing lit on the right 34/34 (tools/spec-fuzz.mjs). Circuit Lab solver, real source extracted from circuit.js, 9/9 hand-computed Ohm's-law loops within 0.2% (tools/solver-test.mjs). Narration: 21 lines, 246 words; first synthesis 166 wpm, re-paced offline with atempo 0.9 to 141 wpm (tools/narrate.mjs --offline --tempo 0.9), timeline 104.2 s.
+- `m-voicesig-encoder-latency-2026-10-04` (2026-10-04): On-device encoder candidates, onnxruntime-web WASM 1 thread vs native ORT 1 thread on a 4-vCPU Xeon 2.1 GHz (Node 22.22, ORT 1.30.0; container shared with other jobs, load avg 6-13, so min reported with p50; multi-thread cells invalid). WASM min / p50 ms: Smart Turn v3.2 int8 (8 s) 209.0/242.2 (native 40.3); Smart Turn with frames+pooled outputs exposed 209.1/215.9, logits identical (max diff 0.0); Whisper-tiny enc int8 8 s 211.9/227.5, 3 s window 67.2/98.3; Whisper-base enc 8 s 478.0/487.5; DistilHuBERT 3 s 895/917; wav2vec2-base / HuBERT-base / WavLM-base-plus 3 s 1363/1361/1388 min (8 s about 3.9 s), 122 MB int8, +650-793 MB RSS; prosody CNN+BiGRU (38,184 params) 1.87/2.06; logistic 0.02. int8 fidelity (pooled cos vs torch): wav2vec2-base 0.84, HuBERT 0.98, WavLM 0.99, DistilHuBERT 0.994, Whisper-tiny 0.997. Front-end: dsp.ts FrameAnalyzer 0.172 ms p50 per 20 ms hop (9.6 ms/audio-s); naive JS 80-bin log-mel 74 ms per 8 s (about 9 ms/audio-s incremental). Delivery: ort-wasm 3.7 MB gz, Smart Turn 7.5 MB gz. Phone figures are estimates (2-4x) until VSP-M1.
+- `m-voicesig-cloud-quota-2026-10-04` (2026-10-04): Read-only cloud probe for voice-signal training. Azure: every NC/ND/NV/NG family limit 0 in 10 regions (southindia, centralindia, westindia, eastus2, eastus, westus3, swedencentral, uaenorth, polandcentral, southeastasia); lowPriorityCores 3; ACA dedicated A100 0; 7 Compute quota requests dated 2026-10-03 all Failed; southindia D-family CPU limits 65-350 vCPU; ACA consumption $0.000024/vCPU-s. AWS account 780899467240: ap-south-1 G/VT quota 0 on-demand and 0 spot; us-east-1 8/8 vCPU; P 0 both. Spot minima over 6 h (us-east-1 / ap-south-1): g4dn.xlarge 0.252/0.216, g5.xlarge 0.412/0.656, g6.xlarge 0.564/0.529, c7i.2xlarge 0.156/0.153 USD/h; on-demand us-east-1 g5 1.006, g6 0.805. No instances running, 0 GB unattached volumes; budget taxila-build-gpu USD 100/month, actual 0.00. Neon: 11 regions, none in India (nearest aws-ap-southeast-1).

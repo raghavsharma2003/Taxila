@@ -1,0 +1,38 @@
+{
+ "nodes": [
+  { "id": "w2f-whiteboard-no-reveal", "kind": "decision", "at": "2026-10-05", "title": "Whiteboard gate W9 no_reveal (wb-gate@2): nothing drawn equals a kit item's answer (rational equality; drawn/derived numbers, column/fraction/equation results, non-axis number-line ticks, a dot/arrow/leader at the answer's position, the asked item's word answer) unless she says it in the line; every item withheld (StudioAsk has no asked ledger); kitNumbers drops item answers; WB_SYSTEM ends with a setup-only shape note for question lines; a W9 repair is told what to remove" },
+  { "id": "w2f-whiteboard-hot-lane", "kind": "decision", "at": "2026-10-05", "title": "planWhiteboard calls on quotaLane hot (W2-E patch applied), WB_MAX_TOKENS 1100 (measured out p90 375, max 659), repair only with >= 3 s of the 7 s budget left, 4-16 ops; lanes.js TPM gains taxila-gpt6 / -gpt6-luna / -gpt61-sol at 500k" },
+  { "id": "w2f-luna-reserved-for-whiteboard", "kind": "decision", "at": "2026-10-05", "title": "routes.json drops the opportunistic taxila-gpt6-luna race arm (defaults + 12 archetypes): that deployment carries the per-line live whiteboard; deviation from MODEL-ROUTER §0 (measured arm gain 14/15 -> 15/15, CIs overlap); restore when a dedicated STUDIO_WB_DEPLOY exists" },
+  { "id": "w2f-whiteboard-not-a-build", "kind": "decision", "at": "2026-10-05", "title": "Router rule 2: the whiteboard is allowed at bond stage meeting (not a build: no code, no interaction, a gated script our code draws) but refused under parent control ready_made (studio.ready_made_only); seam.requestIntent asks routerDecide" },
+  { "id": "w2f-whiteboard-spend-one-mount-per-beat", "kind": "decision", "at": "2026-10-05", "title": "planWhiteboard returns usd (sum of usdOf over every round); the seam books breaker.spend for every board and writes ONE studio_mount row per whiteboard beat (its first board), later continue boards add their usd to that row" },
+  { "id": "w2f-late-script-fast-forward", "kind": "decision", "at": "2026-10-05", "title": "clock.ts awaitLineAnchor takes the anchor of EXACTLY the script's line (same teacherReplySeq) at any age, so a late script is drawn on her clock (catch-up, not a replay after her line); AnchorTiming {lateMs, source} is posted to POST /api/studio/wb-timing (seam noteWbTiming / wbTimingStats) as the production sync telemetry" },
+  { "id": "w2f-wb-speech-from-spoken-text", "kind": "decision", "at": "2026-10-05", "title": "W6 duration and clause onsets estimated from toSpoken(text) (spoken.js), not digits; W4 reads number words past twelve both languages (comprehension phrase reader per clause, translit Roman Hindi 0-99, 'teen bata aath' = 3/8); a placeholder (1/?, 3/__) counts only its digits" },
+  { "id": "w2f-pizza-sectors-fixer", "kind": "decision", "at": "2026-10-05", "title": "plan.js sectorsForCutCircles: a circle cut by k diameters (2k parts) or k radii (k parts) through its centre becomes N exact equal sectors when N is a count her line gives; shape only, never truth" },
+  { "id": "w2f-chatstream-empty-stream-diagnostics", "kind": "decision", "at": "2026-10-05", "title": "chatStream attaches err.diag (status, url, redirected, type, whitelisted headers, ms) and logs one line on empty_stream; the streaming-client test stamps a nonce header and prints the diag; no retry; root cause of the full-suite flake unconfirmed (did not reproduce 2026-10-05)" },
+  { "id": "w2f-router-bench-not-comparable", "kind": "decision", "at": "2026-10-05", "title": "Deviation recorded for the main loop: the router bench cannot reproduce LIVE-STUDIO §14 numbers (portrait 360x640 probe vs the 360x320 tray), the earlier 'Deviations: none' was wrong" },
+  { "id": "w2f-whiteboard-bench-2026-10-05", "kind": "measurement", "at": "2026-10-05", "title": "whiteboard-bench luna-none n=31 (30 production lines + pizza), production 7 s budget, hot lane, W9 on: 27/31 drawn (20 first try), p50 2695 / p90 3912 ms, out tokens p90 375 max 659, $0.00022/line; estimated lateness after audio start p50 1995 / p90 3212 ms (bar p90 <= 1500 NOT met); before the W9 repair hint 22/31 with 5 W9 refusals, all true reveals on question lines" },
+  { "id": "w2f-azure-deployments-2026-10-05", "kind": "measurement", "at": "2026-10-05", "title": "ARM listing: taxila-gpt6, taxila-gpt6-luna, taxila-gpt61-sol GlobalStandard 500k TPM each; gpt-6-luna and gpt-6-sol quota 1000/2000 used" },
+  { "id": "w2f-acceptance-local-2026-10-05", "kind": "measurement", "at": "2026-10-05", "title": "tests/prod/w2f-studio-gate.mjs part B locally (Neon test branch, 4 lessons, accounts 4 -> 4): after fixing the test's {slot} unwrap bug, 3 boards reached the client, each re-passes W0-W9 with the kit, arrival 1.7-2.7 s after the reply (<= 6 s); 1 more board refused by W9 in the server log; sync estimate p50 1824 / p90 2026 ms FAILS the 1500 ms bar (n=3); 19/20 checks" },
+  { "id": "rj-w2f-wb-prompt-values-exempt", "kind": "rejection", "at": "2026-10-05", "title": "Exempting answer values that the item's prompt shows from W9 withholding broke 'Mark 7 on the number line' (the marked 7 IS the answer); replaced by: values she says in the line are hers to draw" },
+  { "id": "rj-w2f-chatstream-proxy-explanation", "kind": "rejection", "at": "2026-10-05", "title": "The sandbox-proxy explanation of the empty_stream full-suite flake: NO_PROXY already covers 127.0.0.1 and the review's run failed after the noProxy dispatcher; replaced by diagnostics" },
+  { "id": "rj-w2f-chatstream-retry", "kind": "rejection", "at": "2026-10-05", "title": "A retry on a 200 with no events: hides a real production failure mode (a cut stream looks like a slow success; races mis-measure)" }
+ ],
+ "edges": [
+  { "src": "w2f-whiteboard-no-reveal", "rel": "part_of", "dst": "w2f-whiteboard-archetype" },
+  { "src": "w2f-whiteboard-no-reveal", "rel": "measured_by", "dst": "w2f-whiteboard-bench-2026-10-05" },
+  { "src": "w2f-whiteboard-no-reveal", "rel": "measured_by", "dst": "w2f-acceptance-local-2026-10-05" },
+  { "src": "w2f-whiteboard-hot-lane", "rel": "caused_by", "dst": "w2efix-lanes-shared-hot-only" },
+  { "src": "w2f-whiteboard-hot-lane", "rel": "measured_by", "dst": "w2f-whiteboard-bench-2026-10-05" },
+  { "src": "w2f-luna-reserved-for-whiteboard", "rel": "measured_by", "dst": "w2f-azure-deployments-2026-10-05" },
+  { "src": "w2f-whiteboard-not-a-build", "rel": "part_of", "dst": "w2f-whiteboard-archetype" },
+  { "src": "w2f-late-script-fast-forward", "rel": "measured_by", "dst": "w2f-acceptance-local-2026-10-05" },
+  { "src": "w2f-pizza-sectors-fixer", "rel": "measured_by", "dst": "w2f-whiteboard-bench-2026-10-05" },
+  { "src": "w2f-whiteboard-bench-2026-10-05", "rel": "supersedes", "dst": "w2f-whiteboard-bench-2026-10-04" },
+  { "src": "w2f-acceptance-local-2026-10-05", "rel": "supersedes", "dst": "w2f-acceptance-local-2026-10-04" },
+  { "src": "w2f-chatstream-empty-stream-diagnostics", "rel": "part_of", "dst": "w2f-chatstream-empty-is-error" },
+  { "src": "rj-w2f-chatstream-proxy-explanation", "rel": "caused_by", "dst": "w2f-chatstream-empty-stream-diagnostics" },
+  { "src": "rj-w2f-chatstream-retry", "rel": "caused_by", "dst": "w2f-chatstream-empty-stream-diagnostics" },
+  { "src": "rj-w2f-wb-prompt-values-exempt", "rel": "caused_by", "dst": "w2f-whiteboard-no-reveal" },
+  { "src": "w2f-router-bench-not-comparable", "rel": "caused_by", "dst": "rj-w2f-probe-portrait-viewport" }
+ ]
+}

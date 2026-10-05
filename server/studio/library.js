@@ -111,7 +111,7 @@ export async function noteMount(buildSha) {
 
 /**
  * Retire a build: an incident (failed after reveal), a review reject, a kit change. It is never mounted again.
- * @param {"incident" | "review_reject" | "kit_change" | "manual"} reason
+ * @param {"incident" | "incident_lessons" | "review_reject" | "kit_change" | "manual"} reason
  */
 export async function retire(buildSha, reason = "manual") {
   const [r] = await q(`update studio_build set status = 'retired', incidents = incidents + $2, record = record || jsonb_build_object('retired', $3::text), updated_at = now()
@@ -122,6 +122,34 @@ export async function retire(buildSha, reason = "manual") {
   }
   forgetBuild(buildSha);
   return !!r;
+}
+
+/** Incidents from this many DIFFERENT lessons retire a build (a promoted one goes back to review instead). */
+export const INCIDENT_LESSONS = 2;
+/**
+ * A build broke on a child's device (csp violation, runtime error, navigation; never a slow device: seam.js
+ * hostFrameError). One incident per lesson is counted (record.incidentLessons); at INCIDENT_LESSONS distinct lessons an
+ * unreviewed build is retired and a promoted one is demoted to `transfer_passed` (back in the review queue, out of the
+ * promoted set). A single incident already stops unreviewed reuse (router rule 6 needs 0 incidents).
+ * @returns {Promise<{ incidents: number, action: "counted" | "retired" | "review" | "none" }>}
+ */
+export async function noteIncident(buildSha, lessonId) {
+  const [r] = await q(`update studio_build set incidents = incidents + 1,
+                          record = jsonb_set(record, '{incidentLessons}', coalesce(record -> 'incidentLessons', '[]'::jsonb) || to_jsonb($2::text)), updated_at = now()
+                        where build_sha = $1 and status <> 'retired' and not (coalesce(record -> 'incidentLessons', '[]'::jsonb) ? $2)
+                        returning incidents, status, identity`, [buildSha, String(lessonId)]);
+  if (!r) return { incidents: 0, action: "none" };
+  if (r.identity) cache.delete(r.identity);
+  const n = Number(r.incidents);
+  if (n < INCIDENT_LESSONS) return { incidents: n, action: "counted" };
+  if (r.status === "promoted") {
+    await q("update studio_build set status = 'transfer_passed', record = record || jsonb_build_object('demoted', 'incidents'), updated_at = now() where build_sha = $1", [buildSha]);
+    await q("update studio_library set promoted_shas = array_remove(promoted_shas, $2), updated_at = now() where identity = $1", [r.identity, buildSha]);
+    if (r.identity) cache.delete(r.identity);
+    return { incidents: n, action: "review" };
+  }
+  await retire(buildSha, "incident_lessons");
+  return { incidents: n, action: "retired" };
 }
 
 /**

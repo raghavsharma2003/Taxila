@@ -17,6 +17,7 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
+import { stopKind } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
@@ -31,7 +32,7 @@ import {
   reteachSessionInputs, noteReteach,
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
-import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX } from "./fading.js";
+import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { newTalk, noteChildTurn } from "./talk.js";
 import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
@@ -93,14 +94,14 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now(), openers = [], comp }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx, seed, now = Date.now(), openers = [], comp }) {
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
   const snaps = Object.fromEntries(Object.entries(skills).map(([id, st]) => [id, snapshotSkill(st)]));
   // W2-C #3 (steal 4): a low-baseline child gets the worked example first and one next step, never a menu.
-  const equity = equityProfile({ kit, skills: snaps, history, reteach: ctx.reteach });
+  const equity = equityProfile({ kit, skills: snaps, history, reteach: ctx.reteach, stuck });
   // W2-C #2: the guidance ladder (worked · faded · attempt, or a first-step probe when the record cannot tell).
-  const guide = lessonGuidance({ kit, skills: snaps, history, lowBaseline: equity === "low" });
+  const guide = lessonGuidance({ kit, skills: snaps, history, lowBaseline: equity === "low", stuck });
   const fade = fadeItem(kit, { band });
   // W2-C #7: the practice purpose (a review set, ctx.practice from server/lesson/purpose.js) and the Ask purpose
   // (ctx.purpose "doubt"): no greeting and no hook.
@@ -135,6 +136,9 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, warmu
     retaught: [], changedApproach: [], flagged: {}, misCorrect: {},
     nextItemId: undefined, verify: undefined, tries: 0, unclear: 0, practiced: 0, easier: false,
     skills: snaps, history,
+    // Items this lesson that reached the assertion or were left after don't-knows, per skill (noteStuck): a routing
+    // signal the NEXT lesson's guidance reads (lesson.js loadRecentStuck), never KT evidence.
+    stuck: {}, stuckIds: [],
     affect: initialAffect(), lastBreakTurn: -99, safeguard: null,
     teachbackAsked: false, teachbackTries: 0, teachbackPassed: false,
     module: null, recent: [], seq: 0,
@@ -276,7 +280,7 @@ function teach(s, input, prefix) {
       s.firstStep = { asked: true };
       return plan("worked_example", join(prefix, SH.firstStep({ band: s.probeSess?.band })), {
         skillId: kit.skills[0].id, format: "F2", content: [`worked example (pose it; give no step): ${we.problem}`],
-        whiteboard: { kind: "math", value: we.problem.slice(0, 80) },
+        whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     if (stepName === "fade") {
@@ -315,18 +319,30 @@ function teach(s, input, prefix) {
       s.teachIdx += 1;
       const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
       return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2 })), {
-        skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: we.problem.slice(0, 80) },
+        skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
     return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts })), {
-      skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: we.problem.slice(0, 80) },
+      skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
   }
   s.phase = "practice";
   return poseNext(s, input, prefix);
+}
+
+/**
+ * Note an item the child got stuck on (W2-C review: the all-"don't know" child left no outcome rows, so day 2 read them
+ * as brand new): the assertion (rung 4) reached, or the item left after don't-knows. Once per item. Monitor-only: read
+ * by the next lesson's guidance ladder and equity profile (fading.js), never by KT, beliefs or the parent report.
+ */
+function noteStuck(s, item) {
+  if (!item?.skillId || !s.stuck) return;
+  if (s.stuckIds.includes(item.id)) return;
+  s.stuckIds = [...s.stuckIds, item.id].slice(-20);
+  s.stuck = { ...s.stuck, [item.skillId]: (s.stuck[item.skillId] ?? 0) + 1 };
 }
 
 function leavePractice(s, kit) {
@@ -368,12 +384,14 @@ function poseNext(s, input, prefix, preferred) {
 function practice(s, input, item) {
   const { kit, cls } = input;
   if (!item) return poseNext(s, input);
-  if (s.lastMove?.kind === "break") return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
-  // After an assertion nothing they say about THIS item is evidence; an isomorphic item proves it (rule 15).
+  // After an assertion nothing they say about THIS item is evidence; an isomorphic item proves it (rule 15). Checked
+  // before the after-break re-pose: an item whose answer she already gave is never posed again "fresh" (review
+  // 2026-10-05: rung 4 → break → the same faded step posed again).
   if (s.hintLevel >= 4) {
     s.itemsDone.push(item.id);
     return poseNext(s, input, "now a similar one for them", isomorphicFor(s, kit, item));
   }
+  if (s.lastMove?.kind === "break") return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
   if (s.pendingWhy === item.id) return afterWhy(s, input, item);
   const v = verdict(cls);
   const engine = engineReteach(s, input, item, v);
@@ -451,6 +469,7 @@ function afterMiss(s, input, item) {
   }
   if (s.hintLevel >= 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
   s.hintLevel = Math.min(4, s.hintLevel + 1);
+  if (s.hintLevel >= 4) noteStuck(s, item);
   // Voice gentlerHint (CE8 / features.js: ≥ 3 hesitation cues on a wrong answer): the rung's CONTENT is one gentler
   // (pump instead of hint) — the hint count, the key gate and the C-outcome are unchanged. Never at the assertion.
   const gentle = !!input.voice?.gentlerHint && s.hintLevel >= 2 && s.hintLevel < 4;
@@ -475,7 +494,15 @@ function engineReteach(s, input, item, v) {
   if ((s.reteachCool?.[k] ?? 0) > 0) { s.reteachCool = { ...s.reteachCool, [k]: s.reteachCool[k] - 1 }; return null; }
   const sk = s.comp?.[k];
   if (!sk?.belief) return null;
-  const trig = reteachTrigger(sk.belief, { uProbes: skillSess(s.probeSess, k).uFamilies.length, wheelSpin: sk.wheelSpin, failsPostRung3: s.failsPostRung3?.[k] ?? 0 });
+  // P21 wheel spinning on this child's record (no 3-in-a-row in ~10 tries, outcomes carried across lessons) is a
+  // re-teach trigger HERE, so it is chosen from the child's history (selectReteach: the arm that repaired them first)
+  // instead of the generic "change approach" in afterMiss (review 2026-10-05: on day 2 that generic path pre-empted
+  // the arm that had repaired the child on day 1). afterMiss keeps it as the fallback when there is no belief.
+  // (skillsMapFor always sets wheelSpin: "none" or "warn" when the ledger view has not confirmed a spin; the record's
+  // outcomes confirming it here is the same P21 rule afterMiss applies, so it confirms the trigger)
+  const historySpin = v !== "right" && wheelSpinning(s.history[k]) && !s.changedApproach.includes(k);
+  const spinning = sk.wheelSpin === "confirm" || historySpin ? "confirm" : sk.wheelSpin;
+  const trig = reteachTrigger(sk.belief, { uProbes: skillSess(s.probeSess, k).uFamilies.length, wheelSpin: spinning, failsPostRung3: s.failsPostRung3?.[k] ?? 0 });
   if (!trig || (trig === "wheel_spin" && s.changedApproach.includes(k))) return null;
   const { kit } = input;
   const mis = sk.belief.misconception?.mId ? kit.misconceptions.find((m) => m.id === sk.belief.misconception.mId) : null;
@@ -492,6 +519,8 @@ function engineReteach(s, input, item, v) {
     voiceTie: !!(input.voice?.gentlerHint || input.voice?.slowerPace), now: new Date(input.now ?? 0).toISOString() });
   noteReteach(s, k, d, sess);
   if (!d || d.move === "none") return null;
+  // the wheel-spin change of approach happens once per skill per lesson, whichever path takes it
+  if (trig === "wheel_spin" && !s.changedApproach.includes(k)) s.changedApproach.push(k);
   s.reteachCool = { ...s.reteachCool, [k]: RETEACH_COOLDOWN };
   s.lastReteach = { ...d, turn: s.turn };
   if (d.armId) s.armsUsed = [...(s.armsUsed ?? []), d.armId];
@@ -534,6 +563,7 @@ function offerChoices(s, kit, item) {
 
 /** Leave the item with no verdict (no evidence) and pose the next one: the unclear cap, or "Skip for now". */
 function leaveItem(s, input, item, prefix) {
+  if (s.hintLevel >= 2 || (s.affect?.dontKnowStreak ?? 0) > 0) noteStuck(s, item);
   if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
   s.unclear = 0;
   if (s.phase === "warmup") return nextWarmup(s, input, prefix);
@@ -644,6 +674,8 @@ function teachback(s, input) {
 }
 
 function toWrap(s, { prefix, stopping = false }) {
+  if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
+  s.stopAsked = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
@@ -657,6 +689,12 @@ function decide(s, input, item) {
   // 1. Safety before anything else — the predicate or the classifier, either one.
   if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   if (s.safeguard) {
+    // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
+    // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
+    if (flags.wantsToStop && chipId !== "safe:stop" && s.rel?.overlay?.kind === "CHECK_IN" && s.stopAsked == null) {
+      s.stopAsked = s.turn;
+      return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+    }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
     if (s.safeguard.asked || chipId === "safe:continue") {
       s.safeguard = null;
@@ -676,13 +714,28 @@ function decide(s, input, item) {
   }
   // 2. The child wants to stop: whatever was mid-way is over (NEVER MANIPULATE — no holding at goodbye). Only their own
   // stop words (or Pause → End, which never reaches here) end the lesson: "Skip for now" is a help request below.
-  if (flags.wantsToStop) return toWrap(s, { stopping: true });
+  // OWNER RESET 2026-10-04 #7 (CONVERSATION-V2 §3.5; owner-truth item3, rebased by W2-I): a stop PHRASE ("end the
+  // lesson", "bas", "I'm done", or a topic change the classifier read as a stop) no longer closes the lesson on the spot.
+  // ONE warm check-in with three choices (keep going / a short break / stop for today). The lesson ends on "stop for
+  // today", on a second stop within two turns, or at once on the relational RELEASE (cls.relRelease: a TRUE goodbye —
+  // "bye", "mummy bula rahi hai" — or that second stop, decided in server/relational/policy.js). A relational CHECK_IN
+  // (I-7: a goodbye right after distress) is the same one check-in, never a hold. NEVER MANIPULATE holds: one check-in,
+  // never a second, no guilt, and the stop chip ends it at once. Pause → End and the parent's controls never reach here.
+  if (chipId === "stop:end") return toWrap(s, { stopping: true });
+  if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
+    const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
+    if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
+    if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
+    s.stopAsked = s.turn;
+    return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] });
+  }
+  if (chipId === "stop:continue") s.stopAsked = undefined;
   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
   // 3. Choices offered by a break.
   if (chipId === "break:rest") return plan("break", SH.stretch());
   if (chipId === "break:easier" && s.phase === "practice") {
-    if (s.activeItemId) s.skipped.push(s.activeItemId);
+    if (s.activeItemId) { noteStuck(s, item); s.skipped.push(s.activeItemId); }
     s.easier = true;
     return poseNext(s, input, "an easier one now");
   }

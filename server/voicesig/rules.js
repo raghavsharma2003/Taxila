@@ -21,7 +21,34 @@ export const PLACEHOLDER = Object.freeze({
 export const RULES_VER = "vs-rules/1";
 
 /** Thresholds [U] (SPEC §3.2). */
-export const T = Object.freeze({ onsetSlowZ: 1.0, onsetFastZ: -0.5, onsetRapidZ: -2.0, pauseHighZ: 1.0, finalRelDb: 2, fillerLeadMs: 300, rapidWords: 2, qMin: 0.5 });
+export const T = Object.freeze({ onsetSlowZ: 1.0, onsetFastZ: -0.5, onsetRapidZ: -2.0, pauseHighZ: 1.0, finalRelDb: 2, fillerLeadMs: 300, fillerLeadZ: 1.0, rapidWords: 2, qMin: 0.5 });
+
+/**
+ * Register-aware lexical filler lead (verify pass 2026-10-04). server/signals' fillerLead counts "haan", "ji", "ok", "achha"
+ * as planning fillers, so the deferential "haan ji, paanch" a polite or shy child uses with a teacher read as hesitation
+ * (Tier-T agreement for fragileCorrect). Here those acknowledgement / address tokens are SKIPPED (neither filler nor
+ * content); only true filled pauses and planning markers count. Pure; takes server/signals' normalised tokens.
+ */
+export const DEFERENCE = Object.freeze(new Set(["haan", "han", "haanji", "hanji", "ji", "jee", "ha", "hm", "ok", "okay", "achha", "acha", "accha",
+  "yes", "yeah", "sir", "maam", "madam", "didi", "bhaiya", "teacher", "miss", "हां", "हाँ", "जी", "अच्छा", "ओके"]));
+const LEX_FILLER = /^(?:u+m+|u+h+m*|h+m{2,}|m{2,}|e+r+m*|e+h+|a+h+|a{2,}|o+h+|उ+म+्?म*|हम्म+|अ+ं*|आ+)$/u;
+const LEX_PLANNING = new Set(["matlab", "woh", "wo", "voh", "toh", "to", "like", "so", "actually", "basically", "yaani", "yani", "well",
+  "मतलब", "वो", "तो", "यानी"]);
+const LEX_STOP = new Set(["hai", "hain", "the", "a", "an", "is", "it", "ye", "yeh", "mera", "meri", "main", "mai", "i", "think", "answer",
+  "uttar", "jawab", "है", "मेरा", "मैं"]);
+/** true when a filler / planning marker precedes the first content token; false when content comes first; null with no content. */
+export function fillerLexOf(toks) {
+  if (!Array.isArray(toks)) return null;
+  let fillers = 0;
+  for (const raw of toks) {
+    const t = String(raw).toLowerCase();
+    if (!t || t === "?" || DEFERENCE.has(t)) continue;
+    if (LEX_FILLER.test(t) || LEX_PLANNING.has(t)) { fillers++; continue; }
+    if (LEX_STOP.has(t)) continue;
+    return fillers > 0;
+  }
+  return null;
+}
 
 const fin = (x) => typeof x === "number" && Number.isFinite(x);
 
@@ -47,9 +74,14 @@ export function score(x) {
   const ageW = x.ageBand === "9-10" ? 0.5 : 1;
   const eW = eOk ? ageW : 0;
   const pauseZ = fin(z.pauseFrac) ? z.pauseFrac : null;
-  // F3: lexical leading filler is Tier T; the acoustic detector's lead is Tier E.
-  const fillerT = !!L.fillerLex;
-  const fillerE = !fillerT && x.det === 1 && fin(f.fillerLeadMs) && f.fillerLeadMs >= T.fillerLeadMs;
+  // F3: lexical leading filler is Tier T; the acoustic detector's lead is Tier E. When the caller passes the turn's tokens,
+  // the register-aware fillerLexOf() decides ("haan ji" is deference, not hesitation); else the caller's flag is used.
+  const lexFromToks = Array.isArray(L.toks) ? fillerLexOf(L.toks) : null;
+  const fillerT = Array.isArray(L.toks) ? lexFromToks === true : !!L.fillerLex;
+  // The acoustic lead counts only when it is UNUSUAL FOR THIS CHILD (baselined z >= 1): a child who habitually opens with
+  // "aaa" / "haan ji" is not hesitating every turn, and the detector false-fires a >= 300 ms lead on ~7% of fluent read
+  // utterances (FLEURS, verify pass). No mature baseline → no E filler term.
+  const fillerE = !fillerT && x.det === 1 && fin(f.fillerLeadMs) && f.fillerLeadMs >= T.fillerLeadMs && fin(z.fillerLeadMs) && z.fillerLeadMs >= T.fillerLeadZ;
   const filler = fillerT || (fillerE && eOk);
   const hedge = !!L.hedge;
   const words = fin(x.words) ? x.words : null;

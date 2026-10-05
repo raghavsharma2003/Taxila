@@ -32,3 +32,13 @@ None of these corpora carries the knowledge outcomes (O1-O4) that the knowledge 
 Hinglish children, and none was recorded through phone capture with AGC. So the filler detector is an
 **adult-trained** component. The knowledge heads themselves can only be trained on Taxila's own consented pilot and
 flywheel data.
+
+## Verify pass (2026-10-04)
+
+- **Capture-chain check.** 4 AMI test headset channels plus 1 interferer channel (IS1006b.D) were re-downloaded (CC BY 4.0) and run through `perturb_eval.py`, which is evaluation only. Every wav was deleted.
+- **Weights.** The only weights that ship are `filler-gru` (AMI, CC BY 4.0). That licence requires attribution, so the product NOTICE / About page must carry: "AMI Meeting Corpus, University of Edinburgh / IDIAP / TNO et al., CC BY 4.0".
+- **Benchmark-only weights.** The encoder benchmarks in `placement/` loaded these models, none gated:
+  - whisper, wav2vec2, hubert and distilhubert: Apache-2.0;
+  - smart-turn-v3: BSD-2;
+  - wavlm-base-plus: its HF card has no licence tag, though the upstream microsoft/unilm repo is MIT. Confirm the licence before any wavlm weights ship.
+- **Never downloaded.** The NC / "other" models (mms, audeering SER, emotion2vec) were only metadata-checked.

@@ -26,7 +26,7 @@ export const OPENINGS_VERSION = "w2i-2026-10-04-draft";
 export const OPENINGS: Table = {
   en: {
     tum: {
-      text: "You did the right thing by telling me. Please tell a grown-up you trust, like a teacher, a relative or a neighbour. You can call Childline on 1098, free, any time. To talk about worries, Tele-MANAS is 14416.",
+      text: "You did the right thing by telling me. Please tell a grown-up you trust, like a teacher, a relative or a neighbour. You can call Childline 1098, free, any time. To talk about worries, call Tele-MANAS 14416.",
       speech: "You did the right thing by telling me. Please tell a grown-up you trust, like a teacher, a relative or a neighbour. You can call Childline on one zero nine eight, free, any time. To talk about worries, Tele-MANAS is one four four one six.",
     },
   },

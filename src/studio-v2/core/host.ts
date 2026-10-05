@@ -47,6 +47,8 @@ export interface StudioHandle {
   perf(fromIdx?: number): PerfSummary | null;
   facts(): Record<string, string | number>;
   agreement(): { n: number; agree: number };
+  /** largest answer value as sent by the engine (bytes of JSON), for the host's answer bound */
+  maxAnswerBytes(): { engine: number; withHostLogs: number };
   boardNow(): BoardSpec;
   dispose(): void;
 }
@@ -66,7 +68,7 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
   const { text, measure } = makeText(tooSmall, safeHits, () => scaleRef);
   const rnd = rng(seed * 7919 + 13);
   let facts: Record<string, string | number> = {};
-  let agreeN = 0, agreeK = 0, disposed = false;
+  let agreeN = 0, agreeK = 0, disposed = false, maxAnswer = 0, maxInjected = 0;
   if (opts.sound === false) sfx.setMuted(true);
 
   const emit = (m: Omit<StudioMessage, "at" | "archetype">) => {
@@ -192,6 +194,16 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
   const audio: Record<string, HTMLAudioElement> = {};
   if (opts.audio) for (const [id, url] of Object.entries(opts.audio)) { try { const a = new Audio(); a.preload = "auto"; a.src = url; audio[id] = a; } catch { /* no audio */ } }
 
+  // ── host-side input channels: long raw inputs (control logs, actions, samples) are recorded HERE as they happen, and an
+  //    answer refers to them by name, so the frame never ships (or edits) its own history and answers stay small
+  const channels: Record<string, unknown[]> = {};
+  function withHostLogs(v: unknown, depth = 0): unknown {
+    if (depth > 4 || !v || typeof v !== "object") return v;
+    if (!Array.isArray(v) && typeof (v as { $hostLog?: unknown }).$hostLog === "string") return [...(channels[(v as { $hostLog: string }).$hostLog] ?? [])];
+    if (Array.isArray(v)) return v.map((x) => withHostLogs(x, depth + 1));
+    return Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([k, x]) => [k, withHostLogs(x, depth + 1)]));
+  }
+
   // ── the engine API
   let hitstopLeft = 0;
   const fx = new FX(reducedMotion, rnd, text);
@@ -204,11 +216,16 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
     onKey: (h) => { keyHandlers.push(h); },
     hud, task, caption, progress,
     answer(itemId, value, local) {
-      const grade: Graded = gradeAnswer(archetype, spec, itemId, value);
+      const full = withHostLogs(value);
+      const grade: Graded = gradeAnswer(archetype, spec, itemId, full);
       if (local) { agreeN++; if (local === grade.verdict) agreeK++; }
-      emit({ k: "answer", itemId, value, grade, local });
+      try { maxAnswer = Math.max(maxAnswer, JSON.stringify(value ?? null).length); maxInjected = Math.max(maxInjected, JSON.stringify(full ?? null).length); } catch { /* unserialisable is the engine's bug */ }
+      // the message carries the act WITH the host's own input record, so the server re-grades exactly what the host graded
+      emit({ k: "answer", itemId, value: full, grade, local });
       return grade;
     },
+    record(channel, entry) { const c = (channels[channel] ??= []); if (c.length < 20000) c.push(structuredClone(entry)); },
+    resetLog(channel) { channels[channel] = []; },
     event: (name, data) => emit({ k: "event", name, data }),
     say(id) {
       const a = audio[id];
@@ -357,6 +374,7 @@ export function mountStudio(slot: HTMLElement, def: EngineDef, opts: MountOption
     },
     facts: () => ({ ...facts }),
     agreement: () => ({ n: agreeN, agree: agreeK }),
+    maxAnswerBytes: () => ({ engine: maxAnswer, withHostLogs: maxInjected }),
     boardNow: () => boardSpec,
     dispose() {
       if (disposed) return; disposed = true; running = false;

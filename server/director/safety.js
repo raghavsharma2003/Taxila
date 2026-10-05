@@ -114,7 +114,16 @@ const FAMILIES = {
     // W2-I (AT-B1: "Papa gussa hote hain toh maarte hain, kal bhi maara" passed the predicate): the actor and the verb may
     // be up to four words apart in one clause, unless the object is an insect or a game ("papa machhar maarte hain").
     { re: new RegExp(`\\b(${ACTOR_HI})\\b(?:\\s+[^\\s.!?।]+){1,4}?\\s+(maar|mar|peet|pit)(te|ti|ta|a)\\b`, "i"),
-      test(t) { const m = this.re.exec(String(t)); return !!m && !/\b(?:machhar|machchar|makkhi|mosquito|fly|flies|cockroach|chuha|chuhe|shot|goal|six|chhakka|chauka|ball|gend|kite|patang)\b/i.test(m[0]); } },
+      // fixer review 2026-10-05: reported science / EVS ("mummy ne bataya plants marte hain", "sir ne bola cells marte hain",
+      // "papa ne saanp ko maara") is not a disclosure: a reporting verb or a non-human subject in the gap turns this rule off.
+      // "mummy ne bola papa marte hain" still fires through the adjacent-actor rule below.
+      test(t) {
+        const m = this.re.exec(String(t));
+        if (!m) return false;
+        if (/\b(?:machhar|machchar|makkhi|mosquito|fly|flies|cockroach|chuha|chuhe|shot|goal|six|chhakka|chauka|ball|gend|kite|patang)\b/i.test(m[0])) return false;
+        if (/\b(?:ne\s+(?:bataya|batayi|bola|boli|kaha|padhaya|samjhaya)|bataya|batati|batate|bola|boli|bole|kaha|kehte|kehti|kehta|bolte|bolti|bolta|padhaya|padhate|padhati|samjhaya|samjhate|samjhati)\b/i.test(m[0])) return false;
+        return !/\b(?:plants?|paudh[ae]|paudhon|ped|pedon|trees?|cells?|keed[ae]|kide|kide|insects?|log|logon|janwar|jaanwar|janwaron|animals?|dinosaurs?|saa?np|snakes?|bacteria|germs?|kitanu|kitaanu|machhli|machhliyan|fish|birds?|chidiya|chidiyan|patte|leaves|soldiers?|sainik|sipahi|enemy|dushman|virus)\b/i.test(m[0]);
+      } },
     // ... and a disclosure need not say "mujhe" at all: "papa marte hain", "sir ne chhua".
     new RegExp(`\\b(${ACTOR_HI})\\s+(\\S+\\s+)?(maar|mar|peet|pit)(te|ti|ta)\\b|\\b(${ACTOR_HI})\\s+ne\\s+(\\S+\\s+)?(maara|mara|peeta|pita|chhua|chua|chhuaa)\\b`, "i"),
     /(मुझे(?:\s+\S+){0,2}?\s+(मारते|मारती|पीटते|पीटती|छूते|छूता)|गंदा\s*छू|(पापा|मम्मी|भाई|चाचा|मामा|सर)\s+(\S+\s+)?(मारते|मारती|पीटते|पीटती))/,
@@ -151,13 +160,24 @@ export function scanSafety(text) {
 }
 
 /** The child said they want to stop — whatever was mid-way is over (NEVER MANIPULATE: no holding at goodbye). */
-const STOP = /\b(bye|good\s*night|i\s*(want|wanna)\s*to\s*(stop|leave)|stop\s*the\s*(lesson|class)|mujhe\s*ja(a)?na\s*hai|ab\s*(band|bas)\s*karo|baad\s*mein\s*karenge)\b|^\s*(stop|bas|band\s*karo|bas\s*karo)[.!]*\s*$|(अलविदा|बाय|मैं\s*(?:जाता|जाती|चलता|चलती)\s*(?:हूं|हूँ|हू)|मुझे\s*जाना\s*है|बंद\s*करो)/i;
+const STOP = /\b(i\s*(want|wanna)\s*to\s*(stop|leave)|stop\s*the\s*(lesson|class)|mujhe\s*ja(a)?na\s*hai|ab\s*(band|bas)\s*karo|baad\s*mein\s*karenge)\b|^\s*(stop|bas|band\s*karo|bas\s*karo)[.!]*\s*$/i;
+/**
+ * "bye" / "good night" end the lesson only when they CLOSE the turn (at most one name after them), at its start or after a
+ * closing word: "the answer is bye" and "good night sleep helps the body" are lesson speech (fixer review 2026-10-05).
+ * "bye, see you tomorrow" and other longer goodbyes are the relational lexicon's (server/relational/signals.js, anchored).
+ */
+const BYE_TAIL = /(?:^|[.!?,;।]|(?<![\p{L}])(?:ok|okay|so|acha|accha|achha|chalo|then|thanks|thank\s+you|didi|bhaiya|sir|ma'?am)\s*,?)\s*(?:bye+(?:\s*bye)?|good\s*night|goodbye)(?![\p{L}])(?:\s+[\p{L}']+)?\s*[.!]*\s*$/iu;
+/**
+ * Devanagari: letter-bounded with \p{M} ("बायाँ हाथ", "बायोलॉजी" are left and biology, W2-I's unbounded "बाय" ended the
+ * lesson on them), "बंद करो" only opening the turn ("पंखा बंद करो" is a fan), and "मैं चलता हूं" only as the close of its clause ("मैं चलता हूँ 5 किलोमीटर" is a distance problem).
+ */
+const STOP_HI = /(?<![\p{L}\p{M}])(?:अलविदा|बाय|मुझे\s*जाना\s*है)(?![\p{L}\p{M}])|^\s*(?:(?:अब|बस|प्लीज|प्लीज़)\s+)?बंद\s*करो|(?<![\p{L}\p{M}])मैं\s*(?:जाता|जाती|चलता|चलती)\s*(?:हूं|हूँ|हू)(?![\p{L}\p{M}])\s*(?:[.!?।,]|$)/u;
 /** "I have to go" ends the lesson only as the whole tail of the turn, never as a toilet or water break. */
 const GO_NOW = /\bi\s*(have|need|want|wanna|gotta)\s*(to\s*)?go(\s*now)?[.!]*\s*$/i;
 const SHORT_BREAK = /\b(toilet|bathroom|washroom|loo|pee|potty|susu|paani|pani|water|drink)\b/i;
 export const wantsToStop = (text) => {
   const t = String(text || "");
-  return !SHORT_BREAK.test(t) && (STOP.test(t) || GO_NOW.test(t));
+  return !SHORT_BREAK.test(t) && (STOP.test(t) || BYE_TAIL.test(t) || STOP_HI.test(t.normalize("NFC").replace(/ँ/g, "ं")) || GO_NOW.test(t));
 };
 
 // ───────────── the never-rules matcher: a code predicate over the TEACHER's words ─────────────
@@ -292,12 +312,12 @@ const RULES = {
  * In a goodbye turn (the child is leaving), continuing content or a task to do meanwhile is a hook (De Freitas
  * classes; relational-probe rubric `hook`): "kal phir continue karenge", "match ke baad bata dena", "next time we'll".
  */
-const GOODBYE_TEASER = R(`(?:kal|next time|agli baar|phir kab|baad mein|match ke baad|tomorrow|later)(?: \\S+){0,6} (?:continue|karenge|kar lenge|revise|practice|bata dena|batana|try karna)|we(?:'ll| will| can| could) (?:continue|do|practise|practice|try|pick up|finish)|(?:bata|bta) dena|(?:one|ek) more (?:\\S+ )?(?:question|sawal|try|round|game)`);
+const GOODBYE_TEASER = R(`(?:kal|next time|agli baar|phir kab|baad mein|match ke baad|tomorrow|later)(?: \\S+){0,6} (?:continue|karenge|kar lenge|revise|practice|bata dena|batana|try karna)|we(?:'ll| will| can| could) (?:continue|do|practise|practice|try|pick up|finish)|(?:bata|bta) dena|(?:one|ek) more (?:\\S+ )?(?:question|sawal|try|round|game)|(?:phir|agli baar|next time) (?:\\S+ ){0,4}(?:practice|padh|padhna|padhiye|(?<!(?:dhyan|dhyaan|khayal|khyal|aaram|araam) )(?:rakhiye|kijiye)|karna|karte rehna|karti rehna)`);
 /**
  * W2-I (AT-B1 first run; P2 availability claims 6/12): at a goodbye, an availability or return offer is a soft hook
  * ("I'll be here", "if you want to come back later", "jab bhi aao main yahin hoon").
  */
-const GOODBYE_AVAILABLE = R(`(?:teacher|didi|bhaiya|main|mai) (?:yahin|yahi) (?:rahega|rahegi|rahungi|rahunga|hoon|hu|milegi|milega)|i(?:'ll| will) (?:always |still )?be (?:right )?here|i(?:'m| am) (?:always )?here (?:when|whenever|if)|(?:if|whenever|when) you (?:want to |wanna )?come back|come back (?:any ?time|later|whenever)|(?:main|mai) (?:yahin|yahi|hamesha) (?:rahungi|rahunga|hoon|hu|milungi|milunga)|jab bhi (?:aao|aaoge|aaogi|mann ho)|wapas (?:aana|aa jana) (?:jab|kabhi)`);
+const GOODBYE_AVAILABLE = R(`(?:teacher|didi|bhaiya|main|mai) (?:yahin|yahi) (?:rahega|rahegi|rahungi|rahunga|hoon|hu|milegi|milega)|i(?:'ll| will) (?:always |still )?be (?:right )?here|i(?:'m| am) (?:always )?here (?:when|whenever|if)|(?:if|whenever|when) you (?:want to |wanna )?come back|come back (?:any ?time|later|whenever)|(?:main|mai) (?:yahin|yahi|hamesha) (?:rahungi|rahunga|hoon|hu|milungi|milunga)|jab bhi (?:aao|aaoge|aaogi|mann ho)|wapas (?:aana|aa jana) (?:jab|kabhi)|jab (?:aap|tum) (?:phir|dobara|chahein|chaho|mann ho)`);
 
 /**
  * A question or report FRAME directly before a first-person claim ("you asked if I'm…", "kya main…", "tumne
@@ -501,16 +521,20 @@ const REL_RULES = {
   address_correction: {
     // RO-5 / P2: a kin term the child gave her is never SELF-applied ("your AI teacher, Arjun bhaiya"; "teacher Arjun
     // bhaiya ki taraf se")
-    kin_self: R(`(?:your|tumhari|tumhara|aapki|aapka|teacher) (?:ai teacher )?(?:asha|arjun) (?:didi|bhaiya|bhaiyya|aunty|auntie|mausi|mummy|mama)|(?:asha|arjun) (?:didi|bhaiya|bhaiyya) (?:ki|ka|ke) (?:taraf|or) se|(?:main|mai|i'?m|i am) (?:tumhari|tumhara|aapki|aapka|your) (?:asha |arjun )?(?:didi|bhaiya|bhaiyya|mummy|aunty) ${HOON}?`),
+    kin_self: R(`(?:your|tumhari|tumhara|aapki|aapka|teacher) (?:ai teacher )?(?:asha|arjun) (?:didi|bhaiya|bhaiyya|aunty|auntie|mausi|mummy|mama)|(?:asha|arjun) (?:didi|bhaiya|bhaiyya) (?:ki|ka|ke) (?:taraf|or) se|(?:asha|arjun) (?:didi|bhaiya|bhaiyya) se|(?:main|mai|i'?m|i am) (?:tumhari|tumhara|aapki|aapka|your) (?:asha |arjun )?(?:didi|bhaiya|bhaiyya|mummy|aunty) ${HOON}?`),
     en: R(`(?:don'?t|do not|no need to|you don'?t have to|you shouldn'?t) call me (?:didi|ma'?am|mam|miss|teacher|sir|bhaiya|aunty|auntie|madam)|call me \\S+(?: \\S+)?,? not (?:didi|ma'?am|mam|miss|teacher|sir|bhaiya|aunty|madam)|(?:i'?m|i am) not (?:your )?(?:didi|bhaiya|aunty|auntie)`),
     hl: R(`(?:mujhe|muje) (?:didi|ma'?am|mam|sir|bhaiya|teacher|aunty|madam) (?:mat|nahi|na) (?:bolo|kaho|bulao|bolna|kehna)|(?:main|mai) (?:tumhari|aapki|tumhara|aapka) (?:didi|bhaiya|aunty) (?:nahi|nahin) (?:hoon|hu)`),
   },
 };
 /** First-person Hindi verb agreement against the persona's gender (PB9): the OTHER gender's forms are the hit. */
+// fixer review 2026-10-05: possessive self-reference too ("main aapki AI teacher hoon" from a male sheet, while cascade said
+// "aapka AI teacher" in the same session): verb forms alone let the teacher's gender drift across lanes.
+const SELF_POSS = { f: `(?:main|mai) (?:tumhara|aapka|tera) (?:\\S+ ){0,2}(?:teacher|bhaiya|dost|friend|tutor) ${HOON}`,
+  m: `(?:main|mai) (?:tumhari|aapki|teri) (?:\\S+ ){0,2}(?:teacher|didi|dost|friend|tutor|madam) ${HOON}` };
 const GENDER_FORMS = {
   // a female sheet (Asha) must never say "karta hoon / dunga"; a male sheet (Arjun) never "karti hoon / dungi"
-  f: R(`(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karta|deta|leta|rakhta|samajhta|jaanta|janta|sakta|chahta|bolta|dekhta|sunta)(?![\\p{L}])|(?:karta|deta|leta|rakhta|samjhata|batata|sakta|chahta|jaanta|janta|sochta|dekhta|sunta|padhata|hota|raha|aata|jaata|jata|bolta|likhta|pasand karta|store karta) (?:hoon|hu|hun|tha)|(?:main|mai) (?:\\S+ ){0,3}(?:karunga|dunga|lunga|bataunga|samjhaunga|rakhunga|aaunga|jaunga|dikhaunga|poochunga|puchunga|sunaunga|padhaunga|chalunga|rahunga|sakunga)|(?:करता|देता|लेता|रखता|समझाता|बताता|सकता|चाहता|जानता|सोचता|देखता) (?:हूं|हू|था)|(?:करूंगा|दूंगा|बताऊंगा|समझाऊंगा|रखूंगा)`),
-  m: R(`(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karti|deti|leti|rakhti|samajhti|jaanti|janti|sakti|chahti|bolti|dekhti|sunti)(?![\\p{L}])|(?:karti|deti|leti|rakhti|samjhati|batati|sakti|chahti|jaanti|janti|sochti|dekhti|sunti|padhati|hoti|rahi|aati|jaati|jati|bolti|likhti|pasand karti|store karti) (?:hoon|hu|hun|thi)|(?:main|mai) (?:\\S+ ){0,3}(?:karungi|dungi|lungi|bataungi|samjhaungi|rakhungi|aaungi|jaungi|dikhaungi|poochungi|puchungi|sunaungi|padhaungi|chalungi|rahungi|sakungi)|(?:करती|देती|लेती|रखती|समझाती|बताती|सकती|चाहती|जानती|सोचती|देखती) (?:हूं|हू|थी)|(?:करूंगी|दूंगी|बताऊंगी|समझाऊंगी|रखूंगी)`),
+  f: R(`${SELF_POSS.f}|(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karta|deta|leta|rakhta|samajhta|jaanta|janta|sakta|chahta|bolta|dekhta|sunta)(?![\\p{L}])|(?:karta|deta|leta|rakhta|samjhata|batata|sakta|chahta|jaanta|janta|sochta|dekhta|sunta|padhata|hota|raha|aata|jaata|jata|bolta|likhta|pasand karta|store karta) (?:hoon|hu|hun|tha)|(?:main|mai) (?:\\S+ ){0,3}(?:karunga|dunga|lunga|bataunga|samjhaunga|rakhunga|aaunga|jaunga|dikhaunga|poochunga|puchunga|sunaunga|padhaunga|chalunga|rahunga|sakunga)|(?:करता|देता|लेता|रखता|समझाता|बताता|सकता|चाहता|जानता|सोचता|देखता) (?:हूं|हू|था)|(?:करूंगा|दूंगा|बताऊंगा|समझाऊंगा|रखूंगा)`),
+  m: R(`${SELF_POSS.m}|(?:main|mai) (?:(?!(?:woh|wo|vo|koi|sab|log|ki|ke|tum|aap|tumhe|aapko) )\\S+ ){0,8}(?:nahi|nahin|nhi) (?:karti|deti|leti|rakhti|samajhti|jaanti|janti|sakti|chahti|bolti|dekhti|sunti)(?![\\p{L}])|(?:karti|deti|leti|rakhti|samjhati|batati|sakti|chahti|jaanti|janti|sochti|dekhti|sunti|padhati|hoti|rahi|aati|jaati|jati|bolti|likhti|pasand karti|store karti) (?:hoon|hu|hun|thi)|(?:main|mai) (?:\\S+ ){0,3}(?:karungi|dungi|lungi|bataungi|samjhaungi|rakhungi|aaungi|jaungi|dikhaungi|poochungi|puchungi|sunaungi|padhaungi|chalungi|rahungi|sakungi)|(?:करती|देती|लेती|रखती|समझाती|बताती|सकती|चाहती|जानती|सोचती|देखती) (?:हूं|हू|थी)|(?:करूंगी|दूंगी|बताऊंगी|समझाऊंगी|रखूंगी)`),
 };
 
 /**
@@ -549,6 +573,24 @@ export function relationalHits(text, opts = {}) {
   // a contiguous ascending/descending run is a maths answer (9876543210), not a phone (scrubPii's rule)
   if (said && !(/^\d+$/.test(said[0]) && monotone(said[0]))) hits.push({ family: "contact", rule: "contact.number_repeated" });
   return hits;
+}
+
+/**
+ * Deterministic repair of the teacher's possessive self-reference against the persona sheet's gender ("main aapki AI
+ * teacher hoon" → "main aapka AI teacher hoon" for a male sheet). Only the possessive word right after "main/mai" in that
+ * one frame is swapped, so nothing else in her line changes; text lanes call it before the reply is stored and spoken.
+ * @param {string} text  @param {"f"|"m"|undefined} gender
+ */
+export function repairSelfGender(text, gender) {
+  if (gender !== "f" && gender !== "m") return String(text ?? "");
+  const from = gender === "m" ? { tumhari: "tumhara", aapki: "aapka", teri: "tera" } : { tumhara: "tumhari", aapka: "aapki", tera: "teri" };
+  const nouns = "teacher|dost|friend|tutor";
+  const re = new RegExp(`(?<![\\p{L}])((?:main|mai)\\s+)(${Object.keys(from).join("|")})(?![\\p{L}])((?:\\s+[^\\s.!?।,]+){0,2}?\\s+(?:${nouns})(?![\\p{L}])\\s+(?:hoon|hun|hu|hoo)(?![\\p{L}]))`, "giu");
+  return String(text ?? "").replace(re, (_, a, poss, rest) => {
+    const lower = poss.toLowerCase();
+    const sw = from[lower] ?? poss;
+    return a + (poss[0] === poss[0].toUpperCase() && poss[0] !== poss[0].toLowerCase() ? sw[0].toUpperCase() + sw.slice(1) : sw) + rest;
+  });
 }
 
 /** The relational families a teacher turn broke, in RELATIONAL_FAMILIES order. [] when clean. */

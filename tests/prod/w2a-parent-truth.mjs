@@ -4,7 +4,10 @@
 // and Notes (the weekly letter preview): state per skill, the next topic, lessons and minutes. Then:
 //   - the no-answer child shows "Not started" and no sprout; the evidence sheet shows the real question and the child's words;
 //   - every lesson card summary is built from facts and passed the server's claim checker (≥ W2A_SUMMARIES, default 20);
-//   - Practice: ≤ 5 items pinned, no lesson greeting asked of the child; the client counter shows "Practice · n of 5";
+//   - Practice: ≤ 5 items (ui.practice.of), no greeting (WARN while the Director half is W2-C's); the client counter;
+//   - a school test window: the next topic is the same on child home, parent home, Progress, "Next time", a start with
+//     no topic and the lesson-end summary; the lesson card carries ONE count and its ticks never exceed the engine's;
+//     Notes claims name skills in the same state as the map; a reset kills the account's other outstanding links;
 //   - Ask: a fractions question is filed under fractions and the top bar is titled by the question;
 //   - Forgot password works end to end with the test-mailbox token (needs TAXILA_OPS_KEY; else WARN).
 //   NODE_USE_ENV_PROXY=1 node tests/prod/w2a-parent-truth.mjs        (TAXILA_BASE for a local server)
@@ -50,10 +53,24 @@ async function checkChild(api, cid, label) {
   // lesson cards: the same word per skill
   for (const l of s.lessons.filter((x) => x.counted).slice(0, 3)) {
     const card = await api("GET", `/api/parent/lesson?childId=${cid}&lessonId=${l.id}`);
+    // ONE count on the card: no legacy did.tried; every "Right, on their own" tick is a first-try engine row of that turn
+    ok(card.did?.tried === undefined, `${label}: the lesson card carries no second count (did.tried)`);
+    const ownTicks = (card.did?.cards ?? []).filter((c) => c.kind === "item" && c.tick && !c.withHelp).length;
+    if (card.summary) ok(ownTicks <= card.summary.counts.firstTry, `${label}: card ticks "on their own" ${ownTicks} ≤ engine first-try ${card.summary.counts.firstTry}`);
+    if (card.summary && card.summary.counts.tried === 0) ok(!(card.did?.cards ?? []).some((c) => c.kind === "item" && c.tick), `${label}: no tick on a card whose engine checked nothing`);
+    for (const k of card.skills) ok(k.unaided <= k.attempts, `${label}: ${k.skillId} unaided ${k.unaided} ≤ item attempts ${k.attempts}`);
     for (const k of card.skills) {
       const m = s.map.skills.find((x) => x.skillId === k.skillId);
       if (m) ok(SHAPE[k.key] === m.state, `${label}: lesson card ${k.skillId} = map (${SHAPE[k.key]} vs ${m.state})`);
     }
+  }
+  // Notes (weekly preview): every skill a claim names reads the same as the map (row.started = taught, Not started)
+  for (const c of s.week.report?.claims ?? []) {
+    if (!c.skillId) continue;
+    const m = s.map.skills.find((x) => x.skillId === c.skillId)?.state ?? "not_started";
+    if (c.shapeId === "row.started") ok(m === "not_started", `${label}: Notes "${c.shapeId}" ${c.skillId} = map ${m}`);
+    else if (c.shapeId === "st.pakka") ok(m === "secure", `${label}: Notes "${c.shapeId}" ${c.skillId} = map ${m}`);
+    else ok(m !== "not_started", `${label}: Notes "${c.shapeId}" names ${c.skillId}, which the map shows as tried (${m})`);
   }
   // 3. one lessons-and-minutes definition: parent home's week = the weekly letter's header
   const header = s.week.report?.renders?.en?.lines?.find((x) => x.section === "header")?.text ?? "";
@@ -85,6 +102,27 @@ await withTestAccount(async ({ api, child, email, password }) => {
   await checkChild(api, mixed.id, "mixed");
   const ss = await checkChild(api, strong.id, "strong");
 
+  // ── a school test window: ONE next topic on every surface, and on the lesson-end summary ──
+  {
+    const day = (n) => new Date(Date.now() + 330 * 60_000 - 4 * 3600_000 + n * 86_400_000).toISOString().slice(0, 10);
+    await api("POST", "/api/parent/unlock", { pin: "2580" }).catch(() => {});
+    const tw = await api("POST", "/api/parent/test-window", { childId: mixed.id, subject: "science", from: day(-1), to: day(3) });
+    ok(tw.window?.subject === "science", "test window saved (science)");
+    const s = await surfaces(api, mixed.id);
+    const next = s.plan.topic?.title ?? null;
+    ok(s.plan.topic?.subject === "science", `test window: the child home revises science (${s.plan.topic?.subject} · ${next})`);
+    ok(s.ov.next?.topic?.title === next, `test window: parent home next = child home next ("${s.ov.next?.topic?.title}" vs "${next}")`);
+    ok(s.syl.next?.title === next, `test window: Progress next = child home next ("${s.syl.next?.title}")`);
+    if (s.plan.today) ok(s.plan.today.summary.nextTitle === next, `test window: the child's "Next time" = child home next ("${s.plan.today.summary.nextTitle}")`);
+    const l = await api("POST", "/api/lesson/start", { childId: mixed.id, mode: "text", purpose: "practice" });
+    ok(/-science-/.test(l.topic?.id ?? "") && l.topic?.title === next, `test window: a start with no topic revises science, the home's topic (${l.topic?.id} · ${l.topic?.title})`);
+    const e = await api("POST", "/api/lesson/end", { lessonId: l.lessonId });
+    const after = (await api("GET", `/api/child/plan?childId=${mixed.id}`)).topic?.title ?? null;
+    ok(e.did?.nextTitle === after, `test window: the lesson-end "Next time" = child home next ("${e.did?.nextTitle}" vs "${after}")`);
+    await api("POST", "/api/parent/unlock", { pin: "2580" }).catch(() => {});
+    await api("DELETE", "/api/parent/test-window", { childId: mixed.id }).catch((e) => warn(`test window not cleared: ${e.message}`));
+  }
+
   // ── the evidence sheet shows the real item and the child's words, and who checked it ──
   const sk = ss.map.skills.find((x) => x.state !== "not_started");
   if (sk) {
@@ -100,6 +138,11 @@ await withTestAccount(async ({ api, child, email, password }) => {
   for (let i = 0; i < SUMMARIES + 4 && summaries < SUMMARIES; i++) {
     const p = await api("POST", "/api/lesson/start", { childId: strong.id, mode: "text", purpose: "practice" });
     practiced++;
+    if (i === 0) {
+      ok(!p.ui?.practice || p.ui.practice.of <= 5, `Practice: at most 5 items (${p.ui?.practice ? `of ${p.ui.practice.of}` : "no ui.practice yet"})`);
+      if (/^\s*(hi|hello|hey|namaste|good (morning|afternoon|evening))\b/i.test(p.reply ?? p.text ?? "")) warn(`Practice opens with a greeting ("${(p.reply ?? p.text).slice(0, 50)}"): the Director half is W2-C's`);
+      else ok(true, "Practice: the first teacher line is not a greeting");
+    }
     let ui = p.ui;
     for (let k = 0; k < 4; k++) {
       const rep = replyFor(ui, p.topic.id);
@@ -156,7 +199,12 @@ await withTestAccount(async ({ api, child, email, password }) => {
   ok(bad.field === "email" && bad.code === "email.bad", `a bad email is a field error with a code (${bad.code})`);
   if (ops && f.testToken) {
     const fresh = `${password}-new`;
+    const fB = await anon("POST", "/api/auth/forgot", { email }, [200], { "x-taxila-ops": ops });
     const r = await anon("POST", "/api/auth/reset", { token: f.testToken, password: fresh });
+    if (fB.testToken) {
+      const other = await anon("POST", "/api/auth/reset", { token: fB.testToken, password: `${fresh}-2` }, [200, 400]);
+      ok(other.code === "reset.bad", "reset: every other outstanding link of the account dies with the reset");
+    }
     ok(r.guardian?.email === email, "reset: the new password is set and this browser is signed in");
     const again = await anon("POST", "/api/auth/reset", { token: f.testToken, password: fresh }, [400]);
     ok(again.code === "reset.bad", "reset: the token is single use");

@@ -1,0 +1,231 @@
+{
+ "nodes": [
+  {
+   "id": "w2efix-studio-slot-on-the-turn",
+   "kind": "decision",
+   "title": "The turn calls W2-H's studioSeam.slotFor before the reply (w2h-turn-slot.patch hand-merged around W2-D's lane resume + w2h-say-screen-targets.patch): an accepted reveal reaches the child as ui.studioSlot with tray studio; a reveal slotFor holds is stripped from TurnResponse.studio (no onReveal, no studio_mount row) and traced studio_rejected.held; the content-filter re-plan clears the slot and calls onSafety",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-live-board-replaces-rung",
+   "kind": "decision",
+   "title": "On explain beats the live whiteboard replaces W2-B's template rung (explainer@1 in the module tray): the ask costs no attention and carries replacesRung; on requestIntent's ack the rung's mount/set_param commands go (or it is unmounted), state.module is cleared and its facts row leaves lastContent; a null ack keeps the rung (studio_rejected.declined_by_studio); an interactive catalog engine show still outbids the board",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-whiteboard-ask-gating",
+   "kind": "decision",
+   "title": "whiteboardAskOf takes the move and Studio's view: declines on repair/hint/hold/show_module inside an explain beat (studio_rejected.not_explain), while an interactive Studio piece is on screen (studio_rejected.attention), and when Studio proposes a reveal this turn (studio_rejected.reveal_ready)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-lanes-shared-hot-only",
+   "kind": "decision",
+   "title": "server/lanes.js caps background calls at 30% only on SHARED_HOT deployments (taxila-fast, grok-4-1-fast-non-reasoning, taxila-realtime + the DEPLOY_* hot lanes and classify fallback; TAXILA_SHARED_HOT overrides); background on a Studio build arm is never queued; the whiteboard planner's hot tag ships to W2-F as server/brain/seam-patches/w2e-plan-whiteboard-hot.patch",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-classify-hedge-to-fallback",
+   "kind": "decision",
+   "title": "classify and distressCheck hedge onto the FALLBACK deployment (hedgedFallback: at 1.5 s or at once on a fast primary failure; no retries; a content-filter block on either decides, fail closed); a fallback label carries cls.fallback; TAXILA_DRILL_HANG_DEPLOY is a drill-only hang hook",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-trace-comprehension-trail",
+   "kind": "decision",
+   "title": "brain_trace answers the comprehension question from the row: closed families cls.*, cls_source.*, verdict.* (what the child saw), guard.*, component_error.<seam> (per-turn seamSafe wrapper), turn.fallback_reply, release.goodbye_wrap / check_in_given and W2-D's turn.lane_resume codes; 016 gains nullable item_id / misconception_id written only when a column probe sees them",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-authority-on-the-real-turn",
+   "kind": "decision",
+   "title": "G-AUTHORITY enforced on the real turn: after each kernelRun the move sent must equal kernel.arb.move (else component_error.director + log); W2-I's w2i-turn-say.patch applied (safety opening, relational never-rules, cls.relRelease, verdictReversed); the stop check (w2i-state-stop-check.patch) stays W2-C's at integration, its test skipped until state.js has it",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-held-fragment-never-lost",
+   "kind": "decision",
+   "title": "turn.predictive: CascadeLink.close() delivers a held fragment before teardown and a resumed hold force-sends after holdMsFor + 2 s (FragmentMerger.drain, resumeCeilingMs); a held line can be a disclosure",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-small-loose-ends",
+   "kind": "decision",
+   "title": "pace is sent only when the kernel accepted the vibe knobs; HOLD_ONE_TURN surfaced as relationalEffects().holdOneTurn (W2-D's realtime lane is its open consumer); the whiteboard intent's band comes from server/learner/bands.js",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2efix-board-replay-2026-10-05",
+   "kind": "measurement",
+   "title": "Replay, 30 synthetic lessons / 420 turns: 63 explain-family turns on text+cascade; live-board slot on 42 (all with ui.studioSlot + tray studio, no explainer@1 beside it); 18 outbid by an interactive engine show; 3 declined after a safeguard froze Studio → 42/42 healthy explain turns (was 14/66 accepted); 0 reveals without a slot",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2efix-hang-drill-2026-10-05",
+   "kind": "measurement",
+   "title": "Classify deployment hanging: replay (n=18 turns, 1.5 s hedge) every turn 200, 13 hung calls answered by taxila-fast, wall max 1624 ms; local server with real Azure (13 turns, US sandbox → eastus2) server turn time 2349-3955 ms, 0 error cards (was ~15-21 s by the code path)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2efix-lanes-sim-2026-10-05",
+   "kind": "measurement",
+   "title": "Fake-clock lanes sim: 40 prefetch builds on taxila-gpt6 → 0 waits (was: 21st queued 55 s); the whiteboard call on taxila-gpt6-luna after 30 builds → admitted at once; taxila-fast background still capped; G-QUOTA 0 hot 429s unchanged",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2efix-authority-replay-2026-10-05",
+   "kind": "measurement",
+   "title": "Replay scripts, 6 lessons each: a true goodbye wraps and ends that turn with no hook 6/6; disclosure + goodbye → safeguard with both helplines, not ended, 6/6; bare stop twice with W2-C's patch (scratch copy) → one check-in then wrap 6/6 (today's tree wraps on the first stop); 0 component_error.director",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2efix-acceptance-local-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod/w2e-brain.mjs locally on the Neon test branch: 23/23 (reveal ⇒ slot, explain turns traced, comprehension trail, item ids, goodbye release; stop check WARNs until W2-C); live board slots on both explain turns, 1 of 2 boards drew (the other failed W2-F's gate); hang-drill run 23/24, the FAIL a leftover-guardian count from another stream's account created mid-run",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2efix-reveal-without-slot",
+   "kind": "rejection",
+   "title": "A kernel-accepted Studio reveal with no slotFor call: studio.reveal went out without ui.studioSlot (the Desk shows nothing) while onReveal wrote studio_mount and counted it in Made-for and spend caps",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2efix-board-beside-rung",
+   "kind": "rejection",
+   "title": "The whiteboard ask costing one attention beside W2-B's template rung: rejected on 52/66 explain turns (2/2 locally); the builder blamed the missing requestIntent",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2efix-same-deployment-hedge",
+   "kind": "rejection",
+   "title": "Classify hedge to the same deployment with azure.js's default retry and the fallback only after both failed: the 404 drill passed (fast fail) but a hang/5xx/429 would cost ~15-21 s, and distressCheck failed open to the predicate",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2efix-bg-cap-everywhere",
+   "kind": "rejection",
+   "title": "The 30% background window on every deployment: unshared Studio arms capped at 60k TPM; the 21st prefetch build queued 55 s and the live whiteboard planner queued behind builds past its 7 s budget",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2efix-unknown-codes-dropped",
+   "kind": "rejection",
+   "title": "Trace codes emitted without a vocabulary entry (W2-D's turn.lane_resume) were silently dropped by knownReasons; a new code must land in reasons.js in the same change",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2efix-opening-keeps-floor-phrase",
+   "kind": "decision",
+   "title": "W2-I's English DISCLOSURE opening (now the safeguard fallback via w2i-turn-say.patch) said 'Childline on 1098' / 'Tele-MANAS is 14416' and tripped the floor test; reworded to the literal 'Childline 1098' / 'Tele-MANAS 14416' in server/relational/openings.js and src/lesson/safetyStrings.ts (kept identical); the test is unchanged",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2efix-studio-slot-on-the-turn",
+   "rel": "part_of",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "rj-w2efix-reveal-without-slot",
+   "rel": "caused_by",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "w2efix-live-board-replaces-rung",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "w2efix-whiteboard-ask-gating",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "rj-w2efix-board-beside-rung",
+   "rel": "caused_by",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "m-w2efix-board-replay-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2e-whiteboard-ask-replay-2026-10-04"
+  },
+  {
+   "src": "w2efix-live-board-replaces-rung",
+   "rel": "measured_by",
+   "dst": "m-w2efix-board-replay-2026-10-05"
+  },
+  {
+   "src": "w2efix-lanes-shared-hot-only",
+   "rel": "supersedes",
+   "dst": "w2e-quota-window"
+  },
+  {
+   "src": "rj-w2efix-bg-cap-everywhere",
+   "rel": "caused_by",
+   "dst": "w2e-quota-window"
+  },
+  {
+   "src": "w2efix-lanes-shared-hot-only",
+   "rel": "measured_by",
+   "dst": "m-w2efix-lanes-sim-2026-10-05"
+  },
+  {
+   "src": "w2efix-classify-hedge-to-fallback",
+   "rel": "supersedes",
+   "dst": "w2e-classify-fallback"
+  },
+  {
+   "src": "rj-w2efix-same-deployment-hedge",
+   "rel": "caused_by",
+   "dst": "w2e-classify-fallback"
+  },
+  {
+   "src": "w2efix-classify-hedge-to-fallback",
+   "rel": "measured_by",
+   "dst": "m-w2efix-hang-drill-2026-10-05"
+  },
+  {
+   "src": "w2efix-trace-comprehension-trail",
+   "rel": "part_of",
+   "dst": "w2e-brain-trace-lesson-keyed"
+  },
+  {
+   "src": "rj-w2efix-unknown-codes-dropped",
+   "rel": "caused_by",
+   "dst": "w2e-brain-trace-lesson-keyed"
+  },
+  {
+   "src": "w2efix-authority-on-the-real-turn",
+   "rel": "part_of",
+   "dst": "w2e-relational-adapter"
+  },
+  {
+   "src": "w2efix-authority-on-the-real-turn",
+   "rel": "measured_by",
+   "dst": "m-w2efix-authority-replay-2026-10-05"
+  },
+  {
+   "src": "w2efix-held-fragment-never-lost",
+   "rel": "part_of",
+   "dst": "w2e-predictive-turn-lite"
+  },
+  {
+   "src": "w2efix-small-loose-ends",
+   "rel": "part_of",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "w2efix-studio-slot-on-the-turn",
+   "rel": "measured_by",
+   "dst": "m-w2efix-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "w2efix-opening-keeps-floor-phrase",
+   "rel": "part_of",
+   "dst": "w2efix-authority-on-the-real-turn"
+  }
+ ]
+}

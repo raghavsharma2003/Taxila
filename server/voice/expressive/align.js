@@ -13,6 +13,7 @@
 // part index), which is how the pause realiser and the clause events line up with the audio.
 import { splitSentences } from "../sentences.js";
 import { momentPlan, fillersFor } from "./moment.js";
+import { preludeTokenOk } from "./prelude.js";
 
 /** @typedef {import("../../../shared/contracts").DeliveryPlan} DeliveryPlan */
 /** @typedef {import("../../../shared/contracts").DeliveryClause} DeliveryClause */
@@ -108,7 +109,9 @@ export function align(reply, moment) {
   // uptake prelude (TEACHER-BRAIN §5.4 L3): the child's own token is spoken first by the prelude; a leading echo of it
   // is stripped from clause 0 so she does not say it twice.
   let prelude;
-  const tok = moment?.uptakePrelude?.text && mp.register !== "safety" ? String(moment.uptakePrelude.text).trim() : "";
+  // The token is screened (prelude.js): a closed class (numbers, number words, lexicon terms) and clean, else no prelude.
+  const raw = moment?.uptakePrelude?.text && mp.register !== "safety" ? String(moment.uptakePrelude.text).trim() : "";
+  const tok = raw && preludeTokenOk(raw, { vocab: moment?.uptakePrelude?.vocab ?? [] }) ? raw : "";
   if (tok && n) {
     prelude = { text: tok };
     const re = new RegExp(`^${tok.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:[\\s,!.?।-]+|$)`, "iu");
@@ -136,8 +139,28 @@ export function align(reply, moment) {
   return preserved(plan, text) ? plan : null;
 }
 
+/**
+ * The plan with the uptake echo PUT BACK into clause 0 (fixer 2026-10-05, w2g-echo-only-when-prelude-plays): the echo is
+ * stripped only for a path where the prelude is GUARANTEED to have played. Every other path (tts-stream without a
+ * prewarm, "Hear", a prelude that wrote no audio) speaks this version, so the child hears every word of the reply (HV-2).
+ * Pure; returns the input when nothing was stripped.
+ */
+export function withEcho(plan) {
+  if (!plan?.clauses?.[0]?.stripped) return plan;
+  const clauses = plan.clauses.map((c) => ({ ...c }));
+  clauses[0].text = `${clauses[0].stripped}${clauses[0].text}`;
+  delete clauses[0].stripped;
+  clauses[0].echoed = true;
+  return { ...plan, clauses };
+}
+
 /** Remove the inserted filler from a clause text (exact prefix the aligner wrote). */
-export const withoutFiller = (c) => (c.filler && c.text.startsWith(`${c.filler}, `) ? c.text.slice(c.filler.length + 2) : c.text);
+export const withoutFiller = (c) => {
+  if (!c.filler) return c.text;
+  if (c.text.startsWith(`${c.filler}, `)) return c.text.slice(c.filler.length + 2);
+  const at = c.echoed ? c.text.indexOf(` ${c.filler}, `) : -1; // withEcho(): "62! achha, …"
+  return at >= 0 ? c.text.slice(0, at + 1) + c.text.slice(at + c.filler.length + 3) : c.text;
+};
 
 /** HV-2: the clause texts minus fillers (plus any stripped uptake echo) equal the reply, modulo whitespace. */
 export function preserved(plan, reply) {

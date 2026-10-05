@@ -92,7 +92,7 @@ function check(call, { band = "B3", kit = null } = {}) {
   if (kit) { const t = checkCall(call, kit, { band, vocab: kitVocabulary(kit) }); if (!t.ok) return fail(`truth:${t.why.split(":")[0]}`); }
   // every drawn label token traces to the call (code drew nothing the call did not carry, except numbers it computed)
   const callText = JSON.stringify(call).toLowerCase();
-  for (const tok of scriptTokens(x.script)) if (!/^[\d./+-]+$/.test(tok) && !callText.includes(tok) && !/^(equal|parts|o|t|h|th|tth|l|tl)$/.test(tok)) return fail(`token:${tok}`);
+  for (const tok of scriptTokens(x.script)) if (!/^[\d./+-]+$/.test(tok) && !callText.includes(tok) && !/^(equal|parts|o|t|h|th|tth|l|tl|cm|m|km|mm|units)$/.test(tok)) return fail(`token:${tok}`);
   row.pass++;
   return true;
 }
@@ -113,6 +113,23 @@ check({ template: "label@1", sketch: "plant", labels: [{ anchor: "flower", text:
 check({ template: "label@1", sketch: "flower", labels: [{ anchor: "petal", text: "petal" }, { anchor: "sepal", text: "sepal" }, { anchor: "stamen", text: "stamen" }, { anchor: "pistil", text: "pistil" }] });
 check({ template: "label@1", sketch: "leaf", labels: [{ anchor: "midrib", text: "midrib" }, { anchor: "vein", text: "vein" }, { anchor: "stalk", text: "petiole" }, { anchor: "blade", text: "leaf blade" }] });
 check({ template: "label@1", sketch: "insect", labels: [{ anchor: "head", text: "head" }, { anchor: "thorax", text: "thorax" }, { anchor: "abdomen", text: "abdomen" }, { anchor: "antenna", text: "antenna" }, { anchor: "leg", text: "six legs" }] });
+// geometry and data (W2-B fixer, major 2)
+for (const d of [30, 45, 60, 90, 120, 135, 150, 180]) check({ template: "angle@1", angles: [{ deg: d, name: d === 90 ? "right angle" : `${d}°` }], arm: "arm", vertex: "corner" });
+check({ template: "angle@1", angles: [{ deg: 50, name: "acute angle" }, { deg: 130, name: "obtuse angle" }] });
+check({ template: "angle@1", angles: [{ deg: 50, name: "acute angle" }, { deg: 90, name: "right angle" }, { deg: 150, name: "obtuse angle" }] });
+for (const sh of ["triangle", "square", "rectangle", "quadrilateral", "pentagon", "hexagon", "octagon"]) {
+  check({ template: "shape@1", shape: sh, name: sh, side: "side", corner: "vertex" });
+  check({ template: "shape@1", shape: sh, copies: 2, names: ["A", "B"] });
+}
+check({ template: "shape@1", shape: "circle", name: "circle", centre: "centre", radius: "radius", diameter: "diameter" });
+check({ template: "shape@1", shape: "circle", name: "circle", centre: "centre", radius: "radius" });
+for (let d = 1; d <= 6; d++) check({ template: "symmetry@1", line: "mirror line", dot: d });
+check({ template: "symmetry@1", line: "line of symmetry" });
+for (const [w, h] of [[1, 1], [3, 2], [5, 3], [8, 4], [12, 8], [50, 30], [100, 4], [999, 1000]]) for (const mode of ["area", "perimeter"]) for (const unit of ["cm", "m", undefined]) check({ template: "area-grid@1", w, h, mode, ...(unit ? { unit } : {}) });
+for (const vals of [[25, 40], [140, 250, 230, 120], [12, 9, 6, 15, 3], [1308, 976], [5, 10, 15, 20, 25, 30], [0, 7]]) {
+  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  check({ template: "bar-chart@1", bars: vals.map((v, i) => ({ label: labels[i], value: v })) });
+}
 const sweep = structuredClone(perTemplate);
 
 // real topics: the code pick (maths) and the library entry (every subject)

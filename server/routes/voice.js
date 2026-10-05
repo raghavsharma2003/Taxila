@@ -15,6 +15,7 @@ import { ageBandOf, sttPrompt, sttSession } from "../voice/stt.js";
 import { PCM_RATE, speakChunk, speechStyle, transcribeClip } from "../voice/speech.js";
 import { take as prewarmTake, deliveryFor, speakingEntry, PASSTHROUGH } from "../voice/prewarm.js";
 import { renderParts, preludeRender } from "../voice/expressive/render.js";
+import { preludeTokenOk } from "../voice/expressive/prelude.js";
 import { edgeTrim, silence } from "../voice/expressive/pauses.js";
 import { FRAME, FRAMES_CONTENT_TYPE, frameWriter } from "../voice/frames.js";
 import { count } from "../voice/expressive/telemetry.js";
@@ -22,7 +23,7 @@ import { spokenOptsForChild } from "../voice/spoken.js";
 import { routes as featureRoutes } from "../voice/features.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { seamSafe } from "../seam-safe.js";
-import { cascadeEngine, dhdVoiceFor } from "../voice/voices.js";
+import { cascadeEngine, dhdVoiceFor, warnUnmeasuredOnce } from "../voice/voices.js";
 
 const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
 /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
@@ -80,15 +81,20 @@ function limiter(max) {
  * @param {string} [ageBand]  the lesson's band (state.ctx.ageBand) when the caller has it; else from class_level
  * @param {string} [pinnedTeacherId]  the lesson's teacher (state.ctx.teacherId); else the child's current pick
  * @param {string} [pinnedName]  the lesson's pinned name (state.ctx.teacherName): one resolution of the name per lesson
+ * @param {{ laneSwitched?: boolean }} [opts]  laneSwitched: the lesson moved realtime → cascade mid-sitting (state.laneSwitch);
+ *   the child has been hearing the character's realtime voice (teacher.voice), so the rest of the sitting keeps that same
+ *   voice on gpt-4o-mini-tts instead of DragonHD (one teacher, one voice: W2-D fixer 2026-10-05)
  */
-export function styleForChild(child, ageBand, pinnedTeacherId, pinnedName) {
+export function styleForChild(child, ageBand, pinnedTeacherId, pinnedName, opts = {}) {
   // The lesson's pinned teacher (state.ctx.teacherId) wins, so a tutor switch never changes an open lesson's voice.
   const teacher = pinnedTeacherId ? teacherForLesson(child, pinnedTeacherId, pinnedName) : teacherFor(child);
   const base = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, spokenOptsForChild(child, ageBand));
   // HUMAN-VOICE B1: the cascade voice from config (server/voice/voices.js): DragonHD when Azure Speech is configured,
   // the character's gpt-4o-mini-tts voice as the fallback (and the only voice when it is not).
-  if (cascadeEngine() !== "dhd") return base;
+  if (cascadeEngine() !== "dhd" || opts?.laneSwitched) return base;
+  warnUnmeasuredOnce();
   const v = dhdVoiceFor(teacher.id);
+  if (!v.usable) return base; // an unprobed DragonHD row: the character's own voice, every turn (voices.js)
   return { ...base, engine: "dhd", dhd: { voice: v.dhd, baseRate: v.baseRate }, version: `${base.version}:dhd` };
 }
 
@@ -189,7 +195,7 @@ async function ttsStream(req, res, body) {
     return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed });
   }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
-  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, c.*
+  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
       from (select $3::text as h) k
       left join auth_session s on s.token_hash = k.h and s.expires_at > now()
       left join lesson l on l.id = $1
@@ -200,16 +206,17 @@ async function ttsStream(req, res, body) {
   if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
   const guardian = { id: row.session_guardian };
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
-  const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, lesson_teacher: lessonTeacher, lesson_teacher_name: lessonTeacherName, ...child } = row;
+  const { turn_text: turnText, session_guardian: _sg, turn_seq: _seq, lesson_teacher: lessonTeacher, lesson_teacher_name: lessonTeacherName, lane_switched: laneSwitched, ...child } = row;
   const text = String(turnText ?? "").trim();
   if (!text) throw notFound("no teacher turn to speak");
   if (text.length > MAX_TTS_CHARS) throw bad(`teacher turn is longer than ${MAX_TTS_CHARS} characters`);
-  const style = styleForChild(child, undefined, lessonTeacher, lessonTeacherName ?? undefined);
+  const style = styleForChild(child, undefined, lessonTeacher, lessonTeacherName ?? undefined, { laneSwitched: !!laneSwitched });
   // the plan /turn made for this turn in this process (a prewarm another request took, prewarm off), else plain
   const d = deliveryFor(lessonId, seq);
-  const r = renderParts({ lessonId, seq, text, style, delivery: d?.plan, gov: d?.governed ? PASSTHROUGH : undefined, log: !d?.governed });
+  // no prelude on this path, so the reply keeps the child's echo (renderParts prelude: false)
+  const r = renderParts({ lessonId, seq, text, style, delivery: d?.plan, gov: d?.governed ? PASSTHROUGH : undefined, log: !d?.governed, prelude: false });
   const abort = new AbortController();
-  const entry = speakingEntry({ parts: r.parts, prelude: null, style, abort });
+  const entry = speakingEntry({ parts: r.parts, prelude: null, style, abort, lessonId });
   entry.startUpTo(LOOKAHEAD);
   return streamParts(res, { entry, t0, setupMs: Math.round(performance.now() - t0), framed });
 }
@@ -273,7 +280,11 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
       try {
         for await (const c of edgeTrim(entry.prelude.read(), { lead: true, tail: true })) { if (abort.signal.aborted) return; said += c.length; await sendPcm(c); }
       } catch (e) { if (abort.signal.aborted) return; console.warn("[voice] prelude failed:", e.message); }
-      if (said) { count("prelude"); await sendPcm(silence(PRELUDE_GAP_MS)); } else count("prelude_miss");
+      if (said) { count("prelude"); await sendPcm(silence(PRELUDE_GAP_MS)); } else {
+        // no prelude audio: part 0 is spoken WITH the child's echo, never silently without it (HV-2)
+        count("prelude_miss");
+        entry.useFull0?.();
+      }
     }
     for (let i = 0; i < parts.length; i++) {
       entry.startUpTo(i + LOOKAHEAD);
@@ -359,12 +370,14 @@ function warmPrelude(req, body, tokenHash) {
     const { keyTokenOf } = await import("../brain/moment.js");
     const token = keyTokenOf(body.text);
     if (!token) return;
-    const row = await one(`select l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, c.*
+    const row = await one(`select l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
         from auth_session s join lesson l on l.id = $1 join child c on c.id = l.child_id and c.guardian_id = s.guardian_id
         where s.token_hash = $2 and s.expires_at > now()`, [body.lessonId, tokenHash]);
     if (!row) return;
-    const { lesson_teacher: t, lesson_teacher_name: n, ...child } = row;
-    const style = styleForChild(child, undefined, t, n ?? undefined);
+    const { lesson_teacher: t, lesson_teacher_name: n, lane_switched: ls, ...child } = row;
+    // the same screen align() applies, plus the child's own name (never echoed): prelude.js
+    if (!preludeTokenOk(token, { names: [child.first_name] })) return;
+    const style = styleForChild(child, undefined, t, n ?? undefined, { laneSwitched: !!ls });
     const render = preludeRender(token, style);
     if (!render) return;
     const job = speakChunk(token, style, undefined, render);

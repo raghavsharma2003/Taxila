@@ -10,7 +10,7 @@ const GATES = [["6/8", true], ["2/3", false], ["4/5", false]] as const;
 export function PilotGame({ settled, reducedMotion, onHud }: { settled?: boolean; reducedMotion?: boolean; onHud?: (hud: { hits: number; target: string }) => void }) {
   const cv = useRef<HTMLCanvasElement>(null);
   const [coach, setCoach] = useState(!settled);
-  const st = useRef({ y: H / 2, vy: 0, t: 0, gx: settled ? W * 0.7 : W + 200, hits: 0, flash: 0, flashGood: true, input: 0, particles: [] as Array<{ x: number; y: number; vx: number; vy: number; life: number }> });
+  const st = useRef({ y: H / 2, vy: 0, t: 0, gx: settled ? W * 0.7 : W + 200, hits: 0, flash: 0, flashGood: true, input: 0, aim: null as number | null, particles: [] as Array<{ x: number; y: number; vx: number; vy: number; life: number }> });
   useEffect(() => {
     const c = cv.current;
     if (!c) return;
@@ -35,7 +35,8 @@ export function PilotGame({ settled, reducedMotion, onHud }: { settled?: boolean
       const dt = settled ? 0 : Math.min(0.05, (now - last) / 1000);
       last = now;
       s.t += dt;
-      // world update
+      // world update (a held finger is a target: the ship eases onto it and stops, never drifts past it)
+      if (s.aim != null) s.input = Math.sign(s.aim - s.y) * Math.min(1, Math.abs(s.aim - s.y) / 80);
       s.y += s.input * 520 * dt;
       s.y = Math.max(120, Math.min(H - 120, s.y));
       s.gx -= 360 * dt;
@@ -111,6 +112,7 @@ export function PilotGame({ settled, reducedMotion, onHud }: { settled?: boolean
     };
     raf = requestAnimationFrame(draw);
     const key = (e: KeyboardEvent) => {
+      st.current.aim = null;
       if (e.key === "ArrowUp") st.current.input = -1;
       else if (e.key === "ArrowDown") st.current.input = 1;
       else return;
@@ -127,13 +129,13 @@ export function PilotGame({ settled, reducedMotion, onHud }: { settled?: boolean
     const r = e.currentTarget.getBoundingClientRect();
     const k = Math.min(r.width / W, r.height / H);
     const y = (e.clientY - r.top - (r.height - H * k) / 2) / k;
-    st.current.input = Math.sign(y - st.current.y) * Math.min(1, Math.abs(y - st.current.y) / 80);
+    st.current.aim = y;
     setCoach(false);
   };
   return (
     <div className="v3-game">
       <canvas ref={cv} tabIndex={0} aria-label="Fraction Pilot. Steer with up and down arrows or drag. Fly through the gate equal to three quarters."
-        onPointerDown={steer} onPointerMove={steer} onPointerUp={() => { st.current.input = 0; }} />
+        onPointerDown={steer} onPointerMove={steer} onPointerUp={() => { st.current.aim = null; st.current.input = 0; }} onPointerCancel={() => { st.current.aim = null; st.current.input = 0; }} />
       {coach && <div className="v3-coach" aria-hidden="true">Drag to steer</div>}
     </div>
   );

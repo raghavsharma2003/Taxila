@@ -30,7 +30,9 @@ export interface EngineSpecDef<S> {
   grade(spec: S, itemId: string, value: unknown): Graded;
 }
 
-const MARKUP = /[<>{}\\`]|https?:|www\.|javascript:|data:/i;
+// markup, links, and failure-shaped tokens a model or a bug can emit as a label ("NaN", "undefined", "[object Object]"):
+// shown on stage they read as a broken piece (fuzz seed 5 on area-claim put "NaN" in a unit label, 2026-10-05)
+const MARKUP = /[<>{}\\`]|https?:|www\.|javascript:|data:|\bNaN\b|\bundefined\b|\bnull\b|\bInfinity\b|\[object /i;
 export const TOPIC_RE = /^c[4-7]-(maths|science|evs)-ch\d{2}-t\d{2}$/;
 const isObj = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
 const clampN = (v: number, lo: number, hi: number) => (v < lo ? lo : v > hi ? hi : v);
@@ -50,6 +52,12 @@ function num(v: unknown, lo: number, hi: number, dflt: number, key: string, r: s
   }
   if (v !== undefined) r.push("num:" + key);
   return dflt;
+}
+/** Optional short sub-line: kept if valid, else "" with the repair recorded (never silently). */
+function sub(v: unknown, max: number, r: string[]): string {
+  if (v === undefined || v === "") return "";
+  if (typeof v === "string" && v.length <= max && !MARKUP.test(v)) return v;
+  r.push("string:sub"); return "";
 }
 function bool(v: unknown, dflt: boolean): boolean { return typeof v === "boolean" ? v : dflt; }
 function arr(v: unknown, key: string, r: string[]): unknown[] {
@@ -205,7 +213,7 @@ function repairLandfall(raw: Record<string, unknown>, r: string[]): LandfallSpec
     }
     if (!items.length) { r.push("wave-empty"); continue; }
     waves.push({
-      title: str(w.title, 22, "Wave", "title", r), sub: typeof w.sub === "string" && w.sub.length <= 40 && !MARKUP.test(w.sub) ? w.sub : "", line,
+      title: str(w.title, 22, "Wave", "title", r), sub: sub(w.sub, 40, r), line,
       ticks: num(w.ticks, 0, 12, 0, "ticks", r, true), scaffoldTicks: num(w.scaffoldTicks, 2, 12, 4, "scaffoldTicks", r, true),
       speed: num(w.speed, 60, 170, 95, "speed", r), gap: num(w.gap, 1.1, 4, 2.4, "gap", r), items,
       ...(misconceptionOk(w.targets, LF_MISC) ? { targets: w.targets as string } : {}),
@@ -585,7 +593,7 @@ function repairSlice(raw: Record<string, unknown>, r: string[]): SliceSpec | nul
       items.push({ cut: f.label });
     }
     if (!items.length) { r.push("wave-empty"); continue; }
-    waves.push({ title: str(w.title, 22, "Wave", "title", r), sub: typeof w.sub === "string" && w.sub.length <= 44 && !MARKUP.test(w.sub) ? w.sub : "", items,
+    waves.push({ title: str(w.title, 22, "Wave", "title", r), sub: sub(w.sub, 44, r), items,
       gravity: num(w.gravity, 0.6, 1.4, 0.9, "gravity", r), gap: num(w.gap, 1.4, 4.5, 2.6, "gap", r), marks: bool(w.marks, false),
       ...(misconceptionOk(w.targets, SL_MISC) ? { targets: w.targets as string } : {}) });
   }
@@ -642,7 +650,7 @@ function repairRunner(raw: Record<string, unknown>, r: string[]): RunnerSpec | n
       calls.push(String(c).trim().replace("−", "-"));
     }
     if (!calls.length) { r.push("round-empty"); continue; }
-    rounds.push({ title: str(w.title, 22, "Round", "title", r), sub: typeof w.sub === "string" && w.sub.length <= 44 && !MARKUP.test(w.sub) ? w.sub : "", range: rg, step,
+    rounds.push({ title: str(w.title, 22, "Round", "title", r), sub: sub(w.sub, 44, r), range: rg, step,
       labels: oneOf(w.labels, ["all", "ends", "zero"] as const, "all", "labels", r), calls, speed: num(w.speed, 0.5, 1.8, 0.9, "speed", r), dir: w.dir === -1 ? -1 : 1,
       ...(misconceptionOk(w.targets, LR_MISC) ? { targets: w.targets as string } : {}) });
   }
@@ -768,7 +776,12 @@ function gradeVault(spec: VaultSpec, itemId: string, value: unknown): Graded {
   let total = 0;
   for (const d of DENOMS) { const c = counts[String(d)]; if (typeof c === "number" && Number.isInteger(c) && c >= 0 && c < 1000) total += c * d; }
   const t = round.target;
-  const detail = total === t ? undefined : String(total) === String(t).replace(/0/g, "") ? "c4-maths-ch04-t01-m-drop-zero" : `total:${total}`;
+  // misconception signatures (kit c4-maths-ch04-t01): an empty place's zero dropped (4,050 → 450 or 45); parts written
+  // as spoken and joined (4,050 → 400050)
+  const ts = String(t), dropped = new Set<string>([ts.replace(/0/g, "")]);
+  for (let i = 1; i < ts.length; i++) if (ts[i] === "0") dropped.add(ts.slice(0, i) + ts.slice(i + 1));
+  const th = Math.floor(t / 1000) * 1000, rest = t % 1000, concat = th && rest ? String(th) + String(rest) : "";
+  const detail = total === t ? undefined : dropped.has(String(total)) ? "c4-maths-ch04-t01-m-drop-zero" : concat && String(total) === concat ? "c4-maths-ch04-t01-m-concat" : `total:${total}`;
   return { verdict: total === t ? "right" : "wrong", truth: t, error: Math.abs(total - t), ...(detail ? { detail } : {}) };
 }
 
@@ -787,7 +800,7 @@ const angleDefault: AngleSpec = {
   waves: [
     { title: "Calibrate", sub: "turn from the zero arm, anticlockwise", mode: "call", items: [90, 45, 135, 30], range: 180, scaffold: "tens", speed: 0.8 },
     { title: "Copy the turn", sub: "long arms or short, the turn is the angle", mode: "copy", items: [60, 120, 25, 150], range: 180, scaffold: "none", speed: 0.85, targets: "c5-maths-ch03-t01-m-angle-is-length" },
-    { title: "Obtuse only", sub: "bigger than a right angle, less than straight", mode: "classify", items: [40, 110, 95, 150, 70, 125], kind: "obtuse", range: 180, scaffold: "none", speed: 0.9 },
+    { title: "Obtuse only", sub: "more than a right angle, less than straight", mode: "classify", items: [40, 110, 95, 150, 70, 125], kind: "obtuse", range: 180, scaffold: "none", speed: 0.9 },
     { title: "Past straight", sub: "the full turn is open now", mode: "call", items: [200, 270, 315, 160], range: 360, scaffold: "none", speed: 0.9, targets: "c5-maths-ch03-t01-m-half-is-quarter" },
   ],
 };
@@ -803,7 +816,7 @@ function repairAngle(raw: Record<string, unknown>, r: string[]): AngleSpec | nul
     if (!items.length) { r.push("wave-empty"); continue; }
     const kind = mode === "classify" ? oneOf(w.kind, ["acute", "right", "obtuse", "reflex"] as const, "obtuse", "kind", r) : undefined;
     if (kind && !items.some((a) => angleKind(a) === kind)) { r.push("classify-no-match"); continue; }
-    waves.push({ title: str(w.title, 22, "Wave", "title", r), sub: typeof w.sub === "string" && w.sub.length <= 44 && !MARKUP.test(w.sub) ? w.sub : "", mode, items, ...(kind ? { kind } : {}), range,
+    waves.push({ title: str(w.title, 22, "Wave", "title", r), sub: sub(w.sub, 44, r), mode, items, ...(kind ? { kind } : {}), range,
       scaffold: oneOf(w.scaffold, ["none", "tens", "protractor"] as const, "none", "scaffold", r), speed: num(w.speed, 0.5, 1.6, 0.9, "speed", r),
       ...(misconceptionOk(w.targets, AN_MISC) ? { targets: w.targets as string } : {}) });
   }
@@ -1043,7 +1056,7 @@ export function waterGoalMet(goal: WaterGoal, s: WaterState, base: WaterState, a
   if (goal === "evaporate") return waterGone(s) - waterGone(base) >= arg;
   return s.droplets - base.droplets >= arg;
 }
-const PS_STRINGS = { step: "Step", heat: "HEAT", cool: "COOL", fan: "FAN", lid: "COLD LID", temp: "TEMP", ice: "ice", water: "water", vapour: "vapour", plateau: "Still 0 °C: the heat is breaking the solid apart", boiling: "100 °C and holding: the heat makes vapour", invisible: "water vapour: invisible", predict: "First, predict", done: "Done", noBoil: "keep it under" };
+const PS_STRINGS = { step: "Step", heat: "HEAT", cool: "COOL", fan: "FAN", lid: "COLD LID", temp: "TEMP", ice: "ice", water: "water", vapour: "vapour", plateau: "0 °C holds: heat is melting the ice", boiling: "100 °C holds: heat is making vapour", invisible: "vapour · invisible", predict: "First, predict", done: "Done", noBoil: "keep it under" };
 const PS_MISC = ["c6-science-ch08-t01-m1", "c6-science-ch08-t01-m2", "c6-science-ch08-t02-m1", "c6-science-ch08-t02-m2", "c6-science-ch08-t02-m3", "c5-evs-ch01-t01-m3", "c5-evs-ch01-t01-m4"];
 const PhaseStep = z.union([
   z.object({ kind: z.literal("goal"), goal: z.enum(["melt", "boil", "evaporate", "condense"]), arg: z.number().min(0).max(0.6), tMax: z.number().min(30).max(100), text: z.string().max(70), targets: z.string().optional() }),
@@ -1144,7 +1157,7 @@ function repairBeam(raw: Record<string, unknown>, r: string[]): BeamSpec | null 
     const pans = mode === "pans";
     const unknown = isObj(w.unknown) && Number.isInteger(w.unknown.w) && Number.isInteger(w.unknown.d) && (w.unknown.w as number) >= 1 && (w.unknown.w as number) <= 50 && (w.unknown.d as number) >= 1 && (w.unknown.d as number) <= 5 ? { w: w.unknown.w as number, d: w.unknown.d as number, n: Number.isInteger(w.unknown.n) ? clampN(w.unknown.n as number, 1, 4) : 1 } : undefined;
     if ((mode === "unknown" || mode === "sameBoth") && !unknown) { r.push("round:unknown-missing"); continue; }
-    const round: BeamRound = { mode, title: str(w.title, 24, "Level it", "title", r), sub: typeof w.sub === "string" && w.sub.length <= 48 && !MARKUP.test(w.sub) ? w.sub : "", unit: oneOf(w.unit, ["kg", "g"] as const, pans ? "g" : "kg", "unit", r),
+    const round: BeamRound = { mode, title: str(w.title, 24, "Level it", "title", r), sub: sub(w.sub, 48, r), unit: oneOf(w.unit, ["kg", "g"] as const, pans ? "g" : "kg", "unit", r),
       left: placed(w.left, "left", pans), right: placed(w.right, "right", pans), tray: arr(w.tray, "tray", r).filter((x): x is number => typeof x === "number" && Number.isInteger(x) && x >= 1 && x <= 2000).slice(0, 8),
       ...(unknown ? { unknown } : {}), ...(misconceptionOk(w.targets, BB_MISC) ? { targets: w.targets as string } : {}) };
     if (mode !== "sameBoth" && !round.tray.length) { r.push("round:empty-tray"); continue; }
@@ -1181,7 +1194,9 @@ function gradeBeam(spec: BeamSpec, itemId: string, value: unknown): Graded {
 }
 
 // ═════════════════════════════ 12. shadow-play@1 — Shadow catcher (shared geometry) ═════════════════════════════
-export const SHADOW = { bench: 520, objX: 690, screenX: 900, objH: 120, torchMin: 60, torchMax: 620, torchY: 460 };
+/** Side view: the torch is at the object's centre height, the object stands on a post above the table, so both edge rays
+ *  reach the screen for factors up to (table − torchY)/(objH/2) = 2.33; specs are clamped to [1.36, 2.3]. */
+export const SHADOW = { table: 600, objX: 690, screenX: 900, objH: 120, torchMin: 60, torchMax: 560, torchY: 460, screenTop: 170, fMin: 1.36, fMax: 2.3 };
 /** Shadow height on the screen for a point source at torch x (similar triangles). */
 export function shadowFactor(torchX: number): number { const S = SHADOW; return (S.screenX - torchX) / Math.max(1e-6, S.objX - torchX); }
 /** Torch x that gives magnification f (inverse of shadowFactor). */
@@ -1195,7 +1210,7 @@ export type ShadowMat = keyof typeof SHADOW_MATERIALS;
 /** The moving target band for "catch" rounds: centre factor and half-width, a pure function of time. */
 export function shadowBand(t: number, lo: number, hi: number): { f: number; half: number } {
   const mid = (lo + hi) / 2, amp = (hi - lo) / 2;
-  return { f: mid + amp * Math.sin(t * 0.55) * Math.cos(t * 0.21), half: 0.12 };
+  return { f: mid + amp * Math.sin(t * 0.55) * Math.cos(t * 0.21), half: 0.1 };
 }
 const SP_STRINGS = { step: "Step", torch: "Drag the torch", tall: "TALL", times: "× the object", hold: "hold it", got: "Locked", band: "Keep the shadow's top in the band", opaque: "Opaque", translucent: "Translucent", transparent: "Transparent", sort: "Drop each one in the light, then sort it", done: "Light done", shadowColour: "shadow colour" };
 const SP_MISC = ["c7-science-ch11-t02-m1", "c7-science-ch11-t02-m2", "c7-science-ch11-t02-m3", "c4-evs-ch10-t01-m1", "c4-evs-ch10-t01-m2"];
@@ -1215,7 +1230,7 @@ const shadowDefault: ShadowSpec = {
   steps: [
     { kind: "size", factor: 2, targets: "c7-science-ch11-t02-m3" },
     { kind: "size", factor: 1.5 },
-    { kind: "catch", lo: 1.4, hi: 2.8, seconds: 4 },
+    { kind: "catch", lo: 1.45, hi: 2.2, seconds: 4 },
     { kind: "materials", items: ["card", "tracing", "glass", "redcard"], targets: "c7-science-ch11-t02-m2" },
   ],
 };
@@ -1226,8 +1241,8 @@ function repairShadow(raw: Record<string, unknown>, r: string[]): ShadowSpec | n
   for (const s of arr(raw.steps, "steps", r).slice(0, 6)) {
     if (!isObj(s)) { r.push("step:not-an-object"); continue; }
     const tg = misconceptionOk(s.targets, SP_MISC);
-    if (s.kind === "size") { const f = num(s.factor, Math.max(1.15, minF + 0.02), Math.min(3.5, maxF - 0.05), 2, "factor", r); steps.push({ kind: "size", factor: +f.toFixed(2), ...(tg ? { targets: tg } : {}) }); continue; }
-    if (s.kind === "catch") { let lo = num(s.lo, 1.15, 3.5, 1.4, "lo", r), hi = num(s.hi, 1.2, 3.6, 2.8, "hi", r); if (hi < lo + 0.3) { r.push("catch:band"); hi = Math.min(3.6, lo + 0.8); } steps.push({ kind: "catch", lo, hi, seconds: num(s.seconds, 2, 8, 4, "seconds", r), ...(tg ? { targets: tg } : {}) }); continue; }
+    if (s.kind === "size") { const f = num(s.factor, Math.max(SHADOW.fMin, minF + 0.02), Math.min(SHADOW.fMax, maxF - 0.05), 2, "factor", r); steps.push({ kind: "size", factor: +f.toFixed(2), ...(tg ? { targets: tg } : {}) }); continue; }
+    if (s.kind === "catch") { let lo = num(s.lo, SHADOW.fMin, SHADOW.fMax - 0.3, 1.45, "lo", r), hi = num(s.hi, SHADOW.fMin + 0.3, SHADOW.fMax, 2.2, "hi", r); if (hi < lo + 0.3) { r.push("catch:band"); hi = Math.min(SHADOW.fMax, lo + 0.5); lo = Math.min(lo, hi - 0.3); } steps.push({ kind: "catch", lo, hi, seconds: num(s.seconds, 2, 8, 4, "seconds", r), ...(tg ? { targets: tg } : {}) }); continue; }
     if (s.kind === "materials") { const items = [...new Set(arr(s.items, "items", r).filter((m): m is ShadowMat => typeof m === "string" && m in SHADOW_MATERIALS))].slice(0, 6); if (items.length >= 2) steps.push({ kind: "materials", items, ...(tg ? { targets: tg } : {}) }); else r.push("materials:too-few"); continue; }
     r.push("step:kind");
   }
@@ -1396,6 +1411,10 @@ function repairAngleSum(raw: Record<string, unknown>, r: string[]): AngleSumSpec
   const text = repairText(raw.text, raw.text === undefined ? AS_TEXT : {}, r), narration = repairNarration(raw.narration, {}, r);
   const beats = repairBeats(raw, AS_VERBS, text, narration, r);
   if (!beats.length || beats.length < 0.5 * (Array.isArray(raw.beats) ? raw.beats.length : 1)) return null;
+  // The triangle must be established on the first beat. When repair dropped the opening beat or its show cue, the
+  // stage stayed empty until a later cue (fuzz seeds 3, 9, 11: blank stage at 2.5 s, 2026-10-05).
+  const shows = (c: BeatT["cues"][number]) => c.do === "show" && ([] as unknown[]).concat((c as { target?: unknown }).target).includes("triangle");
+  if (!beats[0].cues.some(shows)) { beats[0] = { ...beats[0], cues: [{ at: 0, do: "show", target: "triangle", dur: 0.8 } as BeatT["cues"][number], ...beats[0].cues].slice(0, 16) }; r.push("establish:triangle"); }
   const pair = (v: unknown, lo: number, hi: number, d: [number, number], key: string): [number, number] => {
     if (Array.isArray(v) && v.length === 2 && v.every((x) => typeof x === "number" && Number.isFinite(x) && x >= lo && x <= hi) && (v[0] as number) + (v[1] as number) <= 160) return [Math.round(v[0] as number), Math.round(v[1] as number)];
     if (v !== undefined) r.push(key); return d;

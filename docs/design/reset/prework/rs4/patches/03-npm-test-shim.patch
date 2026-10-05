@@ -1,0 +1,12 @@
+RS-4 pre-work patch 03: run the Studio v2 node tests in `npm test` (the gate `npx tsc -b && npx vite build && npm test`).
+`npm test` is `node --test tests/`; the v2 tests live in src/studio-v2/tests/ (RS-4's new path). A one-line shim in
+tests/ pulls them in without moving them.
+
+--- /dev/null
++++ b/tests/studio-v2.test.mjs
+@@ -0,0 +1,3 @@
++// Studio v2 (RS-4): catalogue parity, spec fuzz (300 × 16 engines), outcome tags vs data/, host grading truth, shared
++// physics/maths truths, timeline compile. The suite lives with the engines.
++import "../src/studio-v2/tests/studio-v2.test.mjs";
+
+Measured on 2026-10-04 (node v22.22.0): 8/8 test groups pass in ~0.9 s.

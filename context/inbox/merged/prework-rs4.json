@@ -1,0 +1,181 @@
+{
+  "source": "RS-4 pre-work, Studio v2 (2026-10-04/05): shared/studio-spec.ts, src/studio-v2/** (16 engines, host, gallery, tools, tests), docs/design/reset/prework/rs4/{REPORT,CATALOGUE}.md, measured.json, spec-bench.json, patches/. Merge after reset-studio-v2-on-w2h-host; the patches apply after Wave 2 integration (patches/README.md).",
+  "nodes": [
+    {
+      "id": "rs4-v2-rung1-engine-spec",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner."
+    },
+    {
+      "id": "rs4-shared-pure-grader",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame)."
+    },
+    {
+      "id": "rs4-host-recorded-input",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s)."
+    },
+    {
+      "id": "rs4-safe-zone-measured",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs)."
+    },
+    {
+      "id": "rs4-erasable-ts",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "shared/studio-spec.ts and src/studio-v2/core|engines use erasable TypeScript only (no parameter properties, enums or namespaces), so Node 22 type stripping can import them in tests and on the server without a build. Reverse if the production image cannot run Node >= 22.18 (then bundle studio-spec for the server with esbuild)."
+    },
+    {
+      "id": "rs4-junk-labels-rejected",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens."
+    },
+    {
+      "id": "rs4-perf-2026-10-05",
+      "kind": "measurement",
+      "status": "measured",
+      "at": "2026-10-05",
+      "title": "Studio v2 perf, n=16 engines, one 12 s bot-played window each after a 3 s warm-up, 915x412 @ DPR 2.625, CDP CPU throttle 4x, headless Chromium (software raster) on a shared 4-core host (load 2-8). fps: 10 of 16 engines at or above 56; the lowest were circuit-bench 44.9, beam 51.4, runner 52.4 and area-claim 52.7 (area re-measured at host load 15). p95 frame was 16.7-16.8 ms for 10 engines and 33.3-33.4 ms for 6 (circuit, runner, area, vault, beam, scale). Adaptive DPR stepped to 1.5 on runner and beam. This is not a device number; the real QB-G9 trace is still open."
+    },
+    {
+      "id": "rs4-run-battery-2026-10-05",
+      "kind": "measurement",
+      "status": "measured",
+      "at": "2026-10-05",
+      "title": "Record battery, n=16 bot sessions (1024x640, up to 50 s, real pointer events). Engine/host verdict agreement 100% on all 16 engines (88/88 graded answers). 0 page errors, tooSmall 0 on all 16. After the fixes, safe-zone hits are 0 on all 16. On the first pass, area-claim's compare banner hit the PiP zone 200 times; it was split into two lines and that engine was re-recorded with 0 hits."
+    },
+    {
+      "id": "rs4-fuzz-2026-10-05",
+      "kind": "measurement",
+      "status": "measured",
+      "at": "2026-10-05",
+      "title": "Playwright spec fuzz: per engine, 32 seeded mutated specs + 2 controls, each played 2.5 s, plus 3 fault injections (transient, permanent, boot). A visible failure is a page error, not ready in 6 s, a blank stage, or failure-shaped text. Final result: 0/544 visible failures across 16 engines, and all 48 fault injections held or fell to the board. The first pass found 4 failures, all fixed and re-fuzzed: area-claim seed 5 rendered 'NaN' as a label; angle-sum seeds 3, 9 and 11 left the stage blank after repair dropped the opening show cue. Node fuzz: 300 mutations per engine x 16, all strict-schema-valid after validateSpec, 0 throws."
+    },
+    {
+      "id": "rs4-spec-bench-2026-10-05",
+      "kind": "measurement",
+      "status": "measured",
+      "at": "2026-10-05",
+      "title": "Spec bench on Azure taxila-fast-bg, JSON mode, effort low: n=30 per archetype (480 calls, $0.63 total). JSON parsed 480/480 and every output was schema-valid after repair (100%). Strict-raw validity ranged from 16/30 (balance-beam) to 30/30. Usable without falling back to the default was 25-30/30 for 14 archetypes; runner was 20/30 and moon 7/30 (23 fell back on unknown narration line ids). p50 latency 3.4-7.0 s."
+    },
+    {
+      "id": "rs4-rej-model-narration-ids",
+      "kind": "rejection",
+      "status": "rejected",
+      "at": "2026-10-05",
+      "title": "Tried: the planner picks narration line ids for explainers (orbital-explainer) out of the measured narration table. Broke: 23/30 specs referenced line ids that do not exist, so validateSpec fell back to the default (usable only 7/30). Not yet fixed (open): the planner must be given the line ids as a schema enum, or it must supply text that is then TTS-measured. Until then, explainers serve the reviewed default timeline."
+    },
+    {
+      "id": "rs4-rej-512b-answer-bound",
+      "kind": "rejection",
+      "status": "rejected",
+      "at": "2026-10-05",
+      "title": "Tried: W2-H's 512 B answer bound for v2 answers. Broke: process-graded simulations need their input log. The phase-shift answer was 1768 B with its host log, and before quantisation the log grew without bound. Instead: a 256 KB bound for v2, host-recorded channels, and 0.1 s input quantisation (rs4-host-recorded-input)."
+    },
+    {
+      "id": "rs4-rej-param-properties",
+      "kind": "rejection",
+      "status": "rejected",
+      "at": "2026-10-05",
+      "title": "Tried: TypeScript parameter properties (constructor(private x)) in FX, ExplainerShell and Playhead. Broke: Node 22 type stripping refuses non-erasable syntax, so neither the node suite nor the server could import engine code. Instead: plain fields (rs4-erasable-ts)."
+    },
+    {
+      "id": "rs4-rej-first-eco-model",
+      "kind": "rejection",
+      "status": "rejected",
+      "at": "2026-10-05",
+      "title": "Tried: the first hand-tuned predator-prey population model for food-web@1. Broke: the populations collapsed to zero within the first simulated weeks, so 'what happens if we remove X' had no stable baseline. Instead: Beddington-DeAngelis with mortality derived from a chosen equilibrium (interference 0.6), so the undisturbed web holds steady and removal and drought trends are deterministic."
+    },
+    {
+      "id": "rs4-rej-crude-drop-zero",
+      "kind": "rejection",
+      "status": "rejected",
+      "at": "2026-10-05",
+      "title": "Tried: flagging vault-heist answers as the drop-zero misconception whenever the answer had fewer zeros than the target. Broke: it labelled unrelated wrong answers as drop-zero. Instead: drop-zero matches only removal of exactly one internal zero, or of all zeros. Grade details remain a candidate signal for RS-5, never a verdict."
+    },
+    {
+      "id": "rs4-explainer-establish-subject",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-10-05",
+      "title": "An explainer's repair must keep the subject on stage from beat 1. angle-sum injects a show-triangle cue on the first beat when repair removed it. Reason: fuzz seeds 3, 9 and 11 produced a blank stage for 2.5 s. Reverse if an explainer's design intends a dark open longer than 1 s; in that case the fuzz's blank-stage rule must allow it explicitly."
+    },
+    {
+      "id": "rs4-review-2026-10-05",
+      "kind": "measurement",
+      "status": "measured",
+      "at": "2026-10-05",
+      "title": "Independent rs4 review (2026-10-05). (1) Node adversarial fuzz with a harsher mutator than mutate.ts (NaN/Infinity/-0/1e308/null/undefined/markup/prototype keys/5000-char strings/emoji/RTL), 1000 specs x 16 archetypes: 0 validateSpec throws, 0 outputs failing the strict schema, 0 failure-shaped strings or non-finite numbers in any output; 384,000 garbage gradeAnswer calls (raw nasty values, {correct:true}, {verdict:\"right\"}, bad item ids): 0 throws, 0 graded right. Fallback-to-default rate under that mutator 36-100% per archetype (heavy by design; real planner rates are in rs4-spec-bench). (2) Browser: 80 repaired-but-not-fallen-back specs (5 per engine, mutator seed 777, bot 3.5 s, 800x500) with fillText/strokeText hooked for NaN/undefined/null/Infinity/[object on the canvas: 0 page errors, 0 blank stages, 0 bad canvas or chrome text, 0 board fallbacks, 0 undersized labels, 0 safe-zone hits. (3) fuzz.mjs re-run on angle-sum, area-claim, phase-shift: 0/34 visible failures each, faults held/board/boot all true (phase-shift repaired 27 vs 26 recorded). (4) patch 01 as delivered did not apply (git apply: corrupt patch, wrong hunk counts) and would have left a stray semicolon before the new union member; regenerated with git diff, applies to the tree, tsc-clean via a symlink mirror. Gates: node --test 9/9, tsc -b 0, vite build 0."
+    }
+  ],
+  "edges": [
+    {
+      "src": "rs4-v2-rung1-engine-spec",
+      "rel": "part_of",
+      "dst": "reset-studio-v2-on-w2h-host"
+    },
+    {
+      "src": "rs4-v2-rung1-engine-spec",
+      "rel": "measured_by",
+      "dst": "rs4-spec-bench-2026-10-05"
+    },
+    {
+      "src": "rs4-v2-rung1-engine-spec",
+      "rel": "measured_by",
+      "dst": "rs4-perf-2026-10-05"
+    },
+    {
+      "src": "rs4-shared-pure-grader",
+      "rel": "measured_by",
+      "dst": "rs4-run-battery-2026-10-05"
+    },
+    {
+      "src": "rs4-host-recorded-input",
+      "rel": "supersedes",
+      "dst": "rs4-rej-512b-answer-bound"
+    },
+    {
+      "src": "rs4-safe-zone-measured",
+      "rel": "measured_by",
+      "dst": "rs4-run-battery-2026-10-05"
+    },
+    {
+      "src": "rs4-erasable-ts",
+      "rel": "supersedes",
+      "dst": "rs4-rej-param-properties"
+    },
+    {
+      "src": "rs4-junk-labels-rejected",
+      "rel": "measured_by",
+      "dst": "rs4-fuzz-2026-10-05"
+    },
+    {
+      "src": "rs4-v2-rung1-engine-spec",
+      "rel": "measured_by",
+      "dst": "rs4-fuzz-2026-10-05"
+    },
+    {
+      "src": "rs4-explainer-establish-subject",
+      "rel": "measured_by",
+      "dst": "rs4-fuzz-2026-10-05"
+    },
+    {
+      "src": "rs4-v2-rung1-engine-spec",
+      "rel": "measured_by",
+      "dst": "rs4-review-2026-10-05"
+    }
+  ]
+}

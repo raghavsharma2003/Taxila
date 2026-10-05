@@ -1,0 +1,255 @@
+{
+ "nodes": [
+  {
+   "id": "w2ifix-leave-anchoring",
+   "kind": "decision",
+   "title": "Goodbye / stop phrases count only when they close their (comma sub-)clause: filler-only tail (a greeting may carry one name; a stop may carry lesson words), no number or answer word, not after a copula; a stop is void in a turn that answers, skips or steers (relational/signals.js anchoredLeave)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-third-party-ask-verb",
+   "kind": "decision",
+   "title": "F6 third-party fires only on a lexicon contact/secret form in a reporting frame, or actor + ASK verb + data pointing at the child (not followed by a numeral), or actor + explicit meeting/secrecy ask (not a surprise); generic say/want verbs and bare data words never. Contact lexicon needs her or the child's data; 'call me <name>' removed; 'dating' narrowed",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-pleading-never-releases",
+   "kind": "decision",
+   "title": "policy.js releases only on leaving (goodbye or second stop); pleading without a goodbye → one CHECK_IN then POINT_OUT, lesson continues",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-harm-on-safety-turns",
+   "kind": "decision",
+   "title": "seam.decide runs the predicate on safety turns and counts classifier distressKind self_harm/abuse/fear as harm, so a disclosure said with pleading still gets its goodbye check-in (I-7)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-wantstostop-anchored",
+   "kind": "decision",
+   "title": "safety.js wantsToStop: bye/good night/goodbye only closing the turn; Devanagari letter-bounded with \\p{M}; मैं चलता/जाता हूं only at clause end; बंद करो only opening the turn",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-abuse-gap-report-nonhuman",
+   "kind": "decision",
+   "title": "The 4-word-gap abuse rule is off when the gap holds a reporting verb or a non-human subject (plants, cells, keede, log, saanp…); adjacent-actor and child-object disclosures still fire",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-goodbye-hooks-widened",
+   "kind": "decision",
+   "title": "GOODBYE_TEASER/AVAILABLE gain next-time instructions and 'jab aap phir/chahein'; kin_self gains third-person 'Asha didi se / Arjun bhaiya se'; both observed replies are never-rules positives",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-gender-possessive-repair",
+   "kind": "decision",
+   "title": "GENDER_FORMS covers possessive self-reference; repairSelfGender swaps that one word on text/cascade lanes before the reply is stored or spoken (turn.js)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-tables-probe-at-load",
+   "kind": "decision",
+   "title": "relational/seam.js probes the 018 tables at module load (DB configured, not under node --test) and counts/logs lesson ends with no in-memory session",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-stop-case-warn-until-patch",
+   "kind": "decision",
+   "title": "w2i-release/w2i-safety carry the stop-phrase, check-in-then-release, pleading+disclosure and passive-ideation cases; they WARN (never pass) until W2-C's stopAsked is in state.js; the W2-C patches apply with patch -p1 (offsets only)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-compile-note-position-deferred",
+   "kind": "decision",
+   "title": "Moving relational notes to the appended-last slot is deferred to W2-C's patch application with an AT-B1 cascade re-run (~USD 40); unmeasured move rejected",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-atb1-method-deviation",
+   "kind": "decision",
+   "title": "AT-B1 audio-in used in-house TTS (not probe-fleet fake media); its model coders have κ≈0 on romance/exclusivity: the W2 exit run needs human coders (O22c) or a third adjudicator",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "kind": "measurement",
+   "title": "In-lesson hand negatives n=366 (classes 4-7, en/hl/hi; in-sample): builder 190/366 false (release 104, boundary 75, 3p 54, harm 7, stop 22) → fixed 0/366 [0,0.01]; conversation-v2 recall unchanged 12/12, 5/5",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2ifix-heldout-2026-10-05",
+   "kind": "measurement",
+   "title": "Model-written held-out (gpt6 + mistral-m35, no lexicon sight). v2 (untuned): negatives 0/384 vs builder 3/384; goodbye 23/60 vs 24/60; stop 24/60 vs 20/60; third party 23/48 vs 15/48. v1 tuned on (in-sample after: 60/60, 51/60, 48/48)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2ifix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "title": "Local on Neon test branch: w2i-release 30/30 + 1 WARN (stop case skipped, W2-C patch); w2i-safety 30/30 + 7 WARN (I-7 check-in needs W2-C state patch); classifier wants_to_stop alone ended 'the answer is bye'; guardians 4→4",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2ifix-gates-2026-10-05",
+   "kind": "measurement",
+   "title": "tsc/vite pass; npm test 1737 pass / 4 fail (2 load, pass alone; migrations-applied = prod integration; ui-v2-lint = src/ui-v3 other stream) / 4 skipped; prompt budget 1664/2600; persona 70/70; never-rules PASS",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2ifix-atu10-proxy",
+   "kind": "measurement",
+   "title": "AT-U10 open: the 1/7/40-day test checks the bond row as a proxy until R2/W3-F renders OPEN rows",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-unanchored-leave-lexicon",
+   "kind": "rejection",
+   "title": "Letter-bounded goodbye/stop lexicon without clause anchoring: 'see you have to add 5 and 3' ended the lesson (verified end to end); 104/366 in-lesson false releases",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-generic-report-verbs-third-party",
+   "kind": "rejection",
+   "title": "Actor + any say/ask/want verb + any data word as F6 third-party: 'he wants a number bigger than 10' wrote a safeguarding incident; 54/366 false",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-pleading-releases",
+   "kind": "rejection",
+   "title": "Release on pleading after one check-in: 'i feel lonely' twice ended the lesson",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-harm-false-on-safety-turns",
+   "kind": "rejection",
+   "title": "seam passed harm:false always: a disclosure with pleading consumed the check-in and the next bye released without one",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-unbounded-devanagari-bye",
+   "kind": "rejection",
+   "title": "STOP's unbounded बाय: 'बायाँ हाथ', 'बायोलॉजी' and 'मैं चलता हूँ 5 किलोमीटर' ended Hindi-mode lessons",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2i-abuse-gap-without-frame",
+   "kind": "rejection",
+   "title": "4-word-gap abuse rule without reporting/non-human frame: 'plants marte hain', 'cells marte hain', 'papa ne saanp ko maara' raised safeguarding incidents",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2ifix-tuning-on-heldout",
+   "kind": "rejection",
+   "title": "Tuning recall on held-out v1 made it in-sample (60/60…); a fresh v2 measured 23/60, 24/60, 23/48 — every post-tuning measurement needs a new set",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "part_of",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "part_of",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "part_of",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "part_of",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-inlesson-negatives-2026-10-05"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-heldout-2026-10-05"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-heldout-2026-10-05"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-local-acceptance-2026-10-05"
+  },
+  {
+   "src": "rj-w2i-unanchored-leave-lexicon",
+   "rel": "caused_by",
+   "dst": "w2i-signals-lexical-bilingual"
+  },
+  {
+   "src": "rj-w2i-generic-report-verbs-third-party",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "rj-w2i-pleading-releases",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-w2i-harm-false-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-policy-one-entry"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "supersedes",
+   "dst": "rj-w2i-unanchored-leave-lexicon"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "supersedes",
+   "dst": "rj-w2i-generic-report-verbs-third-party"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "supersedes",
+   "dst": "rj-w2i-pleading-releases"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "supersedes",
+   "dst": "rj-w2i-harm-false-on-safety-turns"
+  },
+  {
+   "src": "w2ifix-wantstostop-anchored",
+   "rel": "supersedes",
+   "dst": "rj-w2i-unbounded-devanagari-bye"
+  },
+  {
+   "src": "w2ifix-abuse-gap-report-nonhuman",
+   "rel": "supersedes",
+   "dst": "rj-w2i-abuse-gap-without-frame"
+  },
+  {
+   "src": "w2ifix-compile-note-position-deferred",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  }
+ ]
+}

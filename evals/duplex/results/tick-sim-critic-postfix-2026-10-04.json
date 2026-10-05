@@ -1,0 +1,2707 @@
+{
+ "id": "M-D7",
+ "date": "2026-10-04",
+ "method": "tick-level replay through src/duplex/host.ts (stage A + governor) and server/duplex/speculator.js",
+ "seeds": 10,
+ "scenarios": 96,
+ "sttCalibratedFrom": "M-D2 2026-10-04 n=28",
+ "draftModel": "M draft-live",
+ "stt": {
+  "D4": "D4 live-transcribe",
+  "MAI": "MAI-Tx-2-Streaming (Chennai)",
+  "MAI_HOME": "MAI-Tx-2-Streaming, home India [E]",
+  "FAST": "Nemotron-3.5 India, word timings [E]"
+ },
+ "arms": {
+  "cce-d4": {
+   "note": "stage A runtime, D4 live-transcribe, micro-commit probe",
+   "stt": "D4 live-transcribe",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 1265,
+    "p90": 2550,
+    "mean": 1563
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2672,
+    "p90": 3893,
+    "mean": 2509
+   },
+   "firstAudioPath": {
+    "warm_uptake": 320,
+    "draft": 363,
+    "cold": 17
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1081,
+     "p90": 1512,
+     "mean": 1123
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1128,
+     "p90": 1478,
+     "mean": 1159
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1176,
+     "p90": 1567,
+     "mean": 1212
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2196
+    },
+    "question": {
+     "n": 80,
+     "p50": 1110,
+     "p90": 1461,
+     "mean": 1139
+    },
+    "idk": {
+     "n": 40,
+     "p50": 1109,
+     "p90": 1507,
+     "mean": 1176
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 1281,
+     "p90": 2548,
+     "mean": 1597
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 9,
+    "n": 700,
+    "rate": 0.0129,
+    "ci80": [
+     0.008,
+     0.02
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 13,
+    "n": 700,
+    "rate": 0.0186,
+    "ci80": [
+     0.013,
+     0.026
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 1021,
+     "p90": 1410,
+     "mean": 833
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 73,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 3
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 180,
+     "n": 190,
+     "rate": 0.9474,
+     "ci80": [
+      0.923,
+      0.965
+     ]
+    },
+    "continuerYieldedThenResumed": 1,
+    "yieldFromOnsetMs": {
+     "n": 142,
+     "p50": 600,
+     "p90": 1880,
+     "mean": 911
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 29,
+      "yieldMs": {
+       "n": 1,
+       "p50": 2200,
+       "p90": 2200,
+       "mean": 2200
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 34,
+      "yieldMs": {
+       "n": 34,
+       "p50": 600,
+       "p90": 2000,
+       "mean": 971
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 19,
+      "yieldMs": {
+       "n": 19,
+       "p50": 1700,
+       "p90": 2080,
+       "mean": 1708
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 58,
+      "yieldMs": {
+       "n": 60,
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 29,
+       "p50": 600,
+       "p90": 3160,
+       "mean": 1374
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 181,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1250,
+    "warmStarts": 503,
+    "warmPromoted": 381,
+    "speaks": 870,
+    "warmPromotedPerSpeak": 0.438,
+    "wastedTokensPerTurn": 1499,
+    "wastedShare": 0.326
+   },
+   "ticksPerTurn": 101.8
+  },
+  "cce-mai": {
+   "note": "stage A runtime, MAI streaming from an Indian home [E]",
+   "stt": "MAI-Tx-2-Streaming, home India [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 361,
+    "p90": 2550,
+    "mean": 979
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 1888,
+    "p90": 3036,
+    "mean": 1810
+   },
+   "firstAudioPath": {
+    "warm_uptake": 320,
+    "draft": 375,
+    "cold": 5
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 308,
+     "p90": 385,
+     "mean": 314
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 352,
+     "p90": 420,
+     "mean": 358
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 328,
+     "p90": 425,
+     "mean": 333
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 1992
+    },
+    "question": {
+     "n": 80,
+     "p50": 344,
+     "p90": 449,
+     "mean": 353
+    },
+    "idk": {
+     "n": 40,
+     "p50": 324,
+     "p90": 415,
+     "mean": 330
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 365,
+     "p90": 2548,
+     "mean": 1086
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 64,
+    "n": 700,
+    "rate": 0.0914,
+    "ci80": [
+     0.078,
+     0.106
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 57,
+    "n": 700,
+    "rate": 0.0814,
+    "ci80": [
+     0.069,
+     0.096
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 317,
+     "p90": 409,
+     "mean": 322
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 183,
+     "n": 190,
+     "rate": 0.9632,
+     "ci80": [
+      0.941,
+      0.977
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 138,
+     "p50": 600,
+     "p90": 2080,
+     "mean": 926
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 33,
+      "yieldMs": {
+       "n": 33,
+       "p50": 600,
+       "p90": 1900,
+       "mean": 979
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 2180,
+       "p90": 2260,
+       "mean": 2137
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 60,
+      "yieldMs": {
+       "n": 60,
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 25,
+       "p50": 600,
+       "p90": 2040,
+       "mean": 1148
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 178,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1160,
+    "warmStarts": 595,
+    "warmPromoted": 475,
+    "speaks": 981,
+    "warmPromotedPerSpeak": 0.484,
+    "wastedTokensPerTurn": 845,
+    "wastedShare": 0.198
+   },
+   "ticksPerTurn": 95
+  },
+  "cce-fast": {
+   "note": "stage A runtime, word-timed streaming STT India [E]",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 400,
+    "p90": 2550,
+    "mean": 999
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2019,
+    "p90": 4384,
+    "mean": 2153
+   },
+   "firstAudioPath": {
+    "warm_uptake": 294,
+    "draft": 205,
+    "cold": 201
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 366,
+     "p90": 587,
+     "mean": 402
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 321,
+     "p90": 537,
+     "mean": 345
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2003
+    },
+    "question": {
+     "n": 80,
+     "p50": 340,
+     "p90": 477,
+     "mean": 346
+    },
+    "idk": {
+     "n": 40,
+     "p50": 338,
+     "p90": 679,
+     "mean": 394
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 469,
+     "p90": 2548,
+     "mean": 1123
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 59,
+    "n": 700,
+    "rate": 0.0843,
+    "ci80": [
+     0.072,
+     0.099
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 56,
+    "n": 700,
+    "rate": 0.08,
+    "ci80": [
+     0.068,
+     0.094
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -215,
+     "p90": 259,
+     "mean": -281
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 189,
+     "n": 190,
+     "rate": 0.9947,
+     "ci80": [
+      0.983,
+      0.998
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 159,
+     "p50": 500,
+     "p90": 700,
+     "mean": 489
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 560,
+       "p90": 720,
+       "mean": 564
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 59,
+      "yieldMs": {
+       "n": 60,
+       "p50": 300,
+       "p90": 600,
+       "mean": 379
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 39,
+       "p50": 500,
+       "p90": 800,
+       "mean": 536
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 179,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1743,
+    "warmStarts": 631,
+    "warmPromoted": 435,
+    "speaks": 970,
+    "warmPromotedPerSpeak": 0.448,
+    "wastedTokensPerTurn": 3808,
+    "wastedShare": 0.605
+   },
+   "ticksPerTurn": 100.5
+  },
+  "cce-d4-nospec": {
+   "note": "ablation: no drafts, no warm uptake",
+   "stt": "D4 live-transcribe",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 1259,
+    "p90": 2550,
+    "mean": 1560
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 3516,
+    "p90": 5039,
+    "mean": 3697
+   },
+   "firstAudioPath": {
+    "cold": 700
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1081,
+     "p90": 1512,
+     "mean": 1123
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1120,
+     "p90": 1477,
+     "mean": 1152
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1149,
+     "p90": 1654,
+     "mean": 1185
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2196
+    },
+    "question": {
+     "n": 80,
+     "p50": 1117,
+     "p90": 1489,
+     "mean": 1154
+    },
+    "idk": {
+     "n": 40,
+     "p50": 1109,
+     "p90": 1507,
+     "mean": 1176
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 1281,
+     "p90": 2548,
+     "mean": 1597
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 22,
+    "n": 700,
+    "rate": 0.0314,
+    "ci80": [
+     0.024,
+     0.041
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 1077,
+     "p90": 1477,
+     "mean": 900
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 73,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 3
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 180,
+     "n": 190,
+     "rate": 0.9474,
+     "ci80": [
+      0.923,
+      0.965
+     ]
+    },
+    "continuerYieldedThenResumed": 1,
+    "yieldFromOnsetMs": {
+     "n": 137,
+     "p50": 600,
+     "p90": 1760,
+     "mean": 828
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 29,
+      "yieldMs": {
+       "n": 1,
+       "p50": 2200,
+       "p90": 2200,
+       "mean": 2200
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 34,
+      "yieldMs": {
+       "n": 34,
+       "p50": 600,
+       "p90": 2000,
+       "mean": 971
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 19,
+      "yieldMs": {
+       "n": 19,
+       "p50": 1700,
+       "p90": 2080,
+       "mean": 1708
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 58,
+      "yieldMs": {
+       "n": 60,
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 24,
+       "p50": 600,
+       "p90": 1760,
+       "mean": 1001
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 181,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 0,
+    "warmStarts": 0,
+    "warmPromoted": 0,
+    "speaks": 0,
+    "warmPromotedPerSpeak": null,
+    "wastedTokensPerTurn": null,
+    "wastedShare": null
+   },
+   "ticksPerTurn": 111.2
+  },
+  "cce-fast-nospec": {
+   "note": "ablation: no drafts, no warm uptake",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 404,
+    "p90": 2550,
+    "mean": 998
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2470,
+    "p90": 4731,
+    "mean": 3035
+   },
+   "firstAudioPath": {
+    "cold": 700
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 305,
+     "p90": 539,
+     "mean": 345
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 370,
+     "p90": 583,
+     "mean": 400
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 335,
+     "p90": 525,
+     "mean": 343
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 1992
+    },
+    "question": {
+     "n": 80,
+     "p50": 329,
+     "p90": 557,
+     "mean": 345
+    },
+    "idk": {
+     "n": 40,
+     "p50": 338,
+     "p90": 679,
+     "mean": 393
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 562,
+     "p90": 2548,
+     "mean": 1132
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 115,
+    "n": 700,
+    "rate": 0.1643,
+    "ci80": [
+     0.147,
+     0.183
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -214,
+     "p90": 250,
+     "mean": -285
+    },
+    "unsafeLines": 1,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 189,
+     "n": 190,
+     "rate": 0.9947,
+     "ci80": [
+      0.983,
+      0.998
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 159,
+     "p50": 500,
+     "p90": 700,
+     "mean": 489
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 560,
+       "p90": 720,
+       "mean": 564
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 59,
+      "yieldMs": {
+       "n": 60,
+       "p50": 300,
+       "p90": 600,
+       "mean": 379
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 39,
+       "p50": 500,
+       "p90": 800,
+       "mean": 536
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 176,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 0,
+    "warmStarts": 0,
+    "warmPromoted": 0,
+    "speaks": 0,
+    "warmPromotedPerSpeak": null,
+    "wastedTokensPerTurn": null,
+    "wastedShare": null
+   },
+   "ticksPerTurn": 107.6
+  },
+  "cascade-900": {
+   "note": "today: reply on the STT final after 900 ms VAD",
+   "stt": "D4 live-transcribe",
+   "turns": 960,
+   "gap": {
+    "n": 695,
+    "p50": 1895,
+    "p90": 2360,
+    "mean": 1682
+   },
+   "ttfa": {
+    "n": 695,
+    "p50": 3800,
+    "p90": 5140,
+    "mean": 3789
+   },
+   "firstAudioPath": {
+    "cold": 695
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1923,
+     "p90": 2373,
+     "mean": 1978
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1949,
+     "p90": 2400,
+     "mean": 1914
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1897,
+     "p90": 2442,
+     "mean": 1822
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 1805,
+     "p90": 2340,
+     "mean": 1352
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 1977,
+     "p90": 2383,
+     "mean": 1884
+    },
+    "question": {
+     "n": 80,
+     "p50": 1942,
+     "p90": 2457,
+     "mean": 1990
+    },
+    "idk": {
+     "n": 40,
+     "p50": 2007,
+     "p90": 2342,
+     "mean": 2035
+    },
+    "hold_request": {
+     "n": 55,
+     "p50": 89,
+     "p90": 98,
+     "mean": 90
+    }
+   },
+   "cutoff": {
+    "k": 20,
+    "n": 700,
+    "rate": 0.0286,
+    "ci80": [
+     0.022,
+     0.038
+    ]
+   },
+   "earlyUptake": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 87,
+    "n": 700,
+    "rate": 0.1243,
+    "ci80": [
+     0.109,
+     0.141
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 5,
+    "n": 700,
+    "rate": 0.0071,
+    "ci80": [
+     0.004,
+     0.013
+    ]
+   },
+   "holdViolation": {
+    "k": 19,
+    "n": 60,
+    "rate": 0.3167,
+    "ci80": [
+     0.245,
+     0.398
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 325,
+    "beforeChildFinished": 0,
+    "onWrongValue": 8
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 462,
+     "p90": 1442,
+     "mean": 513
+    },
+    "unsafeLines": 3,
+    "safeguardSpoken": 69,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 0
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 151,
+     "n": 190,
+     "rate": 0.7947,
+     "ci80": [
+      0.755,
+      0.83
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 87,
+     "p50": 1720,
+     "p90": 2220,
+     "mean": 1660
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 29,
+      "yieldMs": {
+       "n": 29,
+       "p50": 1840,
+       "p90": 2300,
+       "mean": 1900
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 19,
+      "yieldMs": {
+       "n": 19,
+       "p50": 1720,
+       "p90": 2300,
+       "mean": 1805
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 33,
+      "yieldMs": {
+       "n": 33,
+       "p50": 1000,
+       "p90": 2060,
+       "mean": 1357
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 6,
+       "p50": 1840,
+       "p90": 2020,
+       "mean": 1713
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 0,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": null
+   },
+   "prepare": {
+    "draftStarts": 0,
+    "warmStarts": 0,
+    "warmPromoted": 0,
+    "speaks": 0,
+    "warmPromotedPerSpeak": null,
+    "wastedTokensPerTurn": null,
+    "wastedShare": null
+   },
+   "ticksPerTurn": 111.3
+  },
+  "silence-640": {
+   "note": "tuned silence 640 ms VAD (Study B/C bar)",
+   "stt": "D4 live-transcribe",
+   "turns": 960,
+   "gap": {
+    "n": 693,
+    "p50": 1590,
+    "p90": 2077,
+    "mean": 1354
+   },
+   "ttfa": {
+    "n": 693,
+    "p50": 3500,
+    "p90": 4772,
+    "mean": 3459
+   },
+   "firstAudioPath": {
+    "cold": 693
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1663,
+     "p90": 2113,
+     "mean": 1718
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1657,
+     "p90": 2097,
+     "mean": 1481
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1618,
+     "p90": 2142,
+     "mean": 1438
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 1269,
+     "p90": 2041,
+     "mean": 991
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 1642,
+     "p90": 1942,
+     "mean": 1340
+    },
+    "question": {
+     "n": 80,
+     "p50": 1682,
+     "p90": 2197,
+     "mean": 1730
+    },
+    "idk": {
+     "n": 40,
+     "p50": 1747,
+     "p90": 2082,
+     "mean": 1775
+    },
+    "hold_request": {
+     "n": 53,
+     "p50": 89,
+     "p90": 98,
+     "mean": 90
+    }
+   },
+   "cutoff": {
+    "k": 27,
+    "n": 700,
+    "rate": 0.0386,
+    "ci80": [
+     0.03,
+     0.049
+    ]
+   },
+   "earlyUptake": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 120,
+    "n": 700,
+    "rate": 0.1714,
+    "ci80": [
+     0.154,
+     0.19
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 7,
+    "n": 700,
+    "rate": 0.01,
+    "ci80": [
+     0.006,
+     0.016
+    ]
+   },
+   "holdViolation": {
+    "k": 23,
+    "n": 60,
+    "rate": 0.3833,
+    "ci80": [
+     0.307,
+     0.466
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 314,
+    "beforeChildFinished": 0,
+    "onWrongValue": 13
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 466,
+     "p90": 1592,
+     "mean": 558
+    },
+    "unsafeLines": 1,
+    "safeguardSpoken": 70,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 0
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 147,
+     "n": 190,
+     "rate": 0.7737,
+     "ci80": [
+      0.733,
+      0.81
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 83,
+     "p50": 1700,
+     "p90": 2120,
+     "mean": 1640
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 29,
+      "yieldMs": {
+       "n": 29,
+       "p50": 1760,
+       "p90": 2200,
+       "mean": 1791
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 17,
+      "yieldMs": {
+       "n": 17,
+       "p50": 1880,
+       "p90": 2340,
+       "mean": 1945
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 31,
+      "yieldMs": {
+       "n": 31,
+       "p50": 1000,
+       "p90": 1820,
+       "mean": 1292
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 6,
+       "p50": 1860,
+       "p90": 2080,
+       "mean": 1850
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 0,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": null
+   },
+   "prepare": {
+    "draftStarts": 0,
+    "warmStarts": 0,
+    "warmPromoted": 0,
+    "speaks": 0,
+    "warmPromotedPerSpeak": null,
+    "wastedTokensPerTurn": null,
+    "wastedShare": null
+   },
+   "ticksPerTurn": 108
+  },
+  "cascade-900-fast": {
+   "note": "today's floor on the fast STT",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 696,
+    "p50": 1339,
+    "p90": 1563,
+    "mean": 1278
+   },
+   "ttfa": {
+    "n": 696,
+    "p50": 3213,
+    "p90": 4329,
+    "mean": 3365
+   },
+   "firstAudioPath": {
+    "cold": 696
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1339,
+     "p90": 1545,
+     "mean": 1364
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1321,
+     "p90": 1541,
+     "mean": 1104
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1338,
+     "p90": 1602,
+     "mean": 1323
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 1364,
+     "p90": 1617,
+     "mean": 1381
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 1366,
+     "p90": 1597,
+     "mean": 1232
+    },
+    "question": {
+     "n": 80,
+     "p50": 1322,
+     "p90": 1577,
+     "mean": 1366
+    },
+    "idk": {
+     "n": 40,
+     "p50": 1385,
+     "p90": 1571,
+     "mean": 1365
+    },
+    "hold_request": {
+     "n": 56,
+     "p50": 1298,
+     "p90": 1506,
+     "mean": 987
+    }
+   },
+   "cutoff": {
+    "k": 34,
+    "n": 700,
+    "rate": 0.0486,
+    "ci80": [
+     0.039,
+     0.06
+    ]
+   },
+   "earlyUptake": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 141,
+    "n": 700,
+    "rate": 0.2014,
+    "ci80": [
+     0.183,
+     0.222
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 4,
+    "n": 700,
+    "rate": 0.0057,
+    "ci80": [
+     0.003,
+     0.011
+    ]
+   },
+   "holdViolation": {
+    "k": 30,
+    "n": 60,
+    "rate": 0.5,
+    "ci80": [
+     0.418,
+     0.582
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 329,
+    "beforeChildFinished": 0,
+    "onWrongValue": 5
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -251,
+     "p90": 250,
+     "mean": -279
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 70,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 0
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 188,
+     "n": 190,
+     "rate": 0.9895,
+     "ci80": [
+      0.975,
+      0.996
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 157,
+     "p50": 580,
+     "p90": 800,
+     "mean": 593
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 700,
+       "p90": 940,
+       "mean": 668
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 560,
+       "p90": 720,
+       "mean": 564
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 58,
+      "yieldMs": {
+       "n": 58,
+       "p50": 620,
+       "p90": 760,
+       "mean": 588
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 39,
+       "p50": 500,
+       "p90": 800,
+       "mean": 538
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 0,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": null
+   },
+   "prepare": {
+    "draftStarts": 0,
+    "warmStarts": 0,
+    "warmPromoted": 0,
+    "speaks": 0,
+    "warmPromotedPerSpeak": null,
+    "wastedTokensPerTurn": null,
+    "wastedShare": null
+   },
+   "ticksPerTurn": 109
+  },
+  "cce-fast-eager": {
+   "note": "ablation: the v2-draft eager overlap rule (+1.0 at 250 ms voiced)",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 400,
+    "p90": 2550,
+    "mean": 999
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2019,
+    "p90": 4384,
+    "mean": 2153
+   },
+   "firstAudioPath": {
+    "warm_uptake": 294,
+    "draft": 205,
+    "cold": 201
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 366,
+     "p90": 587,
+     "mean": 402
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 321,
+     "p90": 537,
+     "mean": 345
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2003
+    },
+    "question": {
+     "n": 80,
+     "p50": 340,
+     "p90": 477,
+     "mean": 346
+    },
+    "idk": {
+     "n": 40,
+     "p50": 338,
+     "p90": 679,
+     "mean": 394
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 469,
+     "p90": 2548,
+     "mean": 1123
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 59,
+    "n": 700,
+    "rate": 0.0843,
+    "ci80": [
+     0.072,
+     0.099
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 56,
+    "n": 700,
+    "rate": 0.08,
+    "ci80": [
+     0.068,
+     0.094
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 370,
+    "beforeChildFinished": 0,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -215,
+     "p90": 259,
+     "mean": -281
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 189,
+     "n": 190,
+     "rate": 0.9947,
+     "ci80": [
+      0.983,
+      0.998
+     ]
+    },
+    "continuerYieldedThenResumed": 20,
+    "yieldFromOnsetMs": {
+     "n": 160,
+     "p50": 300,
+     "p90": 420,
+     "mean": 313
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 20,
+       "p50": 300,
+       "p90": 300,
+       "mean": 300
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 300,
+       "p90": 680,
+       "mean": 373
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 300,
+       "p90": 300,
+       "mean": 300
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 59,
+      "yieldMs": {
+       "n": 60,
+       "p50": 300,
+       "p90": 300,
+       "mean": 250
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 300,
+       "p90": 500,
+       "mean": 353
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 179,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1769,
+    "warmStarts": 631,
+    "warmPromoted": 435,
+    "speaks": 970,
+    "warmPromotedPerSpeak": 0.448,
+    "wastedTokensPerTurn": 3876,
+    "wastedShare": 0.607
+   },
+   "ticksPerTurn": 100.6
+  },
+  "cce-fast-v1200": {
+   "note": "sweep: verdict delay 1.2 s (v2 draft)",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 401,
+    "p90": 2550,
+    "mean": 1008
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2031,
+    "p90": 4384,
+    "mean": 2162
+   },
+   "firstAudioPath": {
+    "warm_uptake": 294,
+    "draft": 205,
+    "cold": 201
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 366,
+     "p90": 587,
+     "mean": 402
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 330,
+     "p90": 562,
+     "mean": 411
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2003
+    },
+    "question": {
+     "n": 80,
+     "p50": 340,
+     "p90": 477,
+     "mean": 346
+    },
+    "idk": {
+     "n": 40,
+     "p50": 338,
+     "p90": 679,
+     "mean": 394
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 469,
+     "p90": 2548,
+     "mean": 1123
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 59,
+    "n": 700,
+    "rate": 0.0843,
+    "ci80": [
+     0.072,
+     0.099
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 56,
+    "n": 700,
+    "rate": 0.08,
+    "ci80": [
+     0.068,
+     0.094
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 383,
+    "beforeChildFinished": 13,
+    "onWrongValue": 9
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -215,
+     "p90": 259,
+     "mean": -281
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 189,
+     "n": 190,
+     "rate": 0.9947,
+     "ci80": [
+      0.983,
+      0.998
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 159,
+     "p50": 500,
+     "p90": 700,
+     "mean": 489
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 560,
+       "p90": 720,
+       "mean": 564
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 59,
+      "yieldMs": {
+       "n": 60,
+       "p50": 300,
+       "p90": 600,
+       "mean": 379
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 39,
+       "p50": 500,
+       "p90": 800,
+       "mean": 536
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 179,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1732,
+    "warmStarts": 618,
+    "warmPromoted": 435,
+    "speaks": 970,
+    "warmPromotedPerSpeak": 0.448,
+    "wastedTokensPerTurn": 3730,
+    "wastedShare": 0.596
+   },
+   "ticksPerTurn": 100.6
+  },
+  "cce-fast-v1600": {
+   "note": "sweep: verdict delay 1.6 s",
+   "stt": "Nemotron-3.5 India, word timings [E]",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 400,
+    "p90": 2550,
+    "mean": 1003
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2027,
+    "p90": 4384,
+    "mean": 2156
+   },
+   "firstAudioPath": {
+    "warm_uptake": 294,
+    "draft": 205,
+    "cold": 201
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 300,
+     "p90": 539,
+     "mean": 338
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 366,
+     "p90": 587,
+     "mean": 402
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 325,
+     "p90": 540,
+     "mean": 373
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2003
+    },
+    "question": {
+     "n": 80,
+     "p50": 340,
+     "p90": 477,
+     "mean": 346
+    },
+    "idk": {
+     "n": 40,
+     "p50": 338,
+     "p90": 679,
+     "mean": 394
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 469,
+     "p90": 2548,
+     "mean": 1123
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 59,
+    "n": 700,
+    "rate": 0.0843,
+    "ci80": [
+     0.072,
+     0.099
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 56,
+    "n": 700,
+    "rate": 0.08,
+    "ci80": [
+     0.068,
+     0.094
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 374,
+    "beforeChildFinished": 4,
+    "onWrongValue": 4
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": -215,
+     "p90": 259,
+     "mean": -281
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 80,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 10
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 189,
+     "n": 190,
+     "rate": 0.9947,
+     "ci80": [
+      0.983,
+      0.998
+     ]
+    },
+    "continuerYieldedThenResumed": 0,
+    "yieldFromOnsetMs": {
+     "n": 159,
+     "p50": 500,
+     "p90": 700,
+     "mean": 489
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 30,
+      "yieldMs": {
+       "n": 0,
+       "p50": null,
+       "p90": null,
+       "mean": null
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 40,
+       "p50": 540,
+       "p90": 860,
+       "mean": 568
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 20,
+      "yieldMs": {
+       "n": 20,
+       "p50": 560,
+       "p90": 720,
+       "mean": 564
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 59,
+      "yieldMs": {
+       "n": 60,
+       "p50": 300,
+       "p90": 600,
+       "mean": 379
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 39,
+       "p50": 500,
+       "p90": 800,
+       "mean": 536
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 179,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1740,
+    "warmStarts": 627,
+    "warmPromoted": 435,
+    "speaks": 970,
+    "warmPromotedPerSpeak": 0.448,
+    "wastedTokensPerTurn": 3783,
+    "wastedShare": 0.602
+   },
+   "ticksPerTurn": 100.6
+  },
+  "cce-d4-v1200": {
+   "note": "sweep: verdict delay 1.2 s on D4",
+   "stt": "D4 live-transcribe",
+   "turns": 960,
+   "gap": {
+    "n": 700,
+    "p50": 1268,
+    "p90": 2550,
+    "mean": 1567
+   },
+   "ttfa": {
+    "n": 700,
+    "p50": 2683,
+    "p90": 3893,
+    "mean": 2512
+   },
+   "firstAudioPath": {
+    "warm_uptake": 320,
+    "draft": 363,
+    "cold": 17
+   },
+   "gapByCat": {
+    "closed_fluent": {
+     "n": 120,
+     "p50": 1081,
+     "p90": 1512,
+     "mean": 1123
+    },
+    "closed_hesitant": {
+     "n": 100,
+     "p50": 1128,
+     "p90": 1478,
+     "mean": 1159
+    },
+    "self_correction": {
+     "n": 100,
+     "p50": 1178,
+     "p90": 1579,
+     "mean": 1236
+    },
+    "explain_pauses": {
+     "n": 120,
+     "p50": 2539,
+     "p90": 2660,
+     "mean": 2606
+    },
+    "fillers_wordsearch": {
+     "n": 80,
+     "p50": 2520,
+     "p90": 2565,
+     "mean": 2196
+    },
+    "question": {
+     "n": 80,
+     "p50": 1110,
+     "p90": 1461,
+     "mean": 1139
+    },
+    "idk": {
+     "n": 40,
+     "p50": 1109,
+     "p90": 1507,
+     "mean": 1176
+    },
+    "hold_request": {
+     "n": 60,
+     "p50": 1281,
+     "p90": 2548,
+     "mean": 1597
+    }
+   },
+   "cutoff": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "earlyUptake": {
+    "k": 9,
+    "n": 700,
+    "rate": 0.0129,
+    "ci80": [
+     0.008,
+     0.02
+    ]
+   },
+   "silentEarlyCommit": {
+    "k": 13,
+    "n": 700,
+    "rate": 0.0186,
+    "ci80": [
+     0.013,
+     0.026
+    ]
+   },
+   "missedTurnEnd": {
+    "k": 0,
+    "n": 700,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.002
+    ]
+   },
+   "holdViolation": {
+    "k": 0,
+    "n": 60,
+    "rate": 0,
+    "ci80": [
+     0,
+     0.027
+    ]
+   },
+   "wt1NudgeAfterChildSpoke": 0,
+   "verdict": {
+    "played": 371,
+    "beforeChildFinished": 1,
+    "onWrongValue": 0
+   },
+   "safety": {
+    "turns": 70,
+    "detectedTurns": 70,
+    "detectAfterDistressSegEndMs": {
+     "n": 70,
+     "p50": 1021,
+     "p90": 1410,
+     "mean": 833
+    },
+    "unsafeLines": 0,
+    "safeguardSpoken": 73,
+    "safeguardOverChildVoice": 0,
+    "safeguardStoppedWithin120msOfChildOnset": 3
+   },
+   "overlap": {
+    "turns": 190,
+    "accuracy": {
+     "k": 180,
+     "n": 190,
+     "rate": 0.9474,
+     "ci80": [
+      0.923,
+      0.965
+     ]
+    },
+    "continuerYieldedThenResumed": 1,
+    "yieldFromOnsetMs": {
+     "n": 142,
+     "p50": 600,
+     "p90": 1880,
+     "mean": 911
+    },
+    "byExpect": {
+     "resume": {
+      "n": 30,
+      "ok": 29,
+      "yieldMs": {
+       "n": 1,
+       "p50": 2200,
+       "p90": 2200,
+       "mean": 2200
+      }
+     },
+     "repeat": {
+      "n": 40,
+      "ok": 34,
+      "yieldMs": {
+       "n": 34,
+       "p50": 600,
+       "p90": 2000,
+       "mean": 971
+      }
+     },
+     "stop": {
+      "n": 20,
+      "ok": 19,
+      "yieldMs": {
+       "n": 19,
+       "p50": 1700,
+       "p90": 2080,
+       "mean": 1708
+      }
+     },
+     "yield": {
+      "n": 60,
+      "ok": 58,
+      "yieldMs": {
+       "n": 60,
+       "p50": 600,
+       "p90": 600,
+       "mean": 400
+      }
+     },
+     "foldin": {
+      "n": 40,
+      "ok": 40,
+      "yieldMs": {
+       "n": 29,
+       "p50": 600,
+       "p90": 3160,
+       "mean": 1374
+      }
+     }
+    }
+   },
+   "listening": {
+    "openTurns": 200,
+    "nods": 181,
+    "nodMidWord": 0,
+    "nodsInClosedAnswers": 0,
+    "secondsOfChildSpeechPerNod": 2.5
+   },
+   "prepare": {
+    "draftStarts": 1249,
+    "warmStarts": 502,
+    "warmPromoted": 381,
+    "speaks": 870,
+    "warmPromotedPerSpeak": 0.438,
+    "wastedTokensPerTurn": 1495,
+    "wastedShare": 0.326
+   },
+   "ticksPerTurn": 101.8
+  }
+ }
+}

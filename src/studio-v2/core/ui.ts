@@ -42,7 +42,7 @@ export function drawStatCard(api: EngineApi, ctx: Ctx, o: { a: number; head: str
 /** Coach-mark text near the bottom; caller fades `a` to 0 on first input. */
 export function drawCoach(api: EngineApi, ctx: Ctx, text: string, a: number, now: number, y = 600): void {
   if (a <= 0.01) return;
-  api.text(ctx, text, 500, y, { font: "mono", size: 38, weight: 500, color: C.ink2, align: "center", alpha: a * (0.65 + 0.35 * Math.sin(now * 4)), maxWidth: 900 });
+  api.text(ctx, text, 500, y, { font: "mono", size: 38, weight: 500, color: C.ink2, align: "center", alpha: a * (0.65 + 0.35 * Math.sin(now * 4)), maxWidth: y < 180 ? 620 : 900 });   // near the top: clear of both safe zones
 }
 /** The single volt "your move" ring (one volt element per state). */
 export function voltRing(ctx: Ctx, x: number, y: number, r: number, now: number, active = false): void {

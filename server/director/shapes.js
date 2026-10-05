@@ -203,6 +203,10 @@ export const takeBreak = () => join(
   "pause the work; struggling is a normal part of learning (about the work, never about them)",
   "offer a choice: an easier one, a short stretch break, or keep going",
 );
+/** The child said a stop phrase (state.js decide; OWNER RESET #7): a shape, never a line she could recite. */
+export const stopCheck = () => "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices on the chips (keep going, a short break, or stop for today) and wait; if they asked to talk about something else, say you can do that too";
+/** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
+export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; the chips let them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
 
 export const safeguard = () => join(

@@ -168,7 +168,7 @@ Home: her greeting (once a day, live; cached after) + ONE primary card from GET 
 | `capped` | daily limit reached | "That's all for today." (no practice) | Made for you (view only) | ⟨warm, no guilt⟩ |
 | `resting` | outside lesson hours | "Lessons open again at {time}." | Notebook only | none (she has no life outside lessons) |
 | `offline` | no network | "Lessons need the internet. Practice works offline." **Quick practice** (pack) / **Try again** | Made for you (library builds cached) | none |
-| `safety_hold` (new) | Conductor `mode = safety_hold` | "Let's take a break today." + "Talk to a grown-up at home" | Help sheet link | none (calm, cached) |
+| `safety_hold` (new) | Conductor `mode = safety_hold` | "Let's take a break today." + "Talk to a grown-up you trust" (corrected 2026-10-04: the child-safety floor's trusted adult the child chooses outranks this row's earlier "at home") | Help sheet link | none (calm, cached) |
 | `only_session` (consent) | learning_profile = No | `start` every day; Garden/Sky, Notebook, Made for you hidden | — | — |
 | plan API failing | 404/5xx | V2 fallback: cached topic `start`, then choose-a-topic sheet | — | — |
 

@@ -7,7 +7,7 @@
 // {f} fraction part, {a}/{c} times-table operands, {r} the right operand, {h}/{m} hour/minute, {u} a unit.
 // Bump RENDERER_VERSION on any change that alters an output: the TTS cache is keyed by the rendered text, and
 // the version is the provenance field of a SpokenSet (`rendererVersion`).
-export const RENDERER_VERSION = "sp1-2026-10-02";
+export const RENDERER_VERSION = "sp2-2026-10-05";
 
 // ── number words ────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -133,7 +133,12 @@ export const WORDS = {
     decade: "{x} का दशक",
     year: { hundred: "{hi} सौ", oh: "{hi} सौ {lo}", plain: "{hi} सौ {lo}" },
     ordinal: { irregular: { 1: "पहला", 2: "दूसरा", 3: "तीसरा", 4: "चौथा", 6: "छठा" }, regular: "{x}वाँ" },
-    frames: {},
+    // hl = a Hinglish child at a Hindi-medium school: Hindi number words, but the everyday operator words a Roman
+    // Hinglish sentence uses ("बारह plus सात equals उन्नीस"), not the formal धन / बराबर, which read oddly inside a Roman
+    // sentence for classes 4-7 (fixer 2026-10-05, w2g-hinglish-hindi-medium-operators; on the owner's HV-9 blind page).
+    frames: {
+      hl: { minus: "minus", ops: { plus: "plus", minus: "minus", times: "into", divide: "divided by", equals: "equals" } },
+    },
   },
 };
 

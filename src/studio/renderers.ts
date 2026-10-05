@@ -20,9 +20,12 @@ import { ImageRenderer } from "./ImageRenderer.tsx";
 export type StudioStageEvent =
   | { type: "ready" }
   | { type: "done" }
-  | { type: "error"; message: string }
   | { type: "interaction"; name: string; data?: Record<string, unknown> }
-  | { type: "answer"; value: unknown };
+  | { type: "answer"; value: unknown }
+  /** The HOST's verdict on an answer (emitted by the stage, never by a renderer): the lesson hears about it from this. */
+  | { type: "graded"; correct: boolean; complete: boolean; alreadyClosed?: boolean; wrongTries?: number }
+  /** Why a frame could not run (the stage reports it; only a broken build counts against it on the server). */
+  | { type: "error"; message: string; reason?: "csp" | "runtime" | "navigated" | "not_ready" | "unavailable" | "bytes" };
 
 export interface ArtifactRendererProps<K extends StudioArtifactKind = StudioArtifactKind> {
   artifact: Extract<StudioArtifact, { kind: K }>;

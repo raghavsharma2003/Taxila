@@ -25,7 +25,7 @@ import type { LinkEvent, LinkLevels, MicTap, TeacherLink, TeacherReply } from ".
 import { Emitter } from "./store.ts";
 import { fetchSpeechStream, PcmStreamPlayer, type SpeechStreamFetch, type StreamPlayback } from "./ttsStream.ts";
 import { MicVad } from "./vad.ts";
-import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, turnContext, type TurnFinal } from "./turnModel.ts";
+import { FragmentMerger, PREDICTIVE_SILENCE_MS, predictiveEnabled, resumeCeilingMs, turnContext, type TurnFinal } from "./turnModel.ts";
 
 export type CascadeTransport = "webrtc" | "recording" | "typed";
 
@@ -436,7 +436,7 @@ export class CascadeLink implements TeacherLink {
       return;
     }
     void this.ctx?.resume().catch(() => {});
-    const playback = this.player.play((signal) => this.speech({ lessonId: this.lessonId, seq }, signal));
+    const playback = this.player.play((signal, sink) => this.speech({ lessonId: this.lessonId, seq }, signal, sink), { req: { lessonId: this.lessonId, seq } });
     const cur: CurrentReply = { id, text, playback, playing: false, paused: null };
     this.current = cur;
     playback.started.then(
@@ -515,6 +515,10 @@ export class CascadeLink implements TeacherLink {
 
   close(): void {
     if (this.closed) return;
+    // turn.predictive: a held fragment is delivered before teardown, never dropped (it can be a disclosure)
+    this.clearMergeTimer();
+    const held = this.merger?.drain();
+    if (held) this.deliverChild(held);
     this.closed = true;
     this.clearMergeTimer();
     this.clearPttTail();
@@ -568,7 +572,15 @@ export class CascadeLink implements TeacherLink {
   private onChildEvent(e: LinkEvent): void {
     // turn.predictive (W2-E L1): a final that reads unfinished waits for the child to go on, and merges with the next.
     if (this.merger && !this.current?.paused) {
-      if (e.type === "child_speech_start" && this.merger.onSpeechStart()) this.clearMergeTimer();
+      if (e.type === "child_speech_start" && this.merger.onSpeechStart()) {
+        // the child went on: the held fragment waits for the next final, but never indefinitely (no final may ever come)
+        this.clearMergeTimer();
+        this.mergeTimer = setTimeout(() => {
+          this.mergeTimer = null;
+          const held = this.merger?.drain();
+          if (held) this.deliverChild(held);
+        }, resumeCeilingMs(turnContext()));
+      }
       if (e.type === "child_silent" && this.merger.holding) {
         // the resumed speech was nothing (a cough): the held fragment is the turn
         const held = this.merger.flush(true);
@@ -586,7 +598,7 @@ export class CascadeLink implements TeacherLink {
           }, r.holdMs);
           return;
         }
-        if (r.emit) e = r.emit; // the fragment, or the held one merged with it: one turn
+        if (r.emit) { this.clearMergeTimer(); e = r.emit; } // the fragment, or the held one merged with it: one turn
       }
     }
     this.deliverChild(e);

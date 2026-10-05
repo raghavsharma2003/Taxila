@@ -1,0 +1,63 @@
+RS-4 pre-work patch 02: server re-grading for Studio v2 engines (owner-truth patch 01 generalised to every v2 engine).
+Applies after Wave 2 integration to: server/studio/grade.js (RS-4 owns server/studio/** after integration).
+
+Why: the v2 host grades in the page for instant feedback, but evidence must come from the server. The server stores the
+VALIDATED spec when it serves the piece (validateSpec output, never the planner's raw spec) and re-grades each raw act
+with the same shared function. Answers that carry host-recorded input logs (phase-shift controls, food-web actions,
+shadow-play samples) are bigger than W2-H's 512-byte bound: measured maxima are in REPORT.md (answerBytes column);
+the v2 bound is 256 KB. Engines rate-limit their channels (phase-shift: an entry only when an input changes, at most
+10/s; food-web: ≤ 1 action per species per 1.2 s; shadow-play: 10 Hz samples, ≤ 25 s per step). Worst case is
+phase-shift dragged non-stop for 10 minutes (≈ 6,000 entries × ~45 B ≈ 270 KB): if that bound is ever hit, switch the
+phase-shift grader to a per-step checkpoint the SERVER computes (it replays the previous step's log itself and keeps
+the end state), so each answer carries only its own step's log. Not built in the pre-work: the pure gradeAnswer replays
+the whole log, which is exact and simple.
+
+Node strips TypeScript types by default from v22.18, and shared/studio-spec.ts is erasable-syntax only, so the server can
+import it directly. Verified locally on v22.22.0 only. NOT verified in the image: both Dockerfiles use the floating
+`node:22-slim` tag; before merging run `docker run --rm node:22-slim node -e "import('./x.ts')"` style check, or pin
+`node:22.22-slim`. If the image is older, add `--experimental-strip-types` to the server start command.
+
+--- a/server/studio/grade.js
++++ b/server/studio/grade.js
+@@ -11,6 +11,7 @@
+ import { archetype } from "./archetypes/index.js";
+ import { graderFor } from "./qa/graders.js";
+ import { fromLegacyEvidence } from "../learner/kt/adapter.js";
++import { ARCHETYPES_V2, gradeAnswer, validateSpec } from "../../shared/studio-spec.ts";
+
+ export const GRADER_VERSION = "studio-grade@1";
+ /** Answers arrive from an untrusted frame: bound the JSON before it reaches a grader. */
+ export const MAX_ANSWER_BYTES = 512;
++/** Studio v2 answers may carry the host's input record (bounded per engine; see REPORT.md answerBytes). */
++export const MAX_ANSWER_BYTES_V2 = 256 * 1024;
++
++/**
++ * A grading session for a Studio v2 piece. `spec` is what the server served (it validates again, so a stored spec
++ * that predates a schema change still grades against a valid one). Never throws; never reads a `correct` field.
++ * @param {string} archetypeId @param {unknown} spec
++ */
++export function createGradeSessionV2(archetypeId, spec) {
++  if (!ARCHETYPES_V2.includes(archetypeId)) throw new Error("not a v2 archetype: " + archetypeId);
++  const valid = validateSpec(archetypeId, spec).spec;
++  const wrongs = new Map();
++  return {
++    archetype: archetypeId,
++    /** @param {{ itemId: string, value: unknown }} act */
++    grade(act) {
++      let v = null, itemId = "";
++      try {
++        const s = JSON.stringify(act ?? null);
++        if (s && s.length <= MAX_ANSWER_BYTES_V2) { const o = JSON.parse(s); itemId = String(o?.itemId ?? "").slice(0, 64); v = o?.value ?? null; }
++      } catch { v = null; }
++      const g = gradeAnswer(archetypeId, valid, itemId, v);
++      const triesBefore = wrongs.get(itemId) ?? 0;
++      if (g.verdict !== "right" && g.verdict !== "ungraded") wrongs.set(itemId, triesBefore + 1);
++      return { correct: g.verdict === "right", verdict: g.verdict, itemId, truth: g.truth, detail: g.detail, triesBefore, closedItem: g.verdict === "right" };
++    },
++  };
++}
+
+Evidence wiring (unchanged rule): an item's episode closes on the first host-correct grade; ONE kt_evidence event per
+item episode via 'studio'. `detail` carries a kit misconception id when the act matches its signature (e.g.
+c4-maths-ch04-t01-m-drop-zero, c6-maths-ch02-t03-m-wrong-scale, c7-maths-ch13-t02-m-mean-in-data); RS-5's
+classifier may read it as a candidate misconception, never as a verdict.

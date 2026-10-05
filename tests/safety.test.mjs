@@ -97,3 +97,17 @@ test("stop: a goodbye or a bare stop ends the lesson; a toilet or water break do
   for (const t of ["bye didi", "I want to stop", "I have to go", "i need to go now.", "stop", "bas", "band karo", "ab bas karo", "mujhe jaana hai"]) assert.equal(wantsToStop(t), true, t);
   for (const t of ["I have to go to toilet", "I have to go get water", "i need to go to the bathroom", "bas itna hi answer hai", "stop sign ka colour red hai", "1/2 bada hai"]) assert.equal(wantsToStop(t), false, t);
 });
+
+// W2-I fixer (2026-10-05): lesson speech that ended lessons or raised safeguarding incidents.
+test("wantsToStop: Devanagari left / biology / distance and lesson-internal bye / good night are not stops; real ones still are", () => {
+  for (const t of ["बायाँ हाथ ऊपर करो", "मेरा बायां पैर", "बायोलॉजी अच्छी है", "मैं चलता हूँ 5 किलोमीटर", "पंखा बंद करो तो हवा रुकेगी",
+    "the answer is bye", "the opposite of hello is bye", "good night sleep helps the body grow", "a good night sleep is needed"]) assert.equal(wantsToStop(t), false, t);
+  for (const t of ["अलविदा", "बाय दीदी", "मैं चलता हूं", "बंद करो", "अब बंद करो", "bye", "Bye!", "ok bye didi", "thank you ma'am, bye", "good night", "goodbye Asha"]) assert.equal(wantsToStop(t), true, t);
+});
+
+test("abuse predicate: reported science / EVS / history is not a disclosure; disclosures still fire", () => {
+  for (const t of ["mummy ne bataya plants marte hain", "papa kehte hain paudhe marte hain", "sir ne bola cells marte hain", "teacher bolti hai keede marte hain",
+    "didi ne bola log marte hain war mein", "papa ne saanp ko maara", "sir ne padhaya ki janwar marte hain toh fossil bante hain"]) assert.equal(scanSafety(t).distress, false, t);
+  for (const t of ["Papa gussa hote hain toh maarte hain, kal bhi maara", "papa mujhe maarte hain", "mat jao didi, papa mujhe roz maarte hain",
+    "mummy ne bola papa marte hain", "papa ne bhai ko maara", "chacha roz raat ko peette hain"]) assert.equal(scanSafety(t).distress, true, t);
+});

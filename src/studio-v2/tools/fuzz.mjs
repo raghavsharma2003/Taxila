@@ -26,7 +26,7 @@ async function probe(url, { faultWaitMs = 0 } = {}) {
   if (ready) { await runBot(page, { maxMs: playMs }); if (faultWaitMs) await sleep(faultWaitMs); }
   const painted = ready ? await stagePainted(page) : { painted: false, reason: "not-ready" };
   const bad = ready ? await visibleFailureText(page) : null;
-  const info = ready ? await page.evaluate(() => { const h = window.__sv2; return { rung: h.rung(), repairs: h.repairs.length, fellBack: h.fellBack, frameErr: h.log.some((m) => m.name === "frame_error"), failed: h.log.some((m) => m.k === "engine_failed" || m.k === "fallback"), tooSmall: h.tooSmall.length, answers: h.log.filter((m) => m.k === "answer").length }; }) : {};
+  const info = ready ? await page.evaluate(() => { const h = window.__sv2; return { rung: h.rung(), repairs: h.repairs.length, fellBack: h.fellBack, frameErr: h.log.some((m) => m.name === "frame_error"), failed: h.log.some((m) => m.k === "engine_failed" || m.k === "fallback"), tooSmall: h.tooSmall.length, safeHits: h.safeHits.length, answers: h.log.filter((m) => m.k === "answer").length }; }) : {};
   await ctx.close();
   const visibleFailure = errors.length > 0 || !ready || !painted.painted || !!bad;
   return { visibleFailure, errors, ready, painted: painted.painted, sd: painted.sd, bad, ...info };
@@ -53,7 +53,7 @@ for (const id of ids) {
     visibleFailures: rows.filter((r) => r.visibleFailure).length,
     repaired: mut.filter((r) => r.repairs > 0 && !r.fellBack).length, fellBack: mut.filter((r) => r.fellBack).length,
     boardRung: mut.filter((r) => r.rung === "board").length, frameErrors: mut.filter((r) => r.frameErr).length,
-    tooSmallMax: Math.max(0, ...rows.map((r) => r.tooSmall ?? 0)),
+    tooSmallMax: Math.max(0, ...rows.map((r) => r.tooSmall ?? 0)), safeHitsMax: Math.max(0, ...rows.map((r) => r.safeHits ?? 0)),
     faults: {
       transientHeld: faults.transient.rung === "engine" && faults.transient.frameErr && !faults.transient.visibleFailure,
       permanentToBoard: faults.permanent.rung === "board" && faults.permanent.failed && !faults.permanent.visibleFailure,

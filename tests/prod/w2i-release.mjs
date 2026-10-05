@@ -7,10 +7,17 @@
 //   3. The bond record after the lesson ends (DB, test branch locally / TAXILA_DB_URL on prod): one rel_bond row for
 //      (child, teacher) with sessions 1 and stage first_sessions, rel_event rows that replay to it byte for byte (AT-U1),
 //      and the boundary moment as a parent-visible relational_note with closed slots only (never the child's words).
+//   4. (fixer 2026-10-05, OWNER-RESET #7 as the plan rewrote w2i-release) a STOP PHRASE ("lesson khatam") gets exactly ONE
+//      warm check-in with keep going / short break / stop for today; the stop choice or a repeat ends it; "can we talk
+//      about something else" is steering, never a break or a wrap; a stopped lesson does not close the day. Needs W2-C's
+//      w2i-state-stop-check.patch: until the tree carries it the case WARNs and is skipped, never passed.
+//   5. Negative controls: lesson speech with a goodbye or stop word inside it ("see you have to add 5 and 3 to get 8",
+//      "i'm done, it's 24") never ends the lesson (rj-w2i-unanchored-leave-lexicon).
 // No disclosure is sent (a real safeguarding incident would reach the human queue): the safety opening is
 // tests/prod/w2i-safety.mjs, local or W2I_SAFETY=1 only.
 //
 // Run: NODE_USE_ENV_PROXY=1 node tests/prod/w2i-release.mjs   (TAXILA_BASE=http://127.0.0.1:<port> for a local server)
+import { readFileSync } from "node:fs";
 import { withTestAccount, ok, warn, done, dbq, runLesson, BASE } from "./lib.mjs";
 import { floorViolations } from "../../server/director/safety.js";
 import { replay, rowToBond, eventRow, canon } from "../../server/relational/bond.js";
@@ -54,4 +61,49 @@ await withTestAccount(async ({ api, child }) => {
     }
   }
 }, { tag: "w2i" });
+
+// 5. Lesson speech with a goodbye / stop word inside it never ends the lesson (both lanes the classifier sees typed).
+await withTestAccount(async ({ api, child }) => {
+  // ("the answer is bye" is deliberately not here: the deterministic layers are quiet on it, but the classifier model's own
+  // wants_to_stop flag, OR-ed in classify.js, read it as a stop in the 2026-10-05 local run: W2-C's classifier line)
+  const lines = ["haan ready", "see you have to add 5 and 3 to get 8", "i'm done, it's 24", "he wants a number bigger than 10", "usne kaha photo mein 3 birds hain"];
+  const t = await runLesson(api, child.id, { mode: "text", lines, end: false });
+  ok(t.start.status === 201, "negatives: lesson starts");
+  for (let i = 1; i < lines.length; i++) {
+    const r = t.turns[i];
+    ok(!!r && !r.end && r.move?.kind !== "wrap" && r.move?.kind !== "safeguard", `negatives: "${lines[i]}" does not end the lesson or raise a safeguard (end ${r?.end}, move ${r?.move?.kind})`);
+  }
+  await api("POST", "/api/lesson/end", { lessonId: t.start.lessonId }).catch(() => null);
+}, { tag: "w2i-neg" });
+
+// 4. The stop phrase: one check-in with three choices, then the stop choice or a repeat ends it.
+const STOP_CHECK_IN_TREE = (() => { try { return /stopAsked/.test(readFileSync(new URL("../../server/director/state.js", import.meta.url), "utf8")); } catch { return false; } })();
+if (!STOP_CHECK_IN_TREE) {
+  warn("stop-phrase check-in case SKIPPED: W2-C has not applied server/relational/seam-patches/w2i-state-stop-check.patch (a stop phrase still wraps at once)");
+} else {
+  await withTestAccount(async ({ api, child }) => {
+    const t = await runLesson(api, child.id, { mode: "text", lines: ["haan ready", "lesson khatam"], end: false });
+    const stop = t.turns[1];
+    const chips = stop?.ui?.chips ?? [];
+    ok(stop && !stop.end && stop.move?.kind === "break", `stop phrase: one warm check-in, not an end (move ${stop?.move?.kind}, end ${stop?.end})`);
+    ok(chips.length === 3 && chips.some((c) => c.id === "stop:end") && chips.some((c) => c.id === "stop:continue") && chips.some((c) => c.id === "break:rest"), `stop phrase: keep going / short break / stop for today (${chips.map((c) => c.id).join(", ")})`);
+    ok(!/\?.*\?/.test(String(stop?.teacherReply ?? "")), "stop phrase: the check-in asks once, no pressure");
+    const er = await api("POST", "/api/lesson/turn", { lessonId: t.start.lessonId, childText: chips.find((c) => c.id === "stop:end")?.label ?? "stop", chipId: "stop:end",
+      asrConfidence: 0.95, typed: true, turnSeq: 3 }).catch((e) => ({ error: e.message }));
+    ok(er?.end === true || er?.move?.kind === "wrap", `stop phrase: the stop choice ends it (move ${er?.move?.kind}, end ${er?.end})`);
+    const day = await dbq("select state->>'stoppedEarly' as s from lesson where id = $1", [t.start.lessonId]).catch(() => null);
+    if (day?.[0]) ok(day[0].s === "true", `a stopped lesson is marked stoppedEarly, so it does not close the day (${day[0].s})`);
+    else warn("stoppedEarly not readable (no DB url): day-closing check skipped");
+    await api("POST", "/api/lesson/end", { lessonId: t.start.lessonId }).catch(() => null);
+  }, { tag: "w2i-stop" });
+  await withTestAccount(async ({ api, child }) => {
+    const t = await runLesson(api, child.id, { mode: "text", lines: ["haan ready", "lesson khatam", "lesson khatam"], end: false });
+    ok(t.turns[2]?.end === true || t.turns[2]?.move?.kind === "wrap", `a repeated stop ends it (move ${t.turns[2]?.move?.kind})`);
+    await api("POST", "/api/lesson/end", { lessonId: t.start.lessonId }).catch(() => null);
+    const s = await runLesson(api, child.id, { mode: "text", lines: ["haan ready", "can we talk about something else"], end: false });
+    const r = s.turns[1];
+    ok(r && !r.end && !["break", "wrap"].includes(r.move?.kind), `"can we talk about something else" is steering, never a break or a wrap (move ${r?.move?.kind})`);
+    await api("POST", "/api/lesson/end", { lessonId: s.start.lessonId }).catch(() => null);
+  }, { tag: "w2i-stop2" });
+}
 done();

@@ -107,7 +107,7 @@ export function resolveAttempts(rows, events, { now = Date.now(), band } = {}) {
       }
     }
     attempts.push({ skillId: r.skill_id, armId: r.arm_id, repClass: r.rep_class, representationId: r.representation_id ?? undefined, misId: r.misconception_id ?? null,
-      outcome: outcome ?? "open", at: a.at });
+      outcome: outcome ?? "open", final, at: a.at });
   }
   return { attempts, updates };
 }

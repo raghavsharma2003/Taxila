@@ -68,7 +68,7 @@ describe("B3 parent payloads and account deletion (test branch)", { skip: SKIP, 
     assert.equal((await call("POST", "/api/consent", { childId: null, grants: { core_tutoring: true, learning_profile: true, memory: false } })).status, 200);
     // Riya: one long lesson with three checks of one skill (right on her own, then two misses), one 1-minute visit
     lessonLong = (await one(`insert into lesson (child_id, topic_id, started_at, ended_at, state) values ($1, $2, now() - interval '2 days', now() - interval '2 days' + interval '20 minutes', $3) returning id`,
-      [kids[0], TOPIC, { did: [{ kind: "item", itemId: "i1", ask: "Which is bigger, 4,520 or 4,250?", answer: "4,520", verdict: "correct", verified: true, withHelp: false, turn: 1, seq: 3 }], minutes: 20 }])).id;
+      [kids[0], TOPIC, { did: [{ kind: "item", itemId: "i1", ask: "Which is bigger, 4,520 or 4,250?", answer: "4,520", verdict: "correct", verified: true, withHelp: false, turn: 1, seq: 1 }], minutes: 20 }])).id;
     lessonShort = (await one(`insert into lesson (child_id, topic_id, started_at, ended_at) values ($1, $2, now() - interval '1 day', now() - interval '1 day' + interval '1 minute') returning id`, [kids[0], TOPIC])).id;
     const t1 = (await one("insert into turn (lesson_id, seq, speaker, text) values ($1, 1, 'child', 'four thousand five hundred twenty is bigger') returning id", [lessonLong])).id;
     for (const [i, o, h] of [[0, "correct", 0], [1, "incorrect", 0], [2, "partial", 1]]) {

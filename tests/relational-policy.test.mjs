@@ -225,3 +225,53 @@ test("I-7 bookkeeping: a safeguarded PLEADING turn is the check-in (the goodbye 
   const harm = runLesson([["Ghar pe koi mujhse baat nahi karta", "no_evidence", { safety: true }], ["Papa maarte hain", "no_evidence", { safety: true }], "bye"]).out;
   assert.equal(harm[2].moveOverlay.kind, "CHECK_IN", "a goodbye after harm words gets its own check-in");
 });
+
+// ── W2-I fixer (2026-10-05): pleading never releases; a disclosure said with pleading still gets its goodbye check-in ──
+test("pleading without a goodbye never ends the lesson: one CHECK_IN, then POINT_OUT, never RELEASE (×3)", () => {
+  for (const lines of [["i feel lonely", "i feel lonely", "i feel lonely"], ["please don't go", "please don't go", "please don't go"],
+    ["mujhe akela lagta hai", "mat jao na", "mujhe akela lagta hai"]]) {
+    const { out } = runLesson(lines);
+    for (const d of out) assert.ok(d && d.floor !== "RELEASE" && d.moveOverlay?.kind !== "RELEASE", `${lines}: ${JSON.stringify(d?.moveOverlay)}`);
+    assert.equal(out[0].moveOverlay.kind, "CHECK_IN");
+    assert.equal(out[1].moveOverlay.kind, "POINT_OUT", "the check-in is once; then a person in their life");
+    assert.equal(out[2].moveOverlay.kind, "POINT_OUT");
+  }
+  // pleading AND leaving: the check-in, then the goodbye releases
+  const { out } = runLesson(["please don't go, bye", "bye"]);
+  assert.equal(out[0].moveOverlay.kind, "CHECK_IN");
+  assert.equal(out[1].floor, "RELEASE");
+});
+
+test("I-7 through the seam: a disclosure said WITH pleading is harm; the next goodbye is a CHECK_IN, then release", () => {
+  __relTest.reset();
+  const d = (turn, childText, extra = {}) => relationalSeam.decide({ lessonId: "L-i7-plead", childId: "c", turn, childText, cls: null, move: "ask", lane: "text", ...extra });
+  d(1, "mat jao didi, papa mujhe roz maarte hain", { safety: true, move: "safeguard" });
+  const bye1 = d(2, "ok bye");
+  assert.equal(bye1.moveOverlay.kind, "CHECK_IN");
+  assert.equal(bye1.moveOverlay.shapeId, "checkin_before_release");
+  assert.equal(d(3, "bye").floor, "RELEASE");
+  // a classifier-only disclosure (the predicate missed it) counts too, through the gate's distressKind
+  __relTest.reset();
+  const e = (turn, childText, extra = {}) => relationalSeam.decide({ lessonId: "L-i7-cls", childId: "c", turn, childText, cls: null, move: "ask", lane: "text", ...extra });
+  e(1, "mat jao didi, ghar pe bahut bura hota hai", { safety: true, move: "safeguard", cls: { outcome: "no_evidence", flags: { distress: true, distressKind: "abuse" } } });
+  assert.equal(e(2, "bye").moveOverlay.kind, "CHECK_IN");
+  __relTest.reset();
+});
+
+test("answers, skips and steering are never a stop: no release on \"i'm done, it's 24\" twice, \"this one, give another\", \"can we do science\"", () => {
+  for (const lines of [["i'm done, it's 24", "i am done the answer is 12"], ["i don't want to do this one, give another", "i don't want to do this one, give another"],
+    ["i don't want to do maths, can we do science", "stop now i got it"], ["no more questions about fractions please explain again", "can we talk about something else"]]) {
+    for (const d of runLesson(lines).out) assert.ok(!d || (d.floor !== "RELEASE" && d.moveOverlay?.kind !== "RELEASE"), `${lines}`);
+  }
+});
+
+test("seam: a lesson end with no in-memory session is counted (restart / another replica), never silent", () => {
+  __relTest.reset();
+  __relTest.setTablesReady(true);
+  const warn = console.warn; let warned = 0; console.warn = () => { warned++; };
+  try { relationalSeam.onLessonEnd({ id: "00000000-0000-0000-0000-000000000001", legal_mode: "M1" }, { lessonId: "00000000-0000-0000-0000-0000000000aa", turns: 4 }); }
+  finally { console.warn = warn; }
+  assert.equal(__relTest.missedEnds(), 1);
+  assert.equal(warned, 1);
+  __relTest.reset();
+});

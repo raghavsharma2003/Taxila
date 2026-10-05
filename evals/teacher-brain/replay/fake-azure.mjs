@@ -47,6 +47,12 @@ export async function chat(deployment, messages, opts = {}) {
     STATS.failed += 1;
     throw new AzureError(`chat ${deployment} HTTP 404: DeploymentNotFound (replay drill)`, 404, "");
   }
+  // the hang drill: a deployment that accepts the call and never answers, until the caller's own timeout
+  if (process.env.REPLAY_HANG_DEPLOY && process.env.REPLAY_HANG_DEPLOY === deployment) {
+    STATS.hung = (STATS.hung ?? 0) + 1;
+    await new Promise((r) => setTimeout(r, opts.timeoutMs ?? 7000));
+    throw new AzureError(`chat ${deployment} timed out after ${opts.timeoutMs ?? 7000} ms (replay hang drill)`, 0, "timeout");
+  }
   const user = String(messages.at(-1)?.content ?? "");
   if (opts.schema) {
     let json;

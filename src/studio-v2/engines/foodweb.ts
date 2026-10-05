@@ -11,7 +11,9 @@ import { sfx } from "../core/sfx.ts";
 import { pill } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 
-const NODE: Record<SpeciesId, XY> = { grass: [500, 530], insects: [320, 410], deer: [690, 410], frog: [320, 285], snake: [450, 175], tiger: [690, 245] };
+const NODE: Record<SpeciesId, XY> = { grass: [500, 548], insects: [330, 428], deer: [670, 428], frog: [330, 300], snake: [330, 176], tiger: [670, 300] };
+/** labels sit beside nodes (left column to the left, right column to the right) so they never cover another node */
+const LABEL_SIDE: Record<SpeciesId, -1 | 1> = { grass: -1, insects: -1, frog: -1, snake: -1, deer: 1, tiger: 1 };
 const NR = 50;
 type Step = FoodSpec["steps"][number];
 
@@ -26,6 +28,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
   const hud = api.hud([{ key: "step", label: T.step }, { key: "day", label: T.day }]);
   const popOf = (id: SpeciesId) => (g.run.length ? g.run[Math.min(g.day, g.run.length - 1)].pop[id] : ECO_EQ[id]);
   function startStep(i: number) {
+    api.resetLog("eco");
     g.si = i; g.stepT = 0; g.verdicts = {}; g.pick = null; g.truth = null; g.removed = null; g.actions = []; g.lost = new Set(); g.day = 0; g.dayF = 0; g.run = []; g.cool = {};
     const s = spec.steps[i];
     if (s.kind === "arrows") { g.phase = "draw"; g.arrows = []; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, T.arrows); }
@@ -56,7 +59,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
           const b = TILE(i); if (!inBox(p, b, false)) return;
           if ((g.cool[id] ?? 0) > 0) return;
           const kind: EcoAction["kind"] = p.x < b.x + b.w / 2 ? "cull" : "add";
-          g.actions.push({ day: g.day, species: id, kind }); g.cool[id] = 1.2; g.flash[id] = 1;
+          const act: EcoAction = { day: g.day, species: id, kind }; g.actions.push(act); api.record("eco", act); g.cool[id] = 1.2; g.flash[id] = 1;
           sfx.blip({ f: kind === "add" ? 660 : 330, f2: kind === "add" ? 990 : 220, dur: 0.1, type: "triangle", gain: 0.12 });
           api.event("eco_action", { day: g.day, species: id, kind });
         });
@@ -111,7 +114,7 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
         for (const id of species) if (st.pop[id] < ECO_DANGER * ECO_EQ[id] && !g.lost.has(id)) { g.lost.add(id); api.event("species_lost", { species: id, day: g.day }); sfx.blip({ f: 200, f2: 90, dur: 0.4, gain: 0.16 }); }
       }
       if (g.day >= s.days) {
-        const grade = api.answer(`s${g.si + 1}`, g.actions, g.lost.size === 0 ? "right" : "wrong");
+        const grade = api.answer(`s${g.si + 1}`, { $hostLog: "eco" }, g.lost.size === 0 ? "right" : "wrong");
         g.results.push(grade.verdict); g.phase = "done"; g.stepT = 0;
         api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, grade.verdict === "right" ? T.done : `${T.lost}: ${[...g.lost].map((x) => SPECIES[x].name).join(", ")}`, grade.verdict === "right" ? "done" : "warn");
         if (grade.verdict === "right") { api.fx.flash(C.mint, 0.12); sfx.blip({ f: 392, f2: 784, dur: 0.3, type: "triangle", gain: 0.18 }); }
@@ -165,7 +168,9 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
       ctx.fillStyle = "rgba(16,19,27,.92)"; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = s && s.kind === "predict-remove" && id === s.watch ? C.ion : SPECIES[id].color; ctx.lineWidth = s && s.kind === "predict-remove" && id === s.watch ? 5 : 3; ctx.stroke();
       icon(ctx, id, x, y - 8, 1.1);
-      api.text(ctx, SPECIES[id].name, x, y + r + 34, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center" });
+      const side = LABEL_SIDE[id];
+      api.text(ctx, SPECIES[id].name, x + side * (r + 16), y + 2, { font: "mono", size: 38, weight: 600, color: C.ink2, align: side < 0 ? "right" : "left", baseline: "middle" });
+      if (s && s.kind === "predict-remove" && g.phase !== "predict" && !gone) api.text(ctx, `${Math.round(popOf(id))}`, x + side * (r + 16), y + 40, { font: "mono", size: 38, weight: 600, color: id === s.watch ? C.ion : C.ink3, align: side < 0 ? "right" : "left", baseline: "middle" });
       ctx.restore();
       if (gone && g.stepT < 1.2) { ctx.save(); ctx.globalAlpha = 1 - g.stepT / 1.2; ctx.strokeStyle = C.amber; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x - 30, y - 30); ctx.lineTo(x + 30, y + 30); ctx.stroke(); ctx.restore(); }
     }
@@ -191,9 +196,9 @@ function create(api: EngineApi, spec: FoodSpec): EngineInstance {
     if (s && s.kind === "predict-remove") {
       if (g.phase === "predict") for (const c of CHIPS()) { ctx.save(); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, c.label, c.x, c.y + 2, { font: "display", size: 40, weight: 700, align: "center", baseline: "middle" }); ctx.restore(); }
       if (g.phase === "run" || g.phase === "result") {
-        drawGraph(ctx, 560, 470, 400, 140, g.day, s.watch);
-        pill(api, ctx, `${T.predict}: ${g.pick === "up" ? T.up : g.pick === "down" ? T.down : T.same}`, 270, 590, { color: C.ink2, size: 38 });
-        if (g.phase === "result") { const ok = g.pick === g.truth; const txt = `${SPECIES[s.watch].name}: ${g.truth === "up" ? T.up : g.truth === "down" ? T.down : T.same}`.toLowerCase(); pill(api, ctx, txt, 760, 440, { color: ok ? C.mint : C.amber }); if (ok) tick(ctx, 910, 440); else magnifier(ctx, 920, 440); }
+        drawGraph(ctx, 640, 486, 320, 118, g.day, s.watch);
+        api.text(ctx, `you: ${g.pick === "up" ? T.up : g.pick === "down" ? T.down : T.same}`.toLowerCase(), 656, 522, { font: "mono", size: 38, weight: 600, color: C.ink2, maxWidth: 290 });
+        if (g.phase === "result") { const ok = g.pick === g.truth; const txt = `${SPECIES[s.watch].name}: ${g.truth === "up" ? T.up : g.truth === "down" ? T.down : T.same}`.toLowerCase(); pill(api, ctx, txt, 780, 455, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 790, 405); else magnifier(ctx, 790, 405); }
       }
     }
     if (s && s.kind === "keep-alive") {

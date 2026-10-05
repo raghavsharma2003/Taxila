@@ -9,8 +9,14 @@ export const REP_CLASSES = Object.freeze(["concrete", "pictorial", "abstract", "
 const CPA_OF = { concrete: "C", game: "C", pictorial: "P", story: "P", analogy: "P", abstract: "A", worked_example: "A", counterexample: "A", language_switch: "A" };
 export const EXPLORATION_FLOOR = 0.2;
 const DAY = 86_400_000;
-/** Attempt outcomes that mean the arm repaired the error (resolve.js). */
-const RESOLVED = new Set(["resolved_now", "resolved_next", "resolved_delayed"]);
+/** Attempt outcomes that mean the arm repaired the error (resolve.js: repaired_now → resolved_next → resolved_delayed). */
+export const RESOLVED = new Set(["repaired_now", "resolved_next", "resolved_delayed"]);
+/**
+ * Did this attempt's arm repair the error and HOLD? A `repaired_now` that is already final was lost (the next lesson's
+ * first answer was wrong, resolve.js keeps the stage it reached), so it is no proof for child_history; the delayed-fail
+ * recap still uses it (forgot ≠ never understood: that arm did work once).
+ */
+export const heldRepair = (a) => a.outcome === "resolved_next" || a.outcome === "resolved_delayed" || (a.outcome === "repaired_now" && !a.final);
 
 /** Generic arms every skill can fall back to (one per CPA rung plus a worked example). */
 export const GENERIC_ARMS = Object.freeze([
@@ -79,7 +85,7 @@ export function selectReteach(c) {
 
   // 1 forgot ≠ never understood (RT9): recap via the arm that resolved it before, plus one retrieval item.
   if (c.trigger === "delayed_fail") {
-    const worked = [...attempts].reverse().find((a) => a.outcome === "resolved_now" || a.outcome === "resolved_next" || a.outcome === "resolved_delayed");
+    const worked = [...attempts].reverse().find((a) => RESOLVED.has(a.outcome));
     if (worked) return { ...base, move: "recap", armId: worked.armId, representation: worked.representationId, repClass: worked.repClass, retrievalItem: true };
   }
   // 4 two distinct failed arms this session → prerequisite descent; three → park and schedule a spaced re-teach.
@@ -111,7 +117,7 @@ export function selectReteach(c) {
   // for this child before goes first — on any trigger, not only a delayed fail (RT9) — provided it survived the
   // exclusions above (a class that failed twice in 30 days, or failed in the last two attempts, is already out). Most
   // recent resolution first; never an arm already used this lesson.
-  const repaired = [...attempts].reverse().find((a) => RESOLVED.has(a.outcome) && E.some((x) => x.id === a.armId));
+  const repaired = [...attempts].reverse().find((a) => heldRepair(a) && E.some((x) => x.id === a.armId));
   if (repaired && !logged) {
     const arm = E.find((x) => x.id === repaired.armId);
     return { ...base, move: "reteach", armId: arm.id, representation: arm.representationId, repClass: arm.repClass, chosenBy: "child_history", offerPick: null,

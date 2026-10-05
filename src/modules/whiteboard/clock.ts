@@ -22,28 +22,38 @@ const matches = (a: LineAnchor, line: { lessonId?: string; teacherReplySeq?: num
   (!line.lessonId || !a.lessonId || a.lessonId === line.lessonId)
   && (line.teacherReplySeq === undefined || a.teacherReplySeq === undefined || a.teacherReplySeq === line.teacherReplySeq);
 
+/** The anchor names exactly this line (same lesson, same teacher reply seq): it is hers, however long ago it fired. */
+const exact = (a: LineAnchor, line: { lessonId?: string; teacherReplySeq?: number }) =>
+  line.teacherReplySeq !== undefined && a.teacherReplySeq === line.teacherReplySeq && (!line.lessonId || !a.lessonId || a.lessonId === line.lessonId);
+
+/** How late the script reached the board relative to her line's first sample (ms; > 0 = she was already speaking). */
+export interface AnchorTiming { lateMs: number; source: "recent" | "exact" | "event" | "grace" }
+
 /**
- * Resolve the anchor for a script's line: an anchor that already fired for it within `recentMs` before `since`, else the
- * next one to fire, else `since + graceMs`. Calls `onAnchor(at)` exactly once; returns a cancel function.
+ * Resolve the anchor for a script's line: an anchor that already fired for EXACTLY this line (same teacherReplySeq) at any
+ * age, or one that matches loosely within `recentMs` before `since`, else the next one to fire, else `since + graceMs`.
+ * An exact past anchor is used as is, so a script that arrives after she started speaking is drawn on her clock: what
+ * she has already said appears at once and the rest follows her voice (W2-F fixer: a late script used to wait out the
+ * grace and replay from t = 0 after her line). Calls `onAnchor(at, timing)` exactly once; returns a cancel function.
  */
-export function awaitLineAnchor(line: { lessonId?: string; teacherReplySeq?: number }, onAnchor: (at: number) => void,
+export function awaitLineAnchor(line: { lessonId?: string; teacherReplySeq?: number }, onAnchor: (at: number, timing: AnchorTiming) => void,
   { since = now(), graceMs = 1200, recentMs = 2500 }: { since?: number; graceMs?: number; recentMs?: number } = {}): () => void {
-  if (last && matches(last, line) && last.at >= since - recentMs && last.at <= now()) {
-    onAnchor(last.at);
+  if (last && last.at <= now() && (exact(last, line) || (matches(last, line) && last.at >= since - recentMs))) {
+    onAnchor(last.at, { lateMs: Math.round(since - last.at), source: exact(last, line) ? "exact" : "recent" });
     return () => {};
   }
   let done = false;
-  const fire = (at: number) => {
+  const fire = (at: number, source: AnchorTiming["source"]) => {
     if (done) return;
     done = true;
     cleanup();
-    onAnchor(at);
+    onAnchor(at, { lateMs: Math.round(since - at), source });
   };
   const onEvent = (e: Event) => {
     const d = (e as CustomEvent<LineAnchor>).detail;
-    if (d && matches(d, line)) fire(d.at);
+    if (d && matches(d, line)) fire(d.at, "event");
   };
-  const timer = setTimeout(() => fire(since + graceMs), Math.max(0, since + graceMs - now()));
+  const timer = setTimeout(() => fire(since + graceMs, "grace"), Math.max(0, since + graceMs - now()));
   if (typeof window !== "undefined") window.addEventListener(EVENT, onEvent);
   function cleanup() {
     clearTimeout(timer);

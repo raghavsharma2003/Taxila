@@ -40,8 +40,13 @@ export interface EngineApi {
   task(step: string, goal: string, mode?: "done" | "warn" | null): void;
   caption(text: string): void;
   progress(frac: number, marks?: number[]): void;
-  /** the child's RAW act; the host grades it against the validated spec and returns that grade */
+  /** the child's RAW act; the host grades it against the validated spec and returns that grade. Any `{ $hostLog: name }`
+   *  inside `value` is replaced by the HOST's own record of that input channel (see `record`), never the frame's copy. */
   answer(itemId: string, value: unknown, local?: string): Graded;
+  /** append a raw input to a host-side channel (control changes, actions, samples) as it happens */
+  record(channel: string, entry: unknown): void;
+  /** start a channel afresh (e.g. at a new step) */
+  resetLog(channel: string): void;
   event(name: string, data?: unknown): void;
   say(lineId: string): void;
   done(summary?: unknown): void;

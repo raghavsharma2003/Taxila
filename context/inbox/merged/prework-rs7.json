@@ -1,0 +1,121 @@
+{
+ "nodes": [
+  {
+   "id": "rs7-translit-roman-to-devanagari",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Roman Hinglish -> Devanagari step before TTS (server/voice/translit, flag TAXILA_VOICE_DEVANAGARI, OFF by default): per sentence, hand lexicon (numbers 0-100 + scale/ordinal/fraction words mapped to spoken-lexicon WORDS.hi.below100, core words, verb-inflection generator) > dev-learned lexicon > ambiguous words by context (strong-prior set: par/do/main/hum...) > number context (teen sau saath -> साठ) > की/कि after verb forms > rule transliteration for unknown Hindi-looking words; English words, names, acronyms stay Latin so langRuns wraps only Hindi in <lang hi-IN>; a sentence with no unambiguous Hindi word is untouched; safety text (helpline, identity, safety register/moment; predicate on the WRITTEN text) is byte-identical. Wired by patch 01 at dhd.js spokenRun (covers dhd, mai, omni) and patch 02 at speech.js ttsInput, via spoken.devanagari. Reverse if: a human listen on the RS-7 20 number lines finds Devanagari worse than Roman on any voice, or held-out word accuracy falls below 95% on a refreshed corpus."
+  },
+  {
+   "id": "rs7-voice-switch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Voice switch server/voice/voice-switch.js: TAXILA_TEACHER_VOICE=diya|priya|marin behind one interface (styleFor maps onto the existing dhd/oai pipeline style; documentFor/synthesize standalone). Unset (default) = no change, voices.js decides as today; production default voice unchanged. priya refused unless TAXILA_ALLOW_PREVIEW_VOICE=1 (voice-ga-only-for-minors). Respects W2-D laneSwitched (a lane-switched lesson keeps the realtime voice). Lives in a new file because voices.js already exists. Reverse if: the owner's pick needs per-teacher voices (then fold into voices.js VOICE_TABLE)."
+  },
+  {
+   "id": "rs7-devanagari-all-three-voices",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "All three switch rows carry devanagari: true (still behind the flag): the step raised number words heard on Diya 87.0 -> 98.2%, Priya 74.7 -> 93.7%, marin 91.0 -> 97.6% (rs7-m-render-diya, rs7-m-render-voices). Reverse if: a human listen prefers Roman on a voice."
+  },
+  {
+   "id": "rs7-fallback-rules-not-model",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Unknown-word fallback default = rules (heuristic classifier + rule transliteration), not the char n-gram NB model: the model adds +0.2 pt word accuracy but turns 1.3 pt more English words into Devanagari (English kept 99.5 -> 98.2%), the expensive error. Model kept as opt-in arm (TAXILA_TRANSLIT_FALLBACK=model). Reverse if: on a refreshed corpus the model's English-kept is >= the rules arm's while recall is higher."
+  },
+  {
+   "id": "rs7-m-translit-word-accuracy",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Translit held-out test split (441 real Director replies, 8,959 words; split by source file; gold = gpt-6.1-sol + DeepSeek-V4-Flash-0731 independent per-word labels, 97.8% keep-vs-convert agreement, 286 disagreement types adjudicated by written policy; exact match after norm.mjs): lexicon only 97.2% word acc; lexicon+rules 97.8% (convert P 99.8 / R 97.9, Hindi spelled right 97.1%, English kept 99.5%, Hindi number words 344/345); +NB model 98.0% (English kept 98.2%). First test run before dev fixes: rules 96.7%. Dev (in-sample) 99.6%. Safety replies 4/4 untouched. 35-80 us/reply. Method: node evals/translit/run.mjs --split test."
+  },
+  {
+   "id": "rs7-m-render-diya",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "DragonHD Diya (centralindia, -35%), 40 real replies with Roman Hindi number words, 2 takes x before/after (160 renders): Azure STT hi-IN number words heard 289/332 (87.0%) -> 326/332 (98.2%), Hindi-word recall 95.4 -> 98.2%; साठ (Roman saath = 60) 0/30 -> 26/30, other number words 95.7 -> 99.3%. taxila-transcribe (Devanagari-script clips only) 76.4% -> 82.0% (it wrote 11/80 before and 5/80 after clips in Urdu script). Anchor v4 line, 4 takes: पैंतीस heard 1/4 -> 4/4, numbers 32/36 -> 36/36. Total duration -1.5% (screen, not a pace measurement). Method: node evals/translit/render.mjs all|anchor."
+  },
+  {
+   "id": "rs7-m-render-voices",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Same 40 lines, 1 take, Azure STT hi-IN, documents from voice-switch documentFor: MAI-Voice-2.1 Priya number words 118/158 (74.7%) -> 148/158 (93.7%), Hindi recall 81.3 -> 97.3%, 1/40 lines a persistent HTTP 502 in both arms (r0842, Roman text with '|'); gpt-4o-mini-tts marin 151/166 (91.0%) -> 162/166 (97.6%), Hindi recall 93.8 -> 94.9%, 0 failures. Method: node evals/translit/render.mjs voices."
+  },
+  {
+   "id": "rs7-rj-nb-model-default",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: char 1-4-gram naive Bayes (dev-trained, 37 KB) as the default unknown-word classifier. Broke: converted 1.3 pt more English words to Devanagari on the held-out split (English kept 99.5 -> 98.2%) for +0.2 pt word accuracy; not measurably necessary."
+  },
+  {
+   "id": "rs7-rj-context-only-ambiguity",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: resolving ambiguous spellings (par, do, main, pehle) only by a +-2 word Hindi-vs-English neighbour vote. Broke: Hinglish puts English nouns before postpositions ('number line par'), so 'par' lost the vote 38 times on dev; replaced by a strong-prior set that converts unless the window is an English phrase (0 Hindi, >= 3 English)."
+  },
+  {
+   "id": "rs7-rj-gpt-transcribe-as-sole-ear",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: taxila-transcribe as an STT judge for Hindi number words. Broke: it returns Urdu script for 7-14% of Hindi clips, writes digits and merges words (तीनसौ), so a script-blind scorer reads 67-75%; keep Azure STT hi-IN Lexical as the primary proxy and report the gpt numbers on Devanagari-script clips only."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "measured_by",
+   "dst": "rs7-m-translit-word-accuracy"
+  },
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "measured_by",
+   "dst": "rs7-m-render-diya"
+  },
+  {
+   "src": "rs7-devanagari-all-three-voices",
+   "rel": "measured_by",
+   "dst": "rs7-m-render-voices"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "rs7-voice-switch"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "caused_by",
+   "dst": "voice-final-diya-2026-10-04"
+  },
+  {
+   "src": "rs7-fallback-rules-not-model",
+   "rel": "measured_by",
+   "dst": "rs7-m-translit-word-accuracy"
+  },
+  {
+   "src": "rs7-fallback-rules-not-model",
+   "rel": "caused_by",
+   "dst": "rs7-rj-nb-model-default"
+  },
+  {
+   "src": "rs7-m-render-diya",
+   "rel": "blocks",
+   "dst": "w2g-base-rate-minus-35"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "caused_by",
+   "dst": "rs7-m-render-voices"
+  }
+ ]
+}

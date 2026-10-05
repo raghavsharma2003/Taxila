@@ -1,0 +1,421 @@
+{
+ "date": "2026-10-05",
+ "round": "polish-r6 of arm P (from r5)",
+ "image_spend_usd": {
+  "r6": 0.0,
+  "ledger_total": 9.98,
+  "cap": 30
+ },
+ "fix1_shoulder_tear": {
+  "method": "bunclean.py: strip removed from the bun layer (opening + arc-fitted bottom), 3.5 px feathered alpha (1.6 px on wisps); bodyfill.py: nape layer under the bun (rest footprint only)",
+  "gate": "teargate.py v2 (cream-above / 2-14 px warm-dark run / kurta-or-cream-below, >= 4 adjacent columns, every frame)",
+  "r5_control": 313,
+  "r6_final_i3": 0,
+  "frames": 1356,
+  "note": "v1 (thin-structure opening) kept as a diagnostic only: it fired on the bun's smooth taper and the kurta contour in r6 (inspected at 3x, no tear)"
+ },
+ "fix2_3_mouth": "inner occlusion gradient, 2 px soft rims (interior + lip edge AA), lit lower-lip volume + tint, rounded tongue mound, corner creases; aa 56->48, delight +36->+30 and W 1.08->1.04, cheek-up lift with jaw drop",
+ "fix4_turn": "product yaw back to +-20 on the shared field alone (no plate): field sampled at actual x / rest y (removes the delight+turn jaw bulge), far eye floored at 0.78x, far mouth corner tucked inside the lips, nose side-plane shading; NOT painted per-side feature layers (see notes)",
+ "fix5_expressions": "VARIANTS: thinking x3, concern x3 (asymmetric knit / press / one corner down / lower-lid raise; push + same-side squint + cheek bunch), delight/warm/surprise/listening x3, playful x2; random non-repeating pick; rig warp keys: mouth bunching, cheek bunch, mentalis",
+ "fix6_visemes_final": {
+  "gpt56sol": {
+   "model": "taxila-brain",
+   "n": 54,
+   "correct": 45,
+   "accuracy": 0.833,
+   "perClass": {
+    "fv": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "F",
+      "F",
+      "F",
+      "F",
+      "F",
+      "F"
+     ]
+    },
+    "mbp": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "E",
+      "E",
+      "E",
+      "E",
+      "E",
+      "E"
+     ]
+    },
+    "surprise": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "B",
+      "A"
+     ]
+    },
+    "o": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+     ]
+    },
+    "oo": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "D",
+      "D",
+      "D",
+      "D",
+      "D",
+      "D"
+     ]
+    },
+    "ltdn": {
+     "n": 6,
+     "hit": 5,
+     "said": [
+      "G",
+      "G",
+      "G",
+      "G",
+      "G",
+      "A"
+     ]
+    },
+    "aa": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+     ]
+    },
+    "ch": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "H",
+      "H",
+      "C",
+      "C",
+      "H",
+      "H"
+     ]
+    },
+    "ee": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    }
+   }
+  },
+  "grok_a": {
+   "model": "grok-4-20-reasoning",
+   "n": 54,
+   "correct": 34,
+   "accuracy": 0.63,
+   "perClass": {
+    "fv": {
+     "n": 6,
+     "hit": 2,
+     "said": [
+      "C",
+      "C",
+      "F",
+      "F",
+      "C",
+      "C"
+     ]
+    },
+    "mbp": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "E",
+      "E",
+      "E",
+      "E",
+      "E",
+      "E"
+     ]
+    },
+    "surprise": {
+     "n": 6,
+     "hit": 3,
+     "said": [
+      "I",
+      "I",
+      "A",
+      "I",
+      "A",
+      "A"
+     ]
+    },
+    "o": {
+     "n": 6,
+     "hit": 1,
+     "said": [
+      "I",
+      "B",
+      "I",
+      "I",
+      "I",
+      "I"
+     ]
+    },
+    "oo": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "D",
+      "D",
+      "I",
+      "I",
+      "D",
+      "D"
+     ]
+    },
+    "ltdn": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "G",
+      "G",
+      "G",
+      "G",
+      "G",
+      "G"
+     ]
+    },
+    "aa": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+     ]
+    },
+    "ch": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    },
+    "ee": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    }
+   }
+  },
+  "grok_b": {
+   "model": "grok-4-20-reasoning",
+   "n": 54,
+   "correct": 35,
+   "accuracy": 0.648,
+   "perClass": {
+    "fv": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    },
+    "mbp": {
+     "n": 6,
+     "hit": 5,
+     "said": [
+      "E",
+      "C",
+      "E",
+      "E",
+      "E",
+      "E"
+     ]
+    },
+    "surprise": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "A",
+      "I",
+      "I",
+      "A",
+      "I",
+      "I"
+     ]
+    },
+    "o": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "I",
+      "B",
+      "I",
+      "B",
+      "B",
+      "B"
+     ]
+    },
+    "oo": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "D",
+      "D",
+      "I",
+      "I",
+      "D",
+      "D"
+     ]
+    },
+    "ltdn": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "G",
+      "G",
+      "G",
+      "G",
+      "G",
+      "G"
+     ]
+    },
+    "aa": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+     ]
+    },
+    "ch": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    },
+    "ee": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    }
+   }
+  },
+  "r5": {
+   "gpt": 0.87,
+   "grok": 0.685
+  },
+  "best_iteration_gpt": "i4 0.944 (fv 5/6, ch 6/6)"
+ },
+ "fix7": "mid-blink + happy lid volume shading and 3.5 px lash bend; wink entry squints from below (no droopy half-lid); stud glint drawn",
+ "fps_proxy_swiftshader_720px_cpu4x": {
+  "work_p95_ms": [
+   12.6,
+   12.8,
+   12.0
+  ],
+  "work_p50_ms": [
+   7.6,
+   7.7,
+   7.7
+  ],
+  "unthrottled_work_p95": 3.9,
+  "triangles": 22794,
+  "r5": [
+   12.0,
+   13.4,
+   12.3
+  ],
+  "note": "NOT a phone reading; owner must read demo.html?facerig=1 on the cheap Android"
+ },
+ "rest_ssim_vs_cfront_head": 0.9641,
+ "r5_rest_ssim_head": 0.9647,
+ "blind_own_grid_from_clip": {
+  "i2_blink_concern": {
+   "sol": 3.7,
+   "grok": 3.5
+  },
+  "i2_open_concern": {
+   "sol": 3.7,
+   "grok": 3.6
+  },
+  "i3_final": {
+   "sol": 3.7,
+   "grok": 3.6
+  },
+  "r5_judge_grid": {
+   "sol": 3.7,
+   "grok": 3.7
+  }
+ },
+ "clips": [
+  "clip-review-r6-1024.mp4 (45.2 s, 30 fps)",
+  "clip-talk-14s-r6.mp4",
+  "clip-turn-6s-r6.mp4"
+ ]
+}

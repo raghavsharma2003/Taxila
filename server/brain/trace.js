@@ -22,20 +22,53 @@ export function inputsHashOf({ prev, cls, move, itemId = null, kitHash = null, l
 }
 
 /**
- * One brain_trace row (016). `arb` is kernel.arbitrate's result. Idempotent per (lesson, turn).
+ * One brain_trace row (016). `arb` is kernel.arbitrate's result. Idempotent per (lesson, turn). `ids` (the 016 columns
+ * item_id / misconception_id, kit ids only) are written only when the database has them (`withIds`: columnReady), so a
+ * database on the first 016 never fails the turn's transaction.
  * @param {{ lessonId: string, turn: number, lane: string, move: string, beat?: string|null, inputsHash: string,
  *   proposals: any[], arb: { accepted: any[], rejected: { p: any, why: string }[] }, reasons?: string[], serverMs?: number|null,
- *   kernelUs?: number|null, legalMode: string }} t
+ *   kernelUs?: number|null, legalMode: string, itemId?: string|null, misconceptionId?: string|null, withIds?: boolean }} t
  */
 export function brainTraceStmt(t) {
   const reasons = knownReasons([...(t.reasons ?? []), ...t.arb.accepted.flatMap((p) => p.reason ?? []), ...t.arb.rejected.map((r) => r.why)]);
+  const params = [t.lessonId, t.turn, t.lane, t.move, t.beat ?? null, t.inputsHash, JSON.stringify(t.proposals.map(PROPOSAL_KEYS)),
+    JSON.stringify(t.arb.accepted.map(PROPOSAL_KEYS)), JSON.stringify(t.arb.rejected.map((r) => ({ source: r.p.source, kind: r.p.kind, why: r.why }))),
+    reasons, t.serverMs == null ? null : Math.round(t.serverMs), t.kernelUs == null ? null : Math.round(t.kernelUs), t.legalMode];
+  if (t.withIds) {
+    const id = (v) => (typeof v === "string" && v.length && v.length <= 120 ? v : null);
+    return {
+      text: `insert into brain_trace (lesson_id, turn, lane, move, beat, inputs_hash, proposals, accepted, rejected, reasons, server_ms, kernel_us, legal_mode_at_write, item_id, misconception_id)
+           values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) on conflict (lesson_id, turn) do nothing returning id`,
+      params: [...params, id(t.itemId), id(t.misconceptionId)],
+    };
+  }
   return {
     text: `insert into brain_trace (lesson_id, turn, lane, move, beat, inputs_hash, proposals, accepted, rejected, reasons, server_ms, kernel_us, legal_mode_at_write)
            values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) on conflict (lesson_id, turn) do nothing returning id`,
-    params: [t.lessonId, t.turn, t.lane, t.move, t.beat ?? null, t.inputsHash, JSON.stringify(t.proposals.map(PROPOSAL_KEYS)),
-      JSON.stringify(t.arb.accepted.map(PROPOSAL_KEYS)), JSON.stringify(t.arb.rejected.map((r) => ({ source: r.p.source, kind: r.p.kind, why: r.why }))),
-      reasons, t.serverMs == null ? null : Math.round(t.serverMs), t.kernelUs == null ? null : Math.round(t.kernelUs), t.legalMode],
+    params,
   };
+}
+
+/**
+ * The comprehension trail of a turn as closed codes (owner priority 1; reasons.js families cls / cls_source / verdict /
+ * guard): what the classifier read, where the label came from (the model, the fallback deployment, an outage, the bytes),
+ * the verdict the child was shown, and what the reply guard did to her words. PURE.
+ * @param {{ cls: any, classified: boolean, help?: boolean, uiVerdict?: string|null, guard?: { caught?: string[], replaced?: boolean, rewritten?: boolean, repaired?: boolean } | null }} x
+ */
+export function comprehensionReasons({ cls, classified, help = false, uiVerdict = null, guard = null }) {
+  const BYTES = new Set(["exact", "lexical", "echo", "empty", "chip", "predicate", "module", "asr", "content_filter", "error", "help", "relational", "speculative"]);
+  const out = [];
+  if (cls) {
+    out.push(`cls.${cls.outcome ?? "none"}`);
+    const src = cls.source === "model" ? (cls.fallback ? "fallback" : "model") : BYTES.has(cls.source) ? cls.source : "bytes";
+    out.push(`cls_source.${src}`);
+  } else out.push("cls.none", `cls_source.${help ? "help" : classified ? "none" : "module"}`);
+  out.push(`verdict.${uiVerdict ?? "ungraded"}`);
+  if (guard) {
+    for (const k of ["replaced", "rewritten", "repaired"]) if (guard[k]) out.push(`guard.${k}`);
+    for (const c of guard.caught ?? []) out.push(`guard.${c}`);
+  }
+  return out;
 }
 
 /**
@@ -77,6 +110,19 @@ export function tableReady(name, q) {
       .then((rows) => !!rows?.[0]?.ok, () => { ready.delete(name); return false; }));
   }
   return ready.get(name);
+}
+/**
+ * Whether a column exists (the 016 fixer columns item_id / misconception_id on a database that ran the first 016).
+ * Probed once per process like tableReady; a failed probe answers false and is retried.
+ * @returns {Promise<boolean>}
+ */
+export function columnReady(table, column, q) {
+  const k = `${table}.${column}`;
+  if (!ready.has(k)) {
+    ready.set(k, Promise.resolve().then(() => q("select count(*)::int as n from information_schema.columns where table_name = $1 and column_name = $2", [table, column]))
+      .then((rows) => Number(rows?.[0]?.n) > 0, () => { ready.delete(k); return false; }));
+  }
+  return ready.get(k);
 }
 /** Tests: forget the probes. */
 export const __resetTables = () => ready.clear();

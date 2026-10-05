@@ -1,0 +1,67 @@
+RS-4 pre-work patch 01: the `engine` artifact kind (rung 1 of reset-studio-v2-on-w2h-host) and its renderer.
+Applies after Wave 2 integration to: shared/studio.ts (W2-H types), src/studio/renderers.ts (W2-H registry), and
+creates src/studio-v2/react/EngineRenderer.tsx (RS-4-owned; in the patch only because it imports W2-H's types).
+Regenerated 2026-10-05 by the rs4 review with git diff (the first version was hand-written, had wrong hunk counts, so
+git apply rejected it as corrupt, and would have left a stray ';' before the new union member). Verified: git apply
+--check passes on HEAD 94d30a5's tree, and tsc passes on the patched files (symlink mirror, preserveSymlinks).
+
+diff --git a/shared/studio.ts b/shared/studio.ts
+--- a/shared/studio.ts
++++ b/shared/studio.ts
+@@ -106,7 +106,10 @@ export type StudioArtifact =
+       archetype?: string; intentId?: string; strings?: Record<string, string>; skeleton?: string }
+   /** The code skeleton (LIVE-STUDIO D1 §3.4): correct by construction; interactive and host-graded when it is the activity. */
+   | { kind: "skeleton"; stage?: StageSize; skeleton: string; params: Record<string, unknown>; strings: Record<string, string>; archetype?: string; intentId?: string }
+-  | { kind: "image"; stage?: StageSize; src: string; alt: string };
++  | { kind: "image"; stage?: StageSize; src: string; alt: string }
++  /** Studio v2 rung 1 (RS-4): a hand-built engine + a validated spec (shared/studio-spec.ts). The spec is the planner's;
++   *  the client host re-validates it, the server stores the validated copy and re-grades every raw act from it. */
++  | { kind: "engine"; stage?: StageSize; archetype: string; spec: unknown; intentId?: string; pieceId: string };
+ export type StudioArtifactKind = StudioArtifact["kind"];
+ 
+ // ───────────────────────────── the whiteboard (drawing script) ─────────────────────────────
+diff --git a/src/studio/renderers.ts b/src/studio/renderers.ts
+--- a/src/studio/renderers.ts
++++ b/src/studio/renderers.ts
+@@ -15,6 +15,7 @@ import { StudioWhiteboard } from "../modules/whiteboard/StudioWhiteboard.tsx";
+ import { StudioFrame } from "./StudioFrame.tsx";
+ import { SkeletonRenderer } from "./skeletons.tsx";
+ import { ImageRenderer } from "./ImageRenderer.tsx";
++import { EngineRenderer } from "../studio-v2/react/EngineRenderer.tsx";
+ 
+ /** What a renderer may tell the stage. An answer is host-graded (LIVE-STUDIO §3.10); `correct` is never trusted. */
+ export type StudioStageEvent =
+@@ -43,6 +44,7 @@ export const RENDERERS: { [K in StudioArtifactKind]?: ArtifactRenderer<K> } = {
+   frame: StudioFrame,           // W2-H: a gate-passed build (hash-CSP, opaque origin, host-graded)
+   skeleton: SkeletonRenderer,   // W2-H: the code skeleton (the sketch while making; the activity when the build is not there)
+   image: ImageRenderer,         // W2-H: art only (W3-G's image lane fills it)
++  engine: EngineRenderer,       // RS-4: Studio v2 engine + spec (src/studio-v2/**): the first rung
+ };
+ 
+ export function rendererFor<K extends StudioArtifactKind>(kind: K): ArtifactRenderer<K> | null {
+diff --git a/src/studio-v2/react/EngineRenderer.tsx b/src/studio-v2/react/EngineRenderer.tsx
+new file mode 100644
+--- /dev/null
++++ b/src/studio-v2/react/EngineRenderer.tsx
+@@ -0,0 +1,21 @@
++// Adapter from W2-H's ArtifactRendererProps to the Studio v2 piece (RS-4-owned; lives in this patch because it imports
++// W2-H's types). The stage's fitted box hosts the v2 slot; the host inside does its own 16:10 fit (STUDIO-V2 canvas
++// 1000x625), so the stage letterboxes the rest.
++import type { ArtifactRendererProps } from "../../studio/renderers.ts";
++import { StudioV2Piece } from "./StudioV2Piece.tsx";
++
++export function EngineRenderer({ artifact, reducedMotion, onEvent }: ArtifactRendererProps<"engine">) {
++  return (
++    <StudioV2Piece archetype={artifact.archetype} spec={artifact.spec} reducedMotion={reducedMotion}
++      onEvent={(e) => {
++        if (e.type === "ready") onEvent({ type: "ready" });
++        else if (e.type === "done") onEvent({ type: "done" });
++        // the RAW act (value carries the host's own input record where the engine keeps one); the server re-grades it
++        // from the spec it stored, never a `correct` claim
++        else if (e.type === "answer") onEvent({ type: "answer", value: { archetype: e.archetype, itemId: e.itemId, value: e.value } });
++        // engine_failed / fallback: the board is already on screen; the stage must NOT show an error (R9)
++        else if (e.type === "fallback") onEvent({ type: "interaction", name: "rung_board", data: (e.data ?? {}) as Record<string, unknown> });
++        else if (e.type === "facts") onEvent({ type: "interaction", name: "facts", data: e.facts ?? {} });
++      }} />
++  );
++}

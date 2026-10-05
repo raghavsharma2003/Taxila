@@ -4,7 +4,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { prewarm, take, deliveryFor, __test as warm } from "../server/voice/prewarm.js";
-import { setCacheStore, speakChunk } from "../server/voice/speech.js";
+import { setCacheStore, speakChunk, __breaker } from "../server/voice/speech.js";
 import { expressiveSeam } from "../server/voice/expressive/seam.js";
 import { routes as voiceRoutes, wantsFrames } from "../server/routes/voice.js";
 import { parseFrames, FRAMES_CONTENT_TYPE } from "../server/voice/frames.js";
@@ -53,7 +53,7 @@ const COOKIE = "tx_session";
 const reqWith = (token, accept) => ({ headers: { cookie: `${COOKIE}=${token}`, ...(accept ? { accept } : {}) } });
 const sha = (t) => createHash("sha256").update(t).digest("hex");
 
-test.beforeEach(() => { setCacheStore({ get: async () => null, put: async () => {} }); resetTelemetry(); });
+test.beforeEach(() => { setCacheStore({ get: async () => null, put: async () => {} }); resetTelemetry(); __breaker.reset(); });
 test.afterEach(() => warm.clear());
 
 test("voices: config-driven; DragonHD only when Azure Speech is configured; per-character override; expressive flag", () => {

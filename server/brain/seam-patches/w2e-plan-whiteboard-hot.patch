@@ -1,0 +1,16 @@
+# W2-E -> W2-F (server/studio/plan.js; BUILD-PLAN §1.5). Apply with `git apply -p1` from the repo root.
+# The live whiteboard planner is a child-facing call with a 7 s budget beside her spoken line (owner priority 6): it is
+# a HOT lane call (BUILD-PLAN §1.3: reply, classify, distress, realtime ... and anything the child waits on), never
+# queued behind Studio builds. server/lanes.js already never shapes background calls on a deployment no hot lane uses
+# (taxila-gpt6-luna today), so this matters when STUDIO_WB_DEPLOY points at a shared pool (taxila-fast).
+--- a/server/studio/plan.js	2026-10-05 02:21:44.365433748 +0000
++++ b/server/studio/plan.js	2026-10-05 02:21:44.367748901 +0000
+@@ -393,7 +393,7 @@
+       const msgs = [{ role: "system", content: WB_SYSTEM }, { role: "user", content: JSON.stringify(user) }];
+       if (feedback) msgs.push({ role: "user", content: `previous script failed the board check: ${feedback}. Return the corrected script.` });
+       // the deadline covers a wait for the background bucket too (server/lanes.js may queue the call before it is sent)
+-      const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" }), left);
++      const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "hot" }), left);
+       usage.push(r.usage);
+       const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((o) => o.op !== "erase") : [];
+       const fit = fitOps(expandOps(r.json?.ops), WB_BOARD, 6, prior);

@@ -1,0 +1,29 @@
+--- a/server/routes/voice.js	2026-10-05 01:37:27.227591476 +0000
++++ b/server/routes/voice.js	2026-10-05 01:37:27.292950014 +0000
+@@ -23,6 +23,8 @@
+ import { realtimeSeam } from "../voice/realtimeSession.js";
+ import { seamSafe } from "../seam-safe.js";
+ import { cascadeEngine, dhdVoiceFor } from "../voice/voices.js";
++import { voiceChoice, styleFor } from "../voice/voice-switch.js";
++import { devanagariOn } from "../voice/translit/index.js";
+ 
+ const VOICES = new Set(["alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse", "marin", "cedar"]);
+ /** A push-to-talk turn is a child's answer: 30 s of Opus at ~32 kbit/s is ~120 kB; 2 MB is a generous cap. */
+@@ -90,9 +92,15 @@
+   const base = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, spokenOptsForChild(child, ageBand));
+   // HUMAN-VOICE B1: the cascade voice from config (server/voice/voices.js): DragonHD when Azure Speech is configured,
+   // the character's gpt-4o-mini-tts voice as the fallback (and the only voice when it is not).
+-  if (cascadeEngine() !== "dhd" || opts?.laneSwitched) return base;
++  if (opts?.laneSwitched) return base;
++  // RS-7 voice switch: TAXILA_TEACHER_VOICE=diya|priya|marin is the owner's config flip; unset = today's path below.
++  const choice = voiceChoice();
++  if (choice) return styleFor(choice, base);
++  if (cascadeEngine() !== "dhd") return base;
+   const v = dhdVoiceFor(teacher.id);
+-  return { ...base, engine: "dhd", dhd: { voice: v.dhd, baseRate: v.baseRate }, version: `${base.version}:dhd` };
++  // RS-7: every en-IN DragonHD voice gets the Roman → Devanagari step when TAXILA_VOICE_DEVANAGARI=1 (default off)
++  const spoken = devanagariOn() ? { ...base.spoken, devanagari: true } : base.spoken;
++  return { ...base, engine: "dhd", dhd: { voice: v.dhd, baseRate: v.baseRate }, spoken, version: `${base.version}:dhd${spoken?.devanagari ? ":dv" : ""}` };
+ }
+ 
+ // ───────────── POST /api/voice/stt-token ─────────────

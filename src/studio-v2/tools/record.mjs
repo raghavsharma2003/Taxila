@@ -50,7 +50,7 @@ for (const id of ids) {
     const summary = await page.evaluate(() => {
       const h = window.__sv2, log = h.log;
       return { answers: log.filter((m) => m.k === "answer").length, right: log.filter((m) => m.k === "answer" && m.grade?.verdict === "right").length,
-        done: log.some((m) => m.k === "done"), rung: h.rung(), tooSmall: h.tooSmall.length, agreement: h.agreement(), repairs: h.repairs.length,
+        done: log.some((m) => m.k === "done"), rung: h.rung(), tooSmall: h.tooSmall.length, safeHits: h.safeHits.length, safeSample: h.safeHits.slice(0, 3), agreement: h.agreement(), answerBytes: h.maxAnswerBytes(), repairs: h.repairs.length,
         events: [...new Set(log.filter((m) => m.k === "event").map((m) => m.name))] };
     });
     const painted = await stagePainted(page);

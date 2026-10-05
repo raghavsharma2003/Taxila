@@ -4,7 +4,7 @@
 // converges at once. A piece's slot is also fetched once on mount (GET /api/studio/slot) in case the stream is still
 // connecting. Nothing here ever shows an error: a failed fetch simply leaves the slot as the turn gave it.
 import { useEffect, useMemo, useState } from "react";
-import type { StudioArtifact, StudioSlot, StudioStatus, StudioWire, StudioAnswerResponse, StudioFeedbackAction } from "../../shared/studio.ts";
+import type { StudioArtifact, StudioSlot, StudioStatus, StudioWire, StudioAnswerResponse, StudioAnswerRequest, StudioFeedbackAction, StudioFrameErrorReason } from "../../shared/studio.ts";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Every Studio intent id starts with its lesson id (`<lessonId>:st:1`, `<lessonId>:wb:7`). */
@@ -66,9 +66,20 @@ async function postJson<T>(path: string, body: unknown): Promise<T | null> {
 
 export const studioApi = {
   /** The host's grade for a Studio answer (null = no verdict: the activity simply waits; never an error on screen). */
-  answer: (lessonId: string, intentId: string, value: unknown) => postJson<StudioAnswerResponse>("/api/studio/answer", { lessonId, intentId, value }),
+  /**
+   * "gone" = the server no longer has this piece on screen (409: retired, or the lesson left its memory): the stage drops
+   * it to the calm ground rather than leaving a Check button that can never answer.
+   */
+  async answer(lessonId: string, intentId: string, value: unknown, opts: { itemId?: string; mount?: string } = {}): Promise<StudioAnswerResponse | "gone" | null> {
+    const body: StudioAnswerRequest = { lessonId, intentId, value, ...(opts.itemId ? { itemId: opts.itemId } : {}), ...(opts.mount ? { mount: opts.mount } : {}) };
+    try {
+      const res = await fetch("/api/studio/answer", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      if (res.status === 409) return "gone";
+      return res.ok ? ((await res.json()) as StudioAnswerResponse) : null;
+    } catch { return null; }
+  },
   feedback: (lessonId: string, intentId: string, action: StudioFeedbackAction) => postJson<{ ok: boolean }>("/api/studio/feedback", { lessonId, intentId, action }),
-  frameError: (lessonId: string, intentId: string) => postJson<{ ok: boolean; slot?: StudioSlot }>("/api/studio/frame-error", { lessonId, intentId }),
+  frameError: (lessonId: string, intentId: string, reason: StudioFrameErrorReason) => postJson<{ ok: boolean; slot?: StudioSlot }>("/api/studio/frame-error", { lessonId, intentId, reason }),
   async build(src: string): Promise<{ sha256: string; fragment: string; stage: { w: number; h: number } } | null> {
     if (!/^\/api\/studio\/build\?sha=[0-9a-f]{64}$/.test(src)) return null;
     try { const res = await fetch(src, { credentials: "same-origin" }); return res.ok ? await res.json() : null; } catch { return null; }

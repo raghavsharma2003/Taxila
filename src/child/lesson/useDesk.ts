@@ -20,6 +20,7 @@ import type { UiBridge } from "../../lesson/uiBridge.ts";
 import { t } from "../../ui/copy.ts";
 import { tw } from "../../copy/en.ts";
 import { getJson } from "../../lesson/api.ts";
+import { enginesForTopic, prewarmWhenIdle } from "../../modules/prewarm.ts";
 import { fractionQuestion, helpAskedKey } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
@@ -193,7 +194,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         setAudioSinceCommit(true);
         setDismissed((d) => (d.has("T1") || d.has("T5") ? new Set([...d].filter((k) => k !== "T1" && k !== "T5")) : d));
       } else if (e.type === "connection") {
-        if (e.state === "reconnecting" || e.state === "failed") setLinkDownSince((v) => v ?? Date.now());
+        if (e.state === "stalled" || e.state === "reconnecting" || e.state === "failed") setLinkDownSince((v) => v ?? Date.now());
         else if (e.state === "connected") {
           setLinkDownSince((v) => {
             if (v !== null) setRecoveredAt(Date.now());
@@ -409,7 +410,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // re-ask time with no tap and no speech. Shown once per lesson; from then on captions are on for the lesson.
   const [quietTurns, setQuietTurns] = useState(0);
   const [t6, setT6] = useState<"no" | "showing" | "done">("no");
-  const reaskS = young ? 8 : 12;
+  // The Director's pace knob (TurnResponse.pace.waitNudgeSec, W2-C; "dheere" raises it) sets the re-ask time once a turn
+  // has carried it; the band default before that (W2-D seam edit in W2-A's file, 2026-10-05).
+  const nudgeKnob = state.pace?.waitNudgeSec;
+  const reaskS = typeof nudgeKnob === "number" && nudgeKnob >= 4 && nudgeKnob <= 30 ? nudgeKnob : young ? 8 : 12;
   useEffect(() => {
     if (floor !== "your_turn" || paused || waitHeld || !ctx.firstLesson || t6 !== "no") return;
     const id = setTimeout(() => setQuietTurns((n) => n + 1), reaskS * 1000 * ctx.timing);
@@ -498,6 +502,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const start = useCallback(async (mode?: LessonMode) => {
     const m: StartMode = (mode ?? (ctx.textOnly ? "text" : "voice")) === "voice" ? "cascade" : "text";
     prepareEarcons(); // inside the tap when there is one: the earcon context is unlocked by the same gesture
+    // W2-B #4: boot the spare module frame with this topic's likely engines (the board + the topic's own engine) while
+    // the start request and her first line run, so the first mount adopts a frame that is already up
+    prewarmWhenIdle(enginesForTopic(ctx.topicId));
     setGate("starting");
     try {
       await runtime.start(ctx.cid, m, ctx.topicId);
@@ -522,9 +529,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (state.phase === "live" && ctx.firstText && !sentFirst.current) {
       sentFirst.current = true;
       setItem({ ask: { text: ctx.firstText, source: "child", lines: [] }, answer: null, pendingVerdict: null });
-      runtime.say(ctx.firstText);
+      // The start already handled the question (ui.askConsumed: answered, or met by the safeguard): never sent twice.
+      if (!state.ui?.askConsumed) runtime.say(ctx.firstText);
     }
-  }, [state.phase, ctx.firstText, runtime]);
+  }, [state.phase, ctx.firstText, runtime, state.ui?.askConsumed]);
 
   // ───────── quick practice: "Practice · n of 5", "That's the set" (flows G10) ─────────
   const posedAsks = useRef<Set<string>>(new Set());

@@ -9,7 +9,11 @@
 //      its sha, plays with real taps, and is graded by the HOST; from inside the frame fetch / image loads / top
 //      navigation are refused and a forged postMessage answer is ignored (AT-11, locally);
 //   4. bytes that do not match the build id are never mounted: the skeleton activity takes their place;
-//   5. "Show me again" and "Not this one" reach the server.
+//   5. "Show me again" and "Not this one" reach the server;
+//   6. (W2-H fixer) the params production really serves (class 7 tenths: 10-part bars, a 0..1 line in tenths, and the
+//      schema's 12-part maximum) keep every target ≥ 44 px at all three viewports; the open corner menu stays inside the
+//      clipping stage; an answer names its item and the stage's mount key, and a wrong answer reaches the lesson as a
+//      module-only turn (the teacher can re-teach).
 // Runs in `npm test` when Chromium is installed; STUDIO_BROWSER=0 skips it. Screenshots: STUDIO_SHOTS=<dir>.
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -55,7 +59,9 @@ const frameArt = (sha = SHA) => ({ kind: "frame", stage: { w: 360, h: 320 }, stu
 function hostGrader() {
   let i = 0;
   const items = GOLD.shade_fraction.params.items;
-  return (v) => { const it = items[i]; const correct = !!it && v?.n === it.n && v?.d === it.d; if (correct) i++; return { correct, complete: i >= items.length }; };
+  let wrong = 0;
+  return (v) => { const it = items[i]; const correct = !!it && v?.n === it.n && v?.d === it.d; if (correct) { i++; wrong = 0; } else wrong++;
+    return { correct, complete: i >= items.length, wrongTries: correct ? 0 : wrong }; };
 }
 
 async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, fragment: FIXTURE } } = {}) {
@@ -70,7 +76,7 @@ async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, f
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "g@test.invalid", name: "Grown-up" }, children: [KID] });
     if (p === "/api/lesson/start") return json(200, { lessonId: LESSON, topic: { id: "c5-maths-ch02-t01", title: "Fractions", chapter: "Fractions" },
       teacher: { id: "arjun", name: "Arjun", voice: "v", addressedAs: "", role: "AI teacher" }, moduleCommands: [], ui, teacherOpening: "Dekho.", teacherOpeningSeq: 1 });
-    if (p === "/api/lesson/turn") return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: "Hmm.", teacherReplySeq: 2 });
+    if (p === "/api/lesson/turn") { calls.push({ p, b: JSON.parse(route.request().postData() || "{}") }); return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: "Hmm.", teacherReplySeq: 2 }); }
     if (p === "/api/lesson/end") return json(200, { summary: null, parentNote: null });
     if (p === "/api/studio/stream") return route.fulfill({ status: 204, body: "" });
     if (p === "/api/studio/slot") return json(200, { slot: null });
@@ -230,5 +236,91 @@ test("'Show me again' and 'Not this one' reach the server from the corner contro
     const fb = calls.filter((c) => c.p === "/api/studio/feedback").map((c) => c.b.action);
     assert.deepEqual(fb, ["again", "not_this"]);
     assert.equal(await page.$('[data-testid="studio-skeleton"]'), null, "the retired piece leaves the stage");
+  } finally { await page.close(); }
+});
+
+// ───────────────────────────── W2-H fixer (2026-10-05) ─────────────────────────────
+
+const { paramsFromKit } = await import("../server/studio/plan.js");
+const C7 = JSON.parse(readFileSync(new URL("../data/kits/c7-maths.json", import.meta.url), "utf8"));
+/** What production serves for the class 7 tenths topics (plan.js paramsFromKit on the real kits), plus the schema's d = 12. */
+function realCases() {
+  const out = [];
+  for (const topicId of ["c7-maths-ch03-t01", "c7-maths-ch03-t02", "c7-maths-ch12-t01"]) {
+    const kit = C7.topics.find((t) => t.topicId === topicId);
+    for (const id of ["shade_fraction", "number_line_jump"]) { const params = paramsFromKit(id, kit); if (params) out.push({ tag: `${topicId} ${id}`, id, params }); }
+  }
+  out.push({ tag: "schema max d=12", id: "shade_fraction", params: { items: [{ id: "i1", n: 5, d: 12 }], picture: "bar" } });
+  return out;
+}
+const realArt = (id, params) => { const a = ARCHETYPES.get(id); return { kind: "skeleton", stage: a.stage, skeleton: a.skeleton, archetype: id, intentId: `${LESSON}:st:1`, params: buildParams(a, params), strings: {} }; };
+
+test("the params production serves (class 7 tenths, d = 12) keep every target ≥ 44 px inside the box at all three viewports", { skip: SKIP, timeout: 600_000 }, async () => {
+  const fails = [];
+  const cases = realCases();
+  assert.ok(cases.some((c) => c.params.items?.some?.((i) => i.d === 10)), "a 10-part bar is among the real cases");
+  for (const vp of VIEWPORTS) for (const c of cases) {
+    const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: realArt(c.id, c.params) });
+    try {
+      await page.waitForSelector('[data-testid="studio-skeleton"]', { timeout: 10_000 });
+      const m = await measure(page);
+      const tag = `${vp.width}x${vp.height} ${c.tag}`;
+      if (!inside(m.art, m.box)) fails.push(`${tag}: drawing outside box`);
+      for (const t of m.targets) {
+        if (Math.min(t.w, t.h) < 44 - 0.5) fails.push(`${tag}: target ${Math.round(t.w)}x${Math.round(t.h)} under 44 px`);
+        if (!inside(t, m.box, 1.5)) fails.push(`${tag}: target outside box`);
+      }
+      // labels of a dense line never collide
+      const labels = await page.evaluate(() => [...document.querySelectorAll('[data-testid="studio-skeleton"] .sk-small')].map((e) => { const b = e.getBoundingClientRect(); return { x: b.x, w: b.width, y: b.y }; }));
+      const row = labels.filter((l) => Math.abs(l.y - (labels[0]?.y ?? 0)) < 2).sort((a, b) => a.x - b.x);
+      for (let i = 1; i < row.length; i++) if (row[i].x < row[i - 1].x + row[i - 1].w - 0.5) { fails.push(`${tag}: labels overlap`); break; }
+      if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-real-${c.tag.replace(/\W+/g, "-")}-${vp.width}x${vp.height}.png` });
+    } finally { await page.close(); }
+  }
+  assert.deepEqual(fails, []);
+});
+
+test("the open corner menu stays inside the clipping stage at all three viewports", { skip: SKIP, timeout: 300_000 }, async () => {
+  const fails = [];
+  for (const vp of VIEWPORTS) {
+    const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") });
+    try {
+      await page.click('[data-testid="studio-more"]');
+      await page.waitForSelector('[data-testid="studio-menu"]');
+      const r = await page.evaluate(() => {
+        const g = (e) => { const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; };
+        return { stage: g(document.querySelector('[data-testid="studio-stage"]')), menu: g(document.querySelector('[data-testid="studio-menu"]')),
+          items: [...document.querySelectorAll('[data-testid="studio-menu"] button')].map(g) };
+      });
+      if (!inside(r.menu, r.stage, 1)) fails.push(`${vp.width}x${vp.height}: menu ${JSON.stringify(r.menu)} outside stage ${JSON.stringify(r.stage)}`);
+      for (const it of r.items) if (it.h < 44 - 0.5) fails.push(`${vp.width}x${vp.height}: menu item under 44 px`);
+      await page.click('[data-testid="studio-again"]');
+      if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-menu-${vp.width}x${vp.height}.png` });
+    } finally { await page.close(); }
+  }
+  assert.deepEqual(fails, []);
+});
+
+test("an answer names its item and the mount key; a second wrong try reaches the lesson as a module-only turn (never a client 'correct')", { skip: SKIP, timeout: 120_000 }, async () => {
+  const calls = [];
+  const page = await lessonWith({ width: 360, height: 800 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") }, { calls });
+  try {
+    await page.click('[data-testid="sk-check"]');   // nothing shaded: wrong (rides with the next turn)
+    await page.waitForTimeout(600);
+    assert.equal(calls.filter((c) => c.p === "/api/lesson/turn" && c.b.moduleEvents?.length).length, 0, "one wrong try is not a milestone");
+    await page.click('[data-testid="sk-check"]');   // wrong again: stuck
+    await page.waitForTimeout(1200);
+    const ans = calls.filter((c) => c.p === "/api/studio/answer");
+    assert.equal(ans.length, 2);
+    assert.equal(ans[0].b.itemId, GOLD.shade_fraction.params.items[0].id);
+    assert.match(ans[0].b.mount, /^[\w]+\.0$/);
+    const turns = calls.filter((c) => c.p === "/api/lesson/turn" && c.b.moduleEvents?.length);
+    const studioEvs = turns.flatMap((t) => t.b.moduleEvents).filter((e) => e.engine === "studio");
+    assert.deepEqual(studioEvs.map((e) => e.type), ["interaction", "stuck"], "the first wrong try rides along; the second is the milestone");
+    const ev = studioEvs.at(-1);
+    assert.ok(ev, `a module-only turn carried the Studio event: ${JSON.stringify(turns.map((t) => t.b))}`);
+    assert.equal(ev.type, "stuck");
+    assert.equal(ev.moduleId, `${LESSON}:st:1`);
+    assert.equal(ev.data?.correct, undefined, "the lesson reads the host's grade, never a client claim");
   } finally { await page.close(); }
 });

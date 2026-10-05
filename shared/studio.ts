@@ -77,6 +77,13 @@ export interface StudioTurnView {
    * a `Proposal` with source "studio" and the kernel may reject it.
    */
   propose?: TurnStudio;
+  /** How the child is doing on the piece on screen, from the HOST's grades (never the frame's). */
+  outcome?: { lastVerdict: "right" | "wrong" | null; wrongCount: number; complete: boolean };
+  /**
+   * Studio's advice to the Director from that outcome: "reteach" after ≥ 2 wrong answers, "advance" once the piece is
+   * finished. Advisory: the kernel weighs it from W2-E's BR2b; until then it reaches the reply as facts-row values.
+   */
+  suggest?: "reteach" | "advance";
 }
 
 // ───────────────────────────── the stage (owner priority 4) ─────────────────────────────
@@ -171,7 +178,18 @@ export const WHITEBOARD_LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke
 
 // ───────────────────────────── the Studio routes (W2-H, server/routes/studio.js) ─────────────────────────────
 /** POST /api/studio/answer → the HOST's grade (the frame's own `correct` is never read). */
-export interface StudioAnswerResponse { correct: boolean; complete: boolean; itemId?: string; evidence?: boolean }
+export interface StudioAnswerResponse {
+  correct: boolean; complete: boolean; itemId?: string; evidence?: boolean;
+  /** The item was already closed (a remounted activity answered it again): right, and no second evidence row. */
+  alreadyClosed?: boolean;
+  /** Wrong answers on this item so far (the host's count). */
+  wrongTries?: number;
+}
+/** POST /api/studio/answer body. `itemId` names the item a skeleton shows; `mount` is the stage's mount key (a remount
+ *  restarts the host's bookkeeping with the activity on the child's screen). */
+export interface StudioAnswerRequest { lessonId: string; intentId: string; value: unknown; itemId?: string; mount?: string }
+/** Why a frame could not run (POST /api/studio/frame-error). Only csp / runtime / navigated count against the build. */
+export type StudioFrameErrorReason = "csp" | "runtime" | "navigated" | "not_ready" | "unavailable" | "bytes";
 /** POST /api/studio/feedback actions (STUDENT-FLOW §5.3): replay / reset, or retire it (that archetype is excluded for a week). */
 export type StudioFeedbackAction = "again" | "not_this";
 /** GET /api/studio/made-for → one card per revealed piece, newest first (STUDENT-FLOW §9.3; W2-A renders the shelf). */

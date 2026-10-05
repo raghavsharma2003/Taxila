@@ -11,7 +11,7 @@ import { sfx } from "../core/sfx.ts";
 import { pill, voltRing } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
 
-const BK = { x0: 360, x1: 640, top: 250, bot: 540 }, N = 96, SL = { x: 190, y0: 250, y1: 530 }, BTN = { fan: { x: 845, y: 330 }, lid: { x: 845, y: 430 } };
+const BK = { x0: 360, x1: 640, top: 250, bot: 540 }, N = 96, SL = { x: 190, y0: 250, y1: 530 }, BTN = { fan: { x: 870, y: 330 }, lid: { x: 870, y: 430 } };
 interface P { x: number; y: number; vx: number; vy: number; role: "ice" | "liq" | "vap" | "drop" | "gone"; site: number }
 type Step = PhaseSpec["steps"][number];
 
@@ -21,6 +21,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   const u: WaterInput = { heat: 0, fan: 0, lid: 0 };
   const log: WaterLog[] = [{ t: 0, heat: 0, fan: 0, lid: 0 }];
   let acc = 0;
+  api.record("controls", log[0]);
   const g = { si: -1, from: 0, base: s, stepT: 0, phase: "boot" as "boot" | "goal" | "probe" | "reveal" | "met" | "final", pick: null as null | string, dragging: false, warn: 0, results: [] as string[], bootT: 0, bubbles: [] as { x: number; y: number; r: number; v: number }[], plateau: "" };
   const r0 = rng(api.seed * 5 + 1);
   const ps: P[] = Array.from({ length: N }, (_, i) => ({ x: 400 + r0() * 200, y: 470 + r0() * 60, vx: 0, vy: 0, role: "ice", site: i }));
@@ -35,7 +36,8 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   function applyInputs() {
     if (s.t - lastLogT < 0.1 - 1e-9 || (want.heat === u.heat && want.fan === u.fan && want.lid === u.lid)) return;
     u.heat = want.heat; u.fan = want.fan; u.lid = want.lid; lastLogT = s.t;
-    log.push({ t: s.t, heat: u.heat, fan: u.fan, lid: u.lid });
+    const e = { t: s.t, heat: u.heat, fan: u.fan, lid: u.lid };
+    log.push(e); api.record("controls", e);
   }
   function startStep(i: number) {
     g.si = i; g.from = s.t; g.base = s; g.stepT = 0; g.pick = null; g.warn = 0;
@@ -50,8 +52,8 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
       const st = step();
       if (g.phase === "probe" && st?.kind === "probe") { const c = chips().find((b) => Math.abs(p.x - b.x) < b.w / 2 && Math.abs(p.y - b.y) < b.h / 2); if (c) answerProbe(c.o); return; }
       if (Math.abs(p.x - SL.x) < 80 && p.y > SL.y0 - 40 && p.y < SL.y1 + 40) { g.dragging = true; setHeat(p.y); return; }
-      if (Math.hypot(p.x - BTN.fan.x, p.y - BTN.fan.y) < 70) { control("fan", want.fan ? 0 : 1); sfx.blip({ f: want.fan ? 500 : 300, dur: 0.06, type: "square", gain: 0.06 }); return; }
-      if (Math.hypot(p.x - BTN.lid.x, p.y - BTN.lid.y) < 70) { control("lid", want.lid ? 0 : 1); sfx.blip({ f: want.lid ? 500 : 300, dur: 0.06, type: "square", gain: 0.06 }); }
+      if (Math.abs(p.x - BTN.fan.x) < 104 && Math.abs(p.y - BTN.fan.y) < 46) { control("fan", want.fan ? 0 : 1); sfx.blip({ f: want.fan ? 500 : 300, dur: 0.06, type: "square", gain: 0.06 }); return; }
+      if (Math.abs(p.x - BTN.lid.x) < 104 && Math.abs(p.y - BTN.lid.y) < 46) { control("lid", want.lid ? 0 : 1); sfx.blip({ f: want.lid ? 500 : 300, dur: 0.06, type: "square", gain: 0.06 }); }
     },
     move(p) { if (g.dragging) setHeat(p.y); },
     up() { g.dragging = false; },
@@ -73,7 +75,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
       if (g.phase === "goal" && st && st.kind === "goal") {
         if (st.goal === "evaporate" && s.T > st.tMax + 0.5) { g.from = s.t; g.base = s; g.warn = 2.5; }
         if (waterGoalMet(st.goal, s, g.base, st.arg)) {
-          const grade = api.answer(`s${g.si + 1}`, { log: [...log], until: s.t, from: g.from }, "right");
+          const grade = api.answer(`s${g.si + 1}`, { log: { $hostLog: "controls" }, until: s.t, from: g.from }, "right");
           g.results.push(grade.verdict); g.phase = "met"; g.stepT = 0;
           api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, `${T.done}: ${st.text}`, "done");
           api.fx.flash(C.mint, 0.1); sfx.blip({ f: 659, dur: 0.12, type: "triangle", gain: 0.14 }); setTimeout(() => sfx.blip({ f: 988, dur: 0.18, type: "triangle", gain: 0.12 }), 110);
@@ -153,7 +155,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
       ctx.fillStyle = col; ctx.globalAlpha = p.role === "vap" || p.role === "gone" ? 0.55 : 1; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
-    if (s.vapour > 0.02) api.text(ctx, T.invisible, 500, BK.top - 40, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center" });
+    if (s.vapour > 0.02) api.text(ctx, T.invisible, 500, BK.top + 34, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center" });
     // heat slider
     ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(SL.x, SL.y0); ctx.lineTo(SL.x, SL.y1); ctx.stroke();
     const hy = lerp(SL.y1, SL.y0, (u.heat + 1) / 2), hcol = u.heat > 0 ? "#FF9A5C" : u.heat < 0 ? "#7FD6FF" : C.ink2;
@@ -163,22 +165,22 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
     api.text(ctx, T.heat, SL.x, SL.y0 - 30, { font: "mono", size: 38, weight: 600, color: "#FF9A5C", align: "center" });
     api.text(ctx, T.cool, SL.x, SL.y1 + 56, { font: "mono", size: 38, weight: 600, color: "#7FD6FF", align: "center" });
     // thermometer
-    const tx = 715, ty0 = 260, ty1 = 520, tk = clamp((s.T + 20) / 140, 0, 1);
+    const tx = 668, ty0 = 260, ty1 = 520, tk = clamp((s.T + 20) / 140, 0, 1);
     ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(tx, ty0); ctx.lineTo(tx, ty1); ctx.stroke();
     ctx.strokeStyle = s.T >= 99.9 ? "#FF9A5C" : s.T <= 0 ? "#7FD6FF" : C.ion; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, lerp(ty1, ty0, tk)); ctx.stroke();
-    for (const [v, lb] of [[0, "0"], [100, "100"]] as [number, string][]) { const y = lerp(ty1, ty0, (v + 20) / 140); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(tx + 12, y); ctx.lineTo(tx + 24, y); ctx.stroke(); api.text(ctx, lb, tx + 30, y + 13, { font: "mono", size: 38, weight: 600, color: C.ink3 }); }
+    for (const [v, lb] of [[0, "0"], [100, "100"]] as [number, string][]) { const y = lerp(ty1, ty0, (v + 20) / 140); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(tx + 12, y); ctx.lineTo(tx + 24, y); ctx.stroke(); api.text(ctx, lb, tx + 24, y + 13, { font: "mono", size: 38, weight: 600, color: C.ink3 }); }
     const st = step();
     if (st && st.kind === "goal" && st.goal === "evaporate") { const y = lerp(ty1, ty0, (st.tMax + 20) / 140); ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(tx - 20, y); ctx.lineTo(tx + 20, y); ctx.stroke(); ctx.setLineDash([]); }
     api.text(ctx, `${s.T.toFixed(0)}°`, tx, ty1 + 62, { font: "display", size: 52, weight: 800, align: "center" });
     // buttons
     for (const [k, b, label] of [["fan", BTN.fan, T.fan], ["lid", BTN.lid, T.lid]] as const) {
       const on = u[k] > 0.5;
-      ctx.fillStyle = on ? "rgba(139,152,255,.18)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x - 75, b.y - 40, 150, 80, 18); ctx.fill(); ctx.strokeStyle = on ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke();
-      api.text(ctx, label, b.x, b.y + 2, { font: "mono", size: 38, weight: 600, color: on ? C.ion : C.ink2, align: "center", baseline: "middle", maxWidth: 140 });
+      ctx.fillStyle = on ? "rgba(139,152,255,.18)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x - 100, b.y - 40, 200, 80, 18); ctx.fill(); ctx.strokeStyle = on ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke();
+      api.text(ctx, label, b.x, b.y + 2, { font: "mono", size: 38, weight: 600, color: on ? C.ion : C.ink2, align: "center", baseline: "middle", maxWidth: 192 });
       if (k === "fan" && on && !api.reducedMotion) { ctx.strokeStyle = "rgba(139,152,255,.5)"; ctx.lineWidth = 3; for (let i = 0; i < 3; i++) { const y = BK.top - 10 + i * 30, o = (now * 200 + i * 60) % 120; ctx.beginPath(); ctx.moveTo(BK.x1 + 120 - o, y); ctx.lineTo(BK.x1 + 80 - o, y); ctx.stroke(); } }
     }
-    if (g.plateau) pill(api, ctx, g.plateau, 500, 205, { color: C.ink, size: 38 });
-    if (g.warn > 0 && st && st.kind === "goal") pill(api, ctx, `over ${st.tMax} °C: that's boiling territory. Cool it`, 500, 205, { color: C.amber, size: 38 });
+    if (g.plateau) pill(api, ctx, g.plateau, 500, 204, { color: C.ink, size: 38 });
+    if (g.warn > 0 && st && st.kind === "goal") pill(api, ctx, `over ${st.tMax} °C: cool it down`, 500, 204, { color: C.amber, size: 38 });
     // probe chips + reveal
     if (st && st.kind === "probe") {
       const pr = WATER_PROBES[st.probe];
@@ -214,7 +216,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   return {
     update, render, bot,
     seam: () => ({ phase: g.phase, step: step()?.kind ?? null, T: +s.T.toFixed(2), ice: +s.ice.toFixed(3), liquid: +s.liquid.toFixed(3), gone: +(s.vapour + s.escaped).toFixed(3), droplets: +s.droplets.toFixed(3), simT: +s.t.toFixed(2), u: { ...u } }),
-    knob(k) { if (k === "again") { s = waterInit(spec.start); log.length = 0; log.push({ t: 0, heat: 0, fan: 0, lid: 0 }); u.heat = u.fan = u.lid = 0; want.heat = want.fan = want.lid = 0; lastLogT = 0; acc = 0; g.results = []; startStep(0); return true; } return false; },
+    knob(k) { if (k === "again") { s = waterInit(spec.start); log.length = 0; log.push({ t: 0, heat: 0, fan: 0, lid: 0 }); api.resetLog("controls"); api.record("controls", log[0]); u.heat = u.fan = u.lid = 0; want.heat = want.fan = want.lid = 0; lastLogT = 0; acc = 0; g.results = []; startStep(0); return true; } return false; },
     board: () => ({ title: "Same water, three states", lines: ["0 °C holds while ice melts; 100 °C holds while water boils.", "Vapour is invisible. Clouds and steam are droplets."], figure: { kind: "chain", items: ["ice", "water", "vapour", "droplets"] }, accent: "#7FD6FF" }),
   };
 }

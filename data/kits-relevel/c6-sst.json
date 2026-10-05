@@ -1,0 +1,3167 @@
+{
+ "class": 6,
+ "subject": "sst",
+ "version": 1,
+ "generator": "taxila-gpt6",
+ "date": "2026-10-04",
+ "topics": [
+  {
+   "topicId": "c6-sst-ch01-t01",
+   "replacesOpeners": [
+    "c6-sst-ch01-t01-i01",
+    "diag:c6-sst-ch01-t01-m1",
+    "c6-sst-ch01-t01-i11"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch01-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch01-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "On a city map, 1 cm represents 3 km. A cricket ground and a metro stop are 2 cm apart on the map. What is their actual distance?",
+     "prompt_hi": "City map par 1 cm ka matlab 3 km hai. Cricket ground aur metro stop map par 2 cm door hain. Asli doori kitni hai?",
+     "answer": "6 km",
+     "acceptable": [
+      "6",
+      "six kilometres",
+      "chhe kilometre"
+     ],
+     "hints": [
+      "What does each centimetre on this map represent?",
+      "Use the scale to convert map distance into actual distance.",
+      "Actual distance = 2 × ___ km.",
+      "6 km; multiply the map distance by the scale."
+     ],
+     "verified": {
+      "solverAnswer": "6 km",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch01-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch01-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A weather report places Jaipur at about 27°N. Does 27°N describe its latitude or its longitude?",
+     "prompt_hi": "Weather report mein Jaipur ki position lagbhag 27°N likhi hai. 27°N uska latitude batata hai ya longitude?",
+     "answer": "Latitude",
+     "acceptable": [
+      "line of latitude",
+      "parallel",
+      "akshansh"
+     ],
+     "hints": [
+      "What does the letter N tell you about Jaipur's position?",
+      "One coordinate measures position north or south of the Equator.",
+      "A north–south position is measured using ___.",
+      "Latitude; 27°N measures distance north of the Equator."
+     ],
+     "verified": {
+      "solverAnswer": "latitude",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch01-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch01-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "A cycling-route map uses 1 cm = 4 km. The route from the library to the lake is 2 cm, then from the lake to the stadium is 3 cm. How long is the whole route?",
+     "prompt_hi": "Cycling-route map par 1 cm = 4 km hai. Library se lake tak route 2 cm, aur lake se stadium tak 3 cm hai. Poora route kitna lamba hai?",
+     "answer": "20 km",
+     "acceptable": [
+      "20",
+      "twenty kilometres",
+      "bees kilometre"
+     ],
+     "hints": [
+      "How much map distance does the full route cover?",
+      "Add both route sections before applying the scale.",
+      "Whole route = (2 + 3) × ___ km.",
+      "20 km; the 5 cm route represents five groups of 4 km."
+     ],
+     "verified": {
+      "solverAnswer": "20 km",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch01-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch01-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "On a globe, Point A is at 20°N, 70°E; Point B at 20°N, 80°E; and Point C at 10°N, 80°E. Which point is directly south of B: A or C?",
+     "prompt_hi": "Globe par Point A 20°N, 70°E; Point B 20°N, 80°E; aur Point C 10°N, 80°E par hai. B ke seedhe south mein kaun hai: A ya C?",
+     "answer": "C",
+     "acceptable": [
+      "Point C",
+      "point see"
+     ],
+     "hints": [
+      "Which coordinate must stay the same when moving directly south?",
+      "Compare the east coordinates first, then the north coordinates.",
+      "B's east coordinate matches Point ___; its north coordinate is higher.",
+      "C; it shares B's longitude but lies at a lower northern latitude."
+     ],
+     "verified": {
+      "solverAnswer": "C",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch01-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch01-t01-s4",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "IST follows the 82.5°E meridian. A town at 97.5°E is 15° farther east. When an IST clock reads 12 noon, what is the town's local solar time? Use 15° = 1 hour.",
+     "prompt_hi": "IST 82.5°E meridian par based hai. 97.5°E wala town usse 15° east mein hai. Jab IST clock mein dopahar 12 baje hon, town ka local solar time kya hoga? 15° = 1 hour lo.",
+     "answer": "1 pm",
+     "acceptable": [
+      "1:00 pm",
+      "1 o'clock in the afternoon",
+      "dopahar 1 baje",
+      "13:00"
+     ],
+     "hints": [
+      "Does local solar time move ahead or behind as you travel east?",
+      "Convert the longitude difference into a time difference.",
+      "Local time = 12 noon + ___ hour.",
+      "1 pm; the town is 15° east, so its solar time is one hour ahead."
+     ],
+     "verified": {
+      "solverAnswer": "1 pm",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch01-t01-i01": {
+     "ge": 5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch02-t01",
+   "replacesOpeners": [
+    "c6-sst-ch02-t01-i01",
+    "diag:c6-sst-ch02-t01-m1",
+    "c6-sst-ch02-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch02-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch02-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "For a school atlas display, two labels are missing: the largest continent and the largest ocean. What are they?",
+     "prompt_hi": "School atlas display mein do labels missing hain: sabse bada continent aur sabse bada ocean. Dono ke naam kya hain?",
+     "answer": "Asia and the Pacific Ocean",
+     "acceptable": [
+      "Asia, Pacific",
+      "Asia aur Pacific Ocean",
+      "Asia and Pacific"
+     ],
+     "hints": [
+      "Which two size rankings does the display need?",
+      "Compare continents with continents, and oceans with oceans.",
+      "Largest continent: ___; largest ocean: ___.",
+      "Asia and the Pacific Ocean; each ranks first in its group."
+     ],
+     "verified": {
+      "solverAnswer": "Asia and Pacific Ocean",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch02-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A ship leaves Kochi and sails straight south into open water. Which ocean does it enter?",
+     "prompt_hi": "Ek ship Kochi se seedha south khule paani mein jaati hai. Woh kis ocean mein jaayegi?",
+     "answer": "Indian Ocean",
+     "acceptable": [
+      "the Indian Ocean",
+      "Hind Mahasagar",
+      "Hind Mahasaagar"
+     ],
+     "hints": [
+      "Where is Kochi on India's coastline?",
+      "Trace south from India on a world map.",
+      "The ocean south of India is the ___ Ocean.",
+      "Indian Ocean; it lies south of India's coastline."
+     ],
+     "verified": {
+      "solverAnswer": "Indian Ocean",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch02-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "A flight from Mumbai to Nairobi crosses the Arabian Sea. On which continent does it land?",
+     "prompt_hi": "Mumbai se Nairobi ki flight Arabian Sea paar karti hai. Woh kis continent par land karegi?",
+     "answer": "Africa",
+     "acceptable": [
+      "African continent",
+      "Africa mein"
+     ],
+     "hints": [
+      "Locate Nairobi relative to India.",
+      "Look across the water to India's west.",
+      "Nairobi is on the continent of ___.",
+      "Africa; Nairobi is in Kenya, on that continent."
+     ],
+     "verified": {
+      "solverAnswer": "Africa",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A travel poster calls Japan a continent and the Mediterranean an ocean. Which correction is right: A) Japan is a country; the Mediterranean is a sea, or B) Japan is an ocean; the Mediterranean is a continent?",
+     "prompt_hi": "Travel poster Japan ko continent aur Mediterranean ko ocean kehta hai. Kaunsa correction sahi hai: A) Japan country hai; Mediterranean sea hai, ya B) Japan ocean hai; Mediterranean continent hai?",
+     "answer": "A",
+     "acceptable": [
+      "Option A",
+      "Japan is a country; the Mediterranean is a sea"
+     ],
+     "hints": [
+      "What kind of place is Japan?",
+      "Classify the land name and the water name separately.",
+      "Japan is a ___; the Mediterranean is a ___.",
+      "A; Japan is a country and the Mediterranean is a sea."
+     ],
+     "verified": {
+      "solverAnswer": "A) Japan is a country; the Mediterranean is a sea",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "A Mumbai shop imports phones by ship. Why might the sea route cost less than flying the same large shipment: ships carry more cargo at once, or seawater makes phones lighter?",
+     "prompt_hi": "Mumbai ki shop phones ship se import karti hai. Wahi bada shipment flight se bhejne ke mukaable sea route sasta kyun ho sakta hai: ships ek baar mein zyada cargo le jaate hain, ya seawater phones ko halka banata hai?",
+     "answer": "Ships carry more cargo at once",
+     "acceptable": [
+      "ships carry more goods",
+      "greater cargo capacity",
+      "ek baar mein zyada maal le jaate hain"
+     ],
+     "hints": [
+      "What matters when transporting a large shipment?",
+      "Think about how much one vehicle can carry.",
+      "The sea route may cost less because ships carry ___.",
+      "Ships carry more cargo at once, spreading transport costs across more goods."
+     ],
+     "verified": {
+      "solverAnswer": "Ships carry more cargo at once",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-h4",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "On a world map, a ship sails east from Brazil towards the west coast of Africa. Which ocean must it cross?",
+     "prompt_hi": "World map par ek ship Brazil se east ki taraf Africa ke west coast tak jaati hai. Use kaunsa ocean paar karna hoga?",
+     "answer": "Atlantic Ocean",
+     "acceptable": [
+      "Atlantic",
+      "Atlantik Mahasagar",
+      "अटलांटिक महासागर"
+     ],
+     "hints": [
+      "Brazil aur Africa map par ek-doosre ke kis taraf hain?",
+      "Dono ke beech wale ocean ko pehchano.",
+      "Brazil → ___ → Africa.",
+      "Atlantic Ocean: yeh South America aur Africa ke beech hai."
+     ],
+     "verified": {
+      "solverAnswer": "Atlantic Ocean",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-h5",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s1",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "An atlas lists the Pacific, Atlantic and Indian Oceans by size. Which ocean comes next in this largest-to-smallest list: Southern or Arctic?",
+     "prompt_hi": "Atlas mein size ke hisaab se Pacific, Atlantic aur Indian Oceans likhe hain. Largest-to-smallest list mein agla kaunsa hoga: Southern ya Arctic?",
+     "answer": "Southern Ocean",
+     "acceptable": [
+      "Southern",
+      "Dakshini Mahasagar",
+      "दक्षिणी महासागर"
+     ],
+     "hints": [
+      "Bache hue dono oceans mein kaunsa bada hai?",
+      "Ocean sizes ka poora order yaad karo.",
+      "Pacific → Atlantic → Indian → ___.",
+      "Southern Ocean: yeh Arctic Ocean se bada hai."
+     ],
+     "verified": {
+      "solverAnswer": "Southern",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch02-t01-rl-h6",
+     "role": "harder",
+     "skillId": "c6-sst-ch02-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "In the same season, Mumbai often has milder temperatures than inland Nagpur. What feature of the nearby sea helps explain this difference?",
+     "prompt_hi": "Ek hi season mein Mumbai ka temperature aksar inland Nagpur se kam extreme hota hai. Paas ke samundar ki kaunsi khasiyat is antar ko samjhati hai?",
+     "answer": "Sea water heats and cools more slowly than land.",
+     "acceptable": [
+      "Water changes temperature more slowly than land",
+      "Samundar ka paani zameen se dheere garam aur thanda hota hai",
+      "The sea moderates Mumbai's temperature"
+     ],
+     "hints": [
+      "Zameen aur paani mein temperature kiski jaldi badalta hai?",
+      "Din aur mausam ke saath paani ka temperature dheere badalta hai.",
+      "Paani zameen ke muqable ___ garam aur thanda hota hai.",
+      "Sea water heats and cools slowly, so nearby temperatures stay milder."
+     ],
+     "verified": {
+      "solverAnswer": "moderating effect of the sea (sea breeze / high specific heat capacity of water)",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Solver paraphrases key idea",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 6.25,
+     "geRaters": {
+      "gpt6": 7,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch02-t01-i01": {
+     "ge": 3.75,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch03-t01",
+   "replacesOpeners": [
+    "c6-sst-ch03-t01-i02",
+    "diag:c6-sst-ch03-t01-m1",
+    "c6-sst-ch03-t01-i01"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch03-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch03-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "On a school trip in Maharashtra, Meera sees land that stands above the surrounding area but stretches out with a broad, fairly level surface. Is she seeing part of the Deccan Plateau or the Northern Plains?",
+     "prompt_hi": "Maharashtra ki school trip par Meera dekhti hai ki zameen aas-paas se oonchi hai, lekin kaafi door tak lagbhag samtal hai. Kya yeh Deccan Plateau ka hissa hai ya Northern Plains ka?",
+     "answer": "Deccan Plateau",
+     "acceptable": [
+      "Deccan",
+      "plateau",
+      "Dakshin ka pathar"
+     ],
+     "hints": [
+      "Is the land low, or raised above its surroundings?",
+      "Think about which option is raised yet broadly level.",
+      "Raised and broadly level land points to ____.",
+      "Deccan Plateau: a plateau is raised land with a broad, fairly level surface."
+     ],
+     "verified": {
+      "solverAnswer": "Deccan Plateau",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch03-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch03-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "After floods, a river leaves layers of fine soil across a wide, flat area near Patna. Which landform can repeated deposits help build: a plain or a mountain?",
+     "prompt_hi": "Baadh ke baad Patna ke paas ek nadi chaudi, samtal jagah par baarik mitti ki partein chhodti hai. Aise baar-baar jamaav se kaunsa landform ban sakta hai: plain ya mountain?",
+     "answer": "A plain",
+     "acceptable": [
+      "plain",
+      "maidan",
+      "plains"
+     ],
+     "hints": [
+      "What happens to the land as new soil layers spread out?",
+      "River deposits can build up a wide, low area.",
+      "Repeated deposits across flat land help build a ____.",
+      "A plain: river deposits gradually build broad, flat land."
+     ],
+     "verified": {
+      "solverAnswer": "a plain",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch03-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch03-t01-s2",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A trekking group climbs from a valley at 1,200 m to a camp at 3,000 m on the same afternoon. Without a weather forecast, which place would usually be cooler, and what explains it?",
+     "prompt_hi": "Ek trekking group usi dopahar 1,200 m ki ghaati se 3,000 m ke camp tak chadhta hai. Weather forecast ke bina batao: aam taur par kaunsi jagah thandi hogi, aur kyun?",
+     "answer": "The 3,000 m camp; temperature generally falls as height increases.",
+     "acceptable": [
+      "camp, because it is higher",
+      "higher camp; temperature drops with altitude",
+      "3000 m, oonchai badhne par taapmaan ghatta hai"
+     ],
+     "hints": [
+      "Which place is at the greater height?",
+      "Compare temperatures at different altitudes, not times of day.",
+      "As height increases, temperature generally ____.",
+      "The 3,000 m camp: temperature generally decreases with altitude."
+     ],
+     "verified": {
+      "solverAnswer": "The camp because temperature decreases with altitude.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Identical core explanation",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch03-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch03-t01-s3",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A village in Uttarakhand has steep slopes and heavy rain. For a new house, which plan suits the land better: a sloping roof with a strong hillside foundation, or a flat roof on loose soil? Give one reason.",
+     "prompt_hi": "Uttarakhand ke ek gaon mein tez dhalan aur bhaari baarish hai. Naye ghar ke liye kaunsa plan behtar hai: dhalwa chhat aur pahaadi dhalan par mazboot neev, ya dheeli mitti par samtal chhat? Ek wajah batao.",
+     "answer": "A sloping roof with a strong hillside foundation; it sheds rain and provides stability on the slope.",
+     "acceptable": [
+      "sloping roof and strong foundation; rain runs off",
+      "pehla plan; dhalwa chhat se paani beh jaata hai aur mazboot neev ghar sambhalti hai"
+     ],
+     "hints": [
+      "What problems do heavy rain and steep ground create?",
+      "Consider both where rainwater goes and how the house stays steady.",
+      "Choose ____ because its roof drains water and its base supports the house.",
+      "Sloping roof and strong foundation: they handle rain and help stabilise the house."
+     ],
+     "verified": {
+      "solverAnswer": "A sloping roof with a strong hillside foundation. It drains rain and is stable on slopes.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both endorse sloping roof plan",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch03-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch03-t01-s4",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "A school plans a large cycling event and wants easy road travel. It can choose a flat site near Kanpur or a steep hillside near Nainital. Which site is better, and what landform-related challenge does the other site pose?",
+     "prompt_hi": "Ek school bada cycling event rakhna chahta hai jahan sadak par aana-jaana aasaan ho. Kanpur ke paas samtal jagah ya Nainital ke paas tez dhalan wali pahaadi jagah—kaunsi behtar hai? Doosri jagah par landform ki wajah se kya mushkil hogi?",
+     "answer": "The flat site near Kanpur; steep slopes near Nainital make cycling and road travel harder.",
+     "acceptable": [
+      "Kanpur; hills make travel difficult",
+      "Kanpur ki samtal jagah; pahaadi dhalan par cycling mushkil hai"
+     ],
+     "hints": [
+      "Which site makes a long cycle route easier?",
+      "Compare travel on level ground with travel on steep slopes.",
+      "Choose ____; the other site has slopes that make travel harder.",
+      "Kanpur: its flat land suits cycling; Nainital’s steep slopes make travel harder."
+     ],
+     "verified": {
+      "solverAnswer": "The flat site near Kanpur. A steep hillside makes cycling difficult.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both select flat Kanpur site",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch03-t01-i02": {
+     "ge": 4.75,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch04-t01",
+   "replacesOpeners": [
+    "c6-sst-ch04-t01-i01",
+    "diag:c6-sst-ch04-t01-m1",
+    "c6-sst-ch04-t01-i06"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch04-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch04-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A museum labels two coins: one from 320 BCE and another from 120 BCE. Which coin is older: the 320 BCE coin or the 120 BCE coin?",
+     "prompt_hi": "Museum mein do coins par 320 BCE aur 120 BCE likha hai. Kaunsa coin zyada purana hai: 320 BCE wala ya 120 BCE wala?",
+     "answer": "320 BCE coin",
+     "acceptable": [
+      "320 BCE",
+      "320 BCE wala coin",
+      "the coin from 320 BCE"
+     ],
+     "hints": [
+      "Which BCE date sits farther from the start of CE?",
+      "On a BCE timeline, years count down as time moves forward.",
+      "The older coin has the BCE year ___.",
+      "320 BCE coin: the larger BCE number is earlier."
+     ],
+     "verified": {
+      "solverAnswer": "the 320 BCE coin",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch04-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch04-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A school archive has a photograph dated 1912 CE. Which century does it belong to: the 19th century or the 20th century?",
+     "prompt_hi": "School archive mein ek photo par 1912 CE likha hai. Yeh kis century ki hai: 19th century ya 20th century?",
+     "answer": "20th century",
+     "acceptable": [
+      "20th",
+      "twentieth century",
+      "beesvi sadi",
+      "20vi sadi"
+     ],
+     "hints": [
+      "What years does each named century cover?",
+      "A century begins with a year ending in 01.",
+      "Years 1901–2000 belong to the ___ century.",
+      "20th century: 1912 falls between 1901 and 2000."
+     ],
+     "verified": {
+      "solverAnswer": "the 20th century",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch04-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch04-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "An excavation report dates a settlement to 350 BCE and a nearby inscription to 50 BCE. How many years apart are these dates?",
+     "prompt_hi": "Excavation report mein ek settlement 350 BCE ka aur paas ka inscription 50 BCE ka bataya gaya hai. Dono dates mein kitne saal ka antar hai?",
+     "answer": "300 years",
+     "acceptable": [
+      "300",
+      "three hundred years",
+      "teen sau saal"
+     ],
+     "hints": [
+      "Are both dates on the same side of the timeline?",
+      "For two BCE dates, find the difference between their numbers.",
+      "Years apart = ___ − ___.",
+      "300 years: subtract 50 from 350."
+     ],
+     "verified": {
+      "solverAnswer": "300 years",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch04-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch04-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "Researchers want to know the exact words a ruler ordered to be carved on a stone pillar. Which source should they study: the pillar’s inscription, a broken pot, or a folk song?",
+     "prompt_hi": "Researchers jaanna chahte hain ki ek ruler ne stone pillar par kaunse exact words khudvaaye the. Unhe kya padhna chahiye: pillar ka inscription, toota hua bartan, ya folk song?",
+     "answer": "the pillar’s inscription",
+     "acceptable": [
+      "inscription",
+      "pillar inscription",
+      "shilalekh",
+      "pillar ka inscription"
+     ],
+     "hints": [
+      "Which source preserves words on the stone itself?",
+      "Match the evidence to the information being sought.",
+      "The best source for carved words is the ___.",
+      "The pillar’s inscription: it records the words carved there."
+     ],
+     "verified": {
+      "solverAnswer": "the pillar’s inscription",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch04-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch04-t01-s5",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "A king’s inscription says his army won a battle, but gives no enemy account. Why should a historian check other sources: to test whether the claim is accurate, or to find a newer date for the stone?",
+     "prompt_hi": "Raja ke inscription mein likha hai ki uski sena battle jeeti, par dushman ka account nahi hai. Historian ko doosre sources kyun check karne chahiye: claim sahi hai ya nahi jaanchne ke liye, ya stone ki nayi date dhoondhne ke liye?",
+     "answer": "to test whether the claim is accurate",
+     "acceptable": [
+      "to check if the claim is true",
+      "to verify the victory claim",
+      "claim sahi hai ya nahi jaanchne ke liye"
+     ],
+     "hints": [
+      "Whose side of the battle does this inscription describe?",
+      "One source may leave out facts that challenge its account.",
+      "Other sources help historians ___ the victory claim.",
+      "To test the claim’s accuracy: another account may tell a different story."
+     ],
+     "verified": {
+      "solverAnswer": "to test whether the claim is accurate",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch04-t01-i01": {
+     "ge": 5.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch05-t01",
+   "replacesOpeners": [
+    "c6-sst-ch05-t01-i01",
+    "diag:c6-sst-ch05-t01-m1",
+    "c6-sst-ch05-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch05-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch05-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A school exhibition labels an ancient map 'land of the jambu tree'. Which historical name of the subcontinent belongs on the label?",
+     "prompt_hi": "School exhibition mein ek purane map par 'jambu ped ki bhoomi' likha hai. Upmahadweep ka kaunsa aitihasik naam is label par aayega?",
+     "answer": "Jambudvipa",
+     "acceptable": [
+      "Jambu-dvipa",
+      "Jambudweep"
+     ],
+     "hints": [
+      "Which name in the chapter refers to a tree?",
+      "Look for a name combining a tree with land.",
+      "The historical name to write is ___.",
+      "Jambudvipa: its name refers to the jambu tree."
+     ],
+     "verified": {
+      "solverAnswer": "Jambudvīpa",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver spelling variant but key is precise",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch05-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch05-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A museum card says Chinese travellers used a name for this land that sounded like 'Hindu'. Which name should the card show?",
+     "prompt_hi": "Museum card kehta hai ki Cheeni yatriyon ne is bhoomi ke liye 'Hindu' se milta-julta naam use kiya. Card par kaunsa naam hona chahiye?",
+     "answer": "Yindu",
+     "acceptable": [
+      "Yin-du"
+     ],
+     "hints": [
+      "Whose pronunciation does the card ask about?",
+      "Recall the name recorded by travellers from China.",
+      "Write the travellers’ name: ___.",
+      "Yindu: Chinese travellers used this form of the name."
+     ],
+     "verified": {
+      "solverAnswer": "Hind or Hindustan",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver gives unrelated names",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch05-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch05-t01-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "For a history display, choose the correct label: 'Bharata—name used within the land; India—name shaped through outsiders' or 'India—name used within the land; Bharata—name shaped through outsiders'.",
+     "prompt_hi": "History display ke liye sahi label chuno: 'Bharata—andar ke logon ka naam; India—bahari logon se bana naam' ya 'India—andar ke logon ka naam; Bharata—bahari logon se bana naam'?",
+     "answer": "Bharata—name used within the land; India—name shaped through outsiders",
+     "acceptable": [
+      "First label",
+      "Pehla label"
+     ],
+     "hints": [
+      "Which name appears in older texts from this land?",
+      "Think about how travellers adapted the river’s name.",
+      "The correct label is the ___ option.",
+      "First label: Bharata was used within; India developed through outsiders’ usage."
+     ],
+     "verified": {
+      "solverAnswer": "Bharata—name used within the land; India—name shaped through outsiders",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.75,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch05-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch05-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A school form offers 'India' and 'Bharat' as country names. A student says only one can be official. Why is the form correct to offer both?",
+     "prompt_hi": "School form mein desh ke naam ke liye 'India' aur 'Bharat' dono diye hain. Ek student kehta hai sirf ek official ho sakta hai. Form dono kyun de sakta hai?",
+     "answer": "Article 1 of the Constitution says 'India, that is Bharat', making both official names.",
+     "acceptable": [
+      "Article 1 recognises both names",
+      "Constitution mein India aur Bharat dono naam hain"
+     ],
+     "hints": [
+      "Where are the country’s official names stated?",
+      "Check how Article 1 identifies the country.",
+      "The form is correct because Article 1 ___.",
+      "Article 1 says 'India, that is Bharat', recognising both names."
+     ],
+     "verified": {
+      "solverAnswer": "Because the Constitution uses both: 'India, that is Bharat'.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both reference Constitution's dual names",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.75,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch05-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch05-t01-s4",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "An old text describes Bharata as the land south of snowy mountains and north of an ocean. Does it describe the land using natural boundaries or a king’s palace?",
+     "prompt_hi": "Ek purana granth Bharata ko barf se dhake pahadon ke dakshin aur samudra ke uttar ki bhoomi batata hai. Kya yeh prakritik seemaon se bhoomi batata hai ya raja ke mahal se?",
+     "answer": "Natural boundaries",
+     "acceptable": [
+      "Prakritik seemaen",
+      "Mountains and ocean as boundaries"
+     ],
+     "hints": [
+      "What two features locate the land?",
+      "Decide whether those features are physical or built.",
+      "The text uses ___ to describe the land.",
+      "Natural boundaries: mountains and an ocean locate the land."
+     ],
+     "verified": {
+      "solverAnswer": "Natural boundaries",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch05-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch06-t01",
+   "replacesOpeners": [
+    "c6-sst-ch06-t01-i01",
+    "diag:c6-sst-ch06-t01-m1",
+    "c6-sst-ch06-t01-i10"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch06-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch06-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Your class is labelling a map of Harappan sites. Which site should go in Kachchh, Gujarat: Dholavira or Harappa?",
+     "prompt_hi": "Class Harappan sites ka map label kar rahi hai. Kachchh, Gujarat mein kaunsi site mark karoge: Dholavira ya Harappa?",
+     "answer": "Dholavira",
+     "acceptable": [
+      "Dholavira site"
+     ],
+     "hints": [
+      "Which option belongs on a map of Gujarat?",
+      "Recall where each site lies today.",
+      "Kachchh, Gujarat → ____.",
+      "Dholavira: this Harappan site is in Kachchh, Gujarat."
+     ],
+     "verified": {
+      "solverAnswer": "Dholavira",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch06-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch06-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A school exhibition shows a Harappan street model with lanes crossing at right angles. Which planning feature does it show: a grid layout or a circular layout?",
+     "prompt_hi": "School exhibition mein Harappan street model ki galiyan samkon par milti hain. Yeh kaunsi planning dikhata hai: grid layout ya circular layout?",
+     "answer": "Grid layout",
+     "acceptable": [
+      "grid",
+      "grid pattern",
+      "grid system"
+     ],
+     "hints": [
+      "What pattern do the crossing lanes make?",
+      "Focus on how the streets intersect.",
+      "Streets crossing at right angles form a ____.",
+      "Grid layout: its streets cross at right angles."
+     ],
+     "verified": {
+      "solverAnswer": "a grid layout",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch06-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch06-t01-s3",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "An excavated Harappan workshop has unfinished stone beads and tools for shaping them. Is this stronger evidence for bead-making there or for imported finished beads?",
+     "prompt_hi": "Ek Harappan workshop mein adhure paththar ke beads aur unhe banane ke auzaar mile. Yeh wahin bead-making ka mazboot saboot hai ya tayyar beads import hone ka?",
+     "answer": "Bead-making there",
+     "acceptable": [
+      "local bead-making",
+      "beads were made there",
+      "wahin beads bante the"
+     ],
+     "hints": [
+      "What does finding unfinished objects suggest?",
+      "Consider why shaping tools would be beside unfinished pieces.",
+      "Unfinished pieces plus tools point to ____.",
+      "Bead-making there: the unfinished beads and tools show production at the site."
+     ],
+     "verified": {
+      "solverAnswer": "Bead-making there, because tools and unfinished beads are production evidence.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.75,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch06-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch06-t01-s4",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A museum label says a Harappan seal proves the name of its owner. Is that claim justified or not justified? Give the key reason.",
+     "prompt_hi": "Museum label kehta hai ki Harappan seal se uske maalik ka naam pakka pata chalta hai. Kya yeh claim justified hai ya not justified? Mukhya wajah batao.",
+     "answer": "Not justified; the Harappan script has not been deciphered.",
+     "acceptable": [
+      "not justified; we cannot read the script",
+      "not justified; script abhi padhi nahi ja saki"
+     ],
+     "hints": [
+      "Can the marks on the seal confirm a person's name?",
+      "Separate what archaeologists can see from what they can read.",
+      "The claim is ____ because the writing ____.",
+      "Not justified: the Harappan script remains undeciphered."
+     ],
+     "verified": {
+      "solverAnswer": "Not justified. The script is undeciphered, so we cannot read the name.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both cite undeciphered script as reason",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.75,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch06-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch06-t01-s5",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "Suppose a river near a Harappan town gradually changed course, reducing water for its fields. Which is more likely over time: farming and trade weaken, or trade grows because harvests shrink?",
+     "prompt_hi": "Maano ek Harappan town ke paas nadi dheere-dheere raasta badalti hai aur kheton ko kam paani milta hai. Samay ke saath kya zyada mumkin hai: kheti aur vyapar kamzor hon, ya fasal ghatne se vyapar badhe?",
+     "answer": "Farming and trade weaken",
+     "acceptable": [
+      "kheti aur vyapar kamzor hon",
+      "both farming and trade decline"
+     ],
+     "hints": [
+      "How would less water affect harvests first?",
+      "Then consider how fewer crops affect goods available to exchange.",
+      "Less water → smaller harvests → ____.",
+      "Farming and trade weaken: smaller harvests leave less to exchange."
+     ],
+     "verified": {
+      "solverAnswer": "Farming and trade weaken",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch06-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch07-t01",
+   "replacesOpeners": [
+    "c6-sst-ch07-t01-i01",
+    "diag:c6-sst-ch07-t01-m1",
+    "c6-sst-ch07-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch07-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch07-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "At a school exhibition, a card says: ‘This Veda is the oldest of the four.’ Which name should go on the card?",
+     "prompt_hi": "School exhibition mein ek card par likha hai: ‘Yeh chaar Vedas mein sabse puraana hai.’ Card par kaunsa naam likhna chahiye?",
+     "answer": "Rig Veda",
+     "acceptable": [
+      "Rigveda",
+      "Rig"
+     ],
+     "hints": [
+      "Which of the four Vedas was composed earliest?",
+      "Think about the Veda known for its ancient hymns.",
+      "Write the name of the oldest Veda: ___.",
+      "Rig Veda; it is considered the oldest of the four Vedas."
+     ],
+     "verified": {
+      "solverAnswer": "Rig Veda",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch07-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch07-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A library display has two labels: ‘How does a seed grow?’ and ‘Who am I?’ Which question better fits the Upanishads?",
+     "prompt_hi": "Library display par do labels hain: ‘Beej kaise ugta hai?’ aur ‘Main kaun hoon?’ Upanishads ke liye kaunsa sawaal zyada theek hai?",
+     "answer": "Who am I?",
+     "acceptable": [
+      "Who am I",
+      "Main kaun hoon"
+     ],
+     "hints": [
+      "Which question asks about the self rather than a plant?",
+      "The Upanishads explore deep questions about existence and the self.",
+      "Choose the question about ___, not plant growth.",
+      "‘Who am I?’; the Upanishads explore questions about the self."
+     ],
+     "verified": {
+      "solverAnswer": "Who am I?",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch07-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch07-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "Two students give different answers to ‘What is the self?’ Why would discussing both answers fit the tradition of the Upanishads and darshanas?",
+     "prompt_hi": "Do students ‘Self kya hai?’ ka alag-alag jawaab dete hain. Dono jawaabon par charcha karna Upanishads aur darshanas ki parampara se kyun milta hai?",
+     "answer": "They encourage questioning and discussion of different ideas.",
+     "acceptable": [
+      "They explore questions through debate",
+      "Different schools of thought discuss such questions",
+      "Sawaal aur alag vichaaron par charcha hoti hai"
+     ],
+     "hints": [
+      "Did these traditions allow only one way of thinking?",
+      "Consider how questions can lead to different schools of thought.",
+      "Discussing both answers allows people to explore ___.",
+      "They encourage questioning and discussion of different ideas."
+     ],
+     "verified": {
+      "solverAnswer": "Because Upanishads and darshanas encourage dialogue, debate, and exploring multiple views on deep questions.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver too verbose, misses tradition fit",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.75,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch07-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch07-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "During exam week, Aarav studies all night without rest. Neha studies regularly and sleeps enough. Which plan is closer to the Buddha’s Middle Path, and why?",
+     "prompt_hi": "Exam week mein Aarav bina aaraam kiye raat bhar padhta hai. Neha roz padhti hai aur poori neend leti hai. Buddha ke Middle Path ke zyada kareeb kiska plan hai, aur kyun?",
+     "answer": "Neha’s plan, because it avoids the extreme of excessive hardship.",
+     "acceptable": [
+      "Neha; she avoids extreme hardship",
+      "Neha, because her plan is balanced",
+      "Neha; uska plan santulit hai"
+     ],
+     "hints": [
+      "Which plan avoids an extreme?",
+      "The Middle Path avoids excessive hardship as well as excess comfort.",
+      "The closer plan is ___ because it is balanced.",
+      "Neha’s; regular study and rest avoid excessive hardship."
+     ],
+     "verified": {
+      "solverAnswer": "Neha’s plan, because it avoids extremes of indulgence and deprivation.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both identify Neha's balanced plan",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch07-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch07-t01-s4",
+     "kind": "far_transfer",
+     "demand": "transfer",
+     "genGrade": 7,
+     "prompt_en": "A village festival includes a tribal tradition of protecting a sacred grove. A visitor says it cannot be part of India’s cultural roots because it is not in a famous text. Is the visitor right or wrong? Give one reason.",
+     "prompt_hi": "Ek gaon ke festival mein sacred grove ko bachane ki tribal parampara hai. Ek visitor kehta hai ki famous text mein na hone se yeh India ki cultural roots ka hissa nahi hai. Visitor sahi hai ya galat? Ek wajah do.",
+     "answer": "Wrong; folk and tribal traditions are also part of India’s cultural roots.",
+     "acceptable": [
+      "Wrong; tribal traditions are part of India’s culture",
+      "Galat; lok aur tribal paramparayein bhi cultural roots ka hissa hain"
+     ],
+     "hints": [
+      "Must a tradition appear in a famous text to matter?",
+      "Cultural roots include communities’ lived practices.",
+      "The visitor is ___ because cultural roots include more than texts.",
+      "Wrong; folk and tribal traditions are also part of India’s cultural roots."
+     ],
+     "verified": {
+      "solverAnswer": "Wrong, because India’s cultural roots include tribal and oral traditions, not just famous texts.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both reject visitor correctly",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 6,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 7,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch07-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch08-t01",
+   "replacesOpeners": [
+    "c6-sst-ch08-t01-i02",
+    "diag:c6-sst-ch08-t01-m1",
+    "c6-sst-ch08-t01-i05"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch08-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch08-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "For a school display on regional dress, which pairing is correct: phiran—Kashmir or phiran—Kerala?",
+     "prompt_hi": "School ke regional dress display ke liye kaunsi jodi sahi hai: phiran—Kashmir ya phiran—Kerala?",
+     "answer": "phiran—Kashmir",
+     "acceptable": [
+      "Kashmir",
+      "phiran and Kashmir"
+     ],
+     "hints": [
+      "Which region has colder winters?",
+      "Think about where a warm, loose garment is worn.",
+      "Phiran ko ___ ke saath jodo.",
+      "Phiran—Kashmir; it is worn in the region’s cold climate."
+     ],
+     "verified": {
+      "solverAnswer": "phiran—Kashmir",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch08-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch08-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "At a book fair, the same epic story appears in Tamil and Awadhi versions. What is the shared thread here: the story or the language?",
+     "prompt_hi": "Book fair mein ek hi mahakavya ki kahani Tamil aur Awadhi versions mein hai. Yahan shared thread kya hai: kahani ya bhasha?",
+     "answer": "the story",
+     "acceptable": [
+      "story",
+      "same story",
+      "kahani"
+     ],
+     "hints": [
+      "What stays alike across both books?",
+      "Separate what is told from how it is told.",
+      "Dono versions mein ___ ek jaisi hai.",
+      "The story; its language changes, but its central narrative connects them."
+     ],
+     "verified": {
+      "solverAnswer": "the story",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch08-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch08-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "A school exhibition shows kites for Uttarayan in Gujarat and sesame sweets for Makar Sankranti in Maharashtra. Both mark the sun’s northward journey. What is their shared thread: identical customs or a common seasonal idea?",
+     "prompt_hi": "School exhibition mein Gujarat ke Uttarayan ki patangein aur Maharashtra ki Makar Sankranti ki til mithai dikhayi gayi hain. Dono suraj ki uttar ki yatra se jude hain. Shared thread kya hai: bilkul ek jaise riwaaz ya ek common seasonal idea?",
+     "answer": "a common seasonal idea",
+     "acceptable": [
+      "common seasonal idea",
+      "same seasonal idea",
+      "seasonal idea",
+      "mausam se juda ek hi vichar"
+     ],
+     "hints": [
+      "Do the displays show exactly the same custom?",
+      "Look beneath the activities for what both mark.",
+      "Alag riwaazon ke neeche ___ common hai.",
+      "A common seasonal idea; the customs differ, but both mark the same change."
+     ],
+     "verified": {
+      "solverAnswer": "a common seasonal idea",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch08-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch08-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "At a school food fair, families bring different regional dishes and exchange recipes. Why can this diversity enrich the school: because everyone must eat alike, or because people learn from one another?",
+     "prompt_hi": "School food fair mein families alag-alag regional dishes laati hain aur recipes share karti hain. Yeh diversity school ko kyun samriddh banati hai: kyunki sabko ek jaisa khana chahiye, ya kyunki log ek-doosre se seekhte hain?",
+     "answer": "because people learn from one another",
+     "acceptable": [
+      "people learn from one another",
+      "they learn from each other",
+      "ek-doosre se seekhte hain"
+     ],
+     "hints": [
+      "What happens when families exchange recipes?",
+      "Focus on what sharing differences makes possible.",
+      "Diversity enriches the school because people ___.",
+      "People learn from one another; sharing brings new experiences and ideas."
+     ],
+     "verified": {
+      "solverAnswer": "because people learn from one another",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch08-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch08-t01-s4",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "For a Venn diagram, compare an Onam meal served on a banana leaf in Kerala with a Bihu meal served on a plate in Assam. Which belongs in the overlap: ‘uses a banana leaf’ or ‘brings people together over food’?",
+     "prompt_hi": "Venn diagram ke liye Kerala mein kele ke patte par parose Onam meal aur Assam mein plate par parose Bihu meal ko compare karo. Overlap mein kya aayega: ‘kele ka patta use hota hai’ ya ‘khane par log saath aate hain’?",
+     "answer": "brings people together over food",
+     "acceptable": [
+      "people come together over food",
+      "brings people together over food",
+      "khane par log saath aate hain"
+     ],
+     "hints": [
+      "What must be true of both meals?",
+      "The overlap holds a similarity, not a detail from just one side.",
+      "Dono meals mein log ___ ke liye milte hain.",
+      "Brings people together over food; the serving surfaces differ."
+     ],
+     "verified": {
+      "solverAnswer": "‘brings people together over food’",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.25,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch08-t01-i02": {
+     "ge": 4,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch09-t01",
+   "replacesOpeners": [
+    "c6-sst-ch09-t01-i01",
+    "diag:c6-sst-ch09-t01-m1",
+    "c6-sst-ch09-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch09-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch09-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Aarav lives with his mother, grandfather and aunt. His aunt helps care for him after school. Is this a nuclear family or a family with relatives from more than one generation?",
+     "prompt_hi": "Aarav apni maa, dadaji aur bua ke saath rehta hai. School ke baad bua uska khayal rakhti hain. Yeh nuclear family hai ya ek se zyada peedhiyon ke rishtedaaron wala parivaar?",
+     "answer": "A family with relatives from more than one generation",
+     "acceptable": [
+      "more than one generation",
+      "ek se zyada peedhiyon wala parivaar",
+      "joint family"
+     ],
+     "hints": [
+      "Aarav ke saath kaun-kaun se rishtedaar rehte hain?",
+      "Nuclear family ki banavat se is ghar ki tulna karo.",
+      "Is ghar mein rishtedaar ___ peedhiyon se hain.",
+      "Ek se zyada peedhiyon wala parivaar: dadaji bhi ghar mein rehte hain."
+     ],
+     "verified": {
+      "solverAnswer": "family with relatives from more than one generation",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch09-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Before a school event, Meera's father packs everyone's lunches while Meera fills water bottles. Which shows fairer sharing: this arrangement or expecting her father to do both tasks alone?",
+     "prompt_hi": "School event se pehle Meera ke papa sabke lunch pack karte hain aur Meera paani ki bottles bharti hai. Kaunsa zyada theek batwara hai: yeh arrangement ya papa se dono kaam akele karwana?",
+     "answer": "This arrangement",
+     "acceptable": [
+      "the first arrangement",
+      "Meera and her father sharing tasks",
+      "yeh arrangement"
+     ],
+     "hints": [
+      "Dono arrangements mein kaam kaun kar raha hai?",
+      "Ghar ke kaam umar aur kshamta ke hisaab se baante ja sakte hain.",
+      "Jismein dono yogdaan dein, woh ___ arrangement hai.",
+      "Yeh arrangement: Meera aur uske papa dono zimmedari lete hain."
+     ],
+     "verified": {
+      "solverAnswer": "this arrangement",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch09-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "Riya's mother works a night shift. Riya can set the table, but her brother says housework is only their mother's job. Why should the brother also take a suitable task?",
+     "prompt_hi": "Riya ki mummy night shift karti hain. Riya table laga sakti hai, lekin uska bhai kehta hai ghar ka kaam sirf mummy ka hai. Bhai ko bhi apne layak kaam kyun lena chahiye?",
+     "answer": "Housework is a shared responsibility, not only the mother's job",
+     "acceptable": [
+      "to share responsibilities fairly",
+      "ghar ka kaam sabki zimmedari hai",
+      "so the mother does not have to do all the work"
+     ],
+     "hints": [
+      "Night shift ke baad mummy ko kis tarah ki madad chahiye?",
+      "Kaam baantne mein gender ke bajay kshamta dekho.",
+      "Bhai ko kaam lena chahiye kyunki ghar ke kaam ___ hain.",
+      "Ghar ka kaam sabki zimmedari hai, sirf mummy ki nahi."
+     ],
+     "verified": {
+      "solverAnswer": "Because sharing work is fair and respects all family members equally.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver adds equality; key focuses sharing",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "After heavy rain in Pune, several families cannot cook. Neighbours collect ingredients, and volunteers cook and serve meals in the school hall. Is this individual help or community support through shared work?",
+     "prompt_hi": "Pune mein tez baarish ke baad kuch parivaar khana nahi bana paa rahe. Padosi saamaan ikattha karte hain aur volunteers school hall mein khana banaakar paroste hain. Yeh individual help hai ya milkar kaam karne se community support?",
+     "answer": "Community support through shared work",
+     "acceptable": [
+      "community support",
+      "shared community work",
+      "milkar kaam karne se community support"
+     ],
+     "hints": [
+      "Khana taiyaar karne mein kitne tarah ke log lage hain?",
+      "Dekho log apni mehnat aur saamaan kaise jod rahe hain.",
+      "Yeh ___ ke zariye logon ki madad hai.",
+      "Milkar kaam karne se community support: padosi aur volunteers saath madad karte hain."
+     ],
+     "verified": {
+      "solverAnswer": "community support through shared work",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5.5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "A Chennai neighbourhood collects drinking water for families it does not know after a cyclone. How does this action show the idea ‘the world is one family’?",
+     "prompt_hi": "Cyclone ke baad Chennai ki ek colony anjaan parivaaron ke liye peene ka paani ikattha karti hai. Yeh kaam ‘poori duniya ek parivaar hai’ ka vichaar kaise dikhata hai?",
+     "answer": "They care for people beyond their own family as they would care for family",
+     "acceptable": [
+      "they help strangers as members of a wider family",
+      "apne parivaar se bahar ke logon ki bhi parivaar jaisi fikr karte hain"
+     ],
+     "hints": [
+      "Paani paane wale log helpers ke kya lagte hain?",
+      "Is vichaar mein apnaapan sirf rishtedaaron tak seemit nahi.",
+      "Woh anjaan logon ki bhi ___ ki tarah fikr karte hain.",
+      "Woh apne parivaar se bahar ke logon ki bhi parivaar jaisi fikr karte hain."
+     ],
+     "verified": {
+      "solverAnswer": "It shows caring for all, treating strangers as family in need.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both explain wider family care",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-h4",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "Sana lives with her parents. Her uncle lives in another city but regularly helps pay her school fees. Does his support make Sana’s household a joint family? Answer yes or no, based on who lives together.",
+     "prompt_hi": "Sana apne parents ke saath rehti hai. Doosre shehar mein rehne wale uncle regular school fees mein madad karte hain. Kya isse Sana ka ghar joint family ban jaata hai? Saath kaun rehta hai, iske hisaab se haan ya nahin batao.",
+     "answer": "No; her uncle supports the family but does not live in their household.",
+     "acceptable": [
+      "No",
+      "Nahin",
+      "Nahi",
+      "No, the uncle lives elsewhere"
+     ],
+     "hints": [
+      "Which relatives share Sana’s home?",
+      "Support from elsewhere is different from sharing a household.",
+      "Her uncle helps, but lives ___.",
+      "No; his support does not mean they live together."
+     ],
+     "verified": {
+      "solverAnswer": "no",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.75,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-h5",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "At home, Dev has exams, his sister has a free afternoon, and their father has an injured wrist. Which is fairer: everyone does identical chores, or they divide chores according to time and ability?",
+     "prompt_hi": "Ghar mein Dev ke exams hain, uski behen ke paas dopahar mein free time hai, aur papa ki kalai mein chot hai. Kya zyada theek hai: sab bilkul ek jaise kaam karein, ya samay aur kshamta ke hisaab se kaam baantein?",
+     "answer": "Divide chores according to time and ability.",
+     "acceptable": [
+      "Divide according to time and ability",
+      "Samay aur kshamta ke hisaab se kaam baantna",
+      "Share tasks according to availability and ability"
+     ],
+     "hints": [
+      "Can everyone manage the same tasks right now?",
+      "Fair sharing considers each person’s circumstances.",
+      "Choose the plan that accounts for ___ and ___.",
+      "Divide by time and ability; their circumstances differ."
+     ],
+     "verified": {
+      "solverAnswer": "they divide chores according to time and ability",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Identical core answer",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-h6",
+     "role": "harder",
+     "skillId": "c6-sst-ch09-t01-s4",
+     "kind": "far_transfer",
+     "demand": "transfer",
+     "genGrade": 7,
+     "prompt_en": "A housing society’s waste reaches the city’s sorting centre. Which plan shows interdependence: residents separate waste and collection workers transport it, or residents leave mixed waste for workers to sort alone?",
+     "prompt_hi": "Housing society ka kachra shehar ke sorting centre tak jaata hai. Kaunsi yojana paraspar nirbharta dikhati hai: residents kachra alag karein aur collection workers use le jaayein, ya residents mila-jula kachra chhod dein aur workers akele chhaantein?",
+     "answer": "Residents separate waste and collection workers transport it.",
+     "acceptable": [
+      "Residents separate waste and workers transport it",
+      "Pehli yojana",
+      "First plan",
+      "Residents and collection workers share the work"
+     ],
+     "hints": [
+      "Who handles waste before collection workers arrive?",
+      "Interdependence means different groups contribute to one task.",
+      "Residents ___; collection workers transport it.",
+      "The first plan; both groups contribute to waste management."
+     ],
+     "verified": {
+      "solverAnswer": "residents separate waste and collection workers transport it",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.25,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "ongrade": [
+    {
+     "id": "c6-sst-ch09-t01-rl-g1",
+     "role": "ongrade",
+     "skillId": "c6-sst-ch09-t01-s1",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "In Jaipur, Kabir lives with his father and grandmother. His friend says, “This must be a nuclear family because only three people live there.” Is his friend correct? Answer yes or no.",
+     "prompt_hi": "Jaipur mein Kabir apne papa aur dadi ke saath rehta hai. Uska dost kehta hai, “Teen log hain, isliye yeh nuclear family hogi.” Kya uska dost sahi hai? Haan ya nahin?",
+     "answer": "No",
+     "acceptable": [
+      "nahin",
+      "nahi",
+      "no, a grandmother is also part of the household"
+     ],
+     "hints": [
+      "Does family type depend only on the number of people?",
+      "Look at which generations live together.",
+      "A parent and grandparent live together, so the claim is ___.",
+      "No. Family type depends on relationships, not just household size."
+     ],
+     "verified": {
+      "solverAnswer": "no",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-g2",
+     "role": "ongrade",
+     "skillId": "c6-sst-ch09-t01-s2",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "Both parents in a family work outside the home. Their Class 6 child has exams this week. Which plan shares responsibilities more fairly: A, one parent does all housework; or B, both parents divide chores and the child helps briefly after studying?",
+     "prompt_hi": "Ek family mein dono parents ghar ke bahar kaam karte hain. Unke Class 6 bachche ke is hafte exams hain. Kaunsa plan zyada fair hai: A, ek parent saara ghar ka kaam kare; ya B, dono parents kaam baantein aur bachcha padhai ke baad thodi help kare?",
+     "answer": "B",
+     "acceptable": [
+      "plan B",
+      "option B",
+      "dono parents kaam baantein aur bachcha thodi help kare"
+     ],
+     "hints": [
+      "Whose time and commitments should the plan consider?",
+      "Fair sharing considers everyone's capacity, including study time.",
+      "The fairer plan divides work while protecting ___ time.",
+      "B. Adults share chores, and the child helps without neglecting exams."
+     ],
+     "verified": {
+      "solverAnswer": "B",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.75,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 6.5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch09-t01-rl-g3",
+     "role": "ongrade",
+     "skillId": "c6-sst-ch09-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "For a neighbourhood festival in Surat, residents contribute rice, cook together and serve meals to everyone, including people who cannot contribute. Is this mainly a private family meal or community support through shared work?",
+     "prompt_hi": "Surat ke neighbourhood festival mein log chawal dete hain, milkar khana banate hain aur sabko khilate hain, unko bhi jo contribute nahin kar sakte. Yeh mainly private family meal hai ya shared work se community support?",
+     "answer": "Community support through shared work",
+     "acceptable": [
+      "community support",
+      "shared community work",
+      "samudayik sahyog",
+      "milkar kiya gaya community ka kaam"
+     ],
+     "hints": [
+      "Who contributes, and who can receive the meal?",
+      "Notice whether participation extends beyond one household.",
+      "Residents pool resources and effort; this shows ___.",
+      "Community support through shared work. Residents cook together and feed everyone."
+     ],
+     "verified": {
+      "solverAnswer": "community support through shared work",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "oldGE": {
+    "c6-sst-ch09-t01-i01": {
+     "ge": 3.75,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch10-t01",
+   "replacesOpeners": [
+    "c6-sst-ch10-t01-i02",
+    "diag:c6-sst-ch10-t01-m1",
+    "c6-sst-ch10-t01-i01"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch10-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch10-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "At a school sports meet, a rule says each team gets one turn on the ground. Teams keep arguing about whose turn it is. Besides making the rule, what must the organisers do to govern the meet?",
+     "prompt_hi": "School sports meet mein rule hai ki har team ko ground par ek turn milega. Teams apne turn par behas kar rahi hain. Meet ko chalane ke liye rule banane ke alawa organisers ko kya karna hoga?",
+     "answer": "Carry out the rule fairly",
+     "acceptable": [
+      "enforce the rule fairly",
+      "make sure teams follow the rule",
+      "rule ko sab par barabar lagu karna"
+     ],
+     "hints": [
+      "What should happen when teams disagree about a turn?",
+      "Governance includes putting agreed rules into practice.",
+      "Organisers must make sure the rule is followed ____.",
+      "Carry out the rule fairly; a written rule alone cannot settle turns."
+     ],
+     "verified": {
+      "solverAnswer": "enforce the rule",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch10-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch10-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A new law limits how much plastic packaging shops can use. Government officers visit shops to check whether they follow it. Which organ of government are the officers working for: legislature, executive or judiciary?",
+     "prompt_hi": "Naya kanoon shops mein plastic packaging ki matra seemit karta hai. Sarkari officers shops mein jaakar check karte hain ki kanoon maana ja raha hai ya nahi. Officers kis ang ke liye kaam kar rahe hain: legislature, executive ya judiciary?",
+     "answer": "Executive",
+     "acceptable": [
+      "the executive",
+      "karyapalika",
+      "कार्यपालिका"
+     ],
+     "hints": [
+      "Are the officers creating a law, carrying it out, or judging a dispute?",
+      "Match their action to an organ’s job.",
+      "The organ that carries out laws is the ____.",
+      "Executive; its officers help put laws into effect."
+     ],
+     "verified": {
+      "solverAnswer": "executive",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch10-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch10-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A city official fines a shop under a safety rule. The shopkeeper says the fine is unfair. Why should a court, rather than that same official, decide the dispute?",
+     "prompt_hi": "Ek city official safety rule ke tahat shop par fine lagata hai. Shopkeeper kehta hai ki fine galat hai. Usi official ke bajay court ko yeh vivaad kyun suljhana chahiye?",
+     "answer": "An independent court can check the official’s decision fairly",
+     "acceptable": [
+      "separate powers allow a fair review",
+      "the official should not judge their own decision",
+      "alag court official ke faisle ki nishpaksh jaanch kar sakta hai"
+     ],
+     "hints": [
+      "Who would be reviewing the official’s own action?",
+      "Separate organs can check one another’s decisions.",
+      "A court can review the fine without being the ____.",
+      "An independent court checks the decision fairly; the official should not judge their own action."
+     ],
+     "verified": {
+      "solverAnswer": "To ensure a neutral and fair judgement.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both convey independent/fair court review",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch10-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch10-t01-s4",
+     "kind": "practice",
+     "demand": "transfer",
+     "genGrade": 6.5,
+     "prompt_en": "A Mumbai neighbourhood needs a broken streetlight repaired. Another issue concerns defence of India’s borders. Which level should handle each: local, state or Union? Give the two levels in order.",
+     "prompt_hi": "Mumbai ke ek neighbourhood mein streetlight kharab hai. Doosra mudda Bharat ki seemaon ki raksha ka hai. Har mudda kis level ka hai: local, state ya Union? Dono levels kram se batao.",
+     "answer": "Local; Union",
+     "acceptable": [
+      "local and Union",
+      "local, central",
+      "sthaniya aur kendra",
+      "स्थानीय और केंद्र"
+     ],
+     "hints": [
+      "How far does each problem reach?",
+      "Match neighbourhood services and national matters to their levels.",
+      "Streetlight: ____; border defence: ____.",
+      "Local; Union—streetlights serve a neighbourhood, while border defence concerns the country."
+     ],
+     "verified": {
+      "solverAnswer": "local, Union",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch10-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch10-t01-s5",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "At a village meeting, residents discuss a water shortage and question the proposed solution. Another village only votes for representatives and never discusses decisions. Which village shows democracy beyond voting: the first or the second?",
+     "prompt_hi": "Ek gaon ki meeting mein log paani ki kami par charcha karte hain aur sujhaaye gaye hal par sawaal uthate hain. Doosre gaon mein log sirf representatives ko vote dete hain, faislon par charcha nahi karte. Voting se aage ki democracy kaun-sa gaon dikhata hai: pehla ya doosra?",
+     "answer": "The first village",
+     "acceptable": [
+      "first",
+      "pehla gaon",
+      "पहला गाँव"
+     ],
+     "hints": [
+      "Where do residents take part between elections?",
+      "Democracy also includes discussing and questioning public decisions.",
+      "The village showing participation beyond elections is the ____.",
+      "The first village; residents discuss a shared problem and question a proposal."
+     ],
+     "verified": {
+      "solverAnswer": "the first",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.25,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch10-t01-i02": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch11-t01",
+   "replacesOpeners": [
+    "c6-sst-ch11-t01-i01",
+    "diag:c6-sst-ch11-t01-m1",
+    "c6-sst-ch11-t01-i09"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch11-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch11-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Several villages in one block want to coordinate repairs to a road between them. Which Panchayati Raj tier works at block level: gram panchayat, panchayat samiti, or zila parishad?",
+     "prompt_hi": "Ek block ke kai gaon apne beech ki sadak ki marammat milkar karna chahte hain. Block star par kaunsa Panchayati Raj nikay kaam karta hai: gram panchayat, panchayat samiti, ya zila parishad?",
+     "answer": "Panchayat samiti",
+     "acceptable": [
+      "block panchayat",
+      "panchayat samity"
+     ],
+     "hints": [
+      "What area do these villages share?",
+      "Match that area to the middle tier of Panchayati Raj.",
+      "The block-level tier is ____.",
+      "Panchayat samiti works at the block level."
+     ],
+     "verified": {
+      "solverAnswer": "panchayat samiti",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch11-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch11-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Meena is 19 and her name is on her village's voters' list. She was not elected to the panchayat. Can she still attend the gram sabha: yes or no?",
+     "prompt_hi": "Meena 19 saal ki hai aur uska naam gaon ki voter list mein hai. Woh panchayat mein chuni nahi gayi. Kya woh phir bhi gram sabha mein aa sakti hai: haan ya nahin?",
+     "answer": "Yes",
+     "acceptable": [
+      "haan",
+      "ha",
+      "ji haan"
+     ],
+     "hints": [
+      "Does attendance require winning an election?",
+      "Think about the age and voters' list requirements.",
+      "Meena meets those requirements, so the answer is ____.",
+      "Yes; adult voters belong to the gram sabha without being elected."
+     ],
+     "verified": {
+      "solverAnswer": "yes",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch11-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch11-t01-s2",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "At a gram sabha meeting, villagers discuss the proposed budget for repairing a school roof. Should they only listen, or also ask questions about the spending? Choose one and say why.",
+     "prompt_hi": "Gram sabha ki baithak mein school ki chhat ki marammat ke budget par baat ho rahi hai. Kya gaon walon ko sirf sunna chahiye, ya kharch par sawaal bhi poochhne chahiye? Ek chuno aur wajah batao.",
+     "answer": "Ask questions, because the gram sabha reviews the panchayat's plans and spending.",
+     "acceptable": [
+      "Ask questions to check how the money will be spent",
+      "Sawaal poochhne chahiye, taaki kharch ki jaanch ho",
+      "Question the spending to hold the panchayat accountable"
+     ],
+     "hints": [
+      "What is the meeting meant to let villagers do?",
+      "Consider how villagers can check a proposed budget.",
+      "They should ____ because the meeting reviews panchayat plans.",
+      "Ask questions; the gram sabha can scrutinise plans and spending."
+     ],
+     "verified": {
+      "solverAnswer": "also ask questions. Why? Because gram sabha members can question spending for accountability.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both stress asking questions for accountability",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch11-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch11-t01-s3",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "A new gram panchayat needs someone to maintain its meeting records. Should villagers elect this person as a panch, or should an appointed secretary do the work?",
+     "prompt_hi": "Nayi gram panchayat ki baithakon ka record rakhna hai. Kya gaon wale is kaam ke liye kisi ko panch chunenge, ya niyukt secretary yeh kaam karega?",
+     "answer": "An appointed secretary",
+     "acceptable": [
+      "secretary",
+      "appointed panchayat secretary",
+      "niyukt secretary",
+      "panchayat sachiv"
+     ],
+     "hints": [
+      "Is record-keeping an elected representative's post?",
+      "Distinguish elected members from the appointed official.",
+      "The records are kept by the appointed ____.",
+      "An appointed secretary maintains the panchayat's records."
+     ],
+     "verified": {
+      "solverAnswer": "an appointed secretary should do the work",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch11-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch11-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "At a village meeting, only a few powerful families speak about where a new water tap should go. Why does it matter that women and SC/ST villagers also participate? Give one reason.",
+     "prompt_hi": "Gaon ki baithak mein naye paani ke nal ki jagah par sirf kuchh prabhavshali parivar bol rahe hain. Mahilaon aur SC/ST gaon walon ki bhagidari kyun zaroori hai? Ek wajah batao.",
+     "answer": "Their participation helps ensure different villagers' needs are heard in the decision.",
+     "acceptable": [
+      "So everyone's needs are considered",
+      "So the decision does not ignore their needs",
+      "Taaki sabki zarooratein suni jaayen"
+     ],
+     "hints": [
+      "Whose needs might the speakers overlook?",
+      "A shared facility should reflect more than one group's needs.",
+      "Their participation helps ensure ____ are heard.",
+      "It helps different villagers' needs be heard before deciding."
+     ],
+     "verified": {
+      "solverAnswer": "To ensure fair decisions that meet everyone's needs.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both emphasize considering everyone's needs",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch11-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch12-t01",
+   "replacesOpeners": [
+    "c6-sst-ch12-t01-i01",
+    "diag:c6-sst-ch12-t01-m1",
+    "c6-sst-ch12-t01-i10"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch12-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch12-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A farming area near Jaipur is gaining shops and new housing, but is not yet a town. Which urban local body fits it: municipal corporation, municipal council or nagar panchayat?",
+     "prompt_hi": "Jaipur ke paas ek kheti wala ilaaka ab dukaanon aur naye gharon ke saath shehri ban raha hai, par abhi town nahi hai. Iske liye kaunsi urban local body sahi hai: municipal corporation, municipal council ya nagar panchayat?",
+     "answer": "Nagar panchayat",
+     "acceptable": [
+      "nagar panchayat"
+     ],
+     "hints": [
+      "Is the area already a large city or an established town?",
+      "Focus on the change from rural to urban.",
+      "For an area making that change, choose ___.",
+      "Nagar panchayat: it serves an area changing from rural to urban."
+     ],
+     "verified": {
+      "solverAnswer": "nagar panchayat",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch12-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch12-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A streetlight near Zoya’s school is broken. Her city is divided into wards, each with an elected representative. What is that representative called: councillor, mayor or municipal commissioner?",
+     "prompt_hi": "Zoya ke school ke paas streetlight kharab hai. Uska shehar wards mein bata hai, aur har ward ka ek chuna hua representative hai. Use kya kehte hain: councillor, mayor ya municipal commissioner?",
+     "answer": "Councillor",
+     "acceptable": [
+      "councillor",
+      "ward councillor",
+      "parshad"
+     ],
+     "hints": [
+      "Which level of city government represents one ward?",
+      "Look for the elected representative, not the appointed official.",
+      "The elected representative of one ward is the ___.",
+      "Councillor: voters elect one to represent their ward."
+     ],
+     "verified": {
+      "solverAnswer": "councillor",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch12-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch12-t01-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "At a city meeting, Meera says residents elected her. Mr Rao says the government appointed him to manage municipal work. Who is the mayor and who is the municipal commissioner?",
+     "prompt_hi": "City meeting mein Meera kehti hain ki residents ne unhe chuna hai. Mr Rao kehte hain ki sarkar ne unhe municipal kaam sambhalne ke liye appoint kiya hai. Mayor kaun hai aur municipal commissioner kaun?",
+     "answer": "Meera is the mayor; Mr Rao is the municipal commissioner.",
+     "acceptable": [
+      "Meera mayor, Mr Rao commissioner",
+      "Meera mayor and Rao municipal commissioner"
+     ],
+     "hints": [
+      "What does each person say about getting the post?",
+      "Distinguish an elected leader from an appointed official.",
+      "Meera is the ___; Mr Rao is the ___.",
+      "Meera is mayor; Mr Rao is commissioner, because he was appointed."
+     ],
+     "verified": {
+      "solverAnswer": "Meera is the mayor; Mr Rao is the municipal commissioner.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch12-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch12-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "Surat’s municipal body plans to repair a public road. It receives property tax from residents and a grant from the state government. Name the two sources of money in this plan.",
+     "prompt_hi": "Surat ki municipal body ek public road repair karna chahti hai. Use residents se property tax aur state government se grant milti hai. Is plan mein paise ke do sources batao.",
+     "answer": "Property tax and a state government grant.",
+     "acceptable": [
+      "taxes and government grants",
+      "property tax and state grant",
+      "property tax, state government grant"
+     ],
+     "hints": [
+      "Who provides each part of the money?",
+      "Separate money collected locally from money given by government.",
+      "The two sources are ___ and ___.",
+      "Property tax and a state grant: residents pay one; government provides the other."
+     ],
+     "verified": {
+      "solverAnswer": "property tax and state government grant",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Solver matches key exactly",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch12-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch12-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 7,
+     "prompt_en": "A Pune colony reports overflowing bins to its ward councillor, but residents keep putting loose rubbish beside the bins. Why might the complaint alone not keep the lane clean?",
+     "prompt_hi": "Pune ki ek colony overflowing bins ki complaint ward councillor se karti hai, lekin residents bins ke paas khula kachra phenkte rehte hain. Sirf complaint se lane saaf kyun nahi rahegi?",
+     "answer": "Residents must also put waste in bins; keeping the lane clean needs citizens’ action as well as municipal action.",
+     "acceptable": [
+      "People must use the bins too",
+      "Residents must stop throwing rubbish beside the bins",
+      "Citizens and the municipality both need to act"
+     ],
+     "hints": [
+      "What happens after the bins are emptied?",
+      "Think about residents’ actions as well as municipal work.",
+      "The lane may get dirty again unless residents ___.",
+      "Residents must use bins too; complaints cannot prevent new litter."
+     ],
+     "verified": {
+      "solverAnswer": "Because cleanliness requires both municipal action and responsible resident behaviour.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both highlight need for citizen + municipal action",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch12-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch13-t01",
+   "replacesOpeners": [
+    "c6-sst-ch13-t01-i01",
+    "diag:c6-sst-ch13-t01-m1",
+    "c6-sst-ch13-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch13-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch13-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "At a school event, Aarav designs a poster and receives a notebook as payment. Is his poster-making an economic or non-economic activity?",
+     "prompt_hi": "School event ke liye Aarav poster banata hai aur payment mein notebook paata hai. Uska poster banana economic activity hai ya non-economic?",
+     "answer": "Economic activity",
+     "acceptable": [
+      "economic",
+      "आर्थिक गतिविधि"
+     ],
+     "hints": [
+      "Did Aarav receive something for making the poster?",
+      "Payment need not always be money.",
+      "Payment in kind makes this an ___ activity.",
+      "Economic activity: the notebook is payment in kind."
+     ],
+     "verified": {
+      "solverAnswer": "Economic activity",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.25,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch13-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch13-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Before a neighbourhood cricket match, Zoya helps mark the pitch as a favour to her friends. She receives nothing for it. Is this economic or non-economic work?",
+     "prompt_hi": "Neighbourhood cricket match se pehle Zoya doston ki madad ke liye pitch mark karti hai. Use kuch nahi milta. Yeh economic kaam hai ya non-economic?",
+     "answer": "Non-economic work",
+     "acceptable": [
+      "non-economic",
+      "non-economic activity",
+      "गैर-आर्थिक कार्य"
+     ],
+     "hints": [
+      "Why is Zoya marking the pitch?",
+      "Notice whether she receives payment or helps as a favour.",
+      "Work done as an unpaid favour is ___ work.",
+      "Non-economic work: Zoya helps her friends without payment."
+     ],
+     "verified": {
+      "solverAnswer": "Non-economic activity",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch13-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch13-t01-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "Ishaan repairs his neighbour’s bicycle for a fee on Saturday. On Sunday, he repairs his sister’s bicycle without payment. Why are the two repairs classified differently?",
+     "prompt_hi": "Ishaan Saturday ko padosi ki cycle paise lekar theek karta hai. Sunday ko behen ki cycle bina payment ke theek karta hai. Dono repairs ko alag tarah se kyun classify karenge?",
+     "answer": "The neighbour’s repair is paid work; the sister’s repair is unpaid help.",
+     "acceptable": [
+      "One is for payment and the other is unpaid help",
+      "Payment and purpose differ"
+     ],
+     "hints": [
+      "What changes between Saturday and Sunday?",
+      "Classify the activity by its purpose and payment, not just the task.",
+      "The neighbour’s repair involves ___; the sister’s is unpaid help.",
+      "The neighbour’s repair is paid work; the sister’s is unpaid help."
+     ],
+     "verified": {
+      "solverAnswer": "One is for payment (economic), the other is without payment for family (non-economic).",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both distinguish paid vs unpaid work",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch13-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch13-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "During exam week, Nisha’s father cooks meals and cares for her younger brother without pay. Why does this work matter to the family?",
+     "prompt_hi": "Exam week mein Nisha ke papa bina payment ke khana banate hain aur uske chhote bhai ki dekhbhal karte hain. Yeh kaam family ke liye kyun important hai?",
+     "answer": "It meets the family’s needs and lets others focus on their responsibilities.",
+     "acceptable": [
+      "It supports the family and frees others to study or work",
+      "It provides food and care the family needs"
+     ],
+     "hints": [
+      "What would the family need to manage without his help?",
+      "Unpaid care still supports everyone’s daily life.",
+      "His work meets family needs and gives others time to ___.",
+      "It meets family needs and lets others focus on their responsibilities."
+     ],
+     "verified": {
+      "solverAnswer": "It provides care and support essential for family well-being without monetary exchange.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Similar meaning on family support",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch13-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch13-t01-s4",
+     "kind": "predict",
+     "demand": "transfer",
+     "genGrade": 7,
+     "prompt_en": "A school’s drinking-water tap breaks. Choose who the plumber’s work helps: only students, only cleaners, or both students and cleaners. Why?",
+     "prompt_hi": "School ka drinking-water tap toot gaya hai. Plumber ke kaam se kisko madad milegi: sirf students, sirf cleaners, ya students aur cleaners dono ko? Kyun?",
+     "answer": "Both students and cleaners, because both depend on the working tap.",
+     "acceptable": [
+      "both",
+      "students and cleaners",
+      "dono",
+      "Both need the tap to work"
+     ],
+     "hints": [
+      "Who uses water at school?",
+      "Think about how different people rely on the same repair.",
+      "The repaired tap helps ___ because they both need water.",
+      "Both students and cleaners benefit because both depend on the working tap."
+     ],
+     "verified": {
+      "solverAnswer": "Both students and cleaners. The plumber fixes a shared resource used by everyone in the school.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch13-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c6-sst-ch14-t01",
+   "replacesOpeners": [
+    "c6-sst-ch14-t01-i01",
+    "diag:c6-sst-ch14-t01-m1",
+    "c6-sst-ch14-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c6-sst-ch14-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c6-sst-ch14-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A workshop buys clay and shapes it into water pots for sale. Is the workshop’s activity primary, secondary or tertiary?",
+     "prompt_hi": "Ek workshop mitti khareedkar bechne ke liye matke banati hai. Workshop ka kaam primary, secondary ya tertiary hai?",
+     "answer": "secondary",
+     "acceptable": [
+      "secondary sector",
+      "द्वितीयक"
+     ],
+     "hints": [
+      "Does the workshop collect clay or change it?",
+      "Think about the sector that makes goods from materials.",
+      "Clay → water pots: making goods belongs to the ___ sector.",
+      "Secondary: the workshop turns clay into pots."
+     ],
+     "verified": {
+      "solverAnswer": "Secondary",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch14-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c6-sst-ch14-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A delivery rider brings a repaired phone from a repair shop to its owner. Is the rider’s activity primary, secondary or tertiary?",
+     "prompt_hi": "Ek delivery rider repaired phone ko repair shop se uske owner tak pahunchata hai. Rider ka kaam primary, secondary ya tertiary hai?",
+     "answer": "tertiary",
+     "acceptable": [
+      "tertiary sector",
+      "service sector",
+      "तृतीयक"
+     ],
+     "hints": [
+      "What does the rider provide to the owner?",
+      "Focus on the rider’s work, not the phone.",
+      "Delivering a product is a ___, not making a new good.",
+      "Tertiary: delivery is a service."
+     ],
+     "verified": {
+      "solverAnswer": "Tertiary",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c6-sst-ch14-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c6-sst-ch14-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6.5,
+     "prompt_en": "Milk comes from a dairy farm, becomes cheese at a factory, and reaches customers through a grocery shop. Name the sectors in order, from farm to shop.",
+     "prompt_hi": "Dairy farm se doodh aata hai, factory mein cheese banti hai, aur grocery shop se customers tak pahunchti hai. Farm se shop tak sectors ka order batao.",
+     "answer": "primary → secondary → tertiary",
+     "acceptable": [
+      "primary, secondary, tertiary",
+      "प्राथमिक → द्वितीयक → तृतीयक"
+     ],
+     "hints": [
+      "What happens to the milk at each place?",
+      "Match obtaining, making and selling to their sectors.",
+      "Farm → factory → shop gives ___ → ___ → ___.",
+      "Primary → secondary → tertiary: milk is obtained, changed, then sold."
+     ],
+     "verified": {
+      "solverAnswer": "Primary, secondary, tertiary",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c6-sst-ch14-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c6-sst-ch14-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6.5,
+     "prompt_en": "A tomato-sauce factory has plenty of bottles, but tomato farms have a poor harvest. Why might the factory make less sauce?",
+     "prompt_hi": "Tomato-sauce factory ke paas bottles kaafi hain, lekin tomato farms ki fasal kharab hui hai. Factory kam sauce kyun bana sakti hai?",
+     "answer": "It has fewer tomatoes to make sauce.",
+     "acceptable": [
+      "It lacks tomatoes",
+      "Fewer tomatoes are available as raw material",
+      "Tamatar kam milenge"
+     ],
+     "hints": [
+      "Besides bottles, what does the factory need?",
+      "A factory depends on farms for its raw material.",
+      "A poor harvest means the factory receives fewer ___.",
+      "It has fewer tomatoes; without enough raw material, production falls."
+     ],
+     "verified": {
+      "solverAnswer": "Less raw material (tomatoes) from primary sector limits production in secondary sector.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both identify lack of tomatoes",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c6-sst-ch14-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c6-sst-ch14-t01-s4",
+     "kind": "far_transfer",
+     "demand": "transfer",
+     "genGrade": 7,
+     "prompt_en": "In a Ladakh town, one family grows apricots, a unit packs dried apricot snacks, and a driver delivers the packets to shops. Classify the three activities, in the order given.",
+     "prompt_hi": "Ladakh ke ek town mein ek family apricots ugati hai, ek unit dried apricot snacks pack karti hai, aur driver packets shops tak pahunchata hai. Isi order mein teenon activities classify karo.",
+     "answer": "primary, secondary, tertiary",
+     "acceptable": [
+      "primary → secondary → tertiary",
+      "प्राथमिक, द्वितीयक, तृतीयक"
+     ],
+     "hints": [
+      "Which activity gets the fruit from nature?",
+      "Then distinguish preparing goods from providing delivery.",
+      "Growing → preparing packets → delivering: ___ → ___ → ___.",
+      "Primary, secondary, tertiary: growing obtains fruit, packing prepares goods, delivery provides a service."
+     ],
+     "verified": {
+      "solverAnswer": "Primary, secondary, tertiary",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c6-sst-ch14-t01-i01": {
+     "ge": 5.5,
+     "tooEasy": false
+    }
+   }
+  }
+ ]
+}

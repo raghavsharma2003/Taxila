@@ -1,0 +1,28 @@
+--- a/server/director/say.js	2026-10-05 00:19:31.296005550 +0000
++++ b/server/director/say.js	2026-10-05 00:19:54.220358616 +0000
+@@ -112,8 +112,23 @@
+  */
+ export const screenHasTargets = (ui, module) => !!(ui?.chips?.length || module?.id);
+ 
+-/** G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on. */
+-export const screenProblem = (text, ui, module) => refersToScreen(text) && !screenHasTargets(ui, module);
++/** The words that ask the child to ACT on the screen (tap, press, pick a tile …), not merely to look at it. */
++const ACT_WORDS = new RegExp([
++  "\\b(?:tap|taps|tapping|touch|click|press|drag|swipe)\\b",
++  "\\b(?:chhoo|chhuo|chhuiye|chhoona|chuo|dabao|dabaiye|dabana|daba\\s+do)\\b",
++  "\\bbuttons?\\b", "\\btiles?\\b", "\\bchips?\\b",
++  "\\b(?:options?|choices?)\\s+(?:mein\\s+se\\s+)?(?:ek\\s+)?(?:tap|chuno|chuniye|select|on\\s+the\\s+screen)\\b",
++  "टैप", "छूओ", "छुओ", "दबाओ", "बटन",
++].join("|"), "iu");
++/** A module drawn to be watched (W2-B fixer, minor 8): the explainer@1 board takes no tap; "look at the board" is fine. */
++const watchOnly = (module) => module?.engine === "explainer@1";
++
++/**
++ * G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on, or when it asks the child to tap
++ * / pick something while the only thing on screen is a board drawn to be watched.
++ */
++export const screenProblem = (text, ui, module) => refersToScreen(text)
++  && (!screenHasTargets(ui, module) || (watchOnly(module) && !ui?.chips?.length && ACT_WORDS.test(String(text ?? ""))));
+ 
+ /** The line without the sentences that refer to the screen (null if nothing that hands the floor back is left). */
+ export function stripScreenRefs(text) {

@@ -19,6 +19,7 @@
 // The equity profile (steal 4, rj-advice-menu-for-weak-learners): a low-baseline child gets the worked example first on
 // every new skill and ONE next step, never a menu (state.js break). Pure; deterministic; no I/O.
 import { checkFits } from "../compiler/compile.js";
+import { revealsAnswer } from "./items.js";
 
 export const FADE_PREFIX = "fade:";
 export const GUIDANCE_LEVELS = Object.freeze(["worked", "faded", "attempt"]);
@@ -27,6 +28,19 @@ export const GUIDE_PL = Object.freeze({ worked: 0.35, attempt: 0.65 });
 /** Outcomes read for a decisive history: the last few on the skill; at least two to decide by them. */
 export const HISTORY_WINDOW = 5;
 const BLANK_MAX = 40;
+/**
+ * Stuck items (rung 4 reached, or left after don't-knows) on a skill that route it to the worked example: one when the
+ * record holds nothing right on it, two whatever else it holds. An all-"don't know" day-1 lesson of 14 turns reaches
+ * the assertion once (measured on c5-maths-ch01-t01, the Director alone), so a threshold of 2 would miss that child.
+ */
+export const STUCK_WORKED = 1;
+export const STUCK_WORKED_ALWAYS = 2;
+/** Keys too common to keep out of her speech (gapGivenAway). */
+const FUNCTION_WORDS = new Set(["a", "an", "the", "for", "to", "of", "in", "on", "at", "by", "and", "or", "but", "so", "is", "am", "are", "was",
+  "were", "be", "has", "have", "had", "do", "does", "did", "it", "this", "that", "with", "from", "as", "if", "not", "no", "yes",
+  "hai", "ka", "ki", "ke", "se", "me", "mein", "ko", "aur", "ya", "to", "bhi", "है", "का", "की", "के", "से", "में", "को", "और", "या"]);
+/** The whiteboard's text limit (ui.whiteboard value; the anchor and every board the Director writes). */
+export const BOARD_MAX = 120;
 const LEARNED = new Set(["learned_today", "mastered", "due"]);
 
 const correctShare = (outcomes) => outcomes.filter((o) => o === "correct").length / outcomes.length;
@@ -36,8 +50,15 @@ const correctShare = (outcomes) => outcomes.filter((o) => o === "correct").lengt
  * when the skill was never seen; `history`: its recent outcomes, oldest first.
  * @returns {{ level: "worked" | "faded" | "attempt" | "probe", reason: string }}
  */
-export function guidanceLevel(snap, history = [], { lowBaseline = false } = {}) {
-  const recent = (history ?? []).filter((o) => o && o !== "no_evidence").slice(-HISTORY_WINDOW);
+export function guidanceLevel(snap, history = [], { lowBaseline = false, stuck = 0 } = {}) {
+  // `stuck`: items on this skill in recent lessons that reached the assertion (rung 4) or were left after don't-knows
+  // (state.js noteStuck; lesson.js loadRecentStuck). A routing signal only, never KT evidence: a child who says
+  // "pata nahi" to everything leaves no outcome rows, and without it they looked like a brand-new child.
+  const stuckN = Math.max(0, Math.min(HISTORY_WINDOW, Number(stuck) || 0));
+  const graded = (history ?? []).filter((o) => o && o !== "no_evidence");
+  // stuck with nothing right to set against it (the all-"don't know" child), or stuck twice whatever else: worked
+  if (stuckN >= STUCK_WORKED_ALWAYS || (stuckN >= STUCK_WORKED && !graded.slice(-HISTORY_WINDOW).includes("correct"))) return { level: "worked", reason: "history.stuck" };
+  const recent = [...graded, ...Array(stuckN).fill("missed")].slice(-HISTORY_WINDOW);
   if (recent.length >= 2) {
     const share = correctShare(recent);
     if (share <= 1 / 3) return { level: "worked", reason: "history.mostly_missed" };
@@ -60,10 +81,14 @@ export function guidanceLevel(snap, history = [], { lowBaseline = false } = {}) 
  * below the worked-step band. "standard" otherwise, and for a child with no record (the population default).
  * The tercile GATE on outcomes is W4-C; this is only the entry policy.
  */
-export function equityProfile({ kit, skills = {}, history = {}, reteach = null }) {
+export function equityProfile({ kit, skills = {}, history = {}, reteach = null, stuck = {} }) {
   const ids = (kit?.skills ?? []).map((sk) => sk.id);
-  const outcomes = ids.flatMap((id) => (history[id] ?? []).filter((o) => o && o !== "no_evidence").slice(-HISTORY_WINDOW));
+  const outcomes = ids.flatMap((id) => [...(history[id] ?? []).filter((o) => o && o !== "no_evidence"),
+    ...Array(Math.max(0, Math.min(HISTORY_WINDOW, Number(stuck?.[id]) || 0))).fill("missed")].slice(-HISTORY_WINDOW));
   if (outcomes.length >= 3 && correctShare(outcomes) <= 1 / 3) return "low";
+  // stuck on the record with nothing right to set against it (the all-"don't know" child): low baseline
+  const stuckN = ids.reduce((n, id) => n + (Number(stuck?.[id]) || 0), 0);
+  if (stuckN >= STUCK_WORKED && !outcomes.some((o) => o === "correct")) return "low";
   const seen = ids.map((id) => skills[id]).filter(Boolean);
   const pre = Object.values(reteach?.prereqs ?? {}).flat().filter((p) => p?.seen);
   const weakPre = pre.length > 0 && Math.min(...pre.map((p) => Number(p.pL))) < GUIDE_PL.worked;
@@ -76,10 +101,10 @@ export function equityProfile({ kit, skills = {}, history = {}, reteach = null }
  * taught first today). A later skill the child has never met still gets its own short explain turn before its first
  * item (state.js poseNext), so an experienced child is never handed an unseen skill cold.
  */
-export function lessonGuidance({ kit, skills = {}, history = {}, lowBaseline = false }) {
+export function lessonGuidance({ kit, skills = {}, history = {}, lowBaseline = false, stuck = {} }) {
   const sk = kit?.skills?.[0];
   if (!sk) return { skillId: null, level: "attempt", reason: "no_skills" };
-  return { skillId: sk.id, ...guidanceLevel(skills[sk.id], history[sk.id], { lowBaseline }) };
+  return { skillId: sk.id, ...guidanceLevel(skills[sk.id], history[sk.id], { lowBaseline, stuck: stuck?.[sk.id] ?? 0 }) };
 }
 
 /** The teach plan for a guidance level (state.js teach() walks it). */
@@ -104,10 +129,30 @@ export function blankOf(step, faded) {
   return blank && blank.length <= BLANK_MAX ? blank : null;
 }
 
-/** The step backward fading leaves to the child: the LATEST step with a recoverable blank, or null. */
+/**
+ * Would text in view give the gap away? The problem, the steps shown before it (fadedContent; workedLeadContent shows a
+ * prefix of them) and the gap line itself, checked with the leak guard's own predicate (items.js revealsAnswer) against
+ * the bare key (no prompt to excuse a mention): a gap whose key is already on screen is a copy job, not evidence, and
+ * the leak guard would then strip her worked example or spoil the step (review 2026-10-05: 92 + 80 + 64 of 341 kits).
+ */
+export function gapGivenAway(we, i) {
+  const answer = blankOf(we?.steps?.[i], we?.fadedVersion?.[i]);
+  if (!answer) return true;
+  // a function-word key ("for", "has", "ka") is in almost anything she says, so the leak guard would spoil it on her
+  // first sentence: not a gap we can grade
+  if (FUNCTION_WORDS.has(answer.toLowerCase())) return true;
+  const bare = { answer, acceptable: [we.steps[i]], prompt_en: "", prompt_hi: "" };
+  const inView = [we.problem, ...we.steps.slice(0, i), String(we.fadedVersion[i]).replace(/_{2,}/g, " ")].filter(Boolean);
+  return inView.some((t) => revealsAnswer(String(t), bare));
+}
+
+/**
+ * The step backward fading leaves to the child: the LATEST step with a recoverable blank whose key nothing in view
+ * gives away (gapGivenAway), or null — that kit keeps the full worked example.
+ */
 export function fadeStepIndex(we) {
   if (!we?.steps?.length || !we.fadedVersion?.length) return null;
-  for (let i = we.steps.length - 1; i >= 0; i--) if (blankOf(we.steps[i], we.fadedVersion[i])) return i;
+  for (let i = we.steps.length - 1; i >= 0; i--) if (blankOf(we.steps[i], we.fadedVersion[i]) && !gapGivenAway(we, i)) return i;
   return null;
 }
 
@@ -152,14 +197,44 @@ export function fadedContent(we, i) {
 
 /** Content for the first part of a worked example before its faded step: the first half of the steps before `i`. */
 export function workedLeadContent(we, i) {
-  const upto = Math.max(1, Math.ceil(i / 2));
-  return [`worked example: ${we.problem}`, `steps for this part: ${we.steps.slice(0, upto).join(" → ")}`];
+  // never the gap's own step: with the gap at step 0 the first part only sets the problem up (it used to show
+  // steps[0], the faded step itself, so the leak guard spoiled it: review 2026-10-05)
+  const upto = Math.min(i, Math.max(1, Math.ceil(i / 2)));
+  return [`worked example: ${we.problem}`, upto > 0 ? `steps for this part: ${we.steps.slice(0, upto).join(" → ")}`
+    : "this part: read the problem with them and say what it asks; give no step (their first step comes next)"];
 }
 
-/** The whiteboard for a faded step: the problem and the line with the gap (the steps are held on the board). */
+/** Text cut to `max` characters at a word edge where one is near, with an ellipsis (never a silent hard cut). */
+export function clip(text, max = BOARD_MAX) {
+  const t = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  const sp = cut.lastIndexOf(" ");
+  return `${(sp >= max * 0.6 ? cut.slice(0, sp) : cut).replace(/[\s,;:·-]+$/u, "")}…`;
+}
+
+/** A gap line cut around its gap so `___` always stays on the board (the line alone is over `max`). */
+function aroundGap(line, max) {
+  const at = line.search(/_{2,}/);
+  if (line.length <= max) return line;
+  const half = Math.floor((max - 2) / 2);
+  let a = Math.max(0, at - half);
+  const b = Math.min(line.length, a + max - 2);
+  a = Math.max(0, b - (max - 2));
+  return `${a > 0 ? "…" : ""}${line.slice(a, b)}${b < line.length ? "…" : ""}`;
+}
+
+/**
+ * The whiteboard for a faded step: the problem and the line with the gap. The gap line is never cut (the child must
+ * see the step they fill); the problem is shortened to make room, and a gap line over the limit on its own is cut
+ * around its gap.
+ */
 export function fadeBoard(we, i) {
-  const value = `${we.problem} · ${we.fadedVersion[i]}`;
-  return { kind: "math", value: value.length > 120 ? `${value.slice(0, 119)}…` : value };
+  const line = String(we.fadedVersion[i]).replace(/\s+/g, " ").trim();
+  if (line.length + 4 >= BOARD_MAX) return { kind: "math", value: aroundGap(line, BOARD_MAX) };
+  const room = BOARD_MAX - line.length - 3;
+  const problem = room >= 12 ? clip(we.problem, room) : "";
+  return { kind: "math", value: problem ? `${problem} · ${line}` : line };
 }
 
 /** Did the child start on a first-step probe? Words that attempt something (not a don't-know, a request, or silence). */

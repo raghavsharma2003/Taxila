@@ -111,7 +111,9 @@ export class TextLink implements TeacherLink {
   private playStream(id: string, seq: number, signal: AbortSignal): void {
     const player = this.player!;
     void this.ctx?.resume().catch(() => {});
-    const playback = player.play((sig) => this.stream({ lessonId: this.lessonId, seq }, sig));
+    // the player marks the whiteboard's line anchor and times the clause onsets on its own clock (ttsStream.ts)
+    const req = { lessonId: this.lessonId, seq };
+    const playback = player.play((sig, sink) => this.stream(req, sig, sink), { req });
     this.playback = playback;
     let sounded = false;
     playback.started.then(() => {

@@ -21,6 +21,7 @@
 import { BANDS } from "./bands.js";
 import { getTopic } from "../content/curriculum.js";
 import { childBriefRows } from "./brief.js";
+import { guidanceLevel } from "../director/fading.js";
 
 const LEARNED = new Set(["learned_today", "mastered", "due", "durable"]);
 /** Guidance level → SUPPORT fade (brief.js FADE_WORDS: 5 model · 4 share · 3 guide · 2 on-call). */
@@ -68,7 +69,14 @@ function buildView(s, kit) {
   const solid = kitSkills.filter((sk) => skills[sk.id] && LEARNED.has(skills[sk.id].status) && skills[sk.id].pKnown >= 0.8).slice(0, 3)
     .map((sk) => ({ title: sk.title }));
   const solidIds = new Set(solid.map((x) => x.title));
-  const learning = kitSkills.filter((sk) => !solidIds.has(sk.title)).slice(0, 3).map((sk) => ({ title: sk.title, entry }));
+  // Per skill (review 2026-10-05): the ladder's skill gets the lesson's entry; every other skill its own level from its
+  // own record, so an unseen second skill is never shown as hint_first for an attempt-level child.
+  const entryOf = (sk) => {
+    if (!s.guidance?.skillId || sk.id === s.guidance.skillId) return entry;
+    const g = guidanceLevel(skills[sk.id], s.history?.[sk.id] ?? [], { lowBaseline: s.equity === "low", stuck: s.stuck?.[sk.id] ?? 0 }).level;
+    return g === "attempt" ? "hint_first" : "worked_step";
+  };
+  const learning = kitSkills.filter((sk) => !solidIds.has(sk.title)).slice(0, 3).map((sk) => ({ title: sk.title, entry: entryOf(sk) }));
   const pre = Object.values(s.ctx?.reteach?.prereqs ?? {}).flat().filter((p) => p?.seen && Number(p.pL) < 0.5)
     .sort((x, y) => x.pL - y.pL || (x.skillId < y.skillId ? -1 : 1))[0];
   const preTopic = pre ? getTopic(String(pre.skillId).replace(/-s\d+$/, "")) : null;

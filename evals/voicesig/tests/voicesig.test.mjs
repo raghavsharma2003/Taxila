@@ -16,7 +16,7 @@ import { ChildAudioTracker } from "../../../src/duplex/audio.ts";
 import { toSignalInput, validateKv, replaceTimingTerm, updateBaseline, vsMode } from "../../../server/voicesig/adapter.js";
 import { VsBaseline, welfordStep, subjectOf, saveBaseline, loadBaseline } from "../../../server/voicesig/baseline.js";
 import { LADDER, VS_STATES, capFor, afterRefit } from "../../../server/voicesig/ladder.js";
-import { score } from "../../../server/voicesig/rules.js";
+import { score, fillerLexOf } from "../../../server/voicesig/rules.js";
 import { fitIsotonic, applyIsotonic, ece, fitPlatt } from "../../../server/voicesig/calibrate.js";
 import { auroc, clusterBoot } from "../metrics.mjs";
 import { simulate } from "../simulate-pilot.mjs";
@@ -510,4 +510,59 @@ test("log-mel FFT: the mixed-radix 400-point transform equals the direct DFT (re
     maxRel = Math.max(maxRel, Math.abs(p[k] - d) / Math.max(d, 1e-12));
   }
   assert.ok(maxRel < 1e-9, `max relative error ${maxRel}`);
+});
+
+// ── verify pass 2026-10-04: register, habitual fillers, immature baselines, abstain shape ──
+test("verify: 'haan ji' deference is not a lexical filler; true filled pauses and planning markers are", () => {
+  assert.equal(fillerLexOf(["haan", "ji", "paanch"]), false);
+  assert.equal(fillerLexOf(["ji", "didi", "5"]), false);
+  assert.equal(fillerLexOf(["हां", "जी", "पांच"]), false);
+  assert.equal(fillerLexOf(["ok", "achha", "12"]), false);
+  assert.equal(fillerLexOf(["umm", "paanch"]), true);
+  assert.equal(fillerLexOf(["haan", "ji", "aaa", "matlab", "5"]), true);
+  assert.equal(fillerLexOf(["haan", "ji"]), null);
+  // through the adapter: a polite "haan ji, 5" never supplies Tier-T agreement for fragileCorrect
+  const b = matureBaseline();
+  const polite = toSignalInput(kvOf({ onsetMs: 6000, pauseFrac: 0.4 }), { verdict: "correct", safety: false, mode: "shadow", baseline: b, ling: { fillerLex: true, toks: ["haan", "ji", "5"] }, deltaFitted: true });
+  assert.ok(!(polite.state === "fragileCorrect" && polite.tAgree), JSON.stringify(polite.state));
+  assert.ok(!polite.why.includes("F3:T"));
+});
+
+test("verify: the acoustic filler lead counts only when unusual for THIS child (habitual 'aaa' openers are not hesitating)", () => {
+  const habit = new VsBaseline(), clean = new VsBaseline();
+  for (let i = 0; i < 30; i++) {
+    habit.update("answer", "hinglish", "number", { onsetMs: 1300, fillerLeadMs: 550 + (i % 5) * 50, durationMs: 900 });
+    clean.update("answer", "hinglish", "number", { onsetMs: 1300, fillerLeadMs: 0, durationMs: 900 });
+  }
+  const kv = kvOf({ onsetMs: 1300, fillerLeadMs: 600 }, { det: 1 });
+  const h = toSignalInput(kv, { verdict: "correct", safety: false, mode: "shadow", baseline: habit, ling: {} });
+  const c = toSignalInput(kv, { verdict: "correct", safety: false, mode: "shadow", baseline: clean, ling: {} });
+  assert.equal(h.sE.h1, 0, "habitual opener: no F3 E term");
+  assert.ok(c.sE.h1 < 0, "unusual lead for this child: F3 E term fires");
+  const young = toSignalInput(kv, { verdict: "correct", safety: false, mode: "shadow", baseline: new VsBaseline(), ling: {} });
+  assert.equal(young.sE.h1, 0, "no mature baseline → no acoustic filler term");
+});
+
+test("verify: voice alone buys no move before the child's baseline is mature; abstain can never read as live", () => {
+  let voiceOnly = 0;
+  for (let i = 0; i < 2000; i++) {
+    const v = ["correct", "partial", "not_yet", "ungraded"][i % 4];
+    const ling = [{}, { idk: "not_known" }, { idk: "cant_recall" }, { hedge: true }, { thinkAloud: true }][i % 5];
+    const out = toSignalInput(kvOf({ onsetMs: (i * 97) % 12_000, fillerLeadMs: (i * 31) % 1500, pauseFrac: (i % 10) / 10, finalRelDb: (i % 9) - 4 }, { det: i % 2, raw: (i >> 1) % 2 }), { verdict: v, safety: false, mode: "on", baseline: new VsBaseline(), ling, words: 1 + (i % 4) });
+    if (out?.state && !out.tAgree) { voiceOnly++; assert.equal(out.licence, "none", JSON.stringify([out.state, out.licence])); }
+  }
+  assert.ok(voiceOnly >= 0);
+  const ab = toSignalInput(kvOf(), { verdict: "correct", safety: true, mode: "on" });
+  assert.equal(ab.shadow, true);
+  assert.equal(ab.licence, null);
+  assert.equal(ab.lrVApplied, 1);
+});
+
+test("verify: the filler detector's lead is ignored on Bluetooth / speakerphone routes (narrowband collapse measured)", () => {
+  const clean = new VsBaseline();
+  for (let i = 0; i < 30; i++) clean.update("answer", "hinglish", "number", { onsetMs: 1300, fillerLeadMs: 0, durationMs: 900 });
+  const ctx = { verdict: "correct", safety: false, mode: "shadow", baseline: clean, ling: {} };
+  assert.ok(toSignalInput(kvOf({ onsetMs: 1300, fillerLeadMs: 700 }, { det: 1, micClass: "wired" }), ctx).sE.h1 < 0);
+  assert.equal(toSignalInput(kvOf({ onsetMs: 1300, fillerLeadMs: 700 }, { det: 1, micClass: "bt" }), ctx).sE.h1, 0);
+  assert.equal(toSignalInput(kvOf({ onsetMs: 1300, fillerLeadMs: 700 }, { det: 1, micClass: "speaker_route" }), ctx).sE.h1, 0);
 });

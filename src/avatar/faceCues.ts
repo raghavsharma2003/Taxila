@@ -158,8 +158,22 @@ export function gazeAngles(face: { x: number; y: number; w: number; h: number },
   return [c(yaw, -25, 25), c(pitch, -25, 20)];
 }
 
-/** Where a gaze target lives in the lesson DOM (W2-A's WorkTray / Board test ids). */
-export const GAZE_SELECTOR: Record<Exclude<GazeTarget, "child">, string> = {
-  tray: '[data-testid="tray"]',
-  board: '[data-testid="board"], [data-testid="tray"]',
+/**
+ * Where a gaze target lives in the lesson DOM, in PRIORITY order (the first selector that matches a laid-out element
+ * wins; a comma list would pick whichever comes first in the document instead). The Studio stage (src/studio/StudioStage,
+ * which also draws the live whiteboard) comes before W2-A's WorkTray / AnswerTray; the board look prefers a whiteboard on
+ * the stage, then the chalk Board.
+ */
+export const GAZE_SELECTOR: Record<Exclude<GazeTarget, "child">, readonly string[]> = {
+  tray: ['[data-testid="studio-stage"]', '[data-testid="tray"]'],
+  board: ['[data-testid="studio-stage"][data-kind="whiteboard"]', '[data-testid="board"]', '[data-testid="studio-stage"]', '[data-testid="tray"]'],
 };
+
+/** The element a gaze target names: the first selector in priority order with a laid-out match, or null. */
+export function gazeElement(target: Exclude<GazeTarget, "child">, root: Pick<Document, "querySelector">): Element | null {
+  for (const sel of GAZE_SELECTOR[target]) {
+    const el = root.querySelector(sel);
+    if (el && (typeof el.getBoundingClientRect !== "function" || el.getBoundingClientRect().width > 0)) return el;
+  }
+  return null;
+}

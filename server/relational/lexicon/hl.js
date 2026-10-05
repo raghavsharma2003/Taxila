@@ -24,20 +24,21 @@ export const HL = {
   ],
   secret_ask: [
     `${PARENT} ko (?:bhi )?${NA} (?:batana|bataana|bolna|batayiye|bataiyega|bataoge|bataogi|bataiye|bataiega|batao)`,
-    "secret (?:rakhna|rakhoge|rakhogi|rakhiye|hai|rakh lo|rakhenge|rakhna hai)", "(?:raaz|raz) (?:rakhna|hai|rakhoge|rakhogi|rakhiye)",
+    "secret (?:rakhna|rakhoge|rakhogi|rakhiye|hai|rakh lo|rakhenge|rakhna hai|rakhun|rakhu|rakhoon)", "(?:parents|mummy papa|mummy|papa|ghar) se secret", "(?:raaz|raz) (?:rakhna|hai|rakhoge|rakhogi|rakhiye)",
     `sirf ${TUM} (?:ko )?(?:hi )?(?:pata|bata|bataunga|bataungi)`, "(?:hamare|humare|apne) (?:beech|bich|bech) (?:mein |me )?(?:rahega|rakhna|ki baat|rehna)",
     "kisi ko pata nahi (?:chalna|chalega) chahiye",
   ],
   contact_ask: [
     "(?:aapka|tumhara|apna|aapki|tumhari|apni) (?:number|phone number|mobile number|phone|whatsapp|whatsapp number|insta|instagram|address|pata|photo|pic|selfie) (?:do|dena|de do|dijiye|bhejo|bhejiye|batao|bataiye|kya hai|chahiye|milega)",
     "(?:whatsapp|insta|instagram|snapchat|snap|facebook) (?:pe|par|me|mein) (?:baat|chat|message|add|follow|milte)",
-    "(?:mera|meri|mere) (?:number|phone number|mobile number|whatsapp number|whatsapp|insta) (?:hai|le lo|lo|note karo|likh lo)",
-    "photo (?:bhej(?:o|u|oon|un|du|doon|dun|na|iye|ta|ti|enge|ne)|maang(?:a|te|ta|ti|e))", "pic (?:bhej(?:o|u|oon|un|du|doon|dun|na)|maang)",
+    "(?:mera|meri|mere) (?:phone number|mobile number|whatsapp number|whatsapp|insta|phone) (?:hai|le lo|lo|note karo|likh lo)", "(?:mera|meri) number (?:le lo|note karo|likh lo|save karo)",
+    // a photo of the child or of her, never "diagram ki photo bhejo" / "photo bhejo diagram ka"
+    "(?<!(?<![\\p{L}])(?:ka|ki|ke) )(?:photo|pic) (?:bhej(?:o|u|oon|un|du|doon|dun|na|iye|ta|ti|enge|ne)|maang(?:a|te|ta|ti|e))(?! (?:\\S+ )?(?:ka|ki|ke|wala|wali|of)(?![\\p{L}]))",
     "(?:milne|mil) (?:aao|aaogi|aaoge|sakte|sakti|chalo|aana)", "video call", "(?:aapse|tumse) milna hai",
   ],
   romance: [
     `${TUM} (?:real mein |asal mein |sach mein )?(?:bahut |bohot |kitn[ei] |badi |bade |kitne |sach mein )?(?:cute|handsome|sundar|khoobsurat|khubsurat|pretty|beautiful|hot|sexy|smart dikh) ${HO}`,
-    `${TUM} (?:real mein |asal mein )?kaise (?:dikhte|dikhti|lagte|lagti) ${HO}`, "dating", "date (?:pe|par) (?:chalo|chaloge|chalogi|jaana)",
+    `${TUM} (?:real mein |asal mein )?kaise (?:dikhte|dikhti|lagte|lagti) ${HO}`, "dating (?:karogi|karoge|karte|karti|pe|par)", "date (?:pe|par) (?:chalo|chaloge|chalogi|jaana)",
     "shaadi (?:karogi|karoge|karenge|karo|karna|kar lo|karoge mujhse|karogi mujhse)", "(?:meri|mera) (?:girlfriend|boyfriend|gf|bf) (?:ban|banogi|banoge|ho)",
     "crush (?:hai|ho|aa gaya|lag gaya|hogaya|ho gaya)", "(?:mera|meri) crush", `(?:main|mai) ${TUM} (?:ke liye )?special (?:hoon|hu)`,
     `special (?:hoon|hu|hun) (?:na )?(?:aapke|tumhare) liye`, "(?:aapko|tumhe) (?:main )?pasand (?:hoon|hu|hun)",
@@ -48,11 +49,22 @@ export const HL = {
   ],
   goodbye: [
     "(?:mummy|mumma|papa|maa|didi|bhaiya|dadi|nani) bula (?:rahi|rahe|raha) (?:hai|hain|h)", "mujhe ja(?:a)?na (?:hai|padega|h)(?: abhi)?$", "(?:main|mai) ja (?:raha|rahi) (?:hoon|hu|hun)",
-    "tuition (?:jaana|ka time|jana)", "khana khane (?:jaana|ja raha|ja rahi|jana)", "chalta (?:hoon|hu)", "chalti (?:hoon|hu)", "alvida", "phir milte(?: hain)?",
-    "bye bye", "tata", "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)", "(?:jaana|jana) padega", "khana lag gaya",
+    "tuition (?:jaana|ka time|jana)", "khana khane (?:jaana|ja raha|ja rahi|jana)",
+    // "main roz school chalta hoon" is walking, not leaving: only bare, or after a closing word
+    "(?:^|(?:ok|okay|acha|achha|accha|ab|abhi|toh|to|main|mai|bye|chalo|theek hai|thik hai) )(?:chal|jaa?)(?:ta|ti) (?:hoon|hu|hun)",
+    "(?:main|mai) (?:ab |abhi )?jaa?(?:u|un|oon|aun)", "(?:dinner|khana|khane|tuition|sone) (?:ka )?time (?:ho gaya|hai)", "dinner ready (?:hai|ho gaya)",
+    "alvida", "phir milte(?: hain)?", "bye bye",
+    // "Jamsetji Tata" is history: only bare or after a closing word
+    "(?:^|(?:ok|okay|bye|acha|achha|accha|chalo|didi|bhaiya) )tata(?: bye)?",
+    "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)", "(?:jaana|jana) padega", "khana lag gaya",
   ],
   end_request: [
-    "^(?:ab |abhi )?bas(?: karo| kijiye| karte hain| kar do| ho gaya| ab| yaar)?$", "ab (?:band|bas) karo", "khatam karo(?: yaar| na)?", "(?:lesson|class|padhai) band karo", "band karo", "aaj ke liye (?:bas|itna hi|itna kaafi)", "lesson khatam(?: karo| karte hain)?",
+    "^(?:ab |abhi |aaj )?bas(?: karo| kijiye| karte hain| kar do| kar lo| kar lein| karein| ho gaya| ab| yaar| itna hi)?",
+    "(?:lesson|class|padhai|padhna)(?: ab| aaj| yahin| abhi)* (?:band|khatam|stop|end|rok)(?: kar)?(?: do| dein| de| karo| karein| kijiye| kar sakte| sakte)?",
+    "(?:aaj |ab )?yahin (?:stop|khatam|band|rok)", "aaj (?:ke liye )?(?:bas )?itna hi", "kal (?:continue|padhenge|padh lenge|karte hain)", "kal (?:se )?padh(?:unga|ungi|aunga|aungi|enge)",
+    "^(?:(?:abhi|ab|please|plz) )*stop (?:karo|kar do|kijiye|karein)", "ab (?:band|bas) karo", "khatam karo(?: yaar| na)?", "(?:lesson|class|padhai) band karo",
+    // "fan band karo" is a fan: bare "band karo" only at the start of its clause
+    "^(?:(?:please|plz|ab|abhi|yaar|bas|didi|bhaiya|ok|acha|achha) )*band karo", "aaj ke liye (?:bas|itna hi|itna kaafi)(?: karo| kijiye| karte hain| kar do)?", "lesson khatam(?: karo| karte hain)?",
     "class khatam(?: karo| karte hain)?", "(?:mujhe )?(?:ab )?(?:nahi|nhi) padhna(?: hai)?", "padhna nahi hai", "aur nahi(?: padhna)?", "baad mein karenge", "kal karenge",
     "bas ab", "ho gaya bas", "khatam karte hain", "(?:ab )?rehne do", "aur nahi karna",
   ],

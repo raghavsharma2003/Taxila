@@ -1,0 +1,274 @@
+{
+ "nodes": [
+  {
+   "id": "w2cfix-repaired-now-counts",
+   "kind": "decision",
+   "title": "comprehension/reteach.js: RESOLVED = {repaired_now, resolved_next, resolved_delayed} (resolve.js writes repaired_now; `resolved_now` never existed, so a day-1 repair was invisible on day 2). child_history uses heldRepair: resolved_next/resolved_delayed, or repaired_now not yet final (a FINAL repaired_now was lost on the next lesson's first answer); the delayed_fail recap uses any RESOLVED outcome. resolveAttempts attempts now carry `final`",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-fade-gap-not-in-view",
+   "kind": "decision",
+   "title": "fading.js fadeStepIndex skips a candidate gap whose key is already in view (gapGivenAway: revealsAnswer on the bare key over the problem, the steps shown before it and the gap line), or is a function word ('for', 'has', 'ka'), walking back to the next recoverable step; none left → the kit keeps the full worked example. workedLeadContent never shows the gap's own step (with the gap at step 0 it only sets the problem up)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-board-keeps-gap",
+   "kind": "decision",
+   "title": "fading.js fadeBoard never cuts the gap line: the problem is shortened (clip, word edge + ellipsis) to make room, and a gap line over 120 characters alone is cut around its ___. The first-step / worked-example boards use clip(problem, 120) instead of a silent 80-character hard cut",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-stuck-routing-signal",
+   "kind": "decision",
+   "title": "The Director records items the child got stuck on (rung 4 reached, or left after don't-knows / 'An easier one') per skill in the lesson state (state.stuck, once per item); lesson.js loadRecentStuck sums the last 5 lessons within 14 days and feeds guidanceLevel / equityProfile only (never KT, beliefs or reports). 1 stuck item with nothing right on the skill, or 2 whatever else → worked example, no first-step probe; stuck with no correct outcome → low-baseline equity profile",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-ask-start-safety",
+   "kind": "decision",
+   "title": "An Ask's first words pass the turn path's safety predicate (director/safety.js scanSafety, passive ideation included) at lesson start, before they become ctx.askText: a hit opens on the safeguard move (helplines on the board and in her opening) with an incident row (detail.at = ask_start) and no askText. The start returns ui.askConsumed when it handled the first words; useDesk then shows the question card without re-sending them as a turn (one consumer: the start)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-wheel-spin-through-engine",
+   "kind": "decision",
+   "title": "P21 wheel spinning on the child's record (affect.js wheelSpinning over outcomes carried across lessons) is a re-teach trigger inside engineReteach (wheel_spin), so the arm comes from selectReteach (child history first, written to reteach_attempts) instead of afterMiss's generic 'change approach'; afterMiss keeps the generic move as the fallback with no belief, once per skill per lesson either way",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-assertion-before-break-repose",
+   "kind": "decision",
+   "title": "practice(): an item whose answer was asserted (rung 4) goes to its isomorph BEFORE the after-break re-pose, so it is never posed again 'fresh' (measured: rung 4 → frustration break → the same faded step posed again)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "dc-w2c-support-rise-intended",
+   "kind": "decision",
+   "title": "The guidance ladder's rise in teaching turns per skill for the struggling child (+3 at the median vs the legacy novice boolean) and the uncertain-prior child who cannot start (+3, the probe path) is intended support (W2-C #2: legacy sent both attempt-first on a prior it read as knowledge). director-sim --teach-turns names this decision for those arms instead of waiving them silently; the population median (all arms equal weight) is +3",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-talk-gate-persona-change",
+   "kind": "decision",
+   "title": "The child-talk-share gate is enforceable: evals/results/talk-baseline.json (n = 3 director-sim lessons), scripts/talk-gate.mjs, and verify-release --persona-change <candidate.json> runs it; fewer than 3 lessons on either side ('not decided') is RED for a persona or model change",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-brief-entry-per-skill",
+   "kind": "decision",
+   "title": "learner/briefView.js: the ladder's skill gets the lesson's entry; every other learning skill its own guidanceLevel from its own record (an unseen second skill is worked_step, never hint_first because skill 1 is attempt-level)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-evals-test-db-only",
+   "kind": "decision",
+   "title": "evals/director-sim.mjs and evals/never-answer.mjs --live never touch the main database: in-process they set DATABASE_URL to CONDUCTOR_TEST_DATABASE_URL (or TAXILA_DB_URL) and refuse without one; they open the parent's lesson hours, delete the whole account with DELETE /api/account {password, confirm} (never-answer also on SIGTERM), and never-answer runs one child per variant, six at a time",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2cfix-faded-coverage-2026-10-05",
+   "kind": "measurement",
+   "title": "Faded-step coverage after the give-away filter (fadeItem over every kit, verified, B3; script = the W2-C test 'every verified kit's faded step', 2026-10-05): class 4-7 301/385 (was 341 recoverable, 306 before the function-word rule), all classes 572/830. Gap key in the worked lead / shown steps (real item, revealsAnswer): 0 (was 92 + 80 + 64 reported by review; 31 were the step-0 worked lead). Boards without ___: 0 of 572 (was 93 of 341 cut off); 121 class 4-7 boards shorten the problem with an ellipsis",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2cfix-teach-turns-2026-10-05",
+   "kind": "measurement",
+   "title": "director-sim --teach-turns (offline, 385 class 4-7 kits per arm, 2026-10-05): fresh 4 (legacy 4), struggling 4 (1), strong 1 (1), middle prior 0.5 that cannot start 4 (1); population median (4 arms equal weight) 4 vs 1",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2cfix-talk-baseline-2026-10-05",
+   "kind": "measurement",
+   "title": "childTalkShare baseline, director-sim in-process on the Neon test branch, text lane, real classifier + reply model, LLM child (taxila-fast), c4-maths-ch05-t01, 14 turns, n = 3, 2026-10-05: 0.238, 0.240, 0.177 (median 0.238). The sim's independent (e) key-before-question check flagged '1/2' / '5' in all 3 runs (open item)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2cfix-personalisation-diff-2026-10-05",
+   "kind": "measurement",
+   "title": "personalisation-diff against node server/serve.mjs on the Neon test branch (real classifier + reply model, test clock +1 day, n = 3 per arm, 2026-10-05): (c) all-'pata nahi' children worked example with no first-step probe 3/3; control neutral children first-step probe 3/3; right-first-time attempt first 3/3; (d) dheere 4 → 5 s and 700 → 840 ms. (b) after the wheel-spin fixes, n = 3 per arm: the arm that repaired the child on day 1 is day 2's first re-teach 3/3 (2 child_history via wheel_spin, 1 recap via delayed_fail); control (day-1 arms failed) 3/3 not from history and not a just-failed class. Earlier runs 0/3, 1/3, 0/3 (generic wheel-spin path; ledger wheelSpin 'none'/'warn' masking the record), with taxila-fast HTTP 429s under machine load",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2c-resolved-now-token",
+   "kind": "rejection",
+   "title": "Matching re-teach outcomes against `resolved_now`: resolve.js writes `repaired_now`, so child_history and the delayed-fail recap never saw a same-lesson repair; the W2-C unit test fed `resolved_next` by hand and hid it. Now: RESOLVED uses the real token and an end-to-end test goes resolveAttempts → selectReteach with no hand-picked outcome",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2c-stuck-threshold-two",
+   "kind": "rejection",
+   "title": "Routing to the worked example only after 2 stuck items: an all-'pata nahi' day-1 lesson of 14 turns reaches the assertion once (the Director alone, c5-maths-ch01-t01), so that child still got the first-step probe on day 2. Now: 1 stuck item with nothing right, or 2 whatever else",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2c-generic-wheel-spin-first",
+   "kind": "rejection",
+   "title": "Leaving P21 wheel spinning to afterMiss's generic 'change approach' re-teach: with outcomes carried across lessons it fires early on day 2 and pre-empted the arm that repaired the child on day 1 (personalisation-diff (b) 0/3, no reteach_attempts row on day 2). Now a wheel_spin trigger inside engineReteach",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2c-fade-board-tail-cut",
+   "kind": "rejection",
+   "title": "Cutting 'problem · gap line' at 120 characters from the end: in 93 of 341 class 4-7 kits the ___ itself fell off the board, so the child could not see the step they were asked to fill. Now the gap line is never cut",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-chosen-by-child-history-020",
+   "kind": "decision",
+   "title": "Migration 020_reteach_child_history.sql widens reteach_attempts_chosen_by_check to add 'child_history' (007 allowed kit_primary, thompson, explore, recap, pick): without it the turn's one transaction fails on exactly the turn selectReteach personalises (a lesson error). Applied to the Neon test branch 2026-10-05; production must apply it BEFORE this code deploys. A test checks every chooser reteach.js names against the newest check",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2cfix-wheel-spin-none-is-not-absent",
+   "kind": "decision",
+   "title": "engineReteach confirms the wheel_spin trigger when the ledger view says 'confirm' OR the child's outcome record spins (the same P21 rule afterMiss applies): skillsMapFor always sets wheelSpin ('none' or 'warn' until the view confirms), so a `??` fallback never ran and a 'warn' produced no trigger, leaving the generic re-teach to fire",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2cfix-never-answer-live-2026-10-05",
+   "kind": "measurement",
+   "title": "never-answer --live through node server/serve.mjs on the Neon test branch (text lane, real classifier + reply model per MODEL-ROUTER §0, one child per variant, 2026-10-05): 30/30 variants answered, 0 reveals of the key below rung 4 (revealsAnswer on teacherReply against the debug item). One pressure variant opened a real safeguarding incident (the account then needed the test-branch review stand-in to erase)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2c-child-history-unwritable",
+   "kind": "rejection",
+   "title": "Adding chosen_by 'child_history' in selectReteach without widening 007's reteach_attempts check: the insert rides the turn's one transaction (brain/turn.js), so the first personalised re-teach would have failed the turn. It never fired in W2-C's runs (the step was dead behind the resolved_now token), which is why nothing failed. Now: migration 020 and a test over the chooser names",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2cfix-chosen-by-child-history-020",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-child-history-unwritable",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "w2cfix-wheel-spin-none-is-not-absent",
+   "rel": "part_of",
+   "dst": "w2cfix-wheel-spin-through-engine"
+  },
+  {
+   "src": "m-w2cfix-never-answer-live-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-never-answer-offline-2026-10-04"
+  },
+  {
+   "src": "w2c-never-answer-battery",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-never-answer-live-2026-10-05"
+  },
+  {
+   "src": "w2cfix-repaired-now-counts",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-resolved-now-token",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "w2cfix-fade-gap-not-in-view",
+   "rel": "part_of",
+   "dst": "w2c-faded-step-graded-with-help"
+  },
+  {
+   "src": "m-w2cfix-faded-coverage-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-faded-step-coverage-2026-10-04"
+  },
+  {
+   "src": "w2cfix-fade-gap-not-in-view",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-faded-coverage-2026-10-05"
+  },
+  {
+   "src": "w2cfix-board-keeps-gap",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-faded-coverage-2026-10-05"
+  },
+  {
+   "src": "rj-w2c-fade-board-tail-cut",
+   "rel": "caused_by",
+   "dst": "w2c-faded-step-graded-with-help"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "part_of",
+   "dst": "w2c-guidance-ladder-fading"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "part_of",
+   "dst": "w2c-equity-entry-one-step"
+  },
+  {
+   "src": "rj-w2c-stuck-threshold-two",
+   "rel": "caused_by",
+   "dst": "w2cfix-stuck-routing-signal"
+  },
+  {
+   "src": "w2cfix-ask-start-safety",
+   "rel": "part_of",
+   "dst": "w2c-ask-purpose-director"
+  },
+  {
+   "src": "w2cfix-wheel-spin-through-engine",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-generic-wheel-spin-first",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "dc-w2c-support-rise-intended",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-teach-turns-2026-10-05"
+  },
+  {
+   "src": "m-w2cfix-teach-turns-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-teach-turns-2026-10-04"
+  },
+  {
+   "src": "w2cfix-talk-gate-persona-change",
+   "rel": "part_of",
+   "dst": "w2c-talk-share-monitor"
+  },
+  {
+   "src": "w2cfix-talk-gate-persona-change",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-talk-baseline-2026-10-05"
+  },
+  {
+   "src": "w2cfix-brief-entry-per-skill",
+   "rel": "part_of",
+   "dst": "w2c-brief-v2-in-every-compile"
+  },
+  {
+   "src": "m-w2cfix-personalisation-diff-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-personalisation-diff-local-2026-10-04"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-personalisation-diff-2026-10-05"
+  },
+  {
+   "src": "w2cfix-ask-start-safety",
+   "rel": "supersedes",
+   "dst": "open-w2c-lesson-purpose-talk-patch"
+  }
+ ]
+}

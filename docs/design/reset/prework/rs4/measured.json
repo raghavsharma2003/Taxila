@@ -1,166 +1,328 @@
 {
  "engines": {
   "catch-on-line@1": {
-   "bootMs": 100,
-   "navToReadyMs": 285,
+   "bootMs": 70,
+   "navToReadyMs": 168,
    "run": {
-    "answers": 9,
-    "right": 9,
+    "answers": 15,
+    "right": 13,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
-     "n": 9,
-     "agree": 9
+     "n": 15,
+     "agree": 15
+    },
+    "answerBytes": {
+     "engine": 6,
+     "withHostLogs": 6
     },
     "repairs": 0,
     "events": [
      "wave_start",
      "adapt",
-     "wave_end"
+     "wave_end",
+     "same_spot"
     ],
-    "botActions": 70,
-    "ms": 30047,
+    "botActions": 157,
+    "ms": 50060,
     "painted": true,
     "errors": []
    },
    "video": "recordings/catch-on-line_1.webm",
-   "videoBytes": 3782330,
+   "videoBytes": 6042033,
    "perf": {
-    "n": 467,
-    "fps": 54.8,
+    "n": 692,
+    "fps": 57.4,
     "p50": 16.7,
-    "p95": 33.3,
-    "p99": 50,
-    "over20ms": 6.85,
-    "over33ms": 1.71,
+    "p95": 16.8,
+    "p99": 33.4,
+    "over20ms": 3.76,
+    "over33ms": 1.01,
     "dpr": 2,
     "dprChanges": [],
     "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
     "hostLoad": [
      [
-      10.5,
-      7.5,
-      8.6
+      2,
+      3.3,
+      5.6
      ],
      [
-      11.3,
-      7.8,
-      8.7
+      3,
+      3.5,
+      5.6
      ]
     ],
     "errors": []
    },
    "fuzz": {
-    "n": 8,
+    "n": 32,
     "controls": 2,
     "visibleFailures": 0,
-    "repaired": 7,
+    "repaired": 26,
     "fellBack": 0,
     "boardRung": 0,
     "frameErrors": 0,
     "tooSmallMax": 0,
+    "safeHitsMax": 0,
     "faults": {
      "transientHeld": true,
      "permanentToBoard": true,
      "bootToBoard": true
     },
-    "playMs": 1500,
-    "date": "2026-10-04T22:37:27.091Z"
+    "playMs": 2500,
+    "date": "2026-10-05T00:24:13.279Z"
    }
   },
   "circuit-bench@1": {
-   "bootMs": 154,
-   "navToReadyMs": 575,
+   "bootMs": 92,
+   "navToReadyMs": 201,
    "run": {
-    "answers": 4,
-    "right": 4,
-    "done": false,
+    "answers": 5,
+    "right": 5,
+    "done": true,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
-     "n": 4,
-     "agree": 4
+     "n": 5,
+     "agree": 5
+    },
+    "answerBytes": {
+     "engine": 385,
+     "withHostLogs": 385
     },
     "repairs": 0,
     "events": [
      "step_start",
      "step_done",
      "switch",
-     "observe"
+     "observe",
+     "cell_flip"
     ],
-    "botActions": 22,
-    "ms": 40965,
+    "botActions": 32,
+    "ms": 32651,
     "painted": true,
     "errors": []
    },
    "video": "recordings/circuit-bench_1.webm",
-   "videoBytes": 3963796
+   "videoBytes": 3846867,
+   "perf": {
+    "n": 677,
+    "fps": 44.9,
+    "p50": 16.7,
+    "p95": 33.4,
+    "p99": 50,
+    "over20ms": 31.91,
+    "over33ms": 5.91,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      4,
+      3.7,
+      5.6
+     ],
+     [
+      3.6,
+      3.6,
+      5.6
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 17,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:26:09.463Z"
+   }
   },
   "orbital-explainer@1": {
-   "bootMs": 251,
-   "navToReadyMs": 1203,
+   "bootMs": 107,
+   "navToReadyMs": 298,
    "run": {
     "answers": 2,
     "right": 2,
     "done": true,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
      "n": 2,
      "agree": 2
+    },
+    "answerBytes": {
+     "engine": 3,
+     "withHostLogs": 3
     },
     "repairs": 0,
     "events": [
      "interactive"
     ],
-    "botActions": 20,
-    "ms": 30717,
+    "botActions": 56,
+    "ms": 47982,
     "painted": true,
     "errors": []
    },
    "video": "recordings/orbital-explainer_1.webm",
-   "videoBytes": 3911381
+   "videoBytes": 4869917,
+   "perf": {
+    "n": 734,
+    "fps": 59.5,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 16.8,
+    "over20ms": 0.82,
+    "over33ms": 0.27,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.9,
+      3.7,
+      5.5
+     ],
+     [
+      3.8,
+      3.7,
+      5.5
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 30,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:27:55.903Z"
+   }
   },
   "slice-at@1": {
-   "bootMs": 92,
-   "navToReadyMs": 293,
+   "bootMs": 67,
+   "navToReadyMs": 178,
    "run": {
-    "answers": 9,
-    "right": 5,
+    "answers": 12,
+    "right": 10,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
-     "n": 9,
-     "agree": 9
+     "n": 12,
+     "agree": 12
+    },
+    "answerBytes": {
+     "engine": 21,
+     "withHostLogs": 21
     },
     "repairs": 0,
     "events": [
      "wave_start",
-     "adapt",
-     "wave_end"
+     "wave_end",
+     "adapt"
     ],
-    "botActions": 286,
-    "ms": 45078,
+    "botActions": 478,
+    "ms": 50224,
     "painted": true,
     "errors": []
    },
    "video": "recordings/slice-at_1.webm",
-   "videoBytes": 5265160
+   "videoBytes": 6050685,
+   "perf": {
+    "n": 707,
+    "fps": 57.8,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 33.4,
+    "over20ms": 3.54,
+    "over33ms": 0.57,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.4,
+      3.6,
+      5.3
+     ],
+     [
+      3.5,
+      3.6,
+      5.3
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 24,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:29:38.884Z"
+   }
   },
   "line-runner@1": {
-   "bootMs": 71,
-   "navToReadyMs": 353,
+   "bootMs": 86,
+   "navToReadyMs": 241,
    "run": {
-    "answers": 8,
-    "right": 7,
+    "answers": 9,
+    "right": 9,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
-     "n": 8,
-     "agree": 8
+     "n": 9,
+     "agree": 9
+    },
+    "answerBytes": {
+     "engine": 7,
+     "withHostLogs": 7
     },
     "repairs": 0,
     "events": [
@@ -168,51 +330,156 @@
      "adapt",
      "round_end"
     ],
-    "botActions": 211,
-    "ms": 45001,
+    "botActions": 296,
+    "ms": 50002,
     "painted": true,
     "errors": []
    },
    "video": "recordings/line-runner_1.webm",
-   "videoBytes": 5648844
+   "videoBytes": 6403497,
+   "perf": {
+    "n": 631,
+    "fps": 52.4,
+    "p50": 16.7,
+    "p95": 33.4,
+    "p99": 33.4,
+    "over20ms": 13.95,
+    "over33ms": 2.06,
+    "dpr": 1.5,
+    "dprChanges": [
+     {
+      "at": 2717,
+      "from": 2,
+      "to": 1.5,
+      "medMs": 33.3
+     }
+    ],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      4,
+      3.7,
+      5.2
+     ],
+     [
+      4.3,
+      3.8,
+      5.3
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 28,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:31:29.311Z"
+   }
   },
   "area-claim@1": {
-   "bootMs": 338,
-   "navToReadyMs": 550,
+   "bootMs": 91,
+   "navToReadyMs": 308,
    "run": {
     "answers": 6,
     "right": 5,
     "done": true,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
      "n": 6,
      "agree": 6
+    },
+    "answerBytes": {
+     "engine": 13,
+     "withHostLogs": 13
     },
     "repairs": 0,
     "events": [
      "round_start"
     ],
-    "botActions": 107,
-    "ms": 45131,
+    "botActions": 106,
+    "ms": 49951,
     "painted": true,
     "errors": []
    },
    "video": "recordings/area-claim_1.webm",
-   "videoBytes": 4624285
+   "videoBytes": 4931933,
+   "perf": {
+    "n": 646,
+    "fps": 52.7,
+    "p50": 16.7,
+    "p95": 33.3,
+    "p99": 66.6,
+    "over20ms": 9.75,
+    "over33ms": 2.94,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      15.9,
+      16.6,
+      9.7
+     ],
+     [
+      14.8,
+      16.4,
+      9.7
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 25,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:58:26.068Z"
+   }
   },
   "vault-heist@1": {
-   "bootMs": 73,
-   "navToReadyMs": 262,
+   "bootMs": 108,
+   "navToReadyMs": 248,
    "run": {
     "answers": 2,
     "right": 2,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
      "n": 2,
      "agree": 2
+    },
+    "answerBytes": {
+     "engine": 42,
+     "withHostLogs": 42
     },
     "repairs": 0,
     "events": [
@@ -220,52 +487,150 @@
      "regroup",
      "sealed"
     ],
-    "botActions": 190,
-    "ms": 50077,
+    "botActions": 207,
+    "ms": 50089,
     "painted": true,
     "errors": []
    },
    "video": "recordings/vault-heist_1.webm",
-   "videoBytes": 6153053
+   "videoBytes": 6188424,
+   "perf": {
+    "n": 641,
+    "fps": 53.3,
+    "p50": 16.7,
+    "p95": 33.3,
+    "p99": 50,
+    "over20ms": 9.52,
+    "over33ms": 2.5,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      5.8,
+      4.6,
+      5.4
+     ],
+     [
+      5.8,
+      4.7,
+      5.4
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 21,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:35:58.091Z"
+   }
   },
   "angle-cannon@1": {
-   "bootMs": 78,
-   "navToReadyMs": 282,
+   "bootMs": 77,
+   "navToReadyMs": 292,
    "run": {
-    "answers": 12,
-    "right": 9,
+    "answers": 14,
+    "right": 10,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
-     "n": 12,
-     "agree": 12
+     "n": 14,
+     "agree": 14
+    },
+    "answerBytes": {
+     "engine": 14,
+     "withHostLogs": 14
     },
     "repairs": 0,
     "events": [
      "wave_start",
      "wave_end"
     ],
-    "botActions": 139,
-    "ms": 45256,
+    "botActions": 149,
+    "ms": 50550,
     "painted": true,
     "errors": []
    },
    "video": "recordings/angle-cannon_1.webm",
-   "videoBytes": 5042799
+   "videoBytes": 5516203,
+   "perf": {
+    "n": 701,
+    "fps": 57.3,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 33.4,
+    "over20ms": 3.85,
+    "over33ms": 1,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      7.7,
+      5.5,
+      5.6
+     ],
+     [
+      7.3,
+      5.4,
+      5.6
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 24,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:38:14.380Z"
+   }
   },
   "data-rush@1": {
-   "bootMs": 62,
-   "navToReadyMs": 168,
+   "bootMs": 56,
+   "navToReadyMs": 147,
    "run": {
     "answers": 4,
     "right": 4,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
      "n": 4,
      "agree": 4
+    },
+    "answerBytes": {
+     "engine": 1,
+     "withHostLogs": 1
     },
     "repairs": 0,
     "events": [
@@ -273,41 +638,587 @@
      "false_tap",
      "census"
     ],
-    "botActions": 471,
-    "ms": 55318,
+    "botActions": 493,
+    "ms": 50053,
     "painted": true,
     "errors": []
    },
    "video": "recordings/data-rush_1.webm",
-   "videoBytes": 3840909
+   "videoBytes": 3497238,
+   "perf": {
+    "n": 716,
+    "fps": 59.6,
+    "p50": 16.7,
+    "p95": 16.7,
+    "p99": 16.8,
+    "over20ms": 0.7,
+    "over33ms": 0.14,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      5.9,
+      5.4,
+      5.6
+     ],
+     [
+      5.9,
+      5.4,
+      5.6
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 17,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:39:57.920Z"
+   }
   },
   "balance-beam@1": {
-   "bootMs": 125,
-   "navToReadyMs": 704,
+   "bootMs": 67,
+   "navToReadyMs": 186,
    "run": {
     "answers": 3,
     "right": 3,
     "done": false,
     "rung": "engine",
     "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
     "agreement": {
      "n": 3,
      "agree": 3
+    },
+    "answerBytes": {
+     "engine": 49,
+     "withHostLogs": 49
     },
     "repairs": 0,
     "events": [
      "round_start"
     ],
-    "botActions": 119,
-    "ms": 57476,
+    "botActions": 142,
+    "ms": 50398,
     "painted": true,
     "errors": []
    },
    "video": "recordings/balance-beam_1.webm",
-   "videoBytes": 6407168
+   "videoBytes": 5805097,
+   "perf": {
+    "n": 725,
+    "fps": 51.4,
+    "p50": 16.7,
+    "p95": 33.4,
+    "p99": 33.4,
+    "over20ms": 16.41,
+    "over33ms": 2.76,
+    "dpr": 1.5,
+    "dprChanges": [
+     {
+      "at": 3219,
+      "from": 2,
+      "to": 1.5,
+      "medMs": 33.3
+     }
+    ],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.6,
+      4.9,
+      5.4
+     ],
+     [
+      3.3,
+      4.7,
+      5.3
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 22,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:42:27.774Z"
+   }
+  },
+  "food-web@1": {
+   "bootMs": 73,
+   "navToReadyMs": 188,
+   "run": {
+    "answers": 3,
+    "right": 3,
+    "done": false,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 3,
+     "agree": 3
+    },
+    "answerBytes": {
+     "engine": 71,
+     "withHostLogs": 71
+    },
+    "repairs": 0,
+    "events": [
+     "step_start",
+     "eco_action",
+     "species_lost"
+    ],
+    "botActions": 164,
+    "ms": 50107,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/food-web_1.webm",
+   "videoBytes": 3370472,
+   "perf": {
+    "n": 707,
+    "fps": 58.5,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 33.3,
+    "over20ms": 2.4,
+    "over33ms": 0.14,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3,
+      4.4,
+      5.2
+     ],
+     [
+      3.2,
+      4.4,
+      5.2
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 24,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:44:30.809Z"
+   }
+  },
+  "phase-shift@1": {
+   "bootMs": 82,
+   "navToReadyMs": 238,
+   "run": {
+    "answers": 5,
+    "right": 5,
+    "done": true,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 5,
+     "agree": 5
+    },
+    "answerBytes": {
+     "engine": 83,
+     "withHostLogs": 1768
+    },
+    "repairs": 0,
+    "events": [
+     "step_start"
+    ],
+    "botActions": 128,
+    "ms": 50247,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/phase-shift_1.webm",
+   "videoBytes": 6341683,
+   "perf": {
+    "n": 730,
+    "fps": 56.9,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 33.4,
+    "over20ms": 4.93,
+    "over33ms": 1.23,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.8,
+      4.3,
+      5.1
+     ],
+     [
+      3.9,
+      4.3,
+      5.1
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 26,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:46:17.500Z"
+   }
+  },
+  "shadow-play@1": {
+   "bootMs": 61,
+   "navToReadyMs": 187,
+   "run": {
+    "answers": 4,
+    "right": 4,
+    "done": true,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 4,
+     "agree": 4
+    },
+    "answerBytes": {
+     "engine": 93,
+     "withHostLogs": 586
+    },
+    "repairs": 0,
+    "events": [
+     "step_start",
+     "observe"
+    ],
+    "botActions": 64,
+    "ms": 31199,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/shadow-play_1.webm",
+   "videoBytes": 2171756,
+   "perf": {
+    "n": 734,
+    "fps": 60,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 16.8,
+    "over20ms": 0,
+    "over33ms": 0,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.7,
+      4.2,
+      5
+     ],
+     [
+      3.4,
+      4.1,
+      5
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 25,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:48:03.576Z"
+   }
+  },
+  "water-cycle@1": {
+   "bootMs": 93,
+   "navToReadyMs": 211,
+   "run": {
+    "answers": 2,
+    "right": 1,
+    "done": true,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 2,
+     "agree": 2
+    },
+    "answerBytes": {
+     "engine": 17,
+     "withHostLogs": 17
+    },
+    "repairs": 0,
+    "events": [
+     "interactive"
+    ],
+    "botActions": 52,
+    "ms": 38671,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/water-cycle_1.webm",
+   "videoBytes": 3910478,
+   "perf": {
+    "n": 739,
+    "fps": 59.4,
+    "p50": 16.7,
+    "p95": 16.8,
+    "p99": 16.8,
+    "over20ms": 0.95,
+    "over33ms": 0.14,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      3.4,
+      4,
+      4.9
+     ],
+     [
+      3.1,
+      3.9,
+      4.9
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 26,
+    "fellBack": 1,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:49:48.993Z"
+   }
+  },
+  "scale-cinematic@1": {
+   "bootMs": 63,
+   "navToReadyMs": 202,
+   "run": {
+    "answers": 1,
+    "right": 1,
+    "done": true,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 1,
+     "agree": 1
+    },
+    "answerBytes": {
+     "engine": 11,
+     "withHostLogs": 11
+    },
+    "repairs": 0,
+    "events": [
+     "interactive"
+    ],
+    "botActions": 48,
+    "ms": 31893,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/scale-cinematic_1.webm",
+   "videoBytes": 2887548,
+   "perf": {
+    "n": 690,
+    "fps": 54.8,
+    "p50": 16.7,
+    "p95": 33.3,
+    "p99": 33.4,
+    "over20ms": 8.84,
+    "over33ms": 1.59,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      6.4,
+      4.6,
+      5.1
+     ],
+     [
+      7.2,
+      4.9,
+      5.1
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 22,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T00:51:34.441Z"
+   }
+  },
+  "angle-sum@1": {
+   "bootMs": 56,
+   "navToReadyMs": 166,
+   "run": {
+    "answers": 1,
+    "right": 1,
+    "done": true,
+    "rung": "engine",
+    "tooSmall": 0,
+    "safeHits": 0,
+    "safeSample": [],
+    "agreement": {
+     "n": 1,
+     "agree": 1
+    },
+    "answerBytes": {
+     "engine": 14,
+     "withHostLogs": 14
+    },
+    "repairs": 0,
+    "events": [
+     "interactive"
+    ],
+    "botActions": 45,
+    "ms": 27806,
+    "painted": true,
+    "errors": []
+   },
+   "video": "recordings/angle-sum_1.webm",
+   "videoBytes": 1982727,
+   "perf": {
+    "n": 730,
+    "fps": 59.9,
+    "p50": 16.7,
+    "p95": 16.7,
+    "p99": 16.8,
+    "over20ms": 0.14,
+    "over33ms": 0.14,
+    "dpr": 2,
+    "dprChanges": [],
+    "profile": "915x412@2.625, CPU 4x, headless Chromium software raster",
+    "hostLoad": [
+     [
+      5.9,
+      4.8,
+      5.1
+     ],
+     [
+      6,
+      4.9,
+      5.1
+     ]
+    ],
+    "errors": []
+   },
+   "fuzz": {
+    "n": 32,
+    "controls": 2,
+    "visibleFailures": 0,
+    "repaired": 28,
+    "fellBack": 0,
+    "boardRung": 0,
+    "frameErrors": 0,
+    "tooSmallMax": 0,
+    "safeHitsMax": 0,
+    "faults": {
+     "transientHeld": true,
+     "permanentToBoard": true,
+     "bootToBoard": true
+    },
+    "playMs": 2500,
+    "date": "2026-10-05T01:00:32.501Z"
+   }
   }
  },
- "date": "2026-10-04T23:09:06.306Z",
+ "date": "2026-10-05T01:01:01.693Z",
  "host": {
   "cpus": 4,
   "chromium": "153.0.8010.12"

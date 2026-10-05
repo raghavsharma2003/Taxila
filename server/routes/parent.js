@@ -17,13 +17,15 @@ import { requireGuardian, requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
 import { topicOf, skillById, misconceptionById } from "../content/index.js";
-import { topicStatus, nextTopicFor } from "../content/next-topic.js";
+import { topicStatus } from "../content/next-topic.js";
 import { AzureError, tts } from "../azure.js";
 import { allowSpeech, DEFAULT_VOICE, MAX_TTS_CHARS } from "./tts.js";
 import { MIN_DELAY_MS } from "../learner/bkt.js";
 import { loadLive } from "../learner/live.js";
 import { beliefFor, conceptCard } from "../comprehension/index.js";
 import { CADENCES, LANGS, LANG_OF_PREF } from "../reports/config.js";
+import { speakable } from "../voice/spoken.js";
+import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
 import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
@@ -31,7 +33,7 @@ import { HOW, renderFixed } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
 import { COUNTED_LESSON_SQL, loadTruth, loadLessonTally, claimRows, topicTruth, lessonFactsSummary, renderSummaryLine, summaryClaimsHold,
-  supersede, engineRow, lessonEndMs, GRADER_WORDS } from "../reports/truth.js";
+  supersede, engineRow, lessonEndMs, GRADER_WORDS, nextTopicOf } from "../reports/truth.js";
 
 export const PIN_RE = /^\d{4,6}$/;
 export const PIN_MAX_TRIES = 5;
@@ -909,8 +911,12 @@ async function lessonCard(req, res) {
   try { did = (await import("./lesson.js")).lessonSummary(l.state, { topic: t, teacher: null }); } catch { did = null; }
   const skillsOut = await Promise.all(skillIds.map(async (id) => {
     const mine = here.filter((r) => r.skillIds.includes(id));
-    return { skillId: id, title: (await skillTitle(id)) ?? id, label: (await parentLabelOf(id)) ?? id, attempts: mine.length,
-      unaided: mine.filter((r) => r.firstTryUnaided).length, ...stateOut(truth.state(id)), nextReview: nextBy.get(id) ?? null };
+    // attempts are ITEM rows only (a why / teach-back probe can never be first-try-unaided, so counting it would read
+    // "0 of 3 right on their own" for a child who explained every probe in full); probes are their own count
+    const items = mine.filter((r) => ITEM_CLASSES.has(r.cls));
+    return { skillId: id, title: (await skillTitle(id)) ?? id, label: (await parentLabelOf(id)) ?? id, attempts: items.length,
+      unaided: items.filter((r) => r.firstTryUnaided).length, explained: mine.filter(explainedRow).length,
+      ...stateOut(truth.state(id)), nextReview: nextBy.get(id) ?? null };
   }));
   skillsOut.sort((a, b) => b.attempts - a.attempts);
   const ahead = skillsOut.map((s) => s.nextReview).filter((x) => x && new Date(x) > new Date()).sort((a, b) => new Date(a) - new Date(b));
@@ -923,7 +929,9 @@ async function lessonCard(req, res) {
     // lesson.parent_note / summary are model-written text (audit #20 read them as the system voice, and they can be in
     // another language): never shown on the card. The card is built from rows: DidCards, one quote, the checks.
     lesson: { id: l.id, topic: topicOf_(l.topic_id), startedAt: l.started_at, endedAt: l.ended_at, minutes: minutesOfRow(l), counted: !!l.counted },
-    did: did ? { cards: did.cards.map((c) => ({ kind: c.kind, ask: c.ask, answer: c.answer, tick: !!c.tick, withHelp: !!c.withHelp })), tried: did.tried ?? null } : null,
+    // The DidCards are QUOTES of the child's answers; each tick and "with a hint" comes from the engine row of the SAME
+    // turn (one claim source, W2-A #1), never from the Director's legacy verdict. The only count is summary.counts.
+    did: did ? { cards: did.cards.map((c) => ({ kind: c.kind, ask: c.ask, answer: c.answer, ...engineTick(here, c.turnSeq) })) } : null,
     summary: failed.length ? null : { lines: facts.lines.map((x) => renderSummaryLine(x, { name: child.first_name, topicTitle: t?.title ?? "" })), counts: facts.counts },
     skills: skillsOut,
     nextCheck: ahead[0] ?? null,
@@ -933,6 +941,24 @@ async function lessonCard(req, res) {
   });
 }
 
+/** PURE. An own-words explanation the engine scored in full (probe.why full, probe.teachback high), never a game row. */
+const explainedRow = (r) => (r.cls === "probe.why" || r.cls === "probe.teachback") && r.result === "right" && r.via !== "game";
+
+/**
+ * PURE. A DidCard's tick from the engine rows of its turn (`turnSeq`, the child row the event id carries): a tick only
+ * where the engine scored the turn right; "with a hint" whenever it was not first-try-unaided. No engine row, no tick.
+ * @param {any[]} here  scored engineRow()s of the lesson  @param {number | null | undefined} turnSeq
+ */
+export function engineTick(here, turnSeq) {
+  const rows = turnSeq == null ? [] : here.filter((r) => r.turnSeq === Number(turnSeq));
+  const item = rows.find((r) => ITEM_CLASSES.has(r.cls));
+  if (item) {
+    const right = item.result === "right" || item.result === "right_hint";
+    return { tick: right, withHelp: right && !item.firstTryUnaided };
+  }
+  return { tick: rows.some(explainedRow), withHelp: false };
+}
+
 /**
  * GET /api/parent/syllabus?childId= → Progress (§6.5.3): the class's chapters with a state per topic, "Chapters
  * started: n · Secure: k of N" (never a percentage, never "behind"), the chapter the next lesson is in, and the
@@ -940,7 +966,7 @@ async function lessonCard(req, res) {
  */
 async function syllabus(req, res) {
   const { guardian, child } = await requireParentChild(req, query(req).get("childId"));
-  const [truth, next, profile] = await Promise.all([loadTruth(child), nextTopicFor(child).catch(() => null), hasConsent(guardian.id, child.id, "learning_profile")]);
+  const [truth, next, profile] = await Promise.all([loadTruth(child), nextTopicOf(child), hasConsent(guardian.id, child.id, "learning_profile")]);
   // ONE state per skill (truth.state) and the topic's state derived from its skills (topicTruth): Progress, the map,
   // the lesson card and the evidence sheet read the same words (G-PARENT-1 across surfaces).
   const skillsOf = new Map();
@@ -1254,6 +1280,9 @@ async function exportAll(req, res, body) {
   res.end(JSON.stringify({ exportedAt: new Date().toISOString(), account: guardian, consents, children }, null, 2));
 }
 
+/** PURE. What the parent's Listen voice is given: the spoken form (no digits), within the speech limit. */
+export const speechSaid = (text, mode = "english") => speakable(String(text), { mode, ageBand: "10-15" }).slice(0, MAX_TTS_CHARS);
+
 const clipCache = new Map(); // fixed consent text → mp3 (the same for every family)
 
 /**
@@ -1263,7 +1292,8 @@ const clipCache = new Map(); // fixed consent text → mp3 (the same for every f
 async function speakCard(req, res) {
   const sp = query(req);
   const what = sp.get("what");
-  let guardianId, text, cache = false;
+  // the spoken form's language: the cards are English; a report script speaks in its own language
+  let guardianId, text, cache = false, spokenMode = "english";
   if (what === "consent") {
     guardianId = (await requireGuardian(req)).id;
     text = CONSENT_SPEECH[sp.get("row")];
@@ -1297,6 +1327,7 @@ async function speakCard(req, res) {
     try { r = await reportById({ q }, child.id, id); } catch (e) { if (!missingTable(e)) throw e; }
     if (!r?.renders?.[lang]?.voice?.text) throw new HttpError(404, "report not found");
     text = r.renders[lang].voice.text;
+    spokenMode = lang;
     // the report gate holds scripts to VOICE_CHARS ≤ MAX_TTS_CHARS; a longer one is refused, never cut mid-sentence
     if (text.length > MAX_TTS_CHARS) throw new HttpError(500, "report script over the speech limit");
   } else throw bad("unknown what");
@@ -1304,7 +1335,9 @@ async function speakCard(req, res) {
   let audio = cache ? clipCache.get(text) : null;
   if (!audio) {
     try {
-      audio = await tts(text.slice(0, MAX_TTS_CHARS), DEFAULT_VOICE);
+      // speakable() is the last step before every voice (w2g-speakable; voice-clips-off-and-numbers-normalised): no digit
+      // ever reaches tts ("4 questions" is spoken as words, helplines digit by digit)
+      audio = await tts(speechSaid(text, spokenMode), DEFAULT_VOICE);
     } catch (e) {
       if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
       throw e;

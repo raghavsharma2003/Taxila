@@ -31,7 +31,12 @@ if (process.argv.includes("--teach-turns")) {
   const { initLessonState, step } = await import("../server/director/state.js");
   const TEACH = new Set(["hook", "explain", "worked_example"]);
   const kitsDir = new URL("../data/kits/", import.meta.url);
-  const levels = { fresh: { skills: {}, history: {} }, struggling: "s", strong: "g" };
+  // middle: a prior of 0.5 with no attempts behind it → the first-step probe; this child cannot start ("pata nahi"), so
+  // the path is hook · probe · explain · faded step (review 2026-10-05: the probe path had no arm)
+  const levels = { fresh: { skills: {}, history: {} }, struggling: "s", strong: "g", middle: "m" };
+  // Arms whose rise over legacy is support added ON PURPOSE (a child the legacy boolean sent attempt-first on a prior it
+  // read as knowledge). Named with the decision that owns it; the verdict prints them, never waives them silently.
+  const INTENDED = { struggling: "dc-w2c-support-rise-intended", middle: "dc-w2c-support-rise-intended" };
   const out = {};
   const med = (xs) => { const v = [...xs].sort((a, b) => a - b); return v.length ? (v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2) : null; };
   for (const f of readdirSync(kitsDir).filter((n) => /^c[4-7]-[a-z]+\.json$/.test(n))) {
@@ -42,19 +47,21 @@ if (process.argv.includes("--teach-turns")) {
       const s1 = kit.skills[0].id;
       for (const [label, spec] of Object.entries(levels)) {
         const skills = spec === "s" ? { [s1]: { pKnown: 0.66, status: "practising", attempts: 4, correctUnaided: 0, generativePass: false } }
-          : spec === "g" ? { [s1]: { pKnown: 0.9, status: "mastered", attempts: 5, correctUnaided: 4, generativePass: true } } : {};
+          : spec === "g" ? { [s1]: { pKnown: 0.9, status: "mastered", attempts: 5, correctUnaided: 4, generativePass: true } }
+          : spec === "m" ? { [s1]: { pKnown: 0.5, status: "practising", attempts: 0, correctUnaided: 0, generativePass: false } } : {};
         const history = spec === "s" ? { [s1]: ["incorrect", "incorrect", "incorrect"] } : spec === "g" ? { [s1]: ["correct", "correct", "correct"] } : {};
         const ctx = { firstName: "Riya", teacherName: "Asha", protege: { name: "Bittu", what: "a puppy" }, ageBand: d.class <= 4 ? "6-9" : "10-15", lang: "hinglish",
           interests: [], firstMeeting: false, hasCallback: false, topicTitle: "T", classLevel: d.class };
         let r = step(initLessonState({ topicId: kit.topicId, kit, skills, history, ctx, seed: 1, now: 0 }), { event: "start", kit, now: 0 });
         let teach = 0;
         for (let i = 0; i < 10 && !r.move.itemId; i++) {
-          r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "sim", flags: {} }, text: "achha", now: (i + 1) * 20_000 });
+          const flags = spec === "m" ? { dontKnow: true } : {};
+          r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "sim", flags }, text: spec === "m" ? "pata nahi" : "achha", now: (i + 1) * 20_000 });
           if (TEACH.has(r.move.kind)) teach++;
         }
         if (r.move.itemId?.startsWith("fade:")) teach++;   // the faded step is still a supported (teaching) turn
         // legacy: the novice boolean (any learned or pKnown ≥ 0.5 → attempt-first): hook + explain + min(2, steps) worked parts
-        const legacyNovice = !(spec === "g" || spec === "s");   // the struggling child's prior 0.66 read as knowledge: attempt-first
+        const legacyNovice = !(spec === "g" || spec === "s" || spec === "m");   // a prior ≥ 0.5 read as knowledge: attempt-first
         const legacy = legacyNovice ? 2 + Math.min(2, kit.workedExample?.steps.length ?? 0) : 1;
         (out[label] ??= { now: [], legacy: [] }).now.push(teach);
         out[label].legacy.push(legacy);
@@ -62,12 +69,17 @@ if (process.argv.includes("--teach-turns")) {
     }
   }
   let ok = true;
+  const over = [];
   for (const [label, v] of Object.entries(out)) {
     const delta = med(v.now) - med(v.legacy);
     console.log(`${label.padEnd(10)} n=${v.now.length} teaching turns per skill: median ${med(v.now)} (legacy ${med(v.legacy)}; Δ ${delta >= 0 ? "+" : ""}${delta})`);
-    if (label !== "struggling" && delta > 1) ok = false;   // the struggling child is MEANT to get more support than legacy's attempt-first
+    if (delta > 1) { over.push(`${label} +${delta}`); if (!INTENDED[label]) ok = false; }
   }
-  console.log(ok ? "PASS: teaching turns per skill rise by at most 1 at the median (struggling: support added on purpose)" : "FAIL: teaching turns rose by more than 1");
+  // the whole simulated population (every arm equally weighted: real prevalence is not known yet)
+  const all = Object.values(out), popNow = med(all.flatMap((v) => v.now)), popLegacy = med(all.flatMap((v) => v.legacy));
+  console.log(`population (all arms, equal weight) median ${popNow} (legacy ${popLegacy}; Δ ${popNow - popLegacy >= 0 ? "+" : ""}${popNow - popLegacy})`);
+  for (const o of over) { const label = o.split(" ")[0]; console.log(`  over +1: ${o} → ${INTENDED[label] ? `intended support, decision ${INTENDED[label]}` : "NOT covered by a decision"}`); }
+  console.log(ok ? `PASS: every arm within +1 at the median, except ${over.length ? over.join(", ") : "none"} (named decisions above)` : "FAIL: teaching turns rose by more than 1 on an arm no decision covers");
   process.exit(ok ? 0 : 1);
 }
 
@@ -81,6 +93,12 @@ const TURNS = Number(arg("turns", 14));
 const TOPIC = arg("topic", "c4-maths-ch05-t01");
 const KEEP = process.argv.includes("--keep");
 
+// Never the main database (review 2026-10-05: an in-process run leaked a guardian into it): the server this run talks to
+// and the misconception check below both use the Neon TEST branch (CONDUCTOR_TEST_DATABASE_URL), or TAXILA_DB_URL when a
+// caller names the target's database explicitly. Neither set → refuse to run.
+const SIM_DB = process.env.TAXILA_DB_URL || process.env.CONDUCTOR_TEST_DATABASE_URL;
+if (!SIM_DB) { console.error("director-sim: set CONDUCTOR_TEST_DATABASE_URL (or TAXILA_DB_URL); it never runs against the main database"); process.exit(2); }
+process.env.DATABASE_URL = SIM_DB;
 const { chat, DEPLOY } = await import("../server/azure.js");
 const { q } = await import("../server/db.js");
 let base = arg("base"), server;
@@ -171,12 +189,16 @@ const failures = [];
 const fail = (msg) => { failures.push(msg); console.log(`   ✗ ${msg}`); };
 const fmtSkills = (skills = {}) => Object.entries(skills).map(([id, s]) => `${id.split("-").pop()} ${s.before}→${s.after} ${s.status}`).join(", ");
 
-let child;
+let child, signedUp = false;
+const stamp = Date.now();
+const SIM_EMAIL = `sim+${stamp}@taxila.test`, SIM_PW = `sim-${stamp}-pw`;
 try {
-  const stamp = Date.now();
-  await api("POST", "/api/auth/signup", { email: `sim+${stamp}@taxila.test`, password: `sim-${stamp}-pw`, name: "Sim Guardian", isGuardianAdult: true });
+  await api("POST", "/api/auth/signup", { email: SIM_EMAIL, password: SIM_PW, name: "Sim Guardian", isGuardianAdult: true });
+  signedUp = true;
   ({ child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 4, languagePref: "hinglish", interests: ["cricket", "drawing"] }));
   await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+  // the whole day open, so a run after 20:30 IST is not refused by the default lesson hours (409)
+  await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
   const t0 = Date.now();
   const start = await api("POST", "/api/lesson/start", { childId: child.id, topicId: TOPIC, mode: "text" });
   if (!start.debug) throw new Error("the API returned no debug payload (it must run on loopback or with TAXILA_DEBUG=1)");
@@ -235,6 +257,17 @@ try {
   const taught = new Set(moves.filter((mv) => mv.skillId).map((mv) => mv.skillId)).size || 1;
   const teachTurns = moves.filter((mv) => ["hook", "explain", "worked_example", "reteach"].includes(mv.kind)).length;
   console.log(`talk: childTalkShare ${talk.childTalkShare} (child ${talk.childWords} words / teacher ${talk.teacherWords}; ${talk.wordsPerTeacherTurn} words per teacher turn) · teaching turns per skill ${(teachTurns / taught).toFixed(1)}`);
+  // --save-talk <file>: append this lesson's childTalkShare (the baseline / candidate lists scripts/talk-gate.mjs reads)
+  const saveFile = arg("save-talk");
+  if (saveFile && talk.childTalkShare != null) {
+    const { writeFileSync, existsSync } = await import("fs");
+    const prev = existsSync(saveFile) ? JSON.parse(readFileSync(saveFile, "utf8")) : { childTalkShare: [], runs: [] };
+    prev.childTalkShare = [...(prev.childTalkShare ?? []), talk.childTalkShare];
+    prev.runs = [...(prev.runs ?? []), { at: new Date().toISOString(), topic: TOPIC, turns: history.length, childTalkShare: talk.childTalkShare,
+      childWords: talk.childWords, teacherWords: talk.teacherWords, failures: failures.length }];
+    writeFileSync(saveFile, JSON.stringify(prev, null, 2) + "\n");
+    console.log(`talk: appended to ${saveFile} (n = ${prev.childTalkShare.length})`);
+  }
   const baseFile = arg("talk-baseline");
   if (baseFile) {
     const base = JSON.parse(readFileSync(baseFile, "utf8"));
@@ -247,7 +280,9 @@ try {
 } catch (e) {
   fail(`run aborted: ${e.message}`);
 } finally {
-  if (child && !KEEP) await api("DELETE", "/api/children", { childId: child.id }).catch((e) => console.log(`could not delete the sim child: ${e.message}`));
+  // the whole throwaway ACCOUNT goes (DELETE /api/children now needs the password, and left the guardian behind)
+  if (signedUp && !KEEP) await api("DELETE", "/api/account", { password: SIM_PW, confirm: true })
+    .then(() => console.log(`cleanup: ${SIM_EMAIL} deleted`), (e) => fail(`could not delete the sim account ${SIM_EMAIL}: ${e.message}`));
   server?.close();
 }
 console.log(failures.length ? `\nFAIL (${failures.length}):\n- ${failures.join("\n- ")}`

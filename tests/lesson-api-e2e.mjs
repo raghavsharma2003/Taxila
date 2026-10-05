@@ -63,7 +63,7 @@ try {
   ok(!!r.debug.item, `voice turns reach a practice item (${r.debug.item?.id})`);
   ok(r.teacherReply === undefined, "voice turns return no teacherReply");
   const lastCheck = r.instructions.split("\n").at(-2);
-  ok(lastCheck.startsWith("ONE MORE CHECK: when they reply:") && lastCheck.includes("it matches the key →") && !r.instructions.includes("short warm close"),
+  ok(lastCheck.startsWith("ONE MORE CHECK: when they reply:") && lastCheck.includes("it matches the key →") && !r.instructions.includes("nothing new; a short warm close"),
     "with an item on the table, the voice lane's last check is that item's branch, never the close fallback");
   const lowAsr = await A("POST", "/api/lesson/turn", { lessonId: s1.lessonId, childText: r.debug.item.answer, asrConfidence: 0.3, teacherText: "Batao?" });
   ok(lowAsr.debug.classification.source === "asr" && lowAsr.debug.evidence.length === 0, "low ASR confidence → no evidence, even for the right words");

@@ -33,7 +33,7 @@ let uuidN = 0;
 nodeCrypto.randomUUID = () => `00000000-0000-4000-8000-${String(++uuidN).padStart(12, "0")}`;
 syncBuiltinESMExports();
 process.env.TAXILA_TTS_PREWARM = "0";
-process.env.TAXILA_CLASSIFY_HEDGE_MS = "0";
+process.env.TAXILA_CLASSIFY_HEDGE_MS = process.env.REPLAY_HEDGE_MS ?? "0"; // the hang drill runs the production 1.5 s hedge
 delete process.env.TAXILA_DEBUG;
 const quiet = !process.argv.includes("--verbose");
 if (quiet) { console.info = () => {}; console.warn = () => {}; console.log = (...a) => process.stdout.write(a.join(" ") + "\n"); }
@@ -45,7 +45,7 @@ const BRAIN_TABLES = /insert into (brain_trace|decision_record|lesson_plan|forma
 
 const { DB } = await import("./fake-db.mjs");
 // --tables: the 016 tables exist (the turn then writes brain_trace / decision_record rows into its transaction).
-if (args.includes("--tables")) for (const t of ["brain_trace", "decision_record"]) DB.tableExists.add(t);
+if (args.includes("--tables")) for (const t of ["brain_trace", "decision_record", "brain_trace.misconception_id"]) DB.tableExists.add(t);
 const { routes } = await import("../../../server/routes/lesson.js");
 // --rel '{"5":{"floor":"RELEASE"},"3":{"moveOverlay":{"kind":"OWN_SLIP","shapeId":"own.slip"}}}': a scripted RelationalDirective
 // per lesson turn number (W2-I's decide() stand-in), for the BR5 adapter tests. --lessons N: only the first N lessons.
@@ -59,6 +59,10 @@ if (REL) {
   };
 }
 const ONLY = Number(flag("--lessons")) || 0;
+// --script '{"4":"stop","5":"stop"}': a behaviour per lesson turn number in place of the rotation (G-AUTHORITY scripts).
+const SCRIPT = flag("--script") ? JSON.parse(flag("--script")) : null;
+// --turns N: at most N turns per lesson (the goodbye is then not forced); default the full 14 with the closing goodbye.
+const MAX_TURNS = Number(flag("--turns")) || 0;
 const { getKit, pinKit } = await import("../../../server/content/index.js");
 const { getTopic, topicSequence } = await import("../../../server/content/curriculum.js");
 const { initLessonState, step } = await import("../../../server/director/state.js");
@@ -143,6 +147,9 @@ function childTurn(beh, st, kit, n, mode) {
     case "chit": return { ...base, childText: "mujhe cricket bahut pasand hai" };
     case "teach": return { ...base, childText: "pehle hum barabar hisse banate hain phir neeche wala number batata hai kitne hisse hain" };
     case "bye": return { ...base, childText: "bye mujhe jaana hai" };
+    case "stop": return { ...base, childText: "ab band karo" };
+    case "goodbye": return { ...base, childText: "bye didi, mummy bula rahi hai" };
+    case "disclosure_bye": return { ...base, childText: "papa mujhe maarte hain, bye didi" };
     case "distress": return { ...base, childText: "papa mujhe maarte hain aur main dar jaata hoon" };
     default: return { ...base, childText: "hmm" };
   }
@@ -165,6 +172,7 @@ function stripOut(x) {
 }
 
 const plan = ONLY ? lessonsPlan().slice(0, ONLY) : lessonsPlan();
+const WALL = [];
 const record = [];
 for (const p of plan) {
   CLOCK.now = T0 + p.n * 3600_000;
@@ -172,14 +180,15 @@ for (const p of plan) {
   const seeded = await seedLesson(p);
   if (!seeded) { record.push({ lesson: p, skipped: "no kit" }); continue; }
   const turns = [];
-  for (let n = 1; n <= TURNS; n++) {
+  for (let n = 1; n <= (MAX_TURNS || TURNS); n++) {
     const l = DB.lessons.get(seeded.lessonId);
     if (l.ended_at || l.state.phase === "done") break;
     CLOCK.now += 20_000;
-    const beh = n === TURNS ? "bye" : p.n % 6 === 3 && n === 7 ? "distress" : BEHAVIOURS[(p.rot + n - 1) % BEHAVIOURS.length];
+    const beh = SCRIPT?.[String(n)] ?? (n === TURNS && !MAX_TURNS ? "bye" : p.n % 6 === 3 && n === 7 && !SCRIPT ? "distress" : BEHAVIOURS[(p.rot + n - 1) % BEHAVIOURS.length]);
     const body = { lessonId: seeded.lessonId, ...childTurn(beh, l.state, seeded.kit, n, p.mode) };
     const before = DB.txs.length;
     const res = fakeRes();
+    const wall0 = performance.now();
     let error = null;
     try { await routes["POST /api/lesson/turn"]({ headers: { cookie: "tx_session=replay" }, socket: { remoteAddress: "10.1.2.3" }, url: "/api/lesson/turn" }, res, body); }
     catch (e) { error = { status: e.status ?? null, message: String(e.message) }; }
@@ -190,6 +199,7 @@ for (const p of plan) {
       if (/^insert into brain_trace/.test(s.text)) { s.params[10] = 0; s.params[11] = 0; }
     }
     const txs = DB.txs.slice(before).map((t) => t.filter((s) => !(STRIP.size && BRAIN_TABLES.test(s.text))).map((s) => ({ text: s.text, params: stripOut(s.params) })));
+    if (args.includes("--wall")) WALL.push(Math.round(performance.now() - wall0)); // wall ms per turn: kept OUT of the record (determinism)
     turns.push({ n, beh, body, status: res.statusCode, out: stripOut(res.body), error, txs });
   }
   record.push({ lesson: p, turns });
@@ -197,6 +207,7 @@ for (const p of plan) {
 
 const json = JSON.stringify(record, null, 1);
 if (args.includes("--stats")) console.log(`azure ${JSON.stringify(globalThis.__replayAzure ?? {})}`);
+if (args.includes("--wall")) console.log(`wall ${JSON.stringify(WALL)}`);
 const brainRows = DB.txs.flat().filter((x) => BRAIN_TABLES.test(x.text)).length;
 if (brainRows) console.log(`brain rows written: ${brainRows} (${DB.txs.flat().filter((x) => /insert into decision_record/.test(x.text)).length} decision records)`);
 const nTurns = record.reduce((a, l) => a + (l.turns?.length ?? 0), 0);

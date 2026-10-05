@@ -129,7 +129,7 @@ function lessonAfter(answers, mode) {
 test("voice instructions from a stored state carry the active item's branch, never the close fallback", () => {
   const voice = instructionsFor(lessonAfter(toFirstItem(), "voice"), K);
   assert.match(voice, /it matches the key →/);
-  assert.doesNotMatch(voice, /short warm close/);
+  assert.doesNotMatch(voice, /nothing new; a short warm close/); // the close FALLBACK (the floor's goodbye line also says "short warm close")
   assert.ok(voice.split("\n").at(-1).startsWith(TURN_SHAPE_PREFIX));
   const text = instructionsFor(lessonAfter(toFirstItem(), "text"), K);
   assert.doesNotMatch(text, /when they reply/);

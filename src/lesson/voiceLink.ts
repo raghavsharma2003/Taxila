@@ -6,7 +6,7 @@
 import type { RealtimeTokenResponse } from "../../shared/contracts.ts";
 import type { LinkEvent, LinkLevels, MicTap, TeacherLink } from "./link.ts";
 import { createLevelAnalyser } from "./level.ts";
-import { audioInputFrom, endpointSilenceOf, RealtimeProtocol, turnDetectionFrom, withEndpointSilence, type RateLimit } from "./realtime.ts";
+import { audioInputFrom, endpointSilenceOf, MINT_REFUSED, REALTIME_UNAVAILABLE, RealtimeProtocol, turnDetectionFrom, withEndpointSilence, type RateLimit } from "./realtime.ts";
 import { Emitter } from "./store.ts";
 
 export interface VoiceLinkOptions {
@@ -44,10 +44,12 @@ export class VoiceLink implements TeacherLink {
   private remoteSource: MediaStreamAudioSourceNode | null = null;
   private outbox: Record<string, unknown>[] = [];
   private instructions: string | null = null;
-  /** Lane-A delivery note (HUMAN-VOICE B6), appended last to the instructions; null = none. */
+  /** Lane-A delivery note (HUMAN-VOICE B6), placed just before the instructions' last line; null = none. */
   private delivery: string | null = null;
-  /** The pace knob's server VAD silence (ms), re-applied on reconnect; null = as minted. */
+  /** The pace knob's server VAD silence (ms), re-applied on reconnect; null = as minted. Never below mintedMs. */
   private silenceMs: number | null = null;
+  /** The server VAD silence the session was minted with (the measured base): the knob only adds time on top of it. */
+  private mintedMs: number | null = null;
   private turnDetection: Record<string, unknown> = {};
   /** audio.input as minted (transcription, noise reduction); re-sent whole on a push-to-talk toggle. */
   private audioInput: Record<string, unknown> = {};
@@ -115,10 +117,13 @@ export class VoiceLink implements TeacherLink {
     this.protocol.applyInstructions(this.composed());
   }
 
-  /** The instructions as applied: the Director's, verbatim, plus the delivery note as the LAST line. */
+  /**
+   * The instructions as applied: the Director's, verbatim, plus the delivery note inserted just BEFORE their last line.
+   * The compiler guarantees that last line is the turn-shape rule (compile.js: position is mechanism, the rule that must
+   * fire goes last), so the note never takes that place from it. check-prompt-budget counts the longest note.
+   */
   private composed(): string {
-    const base = this.instructions ?? "";
-    return this.delivery ? `${base}\n${this.delivery}` : base;
+    return withDeliveryNote(this.instructions ?? "", this.delivery);
   }
 
   setDelivery(line: string | null, apply: boolean): void {
@@ -128,8 +133,10 @@ export class VoiceLink implements TeacherLink {
   }
 
   setPace(pace: { waitNudgeSec: number; endpointSilenceMs: number }): void {
-    const ms = endpointSilenceOf(pace);
-    if (ms === null || ms === this.silenceMs) return;
+    const knob = endpointSilenceOf(pace);
+    if (knob === null) return;
+    const ms = Math.max(knob, this.mintedMs ?? 0);
+    if (ms === this.silenceMs) return;
     this.silenceMs = ms;
     this.turnDetection = withEndpointSilence(this.turnDetection, ms);
     // Push-to-talk keeps server VAD off; the knob lands when hands-free turn detection is restored.
@@ -209,7 +216,11 @@ export class VoiceLink implements TeacherLink {
   private async open(): Promise<void> {
     const tok = await this.fetchToken(this.lessonId);
     if (this.closed) return;
-    this.turnDetection = withEndpointSilence(turnDetectionFrom(tok.session), this.silenceMs);
+    const minted = turnDetectionFrom(tok.session);
+    const mintedMs = Number(minted.silence_duration_ms);
+    this.mintedMs = Number.isFinite(mintedMs) && mintedMs > 0 ? mintedMs : null;
+    if (this.silenceMs !== null && this.mintedMs !== null) this.silenceMs = Math.max(this.silenceMs, this.mintedMs);
+    this.turnDetection = withEndpointSilence(minted, this.silenceMs);
     this.audioInput = audioInputFrom(tok.session);
 
     const pc = new RTCPeerConnection();
@@ -302,11 +313,12 @@ export class VoiceLink implements TeacherLink {
     this.disconnectTimer = null;
     if (s === "failed") this.lost(pc);
     else if (s === "disconnected") {
-      // Reported at once (the app-voice notice runs from here: T2 ≤ 4.5 s, src/lesson/trouble.ts); rebuilt only after
-      // the grace, because "disconnected" often heals by itself.
+      // Reported at once as "stalled" (the app-voice notice runs from here: T2 ≤ 4.5 s, src/lesson/trouble.ts); rebuilt
+      // only after the grace, because "disconnected" often heals by itself. "stalled" is soft: the runtime keeps the
+      // teacher turns it holds (a blip must not lose the question she just asked); only reconnect() says "reconnecting".
       if (!this.stalled && !this.reconnecting) {
         this.stalled = true;
-        this.events.emit({ type: "connection", state: "reconnecting" });
+        this.events.emit({ type: "connection", state: "stalled" });
       }
       this.disconnectTimer = setTimeout(() => {
         if (pc.iceConnectionState === "disconnected") this.lost(pc);
@@ -338,7 +350,10 @@ export class VoiceLink implements TeacherLink {
       if (this.reconnects >= this.maxReconnects) {
         this.reconnecting = false;
         this.events.emit({ type: "connection", state: "failed" });
-        this.events.emit({ type: "error", message: "the voice call dropped and could not reconnect", fatal: true });
+        // Online but the realtime lane will not come back: the runtime moves the lesson to the cascade lane (and fails
+        // it only when it cannot). Offline: today's fatal error (the cascade lane needs the network too).
+        const online = typeof navigator === "undefined" || navigator.onLine !== false;
+        this.events.emit({ type: "error", message: "the voice call dropped and could not reconnect", fatal: true, ...(online ? { code: REALTIME_UNAVAILABLE } : {}) });
         return;
       }
       this.reconnects++;
@@ -349,6 +364,13 @@ export class VoiceLink implements TeacherLink {
       } catch (err) {
         console.warn("voice: reconnect failed", err);
         this.teardownPeer();
+        if (isLaneFallback(err)) {
+          // The re-mint was refused for quota (503 {fallback: "cascade"}): retrying cannot help, the lane is full.
+          this.reconnecting = false;
+          this.events.emit({ type: "connection", state: "failed" });
+          this.events.emit({ type: "error", message: "the realtime lane is full", code: MINT_REFUSED, fatal: true });
+          return;
+        }
       }
     }
     this.reconnecting = false;
@@ -384,6 +406,19 @@ export class VoiceLink implements TeacherLink {
   private setMicEnabled(on: boolean): void {
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
+}
+
+/** The compiled instructions with the lane-A delivery note inserted before their last line (the turn-shape rule). */
+export function withDeliveryNote(instructions: string, note: string | null): string {
+  if (!note) return instructions;
+  const i = instructions.lastIndexOf("\n");
+  return i < 0 ? `${note}\n${instructions}` : `${instructions.slice(0, i)}\n${note}${instructions.slice(i)}`;
+}
+
+/** A token mint refused for quota: the route answered 503 { fallback: "cascade" } (server/voice/realtimeSession.js). */
+export function isLaneFallback(err: unknown): boolean {
+  const e = err as { status?: unknown; body?: { fallback?: unknown } | null } | null;
+  return !!e && typeof e === "object" && e.status === 503 && e.body?.fallback === "cascade";
 }
 
 /** Two session.update events that set the same top-level field (so the older one is redundant). */

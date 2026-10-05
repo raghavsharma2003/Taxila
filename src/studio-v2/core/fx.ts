@@ -1,6 +1,6 @@
 // Juice, on the learning act only (QB-G4): pooled particles, shockwave rings, rising popups, screen shake, screen
 // flash (mint/amber tint, never red). Reduced motion drops particles and shake; the game stays playable.
-import { C, W, H, MIN } from "./tokens.ts";
+import { C, W, H, MIN, SAFE } from "./tokens.ts";
 import { ease, hexA, lerp } from "./math.ts";
 import { glow, type Ctx, type TextOpts } from "./draw.ts";
 
@@ -11,7 +11,8 @@ export interface BurstOpts { n?: number; angle?: number; spread?: number; speed?
 export class FX {
   private P: P[] = []; private R: R[] = []; private T: T[] = [];
   shakeAmp = 0; private shakeT = 0; private shakeDur = 0; ox = 0; oy = 0; flashA = 0; flashColor: string = C.mint;
-  constructor(private reduced: boolean, private rnd: () => number, private text: (ctx: Ctx, s: string, x: number, y: number, o?: TextOpts) => void) {}
+  private reduced: boolean; private rnd: () => number; private text: (ctx: Ctx, s: string, x: number, y: number, o?: TextOpts) => void;
+  constructor(reduced: boolean, rnd: () => number, text: (ctx: Ctx, s: string, x: number, y: number, o?: TextOpts) => void) { this.reduced = reduced; this.rnd = rnd; this.text = text; }
   burst(x: number, y: number, o: BurstOpts = {}): void {
     if (this.reduced) return;
     const n = o.n ?? 16;
@@ -27,7 +28,13 @@ export class FX {
     this.R.push({ x, y, r0: o.r0 ?? 6, r1: o.r1 ?? 90, life: o.life ?? 0.5, t: 0, w: o.width ?? 6, color: o.color ?? C.ion });
   }
   pop(text: string, x: number, y: number, o: { life?: number; color?: string; size?: number; rise?: number } = {}): void {
-    this.T.push({ text, x, y, t: 0, life: o.life ?? 0.9, color: o.color ?? C.ink, size: Math.max(MIN.label, o.size ?? 44), rise: o.rise ?? 70 });
+    const size = Math.max(MIN.label, o.size ?? 44), rise = o.rise ?? 70, half = (size * 0.62 * text.length) / 2 + 8;
+    // keep the whole rise clear of the safe zones (DESIGN-V3 §6.3): type label top-left 180×75, teacher PiP top-right 162.5²
+    const cx = Math.min(W - half - 8, Math.max(half + 8, x));
+    let top = y - rise - size * 0.6;
+    if (cx + half > SAFE.pip.x && top < SAFE.pip.y + SAFE.pip.h + 6) top = SAFE.pip.y + SAFE.pip.h + 6;
+    if (cx - half < SAFE.label.x + SAFE.label.w && top < SAFE.label.y + SAFE.label.h + 6) top = SAFE.label.y + SAFE.label.h + 6;
+    this.T.push({ text, x: cx, y: top + rise + size * 0.6, t: 0, life: o.life ?? 0.9, color: o.color ?? C.ink, size, rise });
   }
   shake(amp: number, dur = 0.25): void { if (this.reduced) return; this.shakeAmp = Math.max(this.shakeAmp, Math.min(6, amp)); this.shakeDur = dur; this.shakeT = dur; }
   flash(color: string, a = 0.18): void { this.flashColor = color; this.flashA = Math.max(this.flashA, a); }
@@ -66,7 +73,7 @@ export class FX {
     for (const t of this.T) {
       const k = t.t / t.life, y = t.y - t.rise * ease.outCubic(k), sc = k < 0.15 ? ease.outBack(k / 0.15) : 1;
       ctx.globalAlpha = k > 0.7 ? 1 - (k - 0.7) / 0.3 : 1;
-      this.text(ctx, t.text, t.x, y, { size: t.size * sc, font: "display", weight: 700, color: t.color, align: "center", baseline: "middle", glow: t.color, decor: sc < 0.999 });
+      this.text(ctx, t.text, t.x, y, { size: t.size * sc, font: "display", weight: 700, color: t.color, align: "center", baseline: "middle", glow: t.color, decor: sc < 1 });   // the pop-in overshoot is animation, not a resting label
     }
     ctx.restore();
   }

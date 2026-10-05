@@ -58,8 +58,10 @@ export interface LessonLine {
 export interface DidCardOut { kind: "item" | "teachback"; ask: string | null; answer: string; tick: boolean; withHelp: boolean }
 export interface LessonCardOut {
   lesson: { id: string; topic: TopicRef; startedAt: string; endedAt: string | null; minutes: number | null; counted: boolean };
-  did: { cards: DidCardOut[]; tried: number | null } | null;
-  skills: (SkillLine & { attempts: number; unaided: number })[];
+  /** quotes of the child's answers; each tick from the engine row of the same turn (the only count is summary.counts) */
+  did: { cards: DidCardOut[] } | null;
+  /** attempts/unaided over item rows only; explained = own-words probes scored in full */
+  skills: (SkillLine & { attempts: number; unaided: number; explained?: number })[];
   nextCheck: string | null;
   quote: string | null;
   transcript: { seq: number; speaker: "child" | "teacher"; text: string }[] | null;

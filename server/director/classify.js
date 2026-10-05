@@ -135,7 +135,7 @@ function systemPrompt(target, classLevel) {
     "The child may speak Hindi, English or Hinglish, in Roman or Devanagari script. Number words count (aadha = 1/2, ek tihai = 1/3, teen = 3, 'teen wala' = the one with 3). Transcripts come from speech recognition and can have small errors.",
     "If what the teacher last said asked a DIFFERENT question from the one listed, and the reply answers that other question, label it no_attempt: it is not evidence about the listed question.",
     "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.",
-    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now. off_topic: the reply is about something unrelated to the lesson.",
+    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a request to change topic, explain differently, go slower or take a break). off_topic: the reply is about something unrelated to the lesson.",
   ];
   if (target.mode === "none" && target.misconceptions.length) {
     base.push("belief: if the reply expresses one of the listed wrong beliefs (in any words or language), its tag; otherwise none.");
@@ -258,6 +258,50 @@ export function hedged(fn, ms) {
   });
 }
 
+/**
+ * The classify hedge onto the FALLBACK deployment (W2-E fixer; BUILD-PLAN W2-E failure drill): `primary()` now; if it has
+ * not settled after `ms`, or fails before that, `backup()` (another deployment, so a hung or overloaded classify
+ * deployment is never asked twice); the first to fulfil wins. A content-filter block on EITHER decides at once (fails
+ * closed). Rejects only when both have failed (with the primary's error). `backup` null = the same-deployment hedge.
+ * Resolves to { value, backup: boolean } so the caller can trace which deployment answered. Exported for tests.
+ */
+export function hedgedFallback(primary, backup, ms) {
+  if (!backup) return hedged(primary, ms).then((value) => ({ value, backup: false }));
+  return new Promise((resolve, reject) => {
+    let settled = false, pending = 0, firstErr = null, backupStarted = false, timer = null;
+    const finish = (ok, v) => { if (settled) return; settled = true; clearTimeout(timer); (ok ? resolve : reject)(v); };
+    const fail = (e) => {
+      if (isContentFilter(e)) return finish(false, e);
+      firstErr ??= e;
+      pending -= 1;
+      if (!backupStarted) return startBackup();
+      if (!pending) finish(false, firstErr);
+    };
+    const startBackup = () => {
+      if (backupStarted || settled) return;
+      backupStarted = true;
+      pending += 1;
+      backup().then((v) => finish(true, { value: v, backup: true }), fail);
+    };
+    pending += 1;
+    primary().then((v) => finish(true, { value: v, backup: false }), fail);
+    // never unref'd: the hedge must fire even when nothing else holds the event loop; it is cleared on the first answer
+    timer = setTimeout(startBackup, ms > 0 ? ms : 0x7fffffff);
+  });
+}
+
+/**
+ * Drill only (W2-E failure drill): TAXILA_DRILL_HANG_DEPLOY names a deployment whose classify calls hang until their own
+ * timeout, like a dead deployment that accepts the connection and never answers. Unset in every real deployment.
+ */
+function classifyChat(deployment, messages, opts) {
+  const hang = process.env.TAXILA_DRILL_HANG_DEPLOY;
+  if (hang && hang === deployment) {
+    return new Promise((_, reject) => { const t = setTimeout(() => reject(Object.assign(new Error(`chat ${deployment} timed out after ${opts.timeoutMs} ms (drill)`), { code: "timeout", status: 0 })), opts.timeoutMs ?? 7000); t.unref?.(); });
+  }
+  return chat(deployment, messages, opts);
+}
+
 const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required: ["distress"], properties: { distress: { type: "boolean" } } };
 
 /**
@@ -267,11 +311,17 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  */
 async function distressCheck(text, classLevel, trace) {
   try {
-    const { json } = await hedged(() => chat(DEPLOY.classify, [
+    const messages = [
       { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.` },
       // direct identifiers masked before the child's words reach the model (decision scrub-pii-cued)
       { role: "user", content: scrubPii(text).text },
-    ], { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace }), classifyHedgeMs());
+    ];
+    const opts = { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" };
+    // W2-E fixer: in an outage the backup must not fail open to the predicate alone (MODEL-ROUTER §0: passive-ideation
+    // phrasings rest on the model), so it hedges onto the fallback deployment like the classifier does.
+    const fb = classifyFallback();
+    const { value: { json } } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, opts),
+      fb ? () => classifyChat(fb, messages, opts) : null, classifyHedgeMs());
     return !!json?.distress;
   } catch (e) {
     // The content filter blocking a child's words is itself a strong distress signal: fail CLOSED.
@@ -406,12 +456,13 @@ export async function classify(args) {
   ];
   const opts = { schema: schemaFor(target), schemaName: `classify_${target.mode}`,
     effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace, quotaLane: "hot" };
-  const labelled = (json) => {
+  const labelled = (json, viaFallback = false) => {
     const { modelFlags, ...label } = parseClassification(json, target);
     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
     const signals = signalsOn() ? parseSignals(json) : null;
     if (signals) Object.assign(flags, signalFlags(signals));
-    return { ...label, source: "model", flags, ...(signals ? { signals } : {}) };
+    // `fallback`: the fallback deployment answered (brain_trace cls_source.fallback); the label is a model label either way
+    return { ...label, source: "model", flags, ...(signals ? { signals } : {}), ...(viaFallback ? { fallback: true } : {}) };
   };
   const filtered = () => {
     console.warn("[classify] blocked by the content filter: routed to safeguarding");
@@ -419,26 +470,20 @@ export async function classify(args) {
     flags.distressKind ??= "content_filter";
     return done("no_evidence", "content_filter");
   };
+  // W2-E fixer (failure drill, real outage shapes): the hedge goes to the FALLBACK deployment (MODEL-ROUTER §0: taxila-fast,
+  // the OpenAI family), not a second request to the same one. A hung, 5xx or 429ing classify deployment used to cost the
+  // child ~15-21 s (7 s timeout + one retry + the same-deployment hedge, then the 6 s fallback); now the fallback starts at
+  // the hedge (1.5 s) or at once when the primary fails fast, and neither call retries (the other is the retry).
+  const fb = classifyFallback();
   try {
-    const { json } = await hedged(() => chat(DEPLOY.classify, messages, opts), classifyHedgeMs());
-    return labelled(json);
+    const { value: { json }, backup } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, fb ? { ...opts, retries: 0 } : opts),
+      fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
+    return labelled(json, backup);
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.
     if (isContentFilter(e)) return filtered();
-    console.warn("[classify] model unavailable:", e.message);
-    // W2-E L5 / failure drill (BUILD-PLAN W2-E acceptance): the classify deployment is down → the same call once on the
-    // fallback deployment (MODEL-ROUTER §0: taxila-fast, the OpenAI family), so the turn keeps its evidence.
-    const fb = classifyFallback();
-    if (fb) {
-      try {
-        const { json } = await chat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 });
-        return labelled(json);
-      } catch (e2) {
-        if (isContentFilter(e2)) return filtered();
-        console.warn("[classify] fallback unavailable:", e2.message);
-      }
-    }
+    console.warn("[classify] model unavailable (classify and fallback):", e.message);
     // A classifier outage costs one turn of evidence, never the lesson.
     flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
     if (flags.distress) flags.distressKind ??= "model";

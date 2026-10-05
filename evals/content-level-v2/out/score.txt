@@ -1,0 +1,48 @@
+
+## bank240 (v1 stratified sample), too easy = grade <= C-2
+| class | n | gpt6 | deepseek | both (floor) | either (ceiling) | kappa v2 | v1 judge strict | v1 Claude | kappa v1 (judge strict vs Claude) |
+| 4 | 60 | 5 | 4 | 3 | 6 | 0.64 | 15 | 12 | 0.57 |
+| 5 | 60 | 4 | 7 | 3 | 8 | 0.50 | 20 | 8 | 0.47 |
+| 6 | 60 | 1 | 3 | 0 | 4 | -0.03 | 18 | 4 | 0.18 |
+| 7 | 60 | 9 | 10 | 7 | 12 | 0.69 | 23 | 11 | 0.53 |
+| all | 240 | 19 | 24 | 13 | 30 | 0.57 | 76 | 35 | 0.45 |
+
+## precision40 (v1 flags adjudicated against 2025-26 NCERT: 23 true, 17 false; v1 precision 23/40 = 58%)
+| rater | flagged | precision | 95% CI | recall of the 23 |
+| gpt6 | 8 | 6/8 (75%) | 0.41-0.93 | 6/23 (26%) |
+| deepseek | 8 | 6/8 (75%) | 0.41-0.93 | 6/23 (26%) |
+| both | 5 | 4/5 (80%) | 0.38-0.96 | 4/23 (17%) |
+| either | 11 | 8/11 (73%) | 0.43-0.90 | 8/23 (35%) |
+
+## served-old: items at queue positions 1-2, too easy = grade <= C-2
+| class | n | gpt6 | deepseek | both | either | kappa | too hard (either) |
+| 4 | 150 | 13/150 (9%) | 17/150 (11%) | 7/150 (5%) | 23/150 (15%) | 0.41 | 0 |
+| 5 | 148 | 31/148 (21%) | 17/148 (11%) | 9/148 (6%) | 39/148 (26%) | 0.27 | 1 |
+| 6 | 224 | 24/224 (11%) | 22/224 (10%) | 9/224 (4%) | 37/224 (17%) | 0.32 | 0 |
+| 7 | 248 | 31/248 (13%) | 22/248 (9%) | 8/248 (3%) | 45/248 (18%) | 0.22 | 0 |
+| all | 770 | 99/770 (13%) | 78/770 (10%) | 33/770 (4%) | 144/770 (19%) | 0.29 | 1 |
+
+## served-new: items at queue positions 1-2, too easy = grade <= C-2
+| class | n | gpt6 | deepseek | both | either | kappa | too hard (either) |
+| 4 | 150 | 1/150 (1%) | 0/150 (0%) | 0/150 (0%) | 1/150 (1%) | 0.00 | 0 |
+| 5 | 148 | 1/148 (1%) | 0/148 (0%) | 0/148 (0%) | 1/148 (1%) | 0.00 | 0 |
+| 6 | 224 | 1/224 (0%) | 2/224 (1%) | 0/224 (0%) | 3/224 (1%) | -0.01 | 1 |
+| 7 | 248 | 2/248 (1%) | 1/248 (0%) | 1/248 (0%) | 2/248 (1%) | 0.66 | 0 |
+| all | 770 | 5/770 (1%) | 3/770 (0%) | 1/770 (0%) | 7/770 (1%) | 0.25 | 1 |
+
+## relevel: n 2072, too easy gpt6 287, deepseek 123, either 342, kappa 0.27
+
+## placement: n 456, too easy gpt6 35, deepseek 18, either 41, kappa 0.42
+
+## precision40 threshold curve
+| grade <= C-2 | gpt6 | flagged 8 | precision 0.75 | recall 0.26 |
+| grade <= C-2 | deepseek | flagged 8 | precision 0.75 | recall 0.26 |
+| grade <= C-2 | mean | flagged 8 | precision 0.75 | recall 0.26 |
+| grade <= C-1.5 | gpt6 | flagged 9 | precision 0.78 | recall 0.3 |
+| grade <= C-1.5 | deepseek | flagged 10 | precision 0.7 | recall 0.3 |
+| grade <= C-1.5 | mean | flagged 10 | precision 0.7 | recall 0.3 |
+| grade <= C-1 | gpt6 | flagged 23 | precision 0.74 | recall 0.74 |
+| grade <= C-1 | deepseek | flagged 18 | precision 0.72 | recall 0.57 |
+| grade <= C-1 | mean | flagged 15 | precision 0.8 | recall 0.52 |
+
+bank240 v2 vs v1-Claude flags: gpt6 kappa 0.55, deepseek kappa 0.44

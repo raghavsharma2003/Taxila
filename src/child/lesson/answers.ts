@@ -5,10 +5,10 @@ import type { W1AKey } from "../../copy/en.ts";
 export const purposeOf = (v: "lesson" | "practice" | "doubt"): "lesson" | "practice" | "doubt" => (v === "practice" ? "practice" : v === "doubt" ? "doubt" : "lesson");
 
 export interface StartRefusal {
-  state: "done" | "capped" | "resting" | string;
+  state: "done" | "capped" | "resting" | "safety_hold" | string;
   opensAt?: string | null;
   capRemaining?: number;
-  control?: "hours" | "daily_limit" | "done" | null;
+  control?: "hours" | "daily_limit" | "done" | "safety" | null;
   window?: { from: string; to: string } | null;
 }
 
@@ -16,7 +16,7 @@ export interface StartRefusal {
 export function refusalOf(body: unknown): StartRefusal | null {
   const b = body as Partial<StartRefusal> | null;
   if (!b || typeof b !== "object" || typeof b.state !== "string") return null;
-  if (!["done", "capped", "resting"].includes(b.state)) return null;
+  if (!["done", "capped", "resting", "safety_hold"].includes(b.state)) return null;
   return { state: b.state, opensAt: b.opensAt ?? null, capRemaining: b.capRemaining, control: b.control ?? null, window: b.window ?? null };
 }
 

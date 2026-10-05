@@ -54,3 +54,24 @@ test("mergeFinals keeps the first onset and the weaker ASR confidence; the turn 
   setTurnContext(null);
   assert.deepEqual(turnContext(), { beat: undefined, answerForm: undefined, handover: undefined });
 });
+
+test("a held fragment is never lost: drain() force-sends it even after the child resumed, and a resumed hold has a ceiling", async () => {
+  const { resumeCeilingMs, RESUME_CEILING_EXTRA_MS } = await import("../src/lesson/turnModel.ts");
+  const m = new FragmentMerger();
+  const ctx = { beat: "teachback" };
+  assert.ok(m.onFinal(final("pehle hum hisse banate hain aur"), ctx).holdMs > 0);
+  assert.equal(m.onSpeechStart(), true);
+  assert.equal(m.flush(), null, "a plain flush waits for the continuation");
+  const out = m.drain();
+  assert.equal(out?.text, "pehle hum hisse banate hain aur", "drain delivers the held words (link close, or the resume ceiling)");
+  assert.equal(m.holding, false);
+  assert.equal(m.drain(), null);
+  assert.equal(resumeCeilingMs(ctx), holdMsFor(ctx) + RESUME_CEILING_EXTRA_MS);
+  // the link wiring (source scan: CascadeLink needs a browser): close() drains BEFORE teardown, and a resume arms the ceiling
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("../src/lesson/cascadeLink.ts", import.meta.url), "utf8");
+  const close = src.slice(src.indexOf("  close(): void {"), src.indexOf("this.teardownPeer();", src.indexOf("  close(): void {")));
+  assert.ok(/this\.merger\?\.drain\(\)/.test(close) && /this\.deliverChild\(held\)/.test(close), "close() delivers a held fragment first");
+  assert.ok(close.indexOf("drain()") < close.indexOf("this.closed = true"), "before the link marks itself closed");
+  assert.ok(/onSpeechStart\(\)\) \{[\s\S]{0,400}resumeCeilingMs\(turnContext\(\)\)/.test(src), "a resumed hold arms the ceiling timer");
+});

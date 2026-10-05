@@ -46,12 +46,18 @@ await withTestAccount(async ({ api, child, password }) => {
     await page.goto(`${BASE}/c/${child.id}/ask`);
     await page.fill("#ask-q", "Why is 1/2 bigger than 1/3?");
     resp = startStatus("doubt");
-    const turnP = page.waitForResponse((r) => r.url().endsWith("/api/lesson/turn"), { timeout: 45_000 });
+    // W2-C review 2026-10-05: the start answers the question itself (ui.askConsumed) and the client never sends it again
+    // as a turn (it was explained twice). So the check is the start's own answer, and no turn repeating the question.
+    const resent = [];
+    page.on("request", (r) => { if (r.url().endsWith("/api/lesson/turn") && /1\/2 bigger than 1\/3/.test(r.postData() || "")) resent.push(r.postData()); });
     await page.click('[data-testid="ask-go"]');
     const ar = await resp.catch(() => null);
     ok(ar?.status() === 201, `client Ask → start ${ar?.status()} with purpose "doubt"`);
-    const at = await turnP.catch(() => null);
-    ok(at?.status() === 200, `client Ask reaches a first turn (${at?.status()})`);
+    const aj = await ar?.json().catch(() => null);
+    ok(aj?.ui?.askConsumed === true && typeof aj?.teacherOpening === "string" && aj.teacherOpening.length > 0,
+      `client Ask: the start answers the question (askConsumed ${aj?.ui?.askConsumed}, opening ${aj?.teacherOpening ? "present" : "missing"})`);
+    await page.waitForTimeout(4000);
+    ok(resent.length === 0, `client Ask: the question is not sent again as a turn (${resent.length} resend(s))`);
     ok(starts.every((b) => ["practice", "doubt", "lesson"].includes(b.purpose)), `every client start carries a purpose (${starts.map((b) => b.purpose).join(", ")})`);
   } finally { await browser.close(); }
 

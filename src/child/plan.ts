@@ -153,6 +153,11 @@ export function cachedTextOnly(cid: string): boolean {
   return !!readCache(cid)?.textOnly;
 }
 
+/** A safety hold the last plan read on this device saw: the lesson routes never open over it (the server refuses too). */
+export function cachedHold(cid: string): boolean {
+  return !!readCache(cid)?.hold;
+}
+
 /** The home's plan, re-read on `online` / `offline` and when `reload()` is called (Try again). */
 export function usePlan(cid: string): { plan: HomePlan; reload: () => void } {
   const [plan, setPlan] = useState<HomePlan>(() => {

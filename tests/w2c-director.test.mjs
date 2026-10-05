@@ -285,7 +285,11 @@ test("the v2 brief follows the guidance ladder: attempt → SUPPORT on-call, ent
     history: { [S1]: ["correct", "correct", "correct"] }, ctx: ctx(), seed: 3, now: 0 });
   const v = briefViewFor({ ...s0, brief: legacyBrief() }, kit);
   assert.equal(v.support.fade, 2);
-  assert.ok(v.skills.learning.every((x) => x.entry === "hint_first"));
+  const first = kit.skills[0].title;
+  const own = v.skills.learning.find((x) => x.title === first);
+  if (own) assert.equal(own.entry, "hint_first", "the ladder's skill (when not already solid): hint first");
+  // review 2026-10-05: an unseen later skill is not hint_first just because the first skill is attempt-level
+  for (const x of v.skills.learning.filter((y) => y.title !== first)) assert.equal(x.entry, "worked_step", x.title);
 });
 
 test("the v2 brief at its full size fits the prompt budget on the worst items, both lanes, every language", () => {
@@ -365,4 +369,97 @@ test("first-step probe and worked-lead turns compile on both lanes for a sample 
   }
   assert.ok(n > 500, `${n} compiles`);
   assert.deepEqual(fails, []);
+});
+
+// ───────────── review fixes 2026-10-05 ─────────────
+import { gapGivenAway, fadedContent as fadedContentOf, workedLeadContent as leadOf, fadeBoard as boardOf, BOARD_MAX, STUCK_WORKED } from "../server/director/fading.js";
+import { revealsAnswer as reveals } from "../server/director/items.js";
+
+test("every verified kit's faded step: nothing in view (problem, steps shown, worked lead) gives its key away; the board keeps the gap", () => {
+  const dir = new URL("../data/kits/", import.meta.url);
+  let n = 0, faded = 0, launch = 0, launchFaded = 0;
+  const leaks = [], boards = [];
+  for (const f of readdirSync(dir).filter((x) => /^c\d+-[a-z]+\.json$/.test(x))) {
+    const d = JSON.parse(readFileSync(new URL(f, dir), "utf8"));
+    for (const t of d.topics) {
+      n++;
+      const isLaunch = d.class >= 4 && d.class <= 7;
+      if (isLaunch) launch++;
+      const k = normalizeKit(t, { topicId: t.topicId, verified: true });
+      const item = fadeItem(k, { band: "B3" });
+      if (!item) continue;
+      faded++; if (isLaunch) launchFaded++;
+      const we = k.workedExample, i = Number(item.id.slice(5));
+      assert.ok(!gapGivenAway(we, i));
+      const view = [...leadOf(we, i), ...fadedContentOf(we, i).slice(0, 2)].join(" ");
+      if (reveals(view, item)) leaks.push(t.topicId);
+      const b = boardOf(we, i).value;
+      if (!/_{2,}/.test(b) || b.length > BOARD_MAX) boards.push(`${t.topicId}: ${b}`);
+    }
+  }
+  assert.deepEqual(leaks, [], "the gap's key is never in the worked lead or the steps shown");
+  assert.deepEqual(boards, [], "every fade board shows its gap, within the board limit");
+  console.log(`# faded steps: ${launchFaded}/${launch} class 4-7 kits, ${faded}/${n} all kits`);
+  assert.ok(launchFaded / launch >= 0.75, `${launchFaded}/${launch}`);
+});
+
+test("stuck on the record (rung 4 / left after don't-knows) routes to the worked example, never a first-step probe; a fresh child is the control", () => {
+  assert.equal(guidanceLevel(undefined, [], { stuck: STUCK_WORKED }).level, "worked");
+  assert.equal(guidanceLevel(snap({ pKnown: 0.5, attempts: 0 }), [], { stuck: STUCK_WORKED }).reason, "history.stuck");
+  assert.equal(guidanceLevel(snap({ pKnown: 0.5, attempts: 0 }), []).level, "probe", "control: the same prior with no stuck record is asked");
+  assert.equal(equityProfile({ kit, history: {}, stuck: { [S1]: 2 } }), "low");
+  assert.equal(equityProfile({ kit, history: { [S1]: ["correct", "correct"] }, stuck: { [S1]: 1 } }), "standard");
+  assert.equal(guidanceLevel(snap({ pKnown: 0.5, attempts: 0 }), [], { stuck: 1 }).level, "worked", "one stuck item and nothing right: worked");
+  assert.notEqual(guidanceLevel(snap({ pKnown: 0.7, attempts: 3 }), ["correct", "correct", "correct"], { stuck: 1 }).reason, "history.stuck", "one stuck item against right answers is mixed, not stuck");
+  const s0 = initLessonState({ topicId: kit.topicId, kit, skills: { [S1]: snap({ pKnown: 0.5, attempts: 0 }) }, stuck: { [S1]: 3 }, ctx: ctx(), seed: 3, now: 0 });
+  assert.equal(s0.guidance.level, "worked");
+  assert.equal(s0.equity, "low");
+  assert.ok(!s0.teachPlan.includes("first_step"));
+});
+
+test("an all-\"pata nahi\" lesson records its stuck items in the lesson state (never as evidence)", () => {
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: ctx(), seed: 3, now: 0 }), { event: "start", kit, now: 0 });
+  for (let i = 0; i < 30 && r.state.phase !== "done"; i++) {
+    const chips = r.ui?.chips ?? [];
+    const go = chips.find((c) => c.id === "break:easier") ?? chips.find((c) => c.id === "break:continue");
+    r = go ? step(r.state, { event: "turn", kit, cls: neutral, chipId: go.id, text: go.label, typed: true, now: 10_000 * (i + 1) })
+      : say(r.state, idk, "pata nahi", 10_000 * (i + 1));
+    assert.deepEqual(evidenceFrom(r.state, idk, kit), [], "a don't-know is never evidence");
+  }
+  const total = Object.values(r.state.stuck).reduce((a, b) => a + b, 0);
+  assert.ok(total >= STUCK_WORKED, `stuck ${JSON.stringify(r.state.stuck)}`);
+  assert.equal(new Set(r.state.stuckIds).size, r.state.stuckIds.length, "once per item");
+});
+
+test("an Ask whose first words are a disclosure opens on the safeguard move with the helplines, never an explain", () => {
+  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx: ctx({ purpose: "doubt" }), seed: 5, now: 0 });
+  const r = step(s0, { event: "start", kit, now: 0, cls: { outcome: "no_evidence", confidence: 1, source: "predicate", flags: { ...NOF, distress: true, distressKind: "self_harm" } } });
+  assert.equal(r.move.kind, "safeguard");
+  assert.match(r.ui.whiteboard?.value ?? "", /1098/);
+});
+
+test("talk-share gate for a persona/model change: < 3 lessons is a FAIL (never a pass); the committed baseline holds n ≥ 3", async () => {
+  const { decide } = await import("../scripts/talk-gate.mjs");
+  assert.equal(decide([0.24, 0.24, 0.18], [0.3]).ok, false, "not decided → red");
+  assert.equal(decide([0.24, 0.24, 0.18], [0.2, 0.25, 0.22]).ok, true);
+  assert.equal(decide([0.24, 0.24, 0.18], [0.1, 0.12, 0.2]).ok, false, "a > 10% drop of the median blocks");
+  const base = JSON.parse(readFileSync(new URL("../evals/results/talk-baseline.json", import.meta.url), "utf8"));
+  assert.ok(base.childTalkShare.filter(Number.isFinite).length >= 3, "baseline n ≥ 3");
+});
+
+test("wheel spinning on the child's record goes through the engine: the arm that repaired them comes first (not the generic change of approach)", () => {
+  const k = S1;
+  const c = ctx({ reteach: { attempts: [{ skillId: k, armId: "gen:story", repClass: "story", representationId: "story", outcome: "repaired_now", final: false, at: "2026-10-04T00:00:00Z" }], repFluency: {}, posteriors: {}, prereqs: {} } });
+  // skillsMapFor always sets wheelSpin ("none" when the ledger view sees none)
+  for (const ledgerSpin of ["none", "warn"]) {
+  const comp = { [k]: { belief: { pL: 0.3, U: 0.3, T: 0.3, misconception: null }, wheelSpin: ledgerSpin } };
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: c, history: { [k]: Array(10).fill("incorrect") }, seed: 3, now: 0, comp }), { event: "start", kit, now: 0, comp });
+  const wrong = { outcome: "incorrect", confidence: 1, source: "model", flags: NOF };
+  for (let i = 0; i < 8 && r.move.kind !== "reteach"; i++) r = step(r.state, { event: "turn", kit, comp, cls: wrong, text: "999", typed: true, now: 10_000 * (i + 1) });
+  assert.equal(r.move.kind, "reteach");
+  assert.equal(r.state.lastReteach?.trigger, "wheel_spin");
+  assert.equal(r.state.lastReteach?.chosenBy, "child_history");
+  assert.equal(r.state.lastReteach?.armId, "gen:story");
+  assert.ok(r.state.changedApproach.includes(k), "once per skill per lesson");
+  }
 });

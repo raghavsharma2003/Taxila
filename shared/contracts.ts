@@ -87,6 +87,12 @@ export interface UiDirectives {
   /** The text the child is asked to read aloud right now (voice features measure WCPM against it). */
   readAloud?: string;
   /**
+   * Lesson start only (an Ask, purpose "doubt"): the child's first words were handled by the start itself (her opening
+   * answers them, or met them with the safeguard move). The client shows them on the question card and does NOT send
+   * them again as a turn (W2-C review: the same question was explained twice).
+   */
+  askConsumed?: boolean;
+  /**
    * NEEDS A DIRECTOR PRODUCER (no move sets it yet): the child's effort or insight on the turn just closed,
    * which lets the teacher's face play its one "delighted" beat (src/stage/useDelight). Never correctness:
    * a right answer alone is not "insight". Until the Director sends it, the child UI's delight never fires.
@@ -172,6 +178,13 @@ export interface TurnRequest {
    * comes back with `editLanded: true` (the ledger is append-only, so a landed answer is never counted twice).
    */
   edited?: boolean;
+  /**
+   * W2-D: the first turn after the lesson moved from the realtime lane to the cascade lane (POST /api/lesson/lane). It has
+   * no childText and stores no child row (no evidence). teacherText may carry the realtime turn last heard: the server
+   * accepts it ONCE although the lesson is now cascade, stores it and runs the voice-lane checks on it. If the move
+   * planned for the child's last answer was never voiced, the cascade voices it on this turn.
+   */
+  laneResume?: boolean;
 }
 /**
  * One child utterance's voice features, computed on the device (src/voice/tracker.ts UtteranceFeatures).

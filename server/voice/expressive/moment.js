@@ -47,6 +47,9 @@ export const ROWS = Object.freeze({
 /** Filler inventories (HUMAN-VOICE §5.2): closed, per language. Hesitant ones (umm) only in think-aloud. */
 export const FILLERS = Object.freeze({
   hi: Object.freeze({ explain: ["तो", "देखो", "अच्छा"], hook: ["अच्छा", "देखो"], think: ["हम्म", "उम्म"], pose: ["अच्छा", "तो"], laugh: ["अरे"], wrap: ["चलो"] }),
+  // Roman fillers for Roman-script Hinglish replies: read by the same en-IN voice, no single-word <lang hi-IN> switch
+  // mid-sentence (fixer 2026-10-05, w2g-hinglish-roman-fillers; still on the owner's HV-9 blind page).
+  hinglish: Object.freeze({ explain: ["toh", "dekho", "achha"], hook: ["achha", "dekho"], think: ["hmm", "umm"], pose: ["achha", "toh"], laugh: ["arre"], wrap: ["chalo"] }),
   en: Object.freeze({ explain: ["so", "okay"], hook: ["so", "well"], think: ["hmm", "umm"], pose: ["okay", "so"], laugh: ["oh"], wrap: ["okay"] }),
 });
 
@@ -110,8 +113,8 @@ export function momentPlan(m) {
   };
 }
 
-/** The filler inventory for a plan (null = none on this row). Devanagari for Hindi and Hinglish (the voice reads it natively). */
+/** The filler inventory for a plan (null = none on this row): Devanagari for Hindi, Roman for Hinglish, English for English. */
 export function fillersFor(plan) {
   if (!plan?.fillerKey) return [];
-  return [...(FILLERS[plan.lang === "en" ? "en" : "hi"][plan.fillerKey] ?? [])];
+  return [...(FILLERS[plan.lang === "en" ? "en" : plan.lang === "hi" ? "hi" : "hinglish"][plan.fillerKey] ?? [])];
 }

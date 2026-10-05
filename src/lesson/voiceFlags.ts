@@ -2,7 +2,7 @@
 // the safety register are identical on both sides of each.
 //
 //   voice.laneA.delivery (default OFF): the realtime lane appends HUMAN-VOICE B6's delivery note (built from the Brain's
-//     Moment by server/voice/expressive/compile/realtime.js) as the LAST line of the instructions it applies. Off by
+//     Moment by server/voice/expressive/compile/realtime.js) just before the last line of the instructions it applies. Off by
 //     default because RELATIONAL-OS P1 measured that a tail affect row did not move gpt-realtime-2.1's delivery at n=43
 //     and nudged word choice; it turns on per device (`?rtdelivery=1`, or localStorage "tx.flag.voice.laneA.delivery" =
 //     "1") or deploy-wide (VITE_RT_DELIVERY=1) once HV-13 and a blind check say it helps.

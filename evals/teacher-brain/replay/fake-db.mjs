@@ -22,6 +22,7 @@ export async function q(text, params = []) {
     return l ? [clone(l)] : [];
   }
   if (/to_regclass/.test(t)) return [{ ok: DB.tableExists.has(String(params[0] ?? "")) }];
+  if (/information_schema\.columns/.test(t)) return [{ n: DB.tableExists.has(`${params[0]}.${params[1]}`) ? 1 : 0 }];
   return [];
 }
 export const one = async (text, params = []) => (await q(text, params))[0] ?? null;

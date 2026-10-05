@@ -82,7 +82,24 @@ export async function login(req, res, body) {
 // token is spent, and this browser is signed in. A used, expired or unknown token is one 400 { code: "reset.bad" }.
 export const RESET_MIN = 30;
 const sha256 = (s) => createHash("sha256").update(String(s)).digest("hex");
-const appBase = () => (process.env.TAXILA_URL || process.env.PUBLIC_BASE_URL || "https://taxila.app").replace(/\/+$/, "");
+/**
+ * The app origin a reset link points at: TAXILA_URL (else PUBLIC_BASE_URL), and NO fallback. A guessed domain would mail
+ * live reset tokens inside links to a host the owner may not control (account takeover), so with neither set the email
+ * is not sent at all (logged; the answer is still 200).
+ */
+export const appBase = (env = process.env) => {
+  const b = String(env.TAXILA_URL || env.PUBLIC_BASE_URL || "").trim().replace(/\/+$/, "");
+  return /^https?:\/\/[^/\s]+$/i.test(b) ? b : null;
+};
+
+/** PURE. The reset email for one account, or null when no app origin is configured (then nothing is mailed). */
+export function resetMail({ g, token }, env = process.env) {
+  const base = appBase(env);
+  if (!base) return null;
+  const link = `${base}/start/reset?token=${encodeURIComponent(token)}`;
+  return { to: g.email, subject: "Reset your Taxila password",
+    text: `Hello${g.name ? ` ${g.name}` : ""},\n\nSomeone asked to reset the password of your Taxila parent account. To set a new password, open this link within ${RESET_MIN} minutes:\n\n${link}\n\nIf you did not ask for this, you can ignore this email. Your password stays the same.\n\nTaxila` };
+}
 
 /** Azure Communication Services Email, REST with HMAC-SHA256 (no SDK). Returns the operation id, or throws. */
 export async function sendAcsEmail({ to, subject, text, html }, env = process.env, fetchImpl = fetch) {
@@ -108,23 +125,30 @@ export async function forgotPassword(req, res, body) {
   if (!EMAIL.test(email)) throw fieldError("email", "email.bad", "invalid email");
   const g = await one("select id, email, name from guardian where lower(email) = lower($1)", [email]);
   const out = { ok: true };
-  if (g) {
+  if (!g) return send(res, 200, out);
+  const token = randomBytes(32).toString("base64url");
+  // The account's own reads and writes run AFTER the answer: a real email must not answer measurably slower than an
+  // unknown one (that would tell which emails have an account). The one exception is the operator-keyed test account,
+  // which needs its token in the answer and whose timing tells nothing.
+  const ops = process.env.TAXILA_OPS_KEY;
+  const testAccount = /@taxila\.test$/i.test(g.email) && !!ops && req.headers?.["x-taxila-ops"] === ops;
+  const work = async () => {
     // at most 5 links an hour per account (a mailbox is not a spam target)
     const n = await one("select count(*)::int as n from password_reset where guardian_id = $1 and created_at > now() - interval '1 hour'", [g.id]);
-    if ((n?.n ?? 0) < 5) {
-      const token = randomBytes(32).toString("base64url");
-      await q("insert into password_reset(token_hash, guardian_id, expires_at) values ($1, $2, now() + ($3 || ' minutes')::interval)", [sha256(token), g.id, String(RESET_MIN)]);
-      await q("insert into audit(guardian_id, action) values ($1, 'password_reset_requested')", [g.id]);
-      const link = `${appBase()}/start/reset?token=${encodeURIComponent(token)}`;
-      // not awaited: the answer must not take ~2 s longer when the account exists (it would tell which emails have one)
-      sendAcsEmail({ to: g.email, subject: "Reset your Taxila password",
-        text: `Hello${g.name ? ` ${g.name}` : ""},\n\nSomeone asked to reset the password of your Taxila parent account. To set a new password, open this link within ${RESET_MIN} minutes:\n\n${link}\n\nIf you did not ask for this, you can ignore this email. Your password stays the same.\n\nTaxila` })
-        .catch((e) => console.warn(`[account] reset email not sent: ${e.code ?? e.message}`));
-      const ops = process.env.TAXILA_OPS_KEY;
-      if (/@taxila\.test$/i.test(g.email) && ops && req.headers?.["x-taxila-ops"] === ops) out.testToken = token;
-    }
+    if ((n?.n ?? 0) >= 5) return false;
+    await q("insert into password_reset(token_hash, guardian_id, expires_at) values ($1, $2, now() + ($3 || ' minutes')::interval)", [sha256(token), g.id, String(RESET_MIN)]);
+    await q("insert into audit(guardian_id, action) values ($1, 'password_reset_requested')", [g.id]);
+    const mail = resetMail({ g, token });
+    if (!mail) console.warn("[account] reset email not sent: TAXILA_URL unset");
+    else sendAcsEmail(mail).catch((e) => console.warn(`[account] reset email not sent: ${e.code ?? e.message}`));
+    return true;
+  };
+  if (testAccount) {
+    if (await work()) out.testToken = token;
+    return send(res, 200, out);
   }
   send(res, 200, out);
+  work().catch((e) => console.warn(`[account] reset request not stored: ${e?.code ?? e?.message ?? e}`));
 }
 
 export async function resetPassword(req, res, body) {
@@ -140,6 +164,8 @@ export async function resetPassword(req, res, body) {
   await tx([
     { text: "update guardian set pw_hash = $2 where id = $1 returning id", params: [r.guardian_id, await hashSecret(password)] },
     { text: "delete from auth_session where guardian_id = $1", params: [r.guardian_id] },
+    // every other outstanding link of this account dies with the reset (no 30-minute second key)
+    { text: "update password_reset set used_at = now() where guardian_id = $1 and used_at is null returning guardian_id", params: [r.guardian_id] },
     { text: "insert into audit(guardian_id, action) values ($1, 'password_reset') returning id", params: [r.guardian_id] },
   ]);
   await createSession(res, r.guardian_id, req.headers["user-agent"]);

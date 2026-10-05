@@ -6,6 +6,8 @@
 //   node scripts/verify-release.mjs                    → static gates
 //   node scripts/verify-release.mjs --live <base-url>  → also probe production (costs a few cents of Azure AI)
 //   node scripts/verify-release.mjs --only a,b         → just the named gates (by id; for iterating, not release)
+//   node scripts/verify-release.mjs --persona-change <candidate.json> → also the child-talk-share gate (a persona or
+//                                                         model change; scripts/talk-gate.mjs; "not decided" is red)
 //
 // Skips are red: a test that skips is a check that did not run, and a skipped gate that looks like a passed
 // gate is how a guard goes dead unnoticed. The only skips allowed are the named ones in KNOWN_SKIPS, each with
@@ -19,6 +21,9 @@ const ROOT = new URL("..", import.meta.url).pathname;
 const args = process.argv.slice(2);
 const liveAt = args.includes("--live") ? args[args.indexOf("--live") + 1] : null;
 const only = args.includes("--only") ? new Set(args[args.indexOf("--only") + 1].split(",")) : null;
+// A persona or model change must carry director-sim lessons on the candidate (W2-C #5): the talk-share gate then runs,
+// and "not decided" (< 3 lessons) is red.
+const personaChange = args.includes("--persona-change") ? args[args.indexOf("--persona-change") + 1] : null;
 
 /** Named, reasoned skips npm test may report. Anything else that skips fails the release. */
 export const KNOWN_SKIPS = [
@@ -100,6 +105,7 @@ async function main() {
 if (args.includes("--live") && !/^https?:\/\//.test(liveAt ?? "")) { console.error("--live needs a base url"); process.exit(2); }
 console.log(`── static gates (${GATES.length}) ──`);
 for (const g of GATES) await gate(g);
+if (personaChange) await gate(["talk-share", "child talk share vs evals/results/talk-baseline.json (> 10% median drop or < 3 lessons blocks)", "node", ["scripts/talk-gate.mjs", "--candidate", personaChange]]);
 
 if (liveAt) {
   const base = liveAt.replace(/\/$/, "");

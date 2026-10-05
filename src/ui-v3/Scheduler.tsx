@@ -182,7 +182,7 @@ export function TimeGrid({ options, value, onChange, cols = 4, label = "Time" }:
             tabIndex={i === focusIdx ? 0 : -1} title={o.disabled ? o.aria : undefined}
             className={cx("v3-time", o.disabled && "is-disabled", o.reason && `is-${o.reason}`)}
             onClick={() => { if (!o.disabled) onChange(o.min); }}
-          >{fmtTimeParts(o.min).hm} {fmtTimeParts(o.min).ap}</button>
+          ><span>{fmtTimeParts(o.min).hm}</span><span className="v3-time-ap">{fmtTimeParts(o.min).ap}</span></button>
         ))}
       </div>
       <span id={`${id}-d`} className="v3-sr">{unavailable ? `${unavailable} of ${options.length} times unavailable.` : "All times available."}</span>

@@ -3,7 +3,11 @@
 // planWhiteboard (the model writes the drawing script) → the whiteboard gate (qa/whiteboard.js). Reports, per arm:
 // pass first try, pass after ≤ 1 repair, empty ("nothing to draw"), time p50 / p90, $ per line, the failing checks.
 // Also writes the final board of every passed script as a static SVG (out-whiteboard/<arm>/<n>.svg) to look at.
-// Usage: NODE_USE_ENV_PROXY=1 node evals/live-studio/whiteboard-bench.mjs [--arms fast-none,luna-none] [--n 30] [--conc 6]
+// Sync (W2-F fixer 2026-10-05): `lateMs` per line = planner time − the time her audio starts after the ask (--audio-ms,
+// default 700: Azure Speech TTFB p50 473 ms sandbox → centralindia + the client's start lead and network; an ESTIMATE, the
+// production number comes from POST /api/studio/wb-timing). Bar: p90 lateMs ≤ 1500 ms. --budget sets the planner budget
+// (default 7000 = production STUDIO_LIMITS.wbBudgetMs; the 2026-10-04 runs used 20000).
+// Usage: NODE_USE_ENV_PROXY=1 node evals/live-studio/whiteboard-bench.mjs [--arms fast-none,luna-none] [--n 30] [--conc 6] [--budget 7000] [--audio-ms 700]
 import fs from "node:fs";
 import path from "node:path";
 import { loadEnv } from "./models.mjs";
@@ -23,7 +27,7 @@ const ARMS = {
   "gpt6-low": { dep: "taxila-gpt6", effort: "low" },
 };
 const arms = arg("arms", "fast-none,luna-none").split(",");
-const N = +arg("n", 30), CONC = +arg("conc", 6);
+const N = +arg("n", 30), CONC = +arg("conc", 6), BUDGET = +arg("budget", 7000), AUDIO_MS = +arg("audio-ms", 700);
 const HERE = path.dirname(new URL(import.meta.url).pathname);
 const OUT = path.join(HERE, arg("out", "out-whiteboard"));
 
@@ -34,7 +38,10 @@ for (const s of probe) {
   if (!/maths|science|evs/.test(s.topicId ?? "")) continue;
   for (const t of s.turns ?? []) if (/explain|worked_example|repair|hint/.test(t.move ?? "") && t.reply && t.reply.length > 60) lines.push({ topicId: s.topicId, move: t.move, text: t.reply });
 }
-const pick = lines.slice(0, N);
+// fixed extra lines (W2-F fixer): the class 4-5 pizza in 8 equal parts, refused by W8 in the 2026-10-04 seam smoke check
+// until the sectors fixer (plan.js sectorsForCutCircles)
+const EXTRA = [{ topicId: "c5-maths-ch02-t01", move: "explain", text: "Ek pizza lo aur use 8 barabar hisson mein kaato. Har hissa poore pizza ka 1/8 hai, yaani ek-aathwan." }];
+const pick = [...lines.slice(0, N), ...(arg("extra", "1") === "0" ? [] : EXTRA)];
 const kitCache = new Map();
 function kitOf(topicId) {
   if (!kitCache.has(topicId)) { try { kitCache.set(topicId, kitFromFile(getTopic(topicId))); } catch { kitCache.set(topicId, null); } }
@@ -70,11 +77,12 @@ for (const arm of arms) {
       const kit = kitOf(L.topicId);
       const ask = { intent: { intentId: `bench:${i}`, lessonId: "bench", kind: "whiteboard", skillId: kit?.skills?.[0]?.id ?? "", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue", style: { band: /^c4/.test(L.topicId) ? "B2" : "B3", lang: "hinglish", motion: "lively" } },
         line: { lessonId: "bench", text: L.text }, mode: "fresh", kit: { topicId: L.topicId, content: (kit?.expectations ?? []).slice(0, 4) } };
-      const r = await planWhiteboard(ask, { kit, deployment: dep, effort, budgetMs: 20000, redact: ["Riya", "Bittu"] });
+      const r = await planWhiteboard(ask, { kit, deployment: dep, effort, budgetMs: BUDGET, redact: ["Riya", "Bittu"] });
       const firstPass = r.ok && r.attempts === 1;
       const usd = (r.usage ?? []).reduce((s, u) => s + usdOf(dep, u ? { in: u.prompt_tokens, cached: u.prompt_tokens_details?.cached_tokens ?? 0, out: u.completion_tokens } : null), 0);
       const failed = r.gate ? r.gate.checks.filter((c) => !c.pass).map((c) => c.id) : [r.why];
-      rows.push({ arm, i, topicId: L.topicId, move: L.move, ok: r.ok, firstPass, empty: !!r.empty, attempts: r.attempts, ms: r.ms, usd, failed: r.ok ? [] : failed,
+      const outTokens = (r.usage ?? []).map((u) => u?.completion_tokens ?? 0);
+      rows.push({ arm, i, topicId: L.topicId, move: L.move, ok: r.ok, firstPass, empty: !!r.empty, attempts: r.attempts, ms: r.ms, lateMs: r.ms - AUDIO_MS, outTokens, usd, failed: r.ok ? [] : failed,
         ops: r.script?.ops?.length ?? 0, why: r.ok ? undefined : String(r.why ?? "").slice(0, 300) });
       if (r.ok) fs.writeFileSync(path.join(OUT, arm, `${i}.svg`), svgOf(r.script));
       console.log(`${arm} #${i} ${L.topicId} ${r.ok ? (firstPass ? "PASS1" : "PASS2") : r.empty ? "EMPTY" : "FAIL " + failed.join(",")} ${r.ms}ms ops ${r.script?.ops?.length ?? 0} $${usd.toFixed(4)}`);
@@ -88,6 +96,8 @@ const summary = arms.map((arm) => {
   const fails = {}; for (const x of r) for (const f of x.failed) fails[f] = (fails[f] ?? 0) + 1;
   return { arm, n: r.length, empty: r.length - drawn.length, passFirst: drawn.filter((x) => x.firstPass).length, passFinal: drawn.filter((x) => x.ok).length, drawn: drawn.length,
     p50ms: q(r.filter((x) => x.ok).map((x) => x.ms), 0.5), p90ms: q(r.filter((x) => x.ok).map((x) => x.ms), 0.9), firstP50ms: q(r.filter((x) => x.firstPass).map((x) => x.ms), 0.5),
+    lateP50ms: q(r.filter((x) => x.ok).map((x) => x.lateMs), 0.5), lateP90ms: q(r.filter((x) => x.ok).map((x) => x.lateMs), 0.9), lateBarMet: (q(r.filter((x) => x.ok).map((x) => x.lateMs), 0.9) ?? Infinity) <= 1500,
+    outTokensP90: q(r.flatMap((x) => x.outTokens), 0.9), outTokensMax: Math.max(0, ...r.flatMap((x) => x.outTokens)), budgetMs: BUDGET, audioMs: AUDIO_MS,
     usdPerLine: +(r.reduce((s, x) => s + x.usd, 0) / Math.max(1, r.length)).toFixed(5), fails };
 });
 fs.writeFileSync(path.join(OUT, "results.json"), JSON.stringify({ date: new Date().toISOString(), summary, rows }, null, 1));

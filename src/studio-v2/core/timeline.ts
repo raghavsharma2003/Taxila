@@ -111,7 +111,8 @@ export function captionAt(tl: Timeline, t: number): string {
 /** A playback clock with seek, pause and the narration hand-off (one `say` per line start). */
 export class Playhead {
   t = 0; playing = false; mode: "timeline" | "interactive" | "final" = "timeline"; private next = 0;
-  constructor(public tl: Timeline, private onSay: (id: string) => void, start = 0) { this.seek(start); }
+  tl: Timeline; private onSay: (id: string) => void;
+  constructor(tl: Timeline, onSay: (id: string) => void, start = 0) { this.tl = tl; this.onSay = onSay; this.seek(start); }
   play(): void { this.playing = true; }
   pause(): void { this.playing = false; }
   seek(t: number): void { this.t = clamp(t, 0, this.tl.interactiveAt); this.next = this.tl.lines.findIndex((l) => l.start >= this.t - 1e-6); if (this.next < 0) this.next = this.tl.lines.length; }

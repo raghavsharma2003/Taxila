@@ -22,6 +22,7 @@ import { ENGINES, planEngine, moduleCommands, validModes } from "../../shared/en
 import { peekLessonFill, wantLessonFill } from "../forge/lesson-fills.js";
 import { gradeEvent } from "../forge/grade.js";
 import { explainerFor, wantExplainer } from "../forge/explainer/lesson.js";
+import { leaksOpenItem } from "../forge/explainer/guard.js";
 
 const TOPIC_MAP = JSON.parse(readFileSync(new URL("../../shared/engine-topic-map.json", import.meta.url), "utf8"));
 
@@ -94,18 +95,22 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
     // the line showed fifths): a move whose content is the worked example shows the worked example, else the item.
     const fromWorked = (s.lastContent ?? []).some((l) => typeof l === "string" && l.startsWith("worked example:"));
     const source = fromWorked ? null : item ?? null;
+    const open = openItemOf(s, kit, item);
     const plan = mountable(s, unbind(planEngine({ kit, item: source, lang, mode: "show", representation, topicMap: TOPIC_MAP, ageBand })));
-    if (plan) return apply(plan);
+    // an engine show whose visible values state the open item's key (a number line ending on it) is skipped too
+    if (plan && !(open && leaksOpenItem({ facts: moduleFacts({ id: "probe", engine: plan.engine, params: plan.params }), ops: [] }, open))) return apply(plan);
     // rungs 4-5: the board explanation / diagram (code pick from the same text, the topic library, the lesson's fill)
+    // never-an-answer (W2-B fixer, blocker 1): the item the child is still answering is OPEN; the board drawn for it
+    // shows the method with "?" for the result, or a parallel example, and never that item's key (explainer/guard.js)
     const ex = ENGINES["explainer@1"] && !(s.failedEngines ?? []).includes("explainer@1")
-      ? explainerFor({ lessonId: s.ctx?.sessionId, kit, item: source, band: bandOf4(band) }) : null;
+      ? explainerFor({ lessonId: s.ctx?.sessionId, kit, item: source, openItem: open, band: bandOf4(band), representation, interest: s.ctx?.interests?.[0] }) : null;
     if (ex) return apply({ engine: "explainer@1", params: ex.params, goal: undefined, bindItem: false, itemId: null, predict: false });
     // nothing to show: a module that belongs to another item goes; an unbound show stays up through the teach steps
     if (cur?.itemId && item && cur.itemId !== item.id) close();
     return cmds;
   }
   // The move before explain: warm the topic's board fill (a no-op when the topic has a code pick or a library entry).
-  if (move.kind === "hook" || move.kind === "greet") wantExplainer({ lessonId: s.ctx?.sessionId, kit, band: bandOf4(band) });
+  if (move.kind === "hook" || move.kind === "greet") wantExplainer({ lessonId: s.ctx?.sessionId, kit, band: bandOf4(band), interest: s.ctx?.interests?.[0] });
 
   if (ITEM_MOVES.has(move.kind) && item) {
     const predict = PREDICT_KINDS.has(item.kind) || !!item.diagnostic;
@@ -143,6 +148,18 @@ function planModuleInner(s, { kit, item, move, lang, band, representation }) {
   // A plain question on a different item gets the whiteboard anchor, not a stale module.
   if (cur && item && NEW_ITEM_MOVES.has(move.kind) && ownerOf(cur) !== item.id) close();
   return cmds;
+}
+
+/**
+ * The item the child is still answering (not yet in itemsDone): the move's own item, else the active item. A board for
+ * a teaching move on it must never print its key. null when nothing is open.
+ */
+export function openItemOf(s, kit, item) {
+  const done = new Set(s?.itemsDone ?? []);
+  if (item?.id && !done.has(item.id)) return item;
+  const id = s?.activeItemId;
+  if (!id || done.has(id)) return null;
+  return (kit?.items ?? []).find((i) => i.id === id) ?? null;
 }
 
 /** The item a mounted module belongs to: bound, G1-bound, or predicted on (null: an unbound show). */
@@ -203,6 +220,9 @@ export function moduleFacts(m) {
   const key = m.key != null ? String(m.key) : null;
   if (m.engine === "explainer@1") {
     const f = m.params?.script?.facts;
+    // the board is drawn for the child to WATCH: nothing on it asks for a tap, so "tap / pick on the screen" is never a
+    // line to say over it (W2-B fixer, minor 8; the reply guard's half is seam-patches/w2b-watch-only.patch)
+    onScreen.use = "watch only";
     for (const [k, v] of Object.entries(f?.onScreen ?? {})) { const x = factValue(v); if (x !== null) onScreen[k] = x; }
     return { kind: f?.kind ?? "animation", archetype: f?.archetype ?? m.params?.template ?? "explainer@1", onScreen };
   }
@@ -242,6 +262,8 @@ function writeFactsRow(s) {
   const content = (s.lastContent ?? []).filter((l) => !(typeof l === "string" && l.startsWith(FACTS_ROW_PREFIX)));
   const row = factsRow(moduleFacts(s.module));
   if (row) content.push(row);
+  // the part counts the move's content states: what the reply guard allows beside the screen's own (screenContradiction)
+  if (s.module) s.module.contentParts = contentPartsOf(content);
   if (row || content.length !== (s.lastContent ?? []).length) s.lastContent = content;
 }
 
@@ -252,41 +274,81 @@ const PART_WORDS = { half: 2, halves: 2, aadha: 2, aadhe: 2, third: 3, thirds: 3
 const COUNT_WORDS = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, twelve: 12, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, chhe: 6, saat: 7, aath: 8, nau: 9, das: 10 };
 /**
  * The PART COUNTS a line states (live-content audit 6: "quarters" said over a line cut in fifths): every fraction's
- * denominator, every part word (half, thirds, chauthai …) and every "N equal parts / N barabar hisse".
+ * denominator, every part word (half, thirds, chauthai …) and every "N equal parts / N barabar hisse". `strict` keeps
+ * only the forms that can only mean a part count (a written fraction, "N equal parts", a plural part word: thirds,
+ * quarters …), for a screen with no part counts at all, where a lone "half" is ordinary speech.
  * @returns {Set<string>}
  */
-export function partsSaid(text) {
+export function partsSaid(text, { strict = false } = {}) {
   const t = String(text ?? "").toLowerCase();
   const out = new Set();
   for (const m of t.matchAll(/(\d+)\s*\/\s*(\d+)/g)) out.add(m[2]);
-  for (const w of t.match(/[a-z]+/g) ?? []) if (PART_WORDS[w]) out.add(String(PART_WORDS[w]));
+  for (const w of t.match(/[a-z]+/g) ?? []) if (PART_WORDS[w] && (!strict || PLURAL_PARTS.has(w))) out.add(String(PART_WORDS[w]));
   for (const m of t.matchAll(/(\d+|[a-z]+)\s+(?:equal\s+(?:parts|pieces|shares)|barabar\s+(?:hisse|hisson|bhaag|tukde|tukdon|parts))/g)) {
     const v = /^\d+$/.test(m[1]) ? m[1] : COUNT_WORDS[m[1]];
     if (v !== undefined) out.add(String(v));
   }
   return out;
 }
+const PLURAL_PARTS = new Set(["halves", "thirds", "quarters", "fourths", "fifths", "sixths", "sevenths", "eighths", "ninths", "tenths", "twelfths"]);
 /** The part counts a mounted module shows: its fractions' denominators and its partition / parts / denominators. */
 export function partsOnScreen(m) {
   const out = new Set();
   if (!m?.params) return out;
+  if (m.engine === "explainer@1") {
+    // a board: its facts and its fraction number work, never its coordinates ([118,152] is a point, not 118/152)
+    const f = m.params.script?.facts;
+    for (const v of Object.values(f?.onScreen ?? {})) for (const x of String(v).matchAll(/(\d+)\s*\/\s*(\d+)/g)) out.add(x[2]);
+    // a maths board's counts: its parts, and its equal groups (3 equal groups ARE thirds of the whole)
+    if (f?.kind !== "diagram") for (const k of ["parts", "partition", "denominators", "groups"]) { const v = f?.onScreen?.[k]; if (Number.isInteger(v)) out.add(String(v)); }
+    for (const o of m.params.script?.ops ?? []) if (o.op === "numwork" && o.layout === "fraction") for (const d of o.rows?.[1] ?? []) if (/^\d+$/.test(d)) out.add(d);
+    return out;
+  }
   const j = JSON.stringify(m.params).replace(/\[(\d+),(\d+)\]/g, "$1/$2");
   for (const x of j.matchAll(/(\d+)\/(\d+)/g)) out.add(x[2]);
-  for (const k of ["partition", "parts", "denominators"]) for (const v of [m.params[k] ?? m.params.script?.facts?.onScreen?.[k]].flat()) if (Number.isInteger(v)) out.add(String(v));
+  for (const k of ["partition", "parts", "denominators"]) for (const v of [m.params[k]].flat()) if (Number.isInteger(v)) out.add(String(v));
   return out;
 }
+/** A maths screen (an engine, or a maths board): any part word over it is a claim about it. */
+const MATHS_ENGINES = new Set(["fraction-bars@1", "number-line@1", "collections@1", "place-value@1", "fractions@1", "multiply-divide@1", "geoboard@1", "data-graphs@1", "patterns@1", "measure@1"]);
+const mathsScreen = (m) => MATHS_ENGINES.has(m?.engine) || (m?.engine === "explainer@1" && m.params?.script?.facts?.kind !== "diagram");
 /**
- * A reply that states part counts the screen does not show, while a fraction-bearing module is mounted (the teacher
- * contradicting the screen), or null. Pure: the reply path's rewrite loop calls it beside screenProblem (say.js) and
- * re-asks with the facts row; wiring is the reply path owner's (open item w2b-screen-guard-wiring).
+ * A reply that states part counts neither the screen nor the move's own content shows (the teacher contradicting the
+ * screen), or null. The allowed counts are partsOnScreen ∪ the counts in the move's content lines (the same source the
+ * screen's values come from; stored on the module as `contentParts` by writeFactsRow, or passed as `contentLines`).
+ * A screen with part counts: every part count she says must be one of them. A screen with none (a column sum, a flow
+ * diagram, W2-B fixer major 3: "5/4" said over a flow board): a maths screen flags any part count outside the content; a
+ * diagram flags the forms that can only be part counts (strict partsSaid). Nothing mounted: null. Pure; the reply path's
+ * rewrite loop calls it beside screenProblem (server/brain/say.js).
+ * @param {string} text  @param {any} module  @param {string[]} [contentLines]
  * @returns {{ stray: string[], onScreen: string } | null}
  */
-export function screenContradiction(text, module) {
+export function screenContradiction(text, module, contentLines) {
+  if (!module?.id) return null;
   const screen = partsOnScreen(module);
-  if (!screen.size) return null;           // nothing on screen has part counts: nothing to contradict
-  const stray = [...partsSaid(text)].filter((p) => !screen.has(p));
-  return stray.length ? { stray, onScreen: factsRow(moduleFacts(module)) ?? "" } : null;
+  const allowed = new Set([...screen, ...(module.contentParts ?? []), ...(contentLines ? contentPartsOf(contentLines) : [])]);
+  const said = partsSaid(text, { strict: !screen.size && !mathsScreen(module) });
+  const stray = [...said].filter((p) => !allowed.has(p));
+  if (!stray.length) return null;
+  // the rewrite reason names the counts that ARE allowed and the ones that are not (one rewrite has to land it)
+  const ok = [...allowed].sort((a, b) => a - b);
+  return { stray, onScreen: `${factsRow(moduleFacts(module)) ?? ""}; part counts you may name: ${ok.length ? ok.join(", ") : "none"}; not ${stray.join(", ")}` };
 }
+/**
+ * What is left of a line once the sentences naming stray part counts are taken out (the code repair after a rewrite that
+ * still contradicts the screen, as stripScreenRefs is for screen words), or null when nothing is left. The reply path
+ * adds the item's question when what is left does not hand the floor back (brain/say.js keepOr).
+ */
+export function stripStrayParts(text, module, contentLines, { keep = "" } = {}) {
+  const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
+  // a sentence of the kit's own posed question (`keep`) is verified content and stays whatever it names
+  const verified = (x) => !!keep && String(keep).includes(x.trim().replace(/\s+$/, ""));
+  const kept = sentences.filter((x) => verified(x) || !screenContradiction(x, module, contentLines));
+  return kept.join("").trim() || null;
+}
+
+/** The part counts a move's content lines state (the facts row excluded: it is what is on screen, not the content). */
+export const contentPartsOf = (lines) => [...partsSaid((lines ?? []).filter((l) => typeof l === "string" && !l.startsWith(FACTS_ROW_PREFIX)).join(" "))];
 
 /**
  * The client reported the mounted module failing (a frame `error`: unknown or crashed engine, a chunk that would not

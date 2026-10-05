@@ -15,6 +15,8 @@ import { compileDhd, plainSsml } from "../voice/expressive/compile/dhd.js";
 import { lintSsml } from "../voice/expressive/lint.js";
 import { deliveryFor } from "../voice/prewarm.js";
 import { count } from "../voice/expressive/telemetry.js";
+import { withEcho, withoutFiller } from "../voice/expressive/align.js";
+import { dhdBreaker } from "../voice/speech.js";
 
 /** Teacher replies are a few sentences; anything longer is a bug upstream, not a reply. */
 export const MAX_TTS_CHARS = 1200;
@@ -42,7 +44,7 @@ export async function speak(req, res, body) {
   const { lessonId, seq } = need(body, "lessonId", "seq");
   if (!/^[0-9a-f-]{36}$/i.test(String(lessonId))) throw bad("invalid lessonId");
   if (!Number.isInteger(seq) || seq < 1) throw bad("invalid seq");
-  const lesson = await one("select child_id, state->'ctx'->>'teacherId' as teacher_id from lesson where id = $1", [lessonId]);
+  const lesson = await one("select child_id, state->'ctx'->>'teacherId' as teacher_id, (state ? 'laneSwitch') as lane_switched from lesson where id = $1", [lessonId]);
   if (!lesson) throw notFound("lesson not found");
   const { guardian, child } = await requireChild(req, lesson.child_id);
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
@@ -57,7 +59,9 @@ export async function speak(req, res, body) {
   let audio;
   // HUMAN-VOICE B5: the text lane's "Hear" speaks in the SAME voice as the streamed reply (one identity across paths):
   // DragonHD when it is the configured engine, with the delivery plan /turn made for this turn when this process has it.
-  if (cascadeEngine() === "dhd") {
+  // ... except after a realtime → cascade switch (W2-D): the child has been hearing the character's realtime voice, which
+  // the rest of the sitting keeps (styleForChild laneSwitched).
+  if (cascadeEngine() === "dhd" && !lesson.lane_switched && dhdVoiceFor(teacher.id).usable) {
     try {
       audio = await dhdHear(lessonId, seq, text, teacher.id, spokenOptsForChild(child));
     } catch (e) {
@@ -67,6 +71,7 @@ export async function speak(req, res, body) {
   }
   if (audio) {
     res.statusCode = 200;
+    res.setHeader("x-tts-engine", "dhd");
     res.setHeader("content-type", "audio/mpeg");
     res.setHeader("content-length", String(audio.length));
     res.setHeader("cache-control", "no-store");
@@ -84,20 +89,36 @@ export async function speak(req, res, body) {
     throw e;
   }
   res.statusCode = 200;
+  res.setHeader("x-tts-engine", "oai");
   res.setHeader("content-type", "audio/mpeg");
   res.setHeader("content-length", String(audio.length));
   res.setHeader("cache-control", "no-store");
   res.end(audio);
 }
 
-/** One DragonHD document for the whole turn (planned when the plan is known, else plain), as mp3. */
+/**
+ * One DragonHD document for the whole turn (planned when the plan is known, else plain), as mp3. Hear never plays the
+ * uptake prelude, so the plan's echo is put back (withEcho); a plan the governor never saw keeps no filler (HV-4: a replay
+ * must not add an ungoverned one); and the DragonHD breaker is obeyed (speech.js: a degraded voice is not waited on).
+ * Fixer 2026-10-05.
+ */
 async function dhdHear(lessonId, seq, text, teacherId, spoken) {
   const v = dhdVoiceFor(teacherId);
   const dv = { voice: v.dhd, baseRate: v.baseRate };
+  if (!dhdBreaker.admit(v.dhd)) throw Object.assign(new Error("dhd breaker open"), { code: "breaker" });
   const d = expressiveOn("dhd") ? deliveryFor(lessonId, seq) : null;
-  let ssml = d?.plan ? compileDhd(d.plan.clauses.map((c, i) => ({ ...c, sentenceStart: i === 0 || c.sentenceStart })), dv, { register: d.plan.register, pitch: d.plan.pitch ?? 0, spoken }) : null;
+  const plan = d?.plan ? withEcho(d.plan) : null;
+  const clauses = plan?.clauses.map((c, i) => ({ ...c, ...(d.governed ? {} : { text: withoutFiller(c), filler: undefined }), sentenceStart: i === 0 || c.sentenceStart }));
+  let ssml = plan ? compileDhd(clauses, dv, { register: plan.register, pitch: plan.pitch ?? 0, spoken }) : null;
   if (ssml && lintSsml(ssml, "dhd").some((b) => b === "paralinguistic_tag" || b.startsWith("unknown_marker"))) { count("lint_fail"); ssml = null; }
-  return dhdClip(ssml ?? plainSsml(text, dv, spoken));
+  try {
+    const audio = await dhdClip(ssml ?? plainSsml(text, dv, spoken));
+    dhdBreaker.ok(v.dhd);
+    return audio;
+  } catch (e) {
+    dhdBreaker.failed(v.dhd);
+    throw e;
+  }
 }
 
 export const routes = { "POST /api/tts": speak };

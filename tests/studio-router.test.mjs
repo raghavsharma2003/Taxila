@@ -55,6 +55,10 @@ test("router: first session and 'Only ready-made ones' get promoted builds only;
   assert.equal(go({ child: { safetyMode: true }, library: { status: "promoted" } }).action, "fallback");
   assert.equal(go({ intent: { kind: "whiteboard" } }).action, "whiteboard");
   assert.equal(go({ intent: { kind: "whiteboard" }, child: { studioControl: "off" } }).action, "fallback");
+  // a model-written board is not ready-made; the first session does get it (w2f-whiteboard-not-a-build)
+  assert.deepEqual(go({ intent: { kind: "whiteboard" }, child: { studioControl: "ready_made" } }), { action: "fallback", reasons: ["studio.ready_made_only"] });
+  assert.equal(go({ intent: { kind: "whiteboard" }, child: { bondStage: "meeting" } }).action, "whiteboard");
+  assert.equal(go({ intent: { kind: "whiteboard" }, child: { safetyMode: true } }).action, "fallback");
 });
 
 test("router: library-only archetypes, the picture-review rule, no truth, the lead time", () => {
@@ -254,8 +258,11 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   const { chatStream, sseEvents, usdOf } = await import("../server/azure.js");
   const sse = (o) => `data: ${JSON.stringify(o)}\n\n`;
   const hits = [];
+  // every response of THIS server carries a nonce: an empty_stream whose diag lacks it was answered by something else
+  const NONCE = `srv-${process.pid}-${Math.random().toString(36).slice(2, 8)}`;
   const srv = http.createServer((req, res) => {
     hits.push(req.url);
+    res.setHeader("x-test-srv", NONCE);
     if (req.url.endsWith("/responses")) {
       res.writeHead(200, { "content-type": "text/event-stream" });
       res.write(sse({ type: "response.output_text.delta", delta: "<div>" }));
@@ -289,7 +296,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     const deltas = [];
     const { endpoint } = await import("../server/azure.js");
     const ok = await chatStream("gpt-5.6-terra", [{ role: "system", content: "s" }, { role: "user", content: "ok" }], { onDelta: (d) => deltas.push(d), quotaLane: "background" })
-      .catch((e) => { throw new Error(`${e.code}: endpoint ${endpoint("CHAT")} hits ${JSON.stringify(hits)}`); });
+      .catch((e) => { throw new Error(`${e.code}: endpoint ${endpoint("CHAT")} hits ${JSON.stringify(hits)} nonce ${NONCE} diag ${JSON.stringify(e.diag ?? null)}`); });
     assert.equal(ok.text, "<style></style>");
     assert.deepEqual(deltas, ["<style>", "</style>"]);
     assert.equal(ok.usage.in, 100);
@@ -301,7 +308,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     setTimeout(() => ctl.abort(), 150);
     await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "slow" }], { signal: ctl.signal }), (e) => e.code === "cancelled" && e.partial.usage?.estimated === true && e.partial.usd > 0);
     await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "stall" }], { stallMs: 200 }), (e) => e.code === "stalled" && e.partial.text === "<style>");
-    await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "empty" }]), (e) => e.code === "empty_stream");
+    await assert.rejects(chatStream("gpt-5.6-terra", [{ role: "user", content: "empty" }]), (e) => e.code === "empty_stream" && e.diag?.headers?.["x-test-srv"] === NONCE && e.diag.status === 200);
     const evs = []; for await (const ev of sseEvents(["data: {\"a\":1}\r\n\r\ndata: [DONE]\n\n", ": keep-alive\n\n"])) evs.push(ev);
     assert.deepEqual(evs, [{ a: 1 }]);
   } finally {

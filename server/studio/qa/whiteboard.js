@@ -14,14 +14,21 @@
 //   W6 timing       draws in step with her voice: starts within 1.5 s, ends by the end of her line (+2 s), spread over
 //                   the line (not everything at t = 0), sane stroke durations
 //   W7 register     labels, numbers and short terms only (≤ 4 words, never a sentence); the local safety predicates
+//   W8 counts       a whole drawn in equal parts has her number of parts; a round whole is never cut by lines
+//   W9 no reveal    nothing drawn equals the answer of a kit item (the one being asked, or one still to come) unless she
+//                   says that value in this line: a drawn number, a result the gate re-computes, a number-line tick or a
+//                   dot placed at the answer's position, and the current item's word answer (owner priority 1: the board
+//                   must never answer the question she is asking, or the covert-comprehension signal is corrupt)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
 import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts } from "../../../shared/whiteboard.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
+import { numbersIn as phraseNumbers } from "../../comprehension/grade/numbers.js";
+import { NUMBER_WORDS, cardinalOf } from "../../voice/translit/numbers.js";
 
-export const WB_GATE_VERSION = "wb-gate@1";
+export const WB_GATE_VERSION = "wb-gate@2";
 /** Speech rate used for the line's duration when no DeliveryPlan is known (HUMAN-VOICE HV-15: 11-13 chars/s). */
 export const CHARS_PER_SEC = 12;
 export const MIN_TEXT_PX = 11;
@@ -47,9 +54,16 @@ export function numbersIn(text) {
     else { const plain = t.replace(/,(?=\d{2,3}\b)/g, ""); out.add(canon(plain.replace(/,$/, ""))); }
   }
   const words = s.match(/[\p{L}]+/gu) ?? [];
+  // number words past twelve, both languages (the comprehension normaliser's phrase reader: "twenty-five", "pachchis",
+  // "teen sau"; the translit table's Roman Hindi 0-99: "chaubees", "pachees"), and "teen bata aath" as 3/8
+  // (read per clause and never across "aur" / "and": "pachees aur twenty-five" is 25 and 25, not 50)
+  try { for (const part of s.split(/[,.;:?!]|\baur\b|\band\b/)) for (const v of phraseNumbers(part)) if (Number.isInteger(v) && v >= 0) out.add(String(v)); } catch { /* the gate never throws on a line */ }
+  const cardinal = (w) => (WORD_NUM[w] !== undefined ? WORD_NUM[w] : NUMBER_WORDS[w] ? (cardinalOf(NUMBER_WORDS[w]) >= 0 ? cardinalOf(NUMBER_WORDS[w]) : undefined) : /^\d+$/.test(w ?? "") ? Number(w) : undefined);
   for (let i = 0; i < words.length; i++) {
     const w = words[i];
-    if (WORD_NUM[w] !== undefined) out.add(String(WORD_NUM[w]));
+    const c = cardinal(w);
+    if (c !== undefined) out.add(String(c));
+    if ((w === "bata" || w === "by" || w === "upon") && cardinal(words[i - 1]) !== undefined && cardinal(words[i + 1]) > 0) out.add(`${cardinal(words[i - 1])}/${cardinal(words[i + 1])}`);
     if (FRAC_WORD[w] !== undefined) {
       const d = FRAC_WORD[w]; out.add(String(d));
       const prev = WORD_NUM[words[i - 1]] ?? (/^\d+$/.test(words[i - 1] ?? "") ? Number(words[i - 1]) : null);
@@ -60,12 +74,15 @@ export function numbersIn(text) {
   return out;
 }
 
-/** The kit's numbers: items, answers, worked example, expectations, diagnostics. */
+/**
+ * The kit's numbers: item prompts, the worked example (steps and answer), expectations, diagnostics. NEVER an item's
+ * answer or acceptable forms: an answer is not a number the board may draw (W9; the worked example is taught openly).
+ */
 export function kitNumbers(kit) {
   const parts = [];
   const add = (x) => { if (x != null) parts.push(String(x)); };
   for (const e of kit?.expectations ?? []) add(e);
-  for (const i of kit?.items ?? []) { add(i.prompt_en); add(i.prompt_hi); add(i.answer); for (const a of i.acceptable ?? []) add(a); }
+  for (const i of kit?.items ?? []) { add(i.prompt_en); add(i.prompt_hi); }
   const we = kit?.workedExample; if (we) { add(we.problem); for (const s of we.steps ?? []) add(s); add(we.answer); }
   for (const m of kit?.misconceptions ?? []) { add(m.diagnostic?.prompt_en); for (const o of m.diagnostic?.options ?? []) add(o.text); }
   return numbersIn(parts.join(" \n "));
@@ -88,6 +105,45 @@ const rOp = (a, op, b) => {
   if (op === "÷" || op === ":") return b[0] ? [a[0] * b[1], a[1] * b[0]] : null;
   return null;
 };
+/** The value tokens of an answer string: whole tokens ("5/8", "24,360", "3.5"), else a fraction word ("five-eighths"). */
+function valueTokens(text) {
+  const s = String(text ?? "");
+  const digits = (s.match(/-?\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((t) => t.replace(/\s+/g, "").replace(/,/g, ""));
+  if (digits.length) return digits;
+  return [...numbersIn(s)].filter((t) => t.includes("/") || numbersIn(s).size === 1);
+}
+
+/**
+ * W9's withheld values: the answer and acceptable forms of every kit item (the current one first, by id: the StudioAsk
+ * carries no ledger of items already asked, so every item counts as still to come), minus any value she says in this
+ * line (she may name it herself on a re-teach, or read out an item's choices; the board then only repeats her). A value
+ * the item's prompt shows is still withheld ("Mark 7 on the number line": the 7 marked IS the answer). Word answers (≤ 3 words) are withheld
+ * for the current item only. → { values: string[], words: string[] }
+ * @param {any} kit  @param {{ itemId?: string, line?: string }} [o]
+ */
+export function withheldValues(kit, { itemId, line = "" } = {}) {
+  const said = [...numbersIn(line)].map(rat).filter(Boolean);
+  const items = [...(kit?.items ?? [])].sort((a, b) => (b?.id === itemId) - (a?.id === itemId));
+  const values = [], words = [];
+  const lineWords = new Set(String(line).toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []);
+  for (const i of items) {
+    for (const a of [i?.answer, ...(i?.acceptable ?? [])]) {
+      if (a == null) continue;
+      const toks = valueTokens(a);
+      for (const t of toks) {
+        const r = rat(t);
+        if (r && !said.some((x) => rEq(x, r)) && !values.some((v) => rEq(rat(v), r))) values.push(t);
+      }
+      if (!toks.length && i?.id === itemId) {
+        const w = String(a).toLowerCase().trim();
+        const ws = w.match(/[\p{L}\p{M}]+/gu) ?? [];
+        if (ws.length && ws.length <= 3 && !ws.every((x) => lineWords.has(x))) words.push(w);
+      }
+    }
+  }
+  return { values, words };
+}
+
 /** Evaluate "a op b op c" left to right with × ÷ first; null when it is not pure arithmetic. */
 function evalSide(tokens) {
   if (!tokens.length) return null;
@@ -166,7 +222,9 @@ function opNumbers(o, allowed) {
       for (const r of o.rows) for (const c of r) for (const tok of tokensOf(c)) nums.push(canon(tok));
     }
   }
-  return { nums, derived, wrong };
+  // a placeholder for the answer ("1/?", "3/__", "□/8": the setup of a question, W9's shape) carries only its digits
+  const holder = /[?_□]/;
+  return { nums: nums.flatMap((t) => (holder.test(t) ? t.match(/\d+/g) ?? [] : [t])), derived, wrong };
 }
 
 /** Is a drawn number allowed: said, in the kit, re-computed true, or a proper fraction of two said counts. */
@@ -245,12 +303,65 @@ function textsCrossed(ops, byId) {
   return out;
 }
 
+// ───────────────────────────── W9: no reveal ─────────────────────────────
+
+/** Labels of a number line that are its axis (≥ 4 evenly spaced values), not a marked target. */
+function axisLabels(cells) {
+  const vs = cells.map(rat).filter(Boolean).map((r) => r[0] / r[1]);
+  if (vs.length < 4) return false;
+  const d = vs[1] - vs[0];
+  return d > 0 && vs.every((v, i) => !i || Math.abs(v - vs[i - 1] - d) < 1e-9);
+}
+const escRe = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/**
+ * Every place the board shows a withheld answer: a drawn or re-computed number equal to it (rational equality: 10/16
+ * matches 5/8), a number-line tick labelled with it (an evenly spaced axis is not a target), a dot or an arrow head at its
+ * position on a number line, or the current item's word answer written. → string[] (op id: what)
+ */
+export function revealsOf(ops, per, byId, texts, withhold) {
+  const values = (Array.isArray(withhold) ? withhold : withhold?.values ?? []).map((t) => ({ t: String(t), r: rat(t) })).filter((x) => x.r);
+  const words = Array.isArray(withhold) ? [] : (withhold?.words ?? []).map(String).filter(Boolean);
+  if (!values.length && !words.length) return [];
+  const out = [];
+  const hit = (tok) => { const r = rat(tok); return r ? values.find((x) => rEq(x.r, r)) : null; };
+  ops.forEach((o, k) => {
+    const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? []);
+    // a bare "0" or "1" (the origin or the whole of a number line, a place-value column) marks the board, it is not a
+    // result; "5 − 5 = 0" or "3/4 + 1/4 = 1" still is (bench 2026-10-05: an origin labelled 0 was refused)
+    const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text));
+    for (const tok of [...per[k].nums, ...per[k].derived]) {
+      if (bare) continue;
+      if (axis && (o.rows?.[0] ?? []).some((c) => canon(c) === tok)) continue;
+      const h = hit(tok); if (h) out.push(`${o.id}: ${tok} = answer ${h.t}`);
+    }
+  });
+  // a number line with its answer marked by position: a dot (small circle) or an arrow head at the answer's tick
+  for (const nl of ops.filter((o) => o.op === "numwork" && o.layout === "number_line" && Array.isArray(o.range))) {
+    let box; try { box = opGeometry(nl, byId).box; } catch { continue; }
+    const [a, b] = nl.range, y0 = nl.at[1];
+    const xOf = (v) => box.x + 12 + ((v - a) / (b - a)) * (box.w - 24);
+    for (const { t, r } of values) {
+      const v = r[0] / r[1];
+      if (v <= a + 1e-9 || v >= b - 1e-9) continue;
+      const x = xOf(v);
+      const near = (p) => Array.isArray(p) && Math.abs(p[0] - x) <= 6 && Math.abs(p[1] - y0) <= 22;
+      const marks = ops.filter((o) => (o.op === "circle" && o.r <= 12 && near(o.c)) || (o.op === "arrow" && near(o.to)) || (o.op === "label" && near(o.to)));
+      for (const m of marks) out.push(`${m.id}: marks ${t} on ${nl.id}`);
+    }
+  }
+  for (const w of words) for (const t of texts) if (new RegExp(`(^|[^\\p{L}\\p{M}])${escRe(w)}($|[^\\p{L}\\p{M}])`, "iu").test(t)) out.push(`word: ${w}`);
+  return [...new Set(out)];
+}
+
 // ───────────────────────────── the gate ─────────────────────────────
 
 /**
  * @param {unknown} raw the model's script (already expanded to WhiteboardScript shape)
- * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[], prior?: any[] }} ctx
+ * @param {{ reply: string, kit?: any, band?: string, speechMs?: number, extraNumbers?: string[], extraWords?: string[], banned?: string[], prior?: any[],
+ *   withhold?: { values: string[], words?: string[] } | string[] }} ctx
  *   prior: the previous board's ops when this script continues it (mode "continue"): new words must not land on them
+ *   withhold: answers the board must not show (withheldValues(kit, { itemId, line })); W9
  * @returns {{ pass: boolean, checks: {id:string, pass:boolean, detail?:unknown}[], script: any | null, facts: any | null }}
  */
 export function gateWhiteboard(raw, ctx) {
@@ -352,6 +463,9 @@ export function gateWhiteboard(raw, ctx) {
   // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
   const crossed = textsCrossed(ops, byId);
   add("W2.text_clear_of_lines", crossed.length === 0, crossed.slice(0, 3));
+  // W9 no reveal: nothing on the board equals a withheld answer (ctx.withhold = withheldValues(kit, {itemId, line}))
+  const reveals = revealsOf(ops, per, byId, texts, ctx.withhold);
+  add("W9.no_reveal", reveals.length === 0, reveals.slice(0, 4));
   const pass = checks.every((c) => c.pass);
   return { pass, checks, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
 }

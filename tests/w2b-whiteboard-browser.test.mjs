@@ -34,7 +34,7 @@ after(async () => {
   await vite?.close();
 });
 
-async function lessonWith(viewport, { ui, moduleCommands = [] }, { reducedMotion = "no-preference" } = {}) {
+async function lessonWith(viewport, { ui, moduleCommands = [], turn = null }, { reducedMotion = "no-preference" } = {}) {
   const mobile = viewport.width < 600;
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile, reducedMotion });
   await page.route("**/api/**", async (route) => {
@@ -43,7 +43,7 @@ async function lessonWith(viewport, { ui, moduleCommands = [] }, { reducedMotion
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "g@test.invalid", name: "Grown-up" }, children: [KID] });
     if (p === "/api/lesson/start") return json(200, { lessonId: "L-wb", topic: { id: "c5-maths-ch02-t01", title: "Fractions", chapter: "Fractions" },
       teacher: { id: "arjun", name: "Arjun", voice: "v", addressedAs: "", role: "AI teacher" }, moduleCommands, ui, teacherOpening: "Dekho.", teacherOpeningSeq: 1 });
-    if (p === "/api/lesson/turn") return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: "Hmm.", teacherReplySeq: 2 });
+    if (p === "/api/lesson/turn") return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: turn?.moduleCommands ?? [], ui: turn?.ui ?? ui, teacherReply: "Hmm.", teacherReplySeq: 2 });
     if (p === "/api/lesson/end") return json(200, { summary: null, parentNote: null });
     if (p.startsWith("/api/tts") || p.startsWith("/api/voice")) return route.fulfill({ status: 503, body: "" });
     return json(200, {});
@@ -139,5 +139,63 @@ test("explainer@1 (the explain rung) fills the module tray; every drawn word is 
     const words = await frame.$$eval("svg text", (ts) => ts.map((t) => t.textContent));
     assert.ok(words.includes("3") && words.includes("4"), `the fraction is written: ${words}`);
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/explainer-fraction-360.png` });
+  } finally { await page.close(); }
+});
+
+/** Send one typed turn in the text lesson (the composer, then Enter). */
+async function typeTurn(page, text) {
+  const input = await page.waitForSelector("input.dk-input, textarea.dk-input", { timeout: 8000 }).catch(() => null);
+  if (!input) { const type = await page.$('[data-testid="type"]'); if (type) await type.click(); }
+  await page.fill("input.dk-input, textarea.dk-input", text);
+  await page.keyboard.press("Enter");
+}
+
+test("explainer@1 inside the sandboxed frame draws from her line's audio anchor (forwarded by the host), and after the grace without one", { skip: SKIP, timeout: 120_000 }, async () => {
+  const x = expand({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }, { lessonId: "L-wb", scriptId: "s-frame-anchor" });
+  const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "module" };
+  const mount = (id) => [{ op: "mount", moduleId: id, engine: "explainer@1", params: { script: x.script, template: "flow@1", mode: "play" } }];
+  // 1. no anchor: nothing drawn inside the grace, then it starts on its own
+  const page = await lessonWith({ width: 360, height: 800 }, { ui, moduleCommands: mount("m1") });
+  try {
+    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
+    const frame = await iframe.contentFrame();
+    await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
+    const t0 = await frame.$eval("svg", (s) => Number(s.getAttribute("data-wb-t")));
+    assert.ok(t0 <= 0, `drew before any anchor or grace: t=${t0}`);
+    await frame.waitForFunction(() => Number(document.querySelector("svg")?.getAttribute("data-wb-t")) > 200, null, { timeout: 6000 });
+  } finally { await page.close(); }
+  // 2. the anchor fires in the APP window (where the TTS player lives): the frame's clock is measured from it
+  const page2 = await lessonWith({ width: 360, height: 800 }, { ui, moduleCommands: mount("m2") });
+  try {
+    const iframe = await page2.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
+    const frame = await iframe.contentFrame();
+    await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
+    await page2.evaluate(() => window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at: performance.now() - 300 } })));
+    await page2.waitForTimeout(250);
+    const t = await frame.$eval("svg", (s) => Number(s.getAttribute("data-wb-t")));
+    // the anchor was 300 ms before the event; ~250 ms later the clock reads ~550 (well before the 1.2 s grace)
+    assert.ok(t >= 400 && t <= 1100, `the frame's clock follows the forwarded anchor (t=${t} ms, ~550 expected)`);
+  } finally { await page2.close(); }
+});
+
+test("the first mount adopts the pre-booted spare frame (no new document), and it paints inside the tray", { skip: SKIP, timeout: 120_000 }, async () => {
+  const x = expand({ template: "fraction-parts@1", whole: "circle", parts: 4, shade: 3 }, { lessonId: "L-wb", scriptId: "s-spare" });
+  const idle = { status: "your_turn", phase: "teach", handover: "answer", answerForm: "words", tray: "none" };
+  const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "module" };
+  const page = await lessonWith({ width: 360, height: 800 }, { ui: idle, turn: { ui, moduleCommands: [{ op: "mount", moduleId: "m9", engine: "explainer@1", params: { script: x.script, template: "fraction-parts@1", mode: "play", delayMs: 0 } }] } });
+  try {
+    // the lesson start booted a spare (hidden, in the page body) that announced ready once its engines were imported
+    await page.waitForSelector('iframe[data-spare-frame="1"]', { state: "attached", timeout: 15_000 });
+    await page.waitForTimeout(2500);
+    await typeTurn(page, "ok");
+    const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
+    const src = await iframe.getAttribute("src");
+    assert.match(src, /spare%3A|spare:/, `the tray's frame is the adopted spare (${src})`);
+    const frame = await iframe.contentFrame();
+    await frame.waitForSelector('[data-testid="explainer"] svg rect', { timeout: 10_000, state: "attached" });
+    const [box, tray] = await Promise.all([iframe.boundingBox(), page.$eval('[data-testid="tray"] .dk-tray-body', (e) => e.getBoundingClientRect().height)]);
+    assert.ok(Math.abs(box.height - tray) <= 2, `the adopted frame fills the tray (${box.height} vs ${tray})`);
+    // one module document in the tray, none created for m9 by URL
+    assert.equal(await page.$$eval('iframe[src*="#m9"]', (fs) => fs.length), 0);
   } finally { await page.close(); }
 });

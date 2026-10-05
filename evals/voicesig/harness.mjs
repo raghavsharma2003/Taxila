@@ -9,6 +9,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { readText } from "../../server/signals/linguistic.js";
 import { toSignalInput, updateBaseline } from "../../server/voicesig/adapter.js";
 import { VsBaseline } from "../../server/voicesig/baseline.js";
+import { fillerLexOf } from "../../server/voicesig/rules.js";
 import { fitIsotonic, applyIsotonic } from "../../server/voicesig/calibrate.js";
 import { auroc, clusterBoot, clusterFolds, ece, oofLogistic, quantile } from "./metrics.mjs";
 
@@ -28,7 +29,8 @@ function lingOf(r) {
   if (r.ling) return r.ling;
   if (typeof r.text !== "string") return {};
   const L = readText({ childText: r.text, item: r.itemKey ? { key: r.itemKey, kitTerms: [] } : undefined });
-  return { idk: L.idk?.v ?? null, hedge: !!L.hedge, fillerLex: L.fillerLead?.v === true, repairDir: L.repairDir ?? null, thinkAloud: !!L.thinkAloudLex, tFluent: false };
+  // fillerLex is register-aware ("haan ji" is deference, not hesitation): rules.fillerLexOf over the same tokens.
+  return { idk: L.idk?.v ?? null, hedge: !!L.hedge, fillerLex: fillerLexOf(L.toks) === true, toks: L.toks, repairDir: L.repairDir ?? null, thinkAloud: !!L.thinkAloudLex, tFluent: false };
 }
 
 /** Run the adapter over every row in per-child turn order. Returns rows annotated with `vs` and `ling`. */

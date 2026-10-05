@@ -64,7 +64,8 @@ export function Onboarding({ teachers, onHear, onDone, onParent, range = DEFAULT
   const [parent, setParent] = useState<OnboardingResult["parent"]>("later");
   const h1 = useRef<HTMLHeadingElement>(null);
   const LAST = 6;
-  const teacher = teachers.find((t) => t.id === teacherId) ?? teachers[0];
+  // An empty roster is a caller bug, never a crash on the child's screen: the face slot falls back to the band's default tutor.
+  const teacher = teachers.find((t) => t.id === teacherId) ?? teachers[0] ?? { id: "", name: "", band: "b3", style: "" };
   const sum = weeklySummary({ days, start, length });
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export function Onboarding({ teachers, onHear, onDone, onParent, range = DEFAULT
             <WelcomeArt />
             <div style={{ margin: "4px 0 14px" }}><Brand /></div>
             <h1 className="v3-hero">A teacher who actually listens.</h1>
-            <p className="v3-ob-lede" style={{ marginTop: 12 }}>Talk to her like a person. She builds the lesson around you: games, animations, the works. Classes 4 to 7.</p>
+            <p className="v3-ob-lede" style={{ marginTop: 12 }}>Talk to her like a person. She shapes the lesson around you: games, animations, the works. Classes 4 to 7.</p>
           </section>
         )}
 

@@ -54,10 +54,10 @@ function callOf(j) {
 
 /**
  * Fill a diagram template from a kit (one model call). Never throws.
- * @param {{ kit: any, topicTitle?: string, band?: string, timeoutMs?: number, trace?: any[] }} a
+ * @param {{ kit: any, topicTitle?: string, band?: string, timeoutMs?: number, trace?: any[], feedback?: string, interest?: string }} a
  * @returns {Promise<{ ok: boolean, call?: any, why?: string, ms: number, usage?: any }>}
  */
-export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL_TIMEOUT_MS, trace, feedback }) {
+export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL_TIMEOUT_MS, trace, feedback, interest }) {
   const t0 = performance.now();
   const done = (r) => ({ ...r, ms: Math.round(performance.now() - t0) });
   if (process.env.FORGE_EXPLAINER_MODEL === "off") return done({ ok: false, why: "model_off" });
@@ -69,6 +69,7 @@ export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL
     "parts = a whole and its 2-6 parts, kinds or examples; label = a sketch (plant, flower, leaf, insect) with 2-6 of its parts named;",
     "none = no diagram fits (a reading or grammar skill with nothing to draw).",
     "labels: a noun or short phrase of 1-4 words, at most 24 characters; no arrows, colons, brackets or sentences; taken from the kit's own words (shorten, never add facts); English terms as the book uses them.",
+    "labels are NOUN PHRASES: never a clause or a story event (no is/was/did not, no subject + verb, no question, no Hindi है/था ending); never a blank like G__.",
     "fill only the chosen template's fields; every other field null.",
   ].join("\n");
   const user = JSON.stringify({
@@ -76,6 +77,9 @@ export async function modelFill({ kit, topicTitle, band = "B3", timeoutMs = FILL
     key_ideas: (kit?.expectations ?? []).slice(0, 6),
     pictures_the_book_suggests: (kit?.misconceptions ?? []).map((m) => m.remediation?.representation).filter(Boolean).slice(0, 4),
     worked_example: kit?.workedExample ? { problem: kit.workedExample.problem, steps: (kit.workedExample.steps ?? []).slice(0, 6) } : null,
+    // the child's interest as a registry id only (W2-B fixer, minor 10): it may choose WHICH of the kit's contexts and
+    // nouns a label uses (kit.interestContexts are in the truth vocabulary); never a name, never free text
+    ...(typeof interest === "string" && /^[a-z]{2,20}$/.test(interest) ? { child_interest: interest, contexts_the_kit_offers: (kit?.interestContexts ?? []).map((c) => (typeof c === "string" ? c : c?.en ?? c?.context)).filter(Boolean).slice(0, 4) } : {}),
     // a retry is told what the code check rejected last time (a reason code, never the child's data)
     ...(feedback ? { previous_attempt_rejected: String(feedback).slice(0, 160) } : {}),
   });

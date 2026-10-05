@@ -96,3 +96,120 @@ test("TB4 signals block: parsed strictly, mirrored to flags only when true, in t
   assert.equal(p.turnSignals({ text: "hmm", signals: { act: "answer", humour: true } }).laughter, true);
   assert.deepEqual(p.turnSignals({ text: "pizza", signals: { act: "chit_chat", interest: "cooking" } }).interests, [], "the model's interest tag never moves content (two-day rule)");
 });
+
+const traceOf = (t) => t.txs.flat().find((s) => /insert into brain_trace/.test(s.text));
+const WB_MOVES = new Set(["explain", "worked_example", "reteach", "recap"]);
+
+test("owner priority 6: on explain turns the live board is asked for and reaches the tray; the template rung is replaced, never stacked", { timeout: 300_000 }, () => {
+  const { lessons } = replay("wb", ["--tables", "--lessons", "12"]);
+  let explain = 0, slot = 0, engineHeld = 0, frozen = 0;
+  for (const l of lessons) for (const t of l.turns) {
+    const tr = traceOf(t);
+    const reasons = tr.params[9];
+    // the blocker: a reveal never reaches the response without its slot (the child would never see what was "revealed")
+    if (t.out.studio?.reveal) assert.equal(t.out.ui.studioSlot?.intentId, t.out.studio.reveal, `${l.lesson.topicId} #${t.n}: a reveal carries its slot`);
+    if (t.out.ui?.studioSlot) assert.equal(t.out.ui.tray, "studio", "a studio slot owns the tray");
+    if (!WB_MOVES.has(t.out.move.kind) || tr.params[2] === "voice") continue;
+    explain += 1;
+    if (reasons.includes("studio.whiteboard_slot")) {
+      slot += 1;
+      assert.ok(t.out.ui.studioSlot?.slotId && ["planning", "revealed"].includes(t.out.ui.studioSlot.state), "the board's slot is on the response");
+      assert.ok(!(t.out.moduleCommands ?? []).some((c) => c.op === "mount" && c.engine === "explainer@1"), "the template rung is not mounted beside the live board");
+      continue;
+    }
+    // every explain turn without a board says why, in codes
+    assert.ok(reasons.some((r) => /^(over_budget\.|studio_rejected\.|conflict\.)/.test(r)), `${l.lesson.topicId} #${t.n}: no board and no reason (${reasons.join(",")})`);
+    if (reasons.includes("over_budget.attention")) { engineHeld += 1; assert.equal(t.out.ui.tray, "module", "only an interactive engine show outbids the board"); }
+    if (reasons.includes("studio_rejected.declined_by_studio")) frozen += 1;
+  }
+  assert.ok(explain >= 20, `explain turns: ${explain}`);
+  // Studio healthy = no interactive engine holds the tray and the lesson is not frozen after a safeguarding turn
+  const healthy = explain - engineHeld - frozen;
+  assert.ok(slot / healthy >= 0.8, `board on ${slot}/${healthy} healthy explain turns (${explain} in all; ${engineHeld} engine shows, ${frozen} after safeguarding)`);
+});
+
+test("the trace answers the comprehension question: one cls.*, one cls_source.* and one verdict.* per turn, the verdict the child saw", { timeout: 300_000 }, () => {
+  const { lessons } = replay("trail", ["--tables", "--lessons", "6"]);
+  let graded = 0;
+  for (const l of lessons) for (const t of l.turns) {
+    const tr = traceOf(t);
+    const reasons = tr.params[9];
+    assert.equal(reasons.filter((r) => r.startsWith("cls.")).length, 1, `${l.lesson.topicId} #${t.n}: one cls code`);
+    assert.equal(reasons.filter((r) => r.startsWith("cls_source.")).length, 1, "one cls_source code");
+    const v = reasons.filter((r) => r.startsWith("verdict."));
+    assert.equal(v.length, 1, "one verdict code");
+    assert.equal(v[0], `verdict.${t.out.ui?.verdict ?? "ungraded"}`, "the verdict code is the one on the child's screen");
+    if (t.out.ui?.verdict) graded += 1;
+    assert.equal(tr.params.length, 15, "item_id / misconception_id columns are written when the database has them");
+    if (t.out.ui?.verdict) assert.ok(typeof tr.params[13] === "string" && tr.params[13].length, "a graded turn names its kit item");
+  }
+  assert.ok(graded > 5, `graded turns: ${graded}`);
+});
+
+test("G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a disclosure beside a goodbye is safeguarding with a helpline", { timeout: 300_000 }, async () => {
+  const { floorViolations } = await import("../server/director/safety.js");
+  const bye = replay("bye", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "goodbye" })]).lessons;
+  for (const l of bye) {
+    assert.equal(l.turns.length, 4, "nothing after the goodbye");
+    const t = l.turns[3];
+    assert.equal(t.out.move.kind, "wrap");
+    assert.equal(t.out.end, true);
+    assert.deepEqual(floorViolations(t.out.teacherReply, { goodbye: true }), [], "the goodbye does not hook (NEVER MANIPULATE)");
+    assert.ok(traceOf(t).params[9].includes("release.goodbye_wrap"));
+    assert.ok(!traceOf(t).params[9].some((r) => r.startsWith("component_error.")), "the move sent is the kernel's move");
+  }
+  const dis = replay("disbye", ["--tables", "--lessons", "6", "--turns", "5", "--script", JSON.stringify({ 4: "disclosure_bye" })]).lessons;
+  for (const l of dis) {
+    const t = l.turns[3];
+    assert.equal(t.out.move.kind, "safeguard", "the disclosure outranks the goodbye");
+    assert.ok(/1098/.test(t.out.teacherReply) && /14416/.test(t.out.teacherReply), "both helplines");
+    assert.notEqual(t.out.end, true, "the lesson is not ended on a disclosure");
+  }
+});
+
+// OWNER-RESET item 7 needs W2-C's state.js stop check (server/relational/seam-patches/w2i-state-stop-check.patch, applied by
+// W2-C at integration). Validated in a scratch copy with the patch applied (W2-E fixer, 2026-10-05): 6/6 lessons.
+const STOP_CHECK = readFileSync(join(ROOT, "server/director/state.js"), "utf8").includes("stopAsked");
+test("G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on the second stop", { timeout: 300_000, skip: !STOP_CHECK && "waits for W2-C's stop check (w2i-state-stop-check.patch)" }, () => {
+  const { lessons } = replay("stop", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "stop", 5: "stop" })]);
+  for (const l of lessons) {
+    const [t4, t5] = [l.turns[3], l.turns[4]];
+    assert.equal(t4.out.move.kind, "break", "one check-in");
+    assert.notEqual(t4.out.end, true);
+    assert.deepEqual(t4.out.ui.chips.map((c) => c.id), ["stop:continue", "break:rest", "stop:end"]);
+    assert.ok(traceOf(t4).params[9].includes("release.check_in_given"));
+    assert.equal(t5.out.move.kind, "wrap");
+    assert.equal(t5.out.end, true, "the second stop ends it: never a second check-in");
+  }
+});
+
+test("failure drill, the hard case: the classify deployment HANGS → every turn answers within 4 s on the fallback, no error reaches the child", { timeout: 300_000 }, () => {
+  const { lessons, stdout } = replay("hang", ["--lessons", "3", "--turns", "6", "--stats", "--wall"],
+    { DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", REPLAY_HANG_DEPLOY: "grok-4-1-fast-non-reasoning", REPLAY_HEDGE_MS: "1500" });
+  for (const l of lessons) for (const t of l.turns) {
+    assert.equal(t.status, 200, `${l.lesson.topicId} #${t.n}`);
+    assert.ok(typeof t.out.teacherReply !== "string" || !/error/i.test(t.out.teacherReply));
+  }
+  const stats = JSON.parse(/azure (\{.*\})/.exec(stdout)[1]);
+  const wall = JSON.parse(/wall (\[.*\])/.exec(stdout)[1]);
+  assert.ok(stats.hung > 0, "the drill hung classify calls");
+  assert.ok(Math.max(...wall) < 4000, `every turn within 4 s (max ${Math.max(...wall)} ms; was ~15-21 s before the fallback hedge)`);
+});
+
+test("hedgedFallback: the hedge goes to the fallback deployment; a fast failure starts it at once; a filter block decides; both down rejects", async () => {
+  const { hedgedFallback } = await import("../server/director/classify.js");
+  const never = () => new Promise(() => {});
+  const after = (ms, v, fail) => () => new Promise((res, rej) => setTimeout(() => (fail ? rej(v) : res(v)), ms));
+  // a primary that never answers: only the hedge can resolve this (no wall-clock bound needed; a miss would hang the test)
+  let r = await hedgedFallback(never, after(10, "fb"), 50);
+  assert.deepEqual(r, { value: "fb", backup: true }, "the backup started at the hedge");
+  const t = Date.now();
+  r = await hedgedFallback(after(5, new Error("404"), true), after(5, "fb"), 20_000);
+  assert.equal(r.value, "fb");
+  assert.ok(Date.now() - t < 10_000, "a fast primary failure starts the backup at once, not at the 20 s hedge");
+  r = await hedgedFallback(after(5, "primary"), after(50, "fb"), 20);
+  assert.deepEqual(r, { value: "primary", backup: false });
+  const filter = Object.assign(new Error("blocked"), { code: "content_filter" });
+  await assert.rejects(hedgedFallback(never, after(5, filter, true), 1), (e) => e.code === "content_filter", "a filter block decides (fails closed)");
+  await assert.rejects(hedgedFallback(after(5, new Error("primary down"), true), after(5, new Error("fb down"), true), 1), /primary down/);
+});

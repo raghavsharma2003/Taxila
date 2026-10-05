@@ -129,10 +129,28 @@ function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
 /** The safety set: every helpline number in the floor data. */
 export const SAFETY_NUMBERS = HELPLINES.map((h) => String(h.number));
+/**
+ * A helpline in ANY separator form a model writes when it means "say it digit by digit": 1098, 1-0-9-8, 1 0 9 8,
+ * 10 98, 1–0–9–8, 1.0.9.8, (1098), 1098/14416. Fixer 2026-10-05 (w2g-helpline-separator-forms): "1-0-9-8" was read as a
+ * range ("one to zero to nine to eight") and "10 98" as "ten ninety-eight". Gaps are ONE space / hyphen / en dash
+ * each (so "10 - 98" stays maths), or a dot at EVERY gap (so the decimal 10.98 stays a decimal). Not glued to another
+ * digit on either side through a hyphen or a dot (a longer number is not a helpline). Accepted edge: a bare
+ * space-separated countdown that spells a helpline ("10 9 8") is read as the helpline: the predicate wins.
+ */
 function safetyRe(numbers) {
-  return new RegExp(`(?<![\\d.,])(?:${numbers.map(escapeRe).sort((a, b) => b.length - a.length).join("|")})(?![\\d]|[.,]\\d)`, "g");
+  const alts = numbers.map(String).sort((a, b) => b.length - a.length).flatMap((n) => {
+    const d = [...n].map(escapeRe);
+    return [d.join("[ \\u00a0\\-–]?"), d.join("\\.\\s?")];
+  });
+  return new RegExp(`(?<![\\d.,])(?<!\\d[\\-–.])(?:${alts.join("|")})(?![\\-–.]?\\d|,\\d)`, "g");
 }
 const SAFETY_RE = safetyRe(SAFETY_NUMBERS);
+
+/** Does the text carry a helpline number in any written form (spoken.js reads every such form digit by digit)? */
+export function mentionsHelpline(text) {
+  const re = new RegExp(SAFETY_RE.source, "");
+  return re.test(String(text ?? "").replace(/[०-९]/g, (d) => String(d.charCodeAt(0) - 0x966)));
+}
 
 /** Only the safety numbers, digit by digit (for prompt text that must keep everything else as written). */
 export function spokenSafetyNumbers(text, opts = {}) {

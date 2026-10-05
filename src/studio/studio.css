@@ -49,7 +49,8 @@
   display: grid; place-items: center; color: var(--ink); cursor: pointer; }
 .st-ctrl-btn svg { fill: currentColor; }
 .st-ctrl-btn:focus-visible, .st-menu button:focus-visible { outline: 3px solid var(--nib); outline-offset: 2px; }
-.st-menu { position: absolute; right: 0; top: 48px; min-width: 168px; display: grid; gap: 2px; padding: 4px; border-radius: 12px; background: var(--surface);
+/* placed by StudioStage menuPlacement (inline left/top): flipped above or slid beside so it never leaves the clipping stage */
+.st-menu { position: absolute; left: -124px; top: 48px; width: 168px; box-sizing: border-box; display: grid; gap: 2px; padding: 4px; border-radius: 12px; background: var(--surface);
   border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(26,28,34,.16); }
 .st-menu button { min-height: 44px; padding: 0 12px; text-align: left; border: 0; border-radius: 8px; background: transparent; color: var(--ink);
   font: 500 15px/1.2 var(--font-ui, system-ui, sans-serif); cursor: pointer; }

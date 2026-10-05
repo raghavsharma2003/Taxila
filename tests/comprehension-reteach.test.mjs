@@ -110,3 +110,48 @@ test("readContext: resolves, writes in the background, and pins attempts / fluen
     assert.deepEqual(writes[0].params.slice(0, 2), [201, "repaired_now"]);
   } finally { console.info = info; _setSessionQuery(null); }
 });
+
+// W2-C fix (review blocker): acceptance (b) end to end, no hand-picked outcomes. A day-1 re-teach whose in-lesson re-check
+// was right is still `repaired_now` at day-2 start (no later graded answer yet); that arm must go first on day 2.
+test("(b) end to end: resolveAttempts → day-2 selectReteach puts the arm that repaired this child first (child_history)", () => {
+  const kitArms = [
+    { id: "kit:bars", repClass: "concrete", representationId: "fraction_bars", primary: true, cost: 1 },
+    { id: "kit:numline", repClass: "pictorial", representationId: "number_line", cost: 1 },
+  ];
+  const day2 = T + 24 * 3600_000;
+  const pick = (rows, evs) => {
+    const { attempts } = resolveAttempts(rows, evs, { now: day2, band: "B3" });
+    return selectReteach({ trigger: "misconception_confirmed", skillId: SK, misId: "m1", kitArms, band: "B3", seed: "s", pL: 0.4,
+      attempts, now: iso(day2) });
+  };
+  const day1Row = row({ id: 301, arm_id: "kit:numline", rep_class: "pictorial", representation_id: "number_line" });
+  const repaired = pick([day1Row], [item("L1", T + 60_000, "C0")]);
+  assert.equal(repaired.chosenBy, "child_history", JSON.stringify(repaired));
+  assert.equal(repaired.armId, "kit:numline", "the day-1 arm, not the kit primary");
+  // the next lesson's first answer was wrong: repaired_now is final (lost) → no longer proof, the population policy decides
+  const lost = pick([day1Row], [item("L1", T + 60_000, "C0"), item("L2", T + 6 * 3600_000, "C4")]);
+  assert.notEqual(lost.chosenBy, "child_history");
+  // control: an arm that failed twice in 30 days is never chosen, even after a later repair on it
+  const twice = pick([
+    row({ id: 302, arm_id: "kit:numline", rep_class: "pictorial", representation_id: "number_line", at: iso(T - 3 * 86400_000), session_id: "L0" }),
+    row({ id: 303, arm_id: "kit:numline", rep_class: "pictorial", representation_id: "number_line", at: iso(T - 2 * 86400_000), session_id: "Lm" }),
+    day1Row,
+  ], [item("L0", T - 3 * 86400_000 + 60_000, "C4"), item("Lm", T - 2 * 86400_000 + 60_000, "C4"), item("L1", T + 60_000, "C0")]);
+  assert.notEqual(twice.armId, "kit:numline", JSON.stringify(twice));
+});
+
+// Review 2026-10-05: 007's reteach_attempts.chosen_by check did not allow 'child_history', so the turn's one transaction
+// would fail on exactly the turn that personalises the re-teach. Every chooser selectReteach names must be allowed by
+// the newest migration that sets the check.
+test("every chosen_by selectReteach can write is allowed by the reteach_attempts check (020)", async () => {
+  const { readdirSync, readFileSync } = await import("node:fs");
+  const dir = new URL("../db/migrations/", import.meta.url);
+  const files = readdirSync(dir).filter((f) => f.endsWith(".sql")).sort();
+  const last = files.map((f) => readFileSync(new URL(f, dir), "utf8")).filter((t) => /chosen_by\s+(text not null\s+)?check|chosen_by_check/i.test(t)).at(-1);
+  const allowed = new Set([...last.slice(last.search(/check \(chosen_by in|chosen_by\s+text not null check \(chosen_by in/i)).matchAll(/'([a-z_]+)'/g)].map((m) => m[1]));
+  const src = readFileSync(new URL("../server/comprehension/reteach.js", import.meta.url), "utf8");
+  const chosen = new Set([...src.matchAll(/chosenBy:\s*"([a-z_]+)"/g), ...src.matchAll(/chosenBy = "([a-z_]+)"/g)].map((m) => m[1]));
+  chosen.add("recap");
+  for (const c of chosen) assert.ok(allowed.has(c), `chosen_by '${c}' is not allowed by the check (${[...allowed].join(", ")})`);
+  assert.ok(allowed.has("child_history"));
+});

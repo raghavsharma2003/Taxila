@@ -68,3 +68,14 @@ test("scanSafety: the grooming shape and the battery's missed distress shapes fi
     "touch the screen", "mujhe dar lag raha hai exam se", "my friend said send me the homework photo"]) assert.equal(scanSafety(t).distress, false, t);
   for (const t of ["Ek online bhaiya bolte hain photo bhejo"]) assert.notEqual(scanSafety(t).kind, "grooming", "kinds stay self_harm | abuse | fear");
 });
+
+test("gender: possessive self-reference follows the persona sheet, and the text lanes repair it deterministically", async () => {
+  const { repairSelfGender } = await import("../server/director/safety.js");
+  assert.deepEqual(relationalViolations("main aapki AI teacher hoon", { gender: "m" }), ["gender_agreement"]);
+  assert.deepEqual(relationalViolations("main aapka AI teacher hoon", { gender: "m" }), []);
+  assert.deepEqual(relationalViolations("main tumhara teacher hoon", { gender: "f" }), ["gender_agreement"]);
+  assert.equal(repairSelfGender("Main aapki AI teacher hoon, Arjun.", "m"), "Main aapka AI teacher hoon, Arjun.");
+  assert.equal(repairSelfGender("main tumhara teacher hoon", "f"), "main tumhari teacher hoon");
+  assert.equal(repairSelfGender("aapki copy mein likho, main aapki teacher hoon", "m"), "aapki copy mein likho, main aapka teacher hoon", "only the self-reference changes");
+  assert.equal(repairSelfGender("main aapki AI teacher hoon", "f"), "main aapki AI teacher hoon");
+});

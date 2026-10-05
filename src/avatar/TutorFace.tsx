@@ -23,7 +23,7 @@ import type { BandKey, Emotion, FloorStatus } from "./behaviour.ts";
 import { Plate2D } from "./Plate2D.tsx";
 import { PlatePerson } from "./PlatePerson.tsx";
 import { faceRigEnabled } from "./flags.ts";
-import { faceAffectOf, faceCues, gazeAngles, GAZE_SELECTOR, type FaceCue } from "./faceCues.ts";
+import { faceAffectOf, faceCues, gazeAngles, gazeElement, type FaceCue } from "./faceCues.ts";
 import { lookFor } from "./looks.ts";
 import type { TapSource } from "./tap.ts";
 import { detectStaticFacts, staticTier, tierOverride, type FaceTier, type TierDecision } from "./tier.ts";
@@ -62,6 +62,11 @@ let cachedFacts: ReturnType<typeof detectStaticFacts> | null = null;
 let contextLosses = 0;
 /** WebGL contexts lost by LIVE stages this page (a disposed stage never reports one). */
 export const faceContextLosses = () => contextLosses;
+/** A queued look older than this is dropped when the 3D stage boots (the reveal it pointed at is old news). */
+const PENDING_GAZE_MS = 1_500;
+/** A queued affect older than this (about one child turn) is dropped when the 3D stage boots. */
+const PENDING_AFFECT_MS = 15_000;
+
 /** Look ids whose rig failed or was demoted to D on this page: later mounts start on the plate (tier D). */
 const rigFailedThisPage = new Set<string>();
 export const faceRigFailed = (lookId: string) => rigFailedThisPage.has(lookId);
@@ -139,12 +144,16 @@ export function TutorFace(p: TutorFaceProps) {
   onEvent.current = p.onEvent;
   const [face, setFace] = useState<"plate" | "rig">("plate");
   // W2-D #4: an affect or a look that arrives before the 3D stage exists (chunk loading, GLB waiting for idle) is queued
-  // (the newest of each) and played the moment the stage is up, instead of being dropped.
-  const pending = useRef<{ affect: { emotion: Emotion; intensity: 1 | 2 } | null; gaze: Extract<FaceCue, { kind: "gaze" }> | null }>({ affect: null, gaze: null });
+  // (the newest of each, stamped) and played the moment the stage is up, instead of being dropped. A queued cue goes
+  // stale: a look older than PENDING_GAZE_MS and an affect older than PENDING_AFFECT_MS are dropped at boot (she must not
+  // glance at a reveal long gone or wear an old turn's expression). On the plate tiers (D, E: no 3D stage, production
+  // until O1) nothing is queued at all: the face producer only shows on the 3D tiers.
+  const pending = useRef<{ affect: { emotion: Emotion; intensity: 1 | 2; at: number } | null; gaze: (Extract<FaceCue, { kind: "gaze" }> & { at: number }) | null }>({ affect: null, gaze: null });
   const playCue = useRef<(cue: FaceCue) => void>(() => {});
+  const threeDNow = useRef(false);
   const arm = (a: { emotion: Emotion; intensity: 1 | 2 }) => {
     if (stage.current) stage.current.arm(a.emotion, a.intensity);
-    else pending.current.affect = a;
+    else if (threeDNow.current) pending.current.affect = { ...a, at: performance.now() };
   };
   playCue.current = (cue: FaceCue) => {
     const s = stage.current;
@@ -153,11 +162,11 @@ export function TutorFace(p: TutorFaceProps) {
       if (a) arm(a);
     } else if (cue.kind === "gaze") {
       if (!s) {
-        pending.current.gaze = cue;
+        if (threeDNow.current) pending.current.gaze = { ...cue, at: performance.now() };
         return;
       }
       if (cue.target === "child" || !host.current || typeof document === "undefined") return;
-      const el = document.querySelector(GAZE_SELECTOR[cue.target]);
+      const el = gazeElement(cue.target, document);
       if (!el) return;
       const a = host.current.getBoundingClientRect(), b = el.getBoundingClientRect();
       if (!a.width || !b.width) return;
@@ -173,6 +182,10 @@ export function TutorFace(p: TutorFaceProps) {
   const srcKey = sourcesKey(p.teacher);
   const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
   const threeD = tier === "B" || tier === "Blite";
+  threeDNow.current = threeD;
+  useEffect(() => {
+    if (!threeD) pending.current = { affect: null, gaze: null }; // the plate tiers never play a queued cue
+  }, [threeD]);
   useEffect(() => {
     if (!threeD || !host.current) return;
     let cancelled = false;
@@ -212,8 +225,9 @@ export function TutorFace(p: TutorFaceProps) {
         // Queued before the stage loaded: the affect arms for her next onset; a look still pending plays now.
         const q = pending.current;
         pending.current = { affect: null, gaze: null };
-        if (q.affect) s.arm(q.affect.emotion, q.affect.intensity);
-        if (q.gaze) playCue.current(q.gaze);
+        const now = performance.now();
+        if (q.affect && now - q.affect.at <= PENDING_AFFECT_MS) s.arm(q.affect.emotion, q.affect.intensity);
+        if (q.gaze && now - q.gaze.at <= PENDING_GAZE_MS) playCue.current(q.gaze);
         // child mic level → stage, a few times a second (no React render per frame)
         mic = window.setInterval(() => s.set({ childLevel: live.current.mic?.value ?? 0 }), 100);
         if (look) s.init().catch((err: unknown) => fail(`rig load failed: ${String(err)}`));

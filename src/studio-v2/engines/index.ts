@@ -13,6 +13,10 @@ import { data } from "./data.ts";
 import { beam } from "./beam.ts";
 import { foodweb } from "./foodweb.ts";
 import { phase } from "./phase.ts";
+import { shadow } from "./shadow.ts";
+import { watercycle } from "./watercycle.ts";
+import { solarscale } from "./solarscale.ts";
+import { anglesum } from "./anglesum.ts";
 
-const list: EngineDef<never>[] = [landfall, circuit, moon, slice, runner, area, vault, angle, data, beam, foodweb, phase] as EngineDef<never>[];
+const list: EngineDef<never>[] = [landfall, circuit, moon, slice, runner, area, vault, angle, data, beam, foodweb, phase, shadow, watercycle, solarscale, anglesum] as EngineDef<never>[];
 export const ENGINES: Record<string, EngineDef<never>> = Object.fromEntries(list.map((d) => [d.archetype, d]));

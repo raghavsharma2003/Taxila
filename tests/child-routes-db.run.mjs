@@ -107,7 +107,10 @@ describe("child routes (test branch)", { skip: SKIP, concurrency: false, timeout
     assert.equal((await call("/api/lesson/request", { method: "POST", body: { cid: kid } })).body.granted, false, "never 'one more' after done");
     const s = await call(`/api/lesson/summary?lessonId=${l}`);
     assert.equal(s.status, 200);
-    assert.equal(s.body.did.nextTitle, "Square roots");
+    // "Next time" is the ONE next-topic answer read now (reports/truth.js nextTopicForPlan), the same the plan's
+    // today card shows, never the sequence-next pinned in ctx at the start (W2-A fixer)
+    assert.equal(s.body.did.nextTitle, r.body.today.summary.nextTitle);
+    assert.ok(s.body.did.nextTitle, "a next topic is named");
     assert.equal((await call(`/api/lesson/summary?lessonId=${l}`, { tok: otherToken })).status, 403);
     await q("update lesson set state = jsonb_set(state, '{minutes}', '31') where id = $1", [l]);
     r = await call(`/api/child/plan?childId=${kid}`);

@@ -1,0 +1,1180 @@
+{
+ "class": 5,
+ "subject": "maths",
+ "version": 1,
+ "generator": "taxila-gpt6",
+ "date": "2026-10-04",
+ "items": [
+  {
+   "id": "pl-c5-maths-m01",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "Meera walked 3/4 km and Kabir walked 6/8 km. How many times as far as Kabir did Meera walk?",
+   "prompt_hi": "Meera 3/4 km chali aur Kabir 6/8 km chala. Meera, Kabir se kitne guna door chali?",
+   "answer": "1",
+   "unit": "times",
+   "topicRef": "c5-maths-ch02-t03",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "1 time",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 6,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m02",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "A cyclist turns from facing north to facing southwest, turning clockwise. What kind of angle is the turn?",
+   "prompt_hi": "Ek cyclist uttar se dakshin-pashchim ki taraf clockwise mudta hai. Yeh kis tarah ka kon hai?",
+   "answer": "Reflex angle",
+   "options": [
+    {
+     "text": "Acute angle",
+     "correct": false
+    },
+    {
+     "text": "Right angle",
+     "correct": false
+    },
+    {
+     "text": "Obtuse angle",
+     "correct": false
+    },
+    {
+     "text": "Reflex angle",
+     "correct": true
+    }
+   ],
+   "topicRef": "c5-maths-ch03-t02",
+   "demand": "reason",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "Obtuse angle",
+    "agrees": false,
+    "how": "equivalence",
+    "correct": "key",
+    "note": "Reflex >180°; obtuse <180°",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "adjudicated": {
+    "by": "claude-rs6 (model, not a human)",
+    "date": "2026-10-04",
+    "keyCorrect": true,
+    "note": "north to southwest clockwise is 225 degrees, reflex: key correct"
+   },
+   "geRated": 5.25,
+   "geRaters": {
+    "gpt6": 6,
+    "deepseek": 5.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m03",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A school collected ₹48,750 for a trip and spent ₹32,485. How much money remained?",
+   "prompt_hi": "School ne trip ke liye ₹48,750 jama kiye aur ₹32,485 kharch kiye. Kitne rupaye bache?",
+   "answer": "16265",
+   "unit": "₹",
+   "topicRef": "c5-maths-ch04-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "₹16,265",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "Equivalent with symbol",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m04",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A running route is 2 km 350 m long. How many metres long is it?",
+   "prompt_hi": "Running route 2 km 350 m lamba hai. Yeh kul kitne metre lamba hai?",
+   "answer": "2350",
+   "unit": "m",
+   "topicRef": "c5-maths-ch05-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "2350 m",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m05",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A dairy packs 24 bottles in each crate. How many bottles are in 18 full crates?",
+   "prompt_hi": "Dairy ek crate mein 24 bottles rakhti hai. 18 bhare crates mein kul kitni bottles hongi?",
+   "answer": "432",
+   "unit": "bottles",
+   "topicRef": "c5-maths-ch06-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "432 bottles",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m06",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A tile pattern has 5 triangles in its first row. Each new row has 3 more triangles than the previous row. How many triangles are in row 6?",
+   "prompt_hi": "Tile pattern ki pehli row mein 5 triangles hain. Har agli row mein pichhli se 3 zyada hain. Chhathi row mein kitne triangles hain?",
+   "answer": "20",
+   "unit": "triangles",
+   "topicRef": "c5-maths-ch07-t02",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "20 triangles",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m07",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A sack contains 3 kg 250 g of rice. How many grams of rice does it contain?",
+   "prompt_hi": "Ek bori mein 3 kg 250 g chawal hain. Ismein kul kitne gram chawal hain?",
+   "answer": "3250",
+   "unit": "g",
+   "topicRef": "c5-maths-ch08-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "3250 g",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m08",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A coach puts 127 players into teams of 9. After making as many full teams as possible, how many players are left?",
+   "prompt_hi": "Coach 127 players ki 9-9 ki teams banata hai. Jitni poori teams ban sakein, banane ke baad kitne players bachenge?",
+   "answer": "1",
+   "unit": "players",
+   "topicRef": "c5-maths-ch09-t02",
+   "demand": "reason",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "1 player",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m09",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "A square floor tile has the same design after a quarter-turn. Which other turn will also leave its design unchanged?",
+   "prompt_hi": "Ek square floor tile ka design chauthai ghoomne ke baad bhi waisa hi dikhta hai. Aur kaunsa turn design ko waisa hi rakhega?",
+   "answer": "Half-turn",
+   "options": [
+    {
+     "text": "One-eighth turn",
+     "correct": false
+    },
+    {
+     "text": "One-sixth turn",
+     "correct": false
+    },
+    {
+     "text": "One-third turn",
+     "correct": false
+    },
+    {
+     "text": "Half-turn",
+     "correct": true
+    }
+   ],
+   "topicRef": "c5-maths-ch10-t01",
+   "demand": "reason",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "Half-turn",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m10",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A rectangular school garden is 18 m long and 12 m wide. How many metres of fencing are needed to go once around it?",
+   "prompt_hi": "School ka rectangular garden 18 m lamba aur 12 m chauda hai. Iske charon taraf ek baar fencing ke liye kitne metre chahiye?",
+   "answer": "60",
+   "unit": "m",
+   "topicRef": "c5-maths-ch11-t02",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "60 m",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m11",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A school relay team finishes in 2 minutes 35 seconds. What is its time in seconds?",
+   "prompt_hi": "School relay team 2 minute 35 second mein finish karti hai. Uska time kul kitne second hai?",
+   "answer": "155",
+   "unit": "seconds",
+   "topicRef": "c5-maths-ch12-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "155 seconds",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-m12",
+   "band": "mid",
+   "ge": 4.5,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "Two buses leave a stop together. One returns every 12 minutes, the other every 18 minutes. After how many minutes will they next leave together?",
+   "prompt_hi": "Do buses ek stop se saath nikalti hain. Ek har 12 minute mein aur doosri har 18 minute mein lautti hai. Agli baar kitne minute baad saath niklengi?",
+   "answer": "36",
+   "unit": "minutes",
+   "topicRef": "c5-maths-ch13-t01",
+   "demand": "reason",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "36 minutes",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e01",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "At a school fair, 43,725 tickets were sold. What is the value of the digit 3?",
+   "prompt_hi": "School fair mein 43,725 tickets bike. Is sankhya mein 3 ki place value kya hai?",
+   "answer": "3000",
+   "topicRef": "c5-maths-ch01-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "3,000",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "Equivalent with comma",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.25,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 4.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e02",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A stadium has 48,600 seats. Estimate this number to the nearest ten thousand.",
+   "prompt_hi": "Ek stadium mein 48,600 seats hain. Is sankhya ko nearest ten thousand tak round karo.",
+   "answer": "50000",
+   "topicRef": "c5-maths-ch01-t02",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "50,000",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "Equivalent with comma",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.25,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 4.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e03",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A walking track from 0 to 1 km is marked into four equal parts. What fraction of a kilometre is the third mark after 0?",
+   "prompt_hi": "0 se 1 km tak ka walking track chaar barabar hisson mein marked hai. 0 ke baad teesra mark kilometre ka kaunsa fraction hai?",
+   "answer": "3/4",
+   "unit": "km",
+   "topicRef": "c5-maths-ch02-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "3/4 km",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e04",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "Riya drank 3/4 litre of water and Aman drank 3/5 litre. Who drank more?",
+   "prompt_hi": "Riya ne 3/4 litre paani piya aur Aman ne 3/5 litre. Kisne zyada piya?",
+   "answer": "Riya",
+   "options": [
+    {
+     "text": "Riya",
+     "correct": true
+    },
+    {
+     "text": "Aman",
+     "correct": false
+    },
+    {
+     "text": "Both drank the same amount",
+     "correct": false
+    },
+    {
+     "text": "Cannot tell without knowing the glass sizes",
+     "correct": false
+    }
+   ],
+   "topicRef": "c5-maths-ch02-t02",
+   "demand": "reason",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "Riya",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e05",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A recipe uses 2/3 cup of milk. If the cup is divided into 6 equal parts instead, how many parts make the same amount?",
+   "prompt_hi": "Ek recipe mein 2/3 cup doodh lagta hai. Agar cup ko 6 barabar hisson mein baantein, toh utni hi matra ke liye kitne hisse chahiye?",
+   "answer": "4",
+   "unit": "parts",
+   "topicRef": "c5-maths-ch02-t03",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "4 parts",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.75,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e06",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A cyclist facing north turns clockwise to face east. Through how many degrees did the cyclist turn?",
+   "prompt_hi": "Ek cyclist north ki taraf dekh raha hai. Woh clockwise mudkar east ki taraf dekhta hai. Woh kitne degrees muda?",
+   "answer": "90",
+   "unit": "degrees",
+   "topicRef": "c5-maths-ch03-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "90 degrees",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e07",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "A phone stand holds a phone at an angle of 120° to the table. What type of angle is 120°?",
+   "prompt_hi": "Phone stand par phone, table se 120° ka angle banata hai. 120° kis tarah ka angle hai?",
+   "answer": "Obtuse angle",
+   "options": [
+    {
+     "text": "Acute angle",
+     "correct": false
+    },
+    {
+     "text": "Right angle",
+     "correct": false
+    },
+    {
+     "text": "Obtuse angle",
+     "correct": true
+    },
+    {
+     "text": "Straight angle",
+     "correct": false
+    }
+   ],
+   "topicRef": "c5-maths-ch03-t02",
+   "demand": "recall",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "Obtuse angle",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e08",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A library had 25,430 books and bought 3,785 more. How many books does it have now?",
+   "prompt_hi": "Ek library mein 25,430 kitaabein thi aur usne 3,785 aur khareedi. Ab uske paas kitni kitaabein hain?",
+   "answer": "29215",
+   "unit": "books",
+   "topicRef": "c5-maths-ch04-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "29,215 books",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "Equivalent with comma and unit",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e09",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A school collected ₹50,000 for a trip and spent ₹36,750. How many rupees remain?",
+   "prompt_hi": "Ek school ne trip ke liye ₹50,000 jama kiye aur ₹36,750 kharch kiye. Kitne rupaye bache?",
+   "answer": "13250",
+   "unit": "rupees",
+   "topicRef": "c5-maths-ch04-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "₹13,250",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "numerically equal with units",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 4,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e10",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "For a quick estimate, round ₹19,800 and ₹31,200 to the nearest ten thousand, then add them. What is the estimated total?",
+   "prompt_hi": "Jaldi estimate ke liye ₹19,800 aur ₹31,200 ko nearest ten thousand tak round karo, phir jodo. Estimated total kya hai?",
+   "answer": "50000",
+   "unit": "rupees",
+   "topicRef": "c5-maths-ch04-t02",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "₹50,000",
+    "agrees": true,
+    "how": "equivalence",
+    "correct": "both",
+    "note": "numerically equal with units",
+    "solver": "DeepSeek-V4-Pro",
+    "checker": "grok-4-20-non-reasoning",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e11",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A bus route is 7 km long. How many metres is that?",
+   "prompt_hi": "Ek bus route 7 km lamba hai. Yeh kitne metres hue?",
+   "answer": "7000",
+   "unit": "m",
+   "topicRef": "c5-maths-ch05-t01",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "7000 m",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-e12",
+   "band": "early",
+   "ge": 4.2,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "Meera walks 950 m to school. Kabir walks 1 km. Who walks farther, and by how much?",
+   "prompt_hi": "Meera school tak 950 m chalti hai. Kabir 1 km chalta hai. Kaun zyada door chalta hai, aur kitna?",
+   "answer": "Kabir, by 50 m",
+   "options": [
+    {
+     "text": "Meera, by 50 m",
+     "correct": false
+    },
+    {
+     "text": "Kabir, by 50 m",
+     "correct": true
+    },
+    {
+     "text": "Kabir, by 950 m",
+     "correct": false
+    },
+    {
+     "text": "Both walk the same distance",
+     "correct": false
+    }
+   ],
+   "topicRef": "c5-maths-ch05-t02",
+   "demand": "apply",
+   "genGrade": 5,
+   "verified": {
+    "solverAnswer": "Kabir, by 50 m",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l01",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A square tile is turned around its centre. What is the smallest turn, in degrees, that makes it look exactly as it did before?",
+   "prompt_hi": "Ek square tile ko uske centre ke around ghumaya. Kitne degrees ka sabse chhota turn karne par woh pehle jaisi dikhegi?",
+   "answer": "90",
+   "unit": "degrees",
+   "topicRef": "c5-maths-ch10-t01",
+   "demand": "apply",
+   "genGrade": 5.7,
+   "verified": {
+    "solverAnswer": "90 degrees",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 5,
+   "geRaters": {
+    "gpt6": 6,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l02",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A rectangular school garden is 18 m long and 12 m wide. How many metres of fencing are needed to go around it once?",
+   "prompt_hi": "School ka rectangular garden 18 m lamba aur 12 m chauda hai. Uske chaaron taraf ek baar fencing ke liye kitne metres chahiye?",
+   "answer": "60",
+   "unit": "m",
+   "topicRef": "c5-maths-ch11-t02",
+   "demand": "apply",
+   "genGrade": 5.7,
+   "verified": {
+    "solverAnswer": "60 m",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.25,
+   "geRaters": {
+    "gpt6": 4.5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l03",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A rectangular floor is 7 tiles long and 5 tiles wide. Each tile covers 1 square metre. What is the floor’s area?",
+   "prompt_hi": "Ek rectangular floor ki lambai mein 7 tiles aur chaudai mein 5 tiles hain. Har tile 1 square metre cover karti hai. Floor ka area kya hai?",
+   "answer": "35",
+   "unit": "square metres",
+   "topicRef": "c5-maths-ch11-t01",
+   "demand": "apply",
+   "genGrade": 5.6,
+   "verified": {
+    "solverAnswer": "35 square metres",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l04",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "Two rectangular posters each have an area of 24 square centimetres. One is 6 cm by 4 cm; the other is 8 cm long. How wide is the second?",
+   "prompt_hi": "Do rectangular posters ka area 24 square centimetres hai. Ek 6 cm by 4 cm hai; doosra 8 cm lamba hai. Doosra kitna chauda hai?",
+   "answer": "3",
+   "unit": "cm",
+   "topicRef": "c5-maths-ch11-t03",
+   "demand": "reason",
+   "genGrade": 5.8,
+   "verified": {
+    "solverAnswer": "3 cm",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.75,
+   "geRaters": {
+    "gpt6": 5.5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l05",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A school relay takes 2 minutes 35 seconds. How many seconds is that altogether?",
+   "prompt_hi": "School ki relay race mein 2 minutes 35 seconds lage. Kul kitne seconds hue?",
+   "answer": "155",
+   "unit": "seconds",
+   "topicRef": "c5-maths-ch12-t01",
+   "demand": "apply",
+   "genGrade": 5.6,
+   "verified": {
+    "solverAnswer": "155 seconds",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l06",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "Asha finishes a race in 1 minute 48 seconds; Kabir takes 115 seconds. How many seconds faster is Asha?",
+   "prompt_hi": "Asha race 1 minute 48 seconds mein poori karti hai; Kabir ko 115 seconds lagte hain. Asha kitne seconds tez hai?",
+   "answer": "7",
+   "unit": "seconds",
+   "topicRef": "c5-maths-ch12-t02",
+   "demand": "apply",
+   "genGrade": 5.8,
+   "verified": {
+    "solverAnswer": "7 seconds",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.75,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l07",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "One bus leaves every 12 minutes and another every 18 minutes. Both leave now. After how many minutes will they next leave together?",
+   "prompt_hi": "Ek bus har 12 minutes mein aur doosri har 18 minutes mein nikalti hai. Dono abhi nikli hain. Agli baar kitne minutes baad saath niklengi?",
+   "answer": "36",
+   "unit": "minutes",
+   "topicRef": "c5-maths-ch13-t01",
+   "demand": "apply",
+   "genGrade": 5.9,
+   "verified": {
+    "solverAnswer": "36 minutes",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 6,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l08",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "Riya has 36 stickers. She puts the same number in each packet with none left over. What is the greatest possible packet size smaller than 10?",
+   "prompt_hi": "Riya ke paas 36 stickers hain. Woh har packet mein barabar stickers rakhti hai, bina koi bachaye. 10 se chhota sabse bada packet size kya hai?",
+   "answer": "9",
+   "unit": "stickers",
+   "topicRef": "c5-maths-ch13-t02",
+   "demand": "reason",
+   "genGrade": 5.8,
+   "verified": {
+    "solverAnswer": "9",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 6,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l09",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "mcq",
+   "prompt_en": "From the library, Neha walks east, turns left, then turns left again. Which direction is she walking now?",
+   "prompt_hi": "Library se Neha east ki taraf chalti hai, phir left mudti hai, aur dobara left mudti hai. Ab woh kis direction mein chal rahi hai?",
+   "answer": "West",
+   "options": [
+    {
+     "text": "North",
+     "correct": false
+    },
+    {
+     "text": "South",
+     "correct": false
+    },
+    {
+     "text": "East",
+     "correct": false
+    },
+    {
+     "text": "West",
+     "correct": true
+    }
+   ],
+   "topicRef": "c5-maths-ch14-t01",
+   "demand": "apply",
+   "genGrade": 5.6,
+   "verified": {
+    "solverAnswer": "West",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4,
+   "geRaters": {
+    "gpt6": 4,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l10",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "On a route map, school to market is 2 km 400 m, and market to stadium is 1 km 750 m. What is the total distance in metres?",
+   "prompt_hi": "Route map par school se market 2 km 400 m aur market se stadium 1 km 750 m hai. Kul distance metres mein kitna hai?",
+   "answer": "4150",
+   "unit": "m",
+   "topicRef": "c5-maths-ch14-t02",
+   "demand": "apply",
+   "genGrade": 5.8,
+   "verified": {
+    "solverAnswer": "4150 metres",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l11",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "In a school pictograph, each star means 8 students. Class 5A has 6 stars and Class 5B has 4 stars. How many more students does 5A have?",
+   "prompt_hi": "School pictograph mein har star ka matlab 8 students hai. Class 5A ke 6 stars aur 5B ke 4 stars hain. 5A mein kitne students zyada hain?",
+   "answer": "16",
+   "unit": "students",
+   "topicRef": "c5-maths-ch15-t01",
+   "demand": "apply",
+   "genGrade": 5.7,
+   "verified": {
+    "solverAnswer": "16",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 4.5,
+   "geRaters": {
+    "gpt6": 5,
+    "deepseek": 5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  },
+  {
+   "id": "pl-c5-maths-l12",
+   "band": "late",
+   "ge": 4.8,
+   "geSource": "band",
+   "strand": "maths:core",
+   "format": "numeric",
+   "prompt_en": "A bar graph shows books borrowed: Monday 35, Tuesday 50, Wednesday 40. How many more books were borrowed on Tuesday than on Monday and Wednesday averaged together?",
+   "prompt_hi": "Bar graph mein borrowed books hain: Monday 35, Tuesday 50, Wednesday 40. Monday aur Wednesday ke average se Tuesday ko kitni zyada books borrow hui?",
+   "answer": "12.5",
+   "unit": "books",
+   "topicRef": "c5-maths-ch15-t02",
+   "demand": "reason",
+   "genGrade": 5.9,
+   "verified": {
+    "solverAnswer": "12.5",
+    "agrees": true,
+    "how": "code",
+    "solver": "DeepSeek-V4-Pro",
+    "date": "2026-10-04"
+   },
+   "geRated": 5.75,
+   "geRaters": {
+    "gpt6": 7,
+    "deepseek": 5.5,
+    "rubric": "v2"
+   },
+   "anchorMismatch": false
+  }
+ ]
+}

@@ -1,7 +1,10 @@
 // W2-A acceptance: the home states (STUDENT-FLOW §4.2, SF1; BUILD-PLAN §4 W2-A #9). On the real child client at 360×640:
 //   - each of the five Home states (first, start, homework, test_window, safety_hold) renders EXACTLY ONE primary action;
 //     done renders none (F1: "one primary action or none"; done never offers one more lesson);
-//   - safety_hold offers no lesson start, no practice, no Ask; it shows the Help sheet with both helplines;
+//   - safety_hold offers no lesson start, no practice, no Ask; it shows the Help sheet with both helplines; the API
+//     REFUSES every start (lesson, practice, Ask) with 409 state safety_hold, and a typed lesson URL goes home;
+//   - every state also holds at 1280 (one primary, no horizontal scroll); the Made for you shelf renders (fixture rows
+//     on the test branch) without overflow at 360 and 1280;
 //   - the home after a 1-day and a 30-day gap is the same layout apart from the topic and plant states (F7);
 //   - the parent's Controls reach the child: homework on, a test window, tap-and-type per child.
 // safety_hold is set on the TEST child's conductor_state row through TAXILA_DB_URL (the target's database; a local run
@@ -43,25 +46,32 @@ await withTestAccount(async ({ api, child, password }) => {
     ])];
     await page.addInitScript((ids) => { try { for (const id of ids) localStorage.setItem(`taxila.child.${id}.prefs`, JSON.stringify({ hello: true })); } catch { /* */ } }, kids.map((k) => k.id));
     const [riya, aarav, kabir, meera] = kids;
-    const one = (h, want) => {
+    const wide = async (cid, want, primaries = 1) => {
+      await page.setViewportSize({ width: 1280, height: 800 });
+      const w = await home(page, cid);
+      ok(w.state === want && w.primaries === primaries && !w.hscroll, `${want} at 1280: ${primaries} primary, no horizontal scroll (${w.state}, ${w.primaries}, hscroll ${w.hscroll})`);
+      await page.setViewportSize({ width: 360, height: 640 });
+    };
+    const one = async (h, want, cid) => {
       ok(h.state === want, `home state ${want} (got ${h.state})`);
       ok(h.primaries === 1, `${want}: exactly one primary action (${h.primaries}: ${h.primaryIds.join(", ")})`);
       ok(!h.hscroll, `${want}: no horizontal scroll at 360`);
+      if (cid) await wide(cid, want);
     };
 
     // first: no lesson ever
-    one(await home(page, riya.id), "first");
+    await one(await home(page, riya.id), "first", riya.id);
 
     // start: a lesson row exists (an accidental short start), nothing done today
     const s0 = await api("POST", "/api/lesson/start", { childId: aarav.id, mode: "text" });
     await api("POST", "/api/lesson/end", { lessonId: s0.lessonId });
-    one(await home(page, aarav.id), "start");
+    await one(await home(page, aarav.id), "start", aarav.id);
 
     // homework: the parent's "Homework help today" (Controls) reaches the child's home; today's lesson stays as a link
     const c1 = await parent("POST", "/api/parent/controls", { childId: aarav.id, homeworkToday: true });
     ok(c1.controls.homeworkToday === true, "Controls saves Homework help today");
     const hw = await home(page, aarav.id);
-    one(hw, "homework");
+    await one(hw, "homework");
     ok(await page.locator('[data-testid="homework-lesson"]').count() === 1, "homework: today's lesson is the second card (a link, not a second primary)");
     await parent("POST", "/api/parent/controls", { childId: aarav.id, homeworkToday: false });
 
@@ -72,7 +82,7 @@ await withTestAccount(async ({ api, child, password }) => {
     ok(tw.window?.subject === "maths", "Controls saves the school test window");
     const tp = await api("GET", `/api/child/plan?childId=${kabir.id}`);
     ok(tp.state === "test_window" && tp.testWindow?.subject === "maths" && tp.topic?.subject === "maths", `plan: test_window, revising maths (${tp.state}, ${tp.topic?.subject})`);
-    one(await home(page, kabir.id), "test_window");
+    await one(await home(page, kabir.id), "test_window", kabir.id);
     const bad = await parent("POST", "/api/parent/test-window", { childId: kabir.id, subject: "maths", from: istDay(0), to: istDay(40) }, [400]);
     ok(/3 weeks/.test(bad.error), "a test window longer than 3 weeks is refused");
 
@@ -85,6 +95,41 @@ await withTestAccount(async ({ api, child, password }) => {
     ok(dn.primaries === 0 && !dn.start, `done: no primary action and no lesson start (${dn.primaries})`);
     ok(!dn.hscroll, "done: no horizontal scroll at 360");
     ok(await page.locator('[data-testid="practise-something"]').count() === 1, "done: Practise something is a link (not a second primary)");
+    await wide(meera.id, "done", 0);
+
+    // Made for you: one revealed Studio piece (fixture rows in 017's shape on the target's DB) → the shelf renders on
+    // the done home, inside the page, at 360 and 1280; the parent's "Made for {child}" card names it
+    if (!targetDbUrl()) warn("no TAXILA_DB_URL for this target: Made for you shelf check skipped");
+    else {
+      const sha = `w2a-test-${Date.now().toString(36)}`;
+      const [ml] = await dbq("select l.id from lesson l join child c on c.id = l.child_id join guardian g on g.id = c.guardian_id where l.child_id = $1 and g.email like '%@taxila.test' order by l.started_at desc limit 1", [meera.id]);
+      try {
+        await dbq(`insert into studio_build(build_sha, identity, archetype, kind, fragment, plan, record) values ($1, $1, 'fraction-pizza', 'game', 'x', $2, $3)`,
+          [sha, JSON.stringify({ kind: "game", title: "Pizza slices", topicId: "c7-maths-ch08-t01" }), JSON.stringify({ title: "Pizza slices for Meera" })]);
+        await dbq(`insert into studio_mount(lesson_id, intent_id, build_sha, source, kind, archetype, topic_id, revealed_at) values ($1, $2, $3, 'live', 'game', 'fraction-pizza', 'c7-maths-ch08-t01', now())`,
+          [ml.id, `intent-${sha}`, sha]);
+        for (const vp of [{ width: 360, height: 640 }, { width: 1280, height: 800 }]) {
+          await page.setViewportSize(vp);
+          await home(page, meera.id);
+          const shelf = await page.evaluate(() => {
+            const el = document.querySelector('[data-testid="madefor-shelf"]');
+            if (!el) return null;
+            const r = el.getBoundingClientRect();
+            const kids = [...el.querySelectorAll(".madefor-item")].map((x) => x.getBoundingClientRect());
+            return { items: kids.length, inside: r.left >= 0 && r.right <= innerWidth + 1 && kids.every((k) => k.left >= r.left - 1 && k.right <= r.right + 1),
+              hscroll: document.documentElement.scrollWidth > innerWidth + 1, text: el.textContent };
+          });
+          ok(shelf && shelf.items === 1 && /Pizza slices/.test(shelf.text), `Made for you shelf shows the piece at ${vp.width} (${JSON.stringify(shelf && { items: shelf.items })})`);
+          ok(shelf && shelf.inside && !shelf.hscroll, `Made for you shelf fits at ${vp.width}, no horizontal scroll`);
+        }
+        await page.setViewportSize({ width: 360, height: 640 });
+        const pm = await parent("GET", `/api/parent/made-for?childId=${meera.id}`);
+        ok(pm.items?.some((x) => /Pizza slices/.test(x.title)), `parent Made for ${meera.firstName ?? "child"} lists the piece (${pm.items?.length ?? 0})`);
+      } finally {
+        await dbq("delete from studio_mount where build_sha = $1", [sha]).catch(() => {});
+        await dbq("delete from studio_build where build_sha = $1", [sha]).catch(() => {});
+      }
+    }
 
     // tap and type per child: set from Controls, returned with the child's plan (any phone)
     await parent("POST", "/api/parent/controls", { childId: meera.id, textOnly: true });
@@ -99,13 +144,26 @@ await withTestAccount(async ({ api, child, password }) => {
       const sp = await api("GET", `/api/child/plan?childId=${riya.id}`);
       ok(sp.state === "safety_hold", `plan: safety_hold (${sp.state})`);
       const sh = await home(page, riya.id);
-      one(sh, "safety_hold");
+      await one(sh, "safety_hold", riya.id);
       ok(!sh.start && !sh.practice && !sh.ask, `safety_hold: no lesson start, no practice, no Ask (${JSON.stringify({ start: sh.start, practice: sh.practice, ask: sh.ask })})`);
+      const sub = await page.locator(".hpc-sub").first().textContent().catch(() => "");
+      ok(/trust/.test(sub ?? "") && !/at home/i.test(sub ?? ""), `safety_hold copy names a grown-up the child trusts, never "at home" (${sub})`);
+      // a typed lesson / practice URL (or a stale tab) never opens a lesson over the hold
+      for (const path of ["lesson/new", "practice"]) {
+        await page.goto(`${BASE}/c/${riya.id}/${path}`);
+        await page.waitForTimeout(1500);
+        const url = page.url();
+        const deskOrRefused = await page.evaluate(() => ({ home: !!document.querySelector('[data-testid="home"]'), refused: document.querySelector('[data-testid="lesson-refused"]')?.getAttribute("data-state") ?? null }));
+        ok(deskOrRefused.home || deskOrRefused.refused === "safety_hold", `/${path} during safety_hold goes home or shows the hold card (${url.replace(BASE, "")}, ${JSON.stringify(deskOrRefused)})`);
+      }
+      await home(page, riya.id);
       await page.click('[data-testid="hold-help"]');
       ok(await page.locator('[data-testid="help-1098"]').count() === 1 && await page.locator('[data-testid="help-14416"]').count() === 1, "safety_hold: Help shows Childline 1098 and Tele-MANAS 14416");
-      const ref = await api("POST", "/api/lesson/start", { childId: riya.id, mode: "text" }, [201, 409]);
-      if (ref.status === 201) { warn("API: a lesson still STARTS during safety_hold (startRefusal is in lesson.js, W2-E's hot file: open item)"); await api("POST", "/api/lesson/end", { lessonId: ref.lessonId }); }
-      else ok(true, "API: a lesson start is refused during safety_hold");
+      for (const purpose of ["lesson", "practice", "doubt"]) {
+        const ref = await api("POST", "/api/lesson/start", { childId: riya.id, mode: "text", purpose, ...(purpose === "doubt" ? { firstText: "1/2 bada ya 1/4?" } : {}) }, [201, 409]);
+        if (ref.lessonId) await api("POST", "/api/lesson/end", { lessonId: ref.lessonId }).catch(() => {});
+        ok(!ref.lessonId && ref.state === "safety_hold" && ref.control === "safety", `API: a ${purpose} start is refused (409) during safety_hold (${ref.lessonId ? "STARTED" : `${ref.state}/${ref.control}`})`);
+      }
       // release the hold (the protocol's job in real life): an account in safety_hold cannot be erased without review
       await dbq("update conductor_state set mode = 'free' where child_id = $1", [riya.id]);
     }

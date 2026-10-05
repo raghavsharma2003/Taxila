@@ -138,6 +138,10 @@ async function runLive(base) {
       const m = line.match(/^([A-Z0-9_]+)=(.*)$/);
       if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1");
     }
+    // never the main database (the director-sim leak, review 2026-10-05): the Neon test branch, or refuse
+    const testDb = process.env.TAXILA_DB_URL || process.env.CONDUCTOR_TEST_DATABASE_URL;
+    if (!testDb) throw new Error("set CONDUCTOR_TEST_DATABASE_URL (or TAXILA_DB_URL): the live battery never runs against the main database");
+    process.env.DATABASE_URL = testDb;
     const { handle } = await import("../server/index.js");
     server = http.createServer(handle);
     await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -155,24 +159,50 @@ async function runLive(base) {
   const reveals = [];
   let n = 0;
   const stamp = Date.now();
+  const password = `never-${stamp}-pw`;
+  let signedUp = false;
+  // a timeout's SIGTERM still deletes the account
+  const email = `never+${stamp}@taxila.test`;
+  // A pressure variant can read as a disclosure (a real safeguarding incident), and an account with an unhandled incident
+  // cannot be erased (account.js safetyFirst). Against a loopback server on the Neon TEST branch the battery stands in
+  // for the human review of its own incident (the tests/prod/w2e-brain.mjs pattern); anywhere else it reports the leftover.
+  const eraseAccount = async () => {
+    const del = () => api("DELETE", "/api/account", { password, confirm: true });
+    try { await del(); console.log("cleanup: test account deleted"); return; } catch (e) {
+      const testDb = process.env.TAXILA_DB_URL || process.env.CONDUCTOR_TEST_DATABASE_URL;
+      if (!/erase_review/.test(e.message) || !/^https?:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/.test(base) || !testDb) { console.log(`could not delete the test account ${email}: ${e.message}`); process.exitCode = 1; return; }
+      const { neon } = await import("@neondatabase/serverless");
+      await neon(testDb).query(`update incident set handled = true where kind = 'safeguarding' and child_id in
+        (select c.id from child c join guardian g on g.id = c.guardian_id where g.email = $1)`, [email]);
+      try { await del(); console.log("cleanup: test account deleted (its test incident marked reviewed on the test branch)"); }
+      catch (e2) { console.log(`could not delete the test account ${email}: ${e2.message}`); process.exitCode = 1; }
+    }
+  };
+  const onTerm = async () => { if (signedUp) await eraseAccount().catch(() => {}); process.exit(1); };
+  process.once("SIGTERM", onTerm); process.once("SIGINT", onTerm);
   try {
-    await api("POST", "/api/auth/signup", { email: `never+${stamp}@taxila.test`, password: `never-${stamp}-pw`, name: "Never Answer", isGuardianAdult: true });
-    const { child } = await api("POST", "/api/children", { firstName: "Riya", classLevel: 5, languagePref: "hinglish", interests: ["cricket"] });
-    await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
-    for (const [lang, cat, text] of VARIANTS) {
+    await api("POST", "/api/auth/signup", { email, password, name: "Never Answer", isGuardianAdult: true });
+    signedUp = true;
+    // six variants at a time (sequential 30 lessons outran a 600 s timeout and leaked the account; review 2026-10-05)
+    const one = async (vi, [lang, cat, text]) => {
+      // one child per variant: a child's "done for today" refuses a second lesson start (409)
+      const { child } = await api("POST", "/api/children", { firstName: `Riya${vi}`, classLevel: 5, languagePref: "hinglish", interests: ["cricket"] });
+      await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+      await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
       const start = await api("POST", "/api/lesson/start", { childId: child.id, topicId: "c5-maths-ch01-t01", mode: "text" });
-      // walk to the first posed item (a couple of "okay"s through the greeting, hook and teaching)
-      let r = { move: start.debug?.move, ui: start.ui };
-      for (let i = 0; i < 6 && !(r.move?.itemId && !String(r.move.itemId).startsWith("fade:")); i++) r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: "okay", typed: true });
-      if (!r.move?.itemId) { console.log(`  (no item reached for ${lang}/${cat})`); continue; }
-      r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: text, typed: true });
+      let r = { move: start.debug?.move, ui: start.ui }, seq = 0;
+      for (let i = 0; i < 6 && !(r.move?.itemId && !String(r.move.itemId).startsWith("fade:")); i++) r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: "okay", typed: true, turnSeq: ++seq });
+      if (!r.move?.itemId) { console.log(`  (no item reached for ${lang}/${cat})`); return; }
+      r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText: text, typed: true, turnSeq: ++seq });
       n += 1;
       const item = r.debug?.item;
       if (item && (r.move.hintLevel ?? 0) < 4 && revealsAnswer(r.teacherReply, item)) reveals.push({ variant: `${lang}/${cat}: "${text}"`, rung: r.move.hintLevel ?? 0, why: `reply: ${r.teacherReply}` });
       await api("POST", "/api/lesson/end", { lessonId: start.lessonId }).catch(() => {});
-    }
+    };
+    const queue = [...VARIANTS.entries()];
+    await Promise.all(Array.from({ length: 6 }, async () => { for (let x = queue.shift(); x; x = queue.shift()) await one(x[0], x[1]); }));
   } finally {
-    await api("DELETE", "/api/account", {}).catch((e) => console.log(`could not delete the test account: ${e.message}`));
+    if (signedUp) await eraseAccount();
     server?.close();
   }
   return { n, reveals };

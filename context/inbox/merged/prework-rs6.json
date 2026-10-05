@@ -1,0 +1,145 @@
+{
+ "nodes": [
+  {
+   "id": "rs6-content-f0-selection",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Content F0 (patch docs/design/reset/prework/rs6/patches/01-content-f0.patch, flag TAXILA_CONTENT_F0, on by default): items 1-2 by expected success (0.85, 0.75; θ default C-0.5), never ge <= C-2 unless the child is weak, measured ge preferred over the difficulty proxy, opener floor ge >= C-1, never the topic's top level when two items sit below it, diagnostic at position 3+ off item 1's motif, cap across skills dropping the easiest; harderThan (null at the top, never a step down), fastForwardSkips, testedOut; topic start = school chapter > placement startGE > calendar x 0.8. Reverse if real-child first-item P(correct) for on-track children falls below 0.6 (M-OD-10 lower band): lower the floor or the target."
+  },
+  {
+   "id": "rs6-placement-cat",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Placement CAT (server/placement): ability.js gridPosterior as a library; 4PL with c = 1/K for choices, item b set so P = 0.7 at the item's GE anchor; prior N(C-0.5, 1.25) (start mid-class, q50 for unimodal near-grade posteriors, q30 otherwise); first item near GE C-0.7; then P-target selection (0.8 after a miss, 0.65 after a hit) among items with P in [0.45, 0.9]; caps 8 below / 4 on / 4 above grade / 12 total; IDK = half an observation of not knowing; result.placement is an own-evidence site for initialBase. Code-graded only. Reverse the selection rule to 'blend' if real sessions show the down-move is not needed (blend RMSE 0.58 vs 0.61); reverse IDK weight if IDK rates differ by ability less than 2:1 in real data."
+  },
+  {
+   "id": "rs6-rubric-v2",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Calibration rubric v2 (evals/content-level-v2/rubric-v2.mjs, frozen by sha): rater not shown chapter/topic/outcome; given the 2025-26 NCERT chapter scope of classes C-2..C+1; returns grade + demand + needsC, verdict computed by code (too easy = grade <= C-2). Two raters from different families: taxila-gpt6 + DeepSeek-V4-Pro. ge = mean grade - 0.5. Used for agreement and calibration, NOT as a sole gate (precision < 90%). Reverse if a teacher-rated anchor set shows v2 grades off by > 0.5 class on average."
+  },
+  {
+   "id": "rs6-overlay-not-kits",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Re-levelled items live as an overlay (data/kits-relevel) merged by data/kits-relevel/merge.mjs into an output dir; only blind-solver-agreed, not-too-easy items merge; data/kits is written only after the human pass. Reverse when the human pass is complete: merge into data/kits and retire the overlay."
+  },
+  {
+   "id": "rs6-m-rubric-v2-agreement",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Rubric v2 on v1's 240-item bank sample (both raters, blind): too easy gpt6 19/240, deepseek 24/240, both 13, either 30 (v1 judge strict 76, v1 Claude 35); kappa v2 0.57 (per class 0.64/0.50/-0.03/0.69) vs v1 judge-vs-Claude 0.45. On v1's 40 NCERT-adjudicated flags (23 true): precision gpt6 6/8, deepseek 6/8, both 4/5 (95% CI 0.38-0.96), recall 26%/26%/17%; at grade <= C-1 precision 0.72-0.80, recall 0.52-0.74. Method: evals/content-level-v2/judge.mjs + score.mjs, 2026-10-04."
+  },
+  {
+   "id": "rs6-m-first-item-v1-crosscheck",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "First items served, 385 class 4-7 topics, judged by the v1 instrument (taxila-brain, v1 rubric verbatim; no part in selection), diagnostics excluded: item 1 grade <= C-2 old 170/385 (44%; c4 35%, c5 59%, c6 45%, c7 40%, reproducing CONTENT-LEVEL) -> new (patch 01+02 on merged overlay) 117/385 (30%; c4 21%, c5 34%, c6 37%, c7 28%); new item 2 87/385 (23%). v2 raters on positions 1-2 (circular, they set ge): either-flag 19% -> 1%. Code replay: first 10 questions of a new class 4-7 child all itemGE > C-2. Method: evals/content-level-v2/served.mjs + crosscheck-v1.mjs."
+  },
+  {
+   "id": "rs6-m-relevel-items",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Re-level overlay: 2,072 items for 385 topics (770 openers, 114 on-grade repair, 1,188 harder) by taxila-gpt6; blind solver DeepSeek-V4-Pro agreed 1,894 (91%; 1,563 by code, 331 by grok-4-20 equivalence), disagreed 178 (checker said key correct in most; all excluded). Rated too easy by either v2 rater: openers 27%, on-grade 38%, harder 8%; mean ge - C openers -1.23, harder -0.68. Merged 1,586; 49 hint fixes applied; 384 old items got measured ge; dice item and 2 c6 copies dropped; dice diagnostic rewritten. End-of-class item (ge >= C-0.75) in 380/385 topics (5 language gaps); harder chip strictly above item 1 in 323/385."
+  },
+  {
+   "id": "rs6-m-placement-sim",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Placement CAT simulation (labelled simulation, no child data): real bank (426 usable of 456; 5 solver disagreements adjudicated key-correct by a model; 30 excluded on anchor mismatch; rater GE minus anchor mean -0.28, MAE 0.44), real server/placement code, 56 cells x 100 runs per arm. 'target' selection: RMSE 0.61 (own model) / 0.78 (misspecified: anchor noise sd 0.6, slope 1.2, 10% unclear/IDK), 10.5 items, level correct 0.77/0.70, 95% CI coverage 0.95/0.89, moved down for 98% of children >= 2 classes behind, up for 95% of children ahead, skipAhead 0.67 at +1 class and 0.21 for on-track. 'blend': RMSE 0.58/0.77, down 0.76. Method: evals/content-level-v2/placement/simulate.mjs."
+  },
+  {
+   "id": "rs6-m-spend",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "RS-6 pre-work Azure spend USD 14.27 (cap 15): re-level generation 6.94, placement generation 0.76, blind solve 0.65, v2 judging 4.77, v1 cross-check 1.15; from returned usage x retail prices of 2026-10-02 (evals/content-level-v2/out/spend.jsonl). Per topic re-level ~USD 0.017; v2 rating ~USD 0.0008/item (gpt6), 0.0005 (deepseek)."
+  },
+  {
+   "id": "rj-rs6-gentle-opener-prompt",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Asking the generator for a 'gentle first step that still needs the class-C idea' produced openers the raters graded EASIER than the old openers in 5 of 6 subjects (too easy either-rater: english 44->63%, hindi 28->64%, evs 10->24%, sst 9->21%, science 4->9%; maths 18->12%). Teen-relatable framing plus 'gentle' reads as everyday knowledge. What worked: selecting items 1-2 by MEASURED ge (harder items often became openers) and a repair prompt that quotes the rater's own definition."
+  },
+  {
+   "id": "rj-rs6-rubric-v2-as-gate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Rubric v2 (decimal grades, scope given, chapter hidden, comprehension rule) as a too-easy gate: it removed v1's false positives but now places adjudicated too-easy items about one class below instead of two; recall 26% at grade <= C-2, precision 75-80% at any cut (target >= 90%). Not a gate on its own; the human pass stays mandatory."
+  },
+  {
+   "id": "rj-rs6-v2-measures-what-it-selected",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Reporting the served-new too-easy rate with the same v2 raters that calibrated ge (19% -> 1%) measures the selection rule against itself. The independent check (v1 instrument, no part in selection) shows 44% -> 30% at item 1. Any future re-level must be measured by a rater or human that did not set ge."
+  },
+  {
+   "id": "rj-rs6-grader-letter-index-first",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Placement grader (server/placement/grade.js) reading a leading letter or bare digit BEFORE the option words: adversarial review found a child typing the correct option \"a rectangle\" graded as option A (wrong), typing the value \"3\" of a numeric choice graded as the third option, \"1/2 or 3/4\" and \"12 or 13\" hedges credited, \"i do not know\" parsed as 2 (Hindi do) and credited, \"two thousand\" parsed as 2, and \"10%\" vs \"10\" options colliding after punctuation stripping. Fixed: exact option text first (punctuation-preserving, then unique normalised match), letter/index only for a bare letter/digit, any second distinct number or a hedge word makes the answer unclear (null), refusal words block number-word parsing, thousand/hazaar/lakh composed strictly. Verified by a test that every one of 426 usable bank items grades its own key true and every option by text, tap and letter as keyed (review, n=426 items x 3 seeds, 2026-10-05)."
+  },
+  {
+   "id": "rj-rs6-placement-stale-throw",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "answerPlacement throwing on any itemId other than the current one: a double tap or network retry of the answer just graded became a 500 mid-round (visible failure). Fixed: a resend of the last graded item is idempotent (returns the current item, repeat:true); other stale ids throw code PLACEMENT_STALE, which the proposed route maps to 409 carrying the current item; retired items mid-round are censored; responses capped at 200 chars; non-numeric ms dropped. Route patch also skips classes outside 3-9 ({skip:true}) and 404s a malformed placementId instead of a Postgres 500."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rs6-content-f0-selection",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rs6-content-f0-selection",
+   "rel": "measured_by",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "rs6-placement-cat",
+   "rel": "part_of",
+   "dst": "learner-ge-scale-one-cat"
+  },
+  {
+   "src": "rs6-placement-cat",
+   "rel": "measured_by",
+   "dst": "rs6-m-placement-sim"
+  },
+  {
+   "src": "rs6-rubric-v2",
+   "rel": "measured_by",
+   "dst": "rs6-m-rubric-v2-agreement"
+  },
+  {
+   "src": "rs6-overlay-not-kits",
+   "rel": "measured_by",
+   "dst": "rs6-m-relevel-items"
+  },
+  {
+   "src": "rj-rs6-gentle-opener-prompt",
+   "rel": "measured_by",
+   "dst": "rs6-m-relevel-items"
+  },
+  {
+   "src": "rj-rs6-rubric-v2-as-gate",
+   "rel": "measured_by",
+   "dst": "rs6-m-rubric-v2-agreement"
+  },
+  {
+   "src": "rj-rs6-v2-measures-what-it-selected",
+   "rel": "measured_by",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "rj-rs6-grader-letter-index-first",
+   "rel": "part_of",
+   "dst": "rs6-placement-cat"
+  },
+  {
+   "src": "rj-rs6-placement-stale-throw",
+   "rel": "part_of",
+   "dst": "rs6-placement-cat"
+  }
+ ]
+}

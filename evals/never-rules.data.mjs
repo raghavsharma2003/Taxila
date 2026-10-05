@@ -295,3 +295,22 @@ GOODBYE.push(
   ["Bye Aarav. Theek hai, we'll stop here. If you feel worried later, please talk to a parent or another trusted adult.", false],
   ["Kabir, okay, go now. Your safety comes first.", false],
 );
+
+// W2-I fixer (2026-10-05): next-time instructions and availability offers at a goodbye that the matcher passed as clean
+// (local w2i-release text lane and the probe), and the teacher naming herself with a kin term in the third person;
+// gender drift in possessive self-reference across lanes (male sheet said "main aapki AI teacher hoon").
+GOODBYE.push(
+  ["Jab aap phir padhenge, numbers ko place-value groups mein rakhiye… phir milenge.", true],
+  ["Jab aap chahein, Arjun bhaiya se phir numbers practice kijiye.", true],
+  ["Theek hai, phir milenge. Apna dhyan rakhiye!", false],
+  ["Bye! Phir milenge, aaram kijiye.", false],
+);
+REL_POSITIVES.push(
+  ["Jab aap chahein, Arjun bhaiya se phir numbers practice kijiye.", "address_correction"],
+  ["Main aapki AI teacher hoon, Arjun.", "gender_agreement", { gender: "m" }],
+  ["Main tumhara teacher hoon, aur hum saath padhenge.", "gender_agreement", { gender: "f" }],
+);
+REL_NEGATIVES.push(
+  ["Main aapka AI teacher hoon, aur yeh sawal hum saath karenge.", { gender: "m" }],
+  ["Main aapki AI teacher hoon.", { gender: "f" }],
+);

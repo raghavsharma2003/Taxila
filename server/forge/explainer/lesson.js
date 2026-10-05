@@ -15,6 +15,8 @@ import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
 import { checkCall, kitVocabulary } from "./truth.js";
+import { leaksOpenItem } from "./guard.js";
+import { termsCall } from "./terms.js";
 
 const TTL_MS = 3 * 3600_000;
 const MAX_LESSONS = 2000;
@@ -65,21 +67,36 @@ function entry(lessonId, create) {
 
 /**
  * The explain rung for this move, or null.
- * @param {{ lessonId?: string, kit: any, item?: any, text?: string, band?: string }} a
- * @returns {{ params: { script: any, template: string, mode: "play" }, facts: any, by: "code" | "library" | "model", template: string } | null}
+ *
+ * `openItem` (W2-B fixer, blocker 1): the item the child is still answering (a reteach, a hint-path explain). Then the
+ * board never shows its answer: a code pick from that item's own text draws the method with "?" in the result cells
+ * (hideResult), the worked example (a parallel problem) is the next try, and EVERY script, library and model fills
+ * included, is refused when it shows a key or acceptable answer of the open item (guard.js leaksOpenItem).
+ * `representation` (the active misconception's remediation picture) and `interest` (the child's consented interest id)
+ * choose how a code pick draws its values (pick.js), never the values.
+ * @param {{ lessonId?: string, kit: any, item?: any, openItem?: any, text?: string, band?: string, representation?: string, interest?: string }} a
+ * @returns {{ params: { script: any, template: string, mode: "play" }, facts: any, by: "code" | "library" | "model" | "terms", template: string } | null}
  */
-export function explainerFor({ lessonId, kit, item = null, text, band = "B3" }) {
+export function explainerFor({ lessonId, kit, item = null, openItem = null, text, band = "B3", representation, interest }) {
   const tries = [];
-  const code = codePick({ kit, item, text });
-  if (code) tries.push([code, "code"]);
+  const open = openItem && item && openItem.id === item.id;
+  const code = codePick({ kit, item, text, representation, interest });
+  if (code) tries.push([open ? { ...code, hideResult: true } : code, "code"]);
+  // the open item's parallel: the worked example (a different problem, the same method)
+  if (open) { const we = codePick({ kit, item: null, representation, interest }); if (we) tries.push([we, "code"]); }
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;
   if (live) tries.push([live, "model"]);
+  // the last rung: the topic's own key terms as a parts board (never an empty explain beat; terms.js)
+  const tc = termsCall(kit, band);
+  if (tc) tries.push([tc, "terms"]);
   for (const [call, by] of tries) {
     // the script id is the call's identity: the same call on the next show move is the same board (no redraw)
     const x = expand(call, { band, lessonId: lessonId ?? "", scriptId: `ex-${callHash(call)}` });
-    if (x.ok) return { params: { script: x.script, template: call.template, mode: "play" }, facts: x.facts, by, template: call.template };
+    if (!x.ok) continue;
+    if (openItem && leaksOpenItem(x.script, openItem)) continue;
+    return { params: { script: x.script, template: call.template, mode: "play" }, facts: x.facts, by, template: call.template };
   }
   return null;
 }

@@ -22,7 +22,7 @@
 // clause (the clause events of framed TTS v2). `parts` stays the WRITTEN sentences (captions, tests); `renders`,
 // `pauses` and `clauses` run beside it. The plan is also remembered per (lesson, seq) for 10 minutes whether or not
 // prewarm is on, so the text lane's "Hear" and a tts-stream that missed the prewarm speak the same delivery.
-import { speakChunk } from "./speech.js";
+import { speakChunk, voiceLane } from "./speech.js";
 import { renderParts } from "./expressive/render.js";
 
 export const TTL_MS = 30_000;
@@ -48,7 +48,7 @@ export function prewarm({ lessonId, seq, text, tokenHash, guardianId, style, del
   if (!r.parts.length) return false;
   if (r.plan) rememberDelivery(lessonId, seq, r.plan, true);
   const abort = new AbortController();
-  const entry = speakingEntry({ parts: r.parts, prelude: r.prelude, style, abort });
+  const entry = speakingEntry({ parts: r.parts, prelude: r.prelude, full0: r.full0, style, abort, lessonId });
   Object.assign(entry, { lessonId, seq, text: text.trim(), tokenHash, guardianId, style, plan: r.plan, at: performance.now(), timer: setTimeout(() => dropKey(key), TTL_MS) });
   entry.timer.unref?.();
   entry.startUpTo(LOOKAHEAD);
@@ -58,17 +58,31 @@ export function prewarm({ lessonId, seq, text, tokenHash, guardianId, style, del
 
 /**
  * The speaking machinery for rendered parts (shared by prewarm and the tts-stream / turn-audio paths that did not get a
- * prewarm): { parts (written), renders, pauses, clauses, jobs, startUpTo(i), prelude? }. A prelude job starts at once.
- * @param {{ parts: import("./expressive/render.js").Part[], prelude?: import("./expressive/render.js").Part | null, style: any, abort: AbortController }} x
+ * prewarm): { parts (written), renders, pauses, clauses, jobs, startUpTo(i), prelude?, useFull0() }. A prelude job starts
+ * at once. Every part of the reply speaks through ONE voice lane (speech.js voiceLane): once a part has fallen back to
+ * mini-tts, every later part of the reply does too (one teacher, one voice). `full0` = part 0 with the uptake echo, spoken
+ * instead of the stripped part 0 when the prelude wrote no audio (useFull0, from streamParts).
+ * @param {{ parts: import("./expressive/render.js").Part[], prelude?: import("./expressive/render.js").Part | null,
+ *   full0?: import("./expressive/render.js").Part | null, style: any, abort: AbortController, lessonId?: string }} x
  */
-export function speakingEntry({ parts, prelude, style, abort }) {
+export function speakingEntry({ parts, prelude, full0 = null, style, abort, lessonId }) {
   const written = parts.map((p) => p.written);
   const renders = parts.map((p) => p.render);
   const jobs = [];
+  const lane = voiceLane(lessonId);
   return {
     parts: written, renders, pauses: parts.map((p) => p.pauseBeforeMs), clauses: parts.map((p, i) => p.clause ?? i), jobs, abort,
-    prelude: prelude ? speakChunk(prelude.written, style, abort.signal, prelude.render) : null,
-    startUpTo(i) { while (jobs.length <= Math.min(i, written.length - 1)) jobs.push(speakChunk(written[jobs.length], style, abort.signal, renders[jobs.length])); },
+    // the prelude has its own lane: it is not in the reply's chain (part 0 never waits on it), but it obeys the breaker
+    prelude: prelude ? speakChunk(prelude.written, style, abort.signal, prelude.render, voiceLane(lessonId)) : null,
+    startUpTo(i) { while (jobs.length <= Math.min(i, written.length - 1)) jobs.push(speakChunk(written[jobs.length], style, abort.signal, renders[jobs.length], lane)); },
+    /** The prelude did not play: part 0 is spoken WITH the echo (HV-2: every word of the reply reaches the child). */
+    useFull0() {
+      if (!full0) return false;
+      written[0] = full0.written;
+      renders[0] = full0.render;
+      jobs[0] = speakChunk(full0.written, style, abort.signal, full0.render, lane);
+      return true;
+    },
   };
 }
 

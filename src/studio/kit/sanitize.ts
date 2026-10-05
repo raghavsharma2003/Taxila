@@ -4,7 +4,7 @@
 // either layer alone keeps a hostile partial inert.
 //
 // Allowlist, not a blocklist: known presentational HTML and SVG elements and attributes survive; everything else is
-// dropped. No <script> (content dropped too), no on* attribute, no href / xlink:href except a same-document `#id`, no
+// dropped. Text nodes are dropped (shapes only: no unchecked model words are ever painted). No <script> (content dropped too), no on* attribute, no href / xlink:href except a same-document `#id`, no
 // src / srcset / action, no url() / @import / expression() in styles, no comments or CDATA. Pure string code: tests run
 // it under node against the XSS corpus (tests/studio-contracts.test.mjs).
 
@@ -30,7 +30,6 @@ export function cleanCss(css: string): string {
     .replace(/<\/?\s*style/gi, "");
 }
 
-const esc = (s: string) => s.replace(/&(?!(?:[a-z]+|#\d+|#x[0-9a-f]+);)/gi, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escAttr = (s: string) => s.replace(/&(?!(?:[a-z]+|#\d+|#x[0-9a-f]+);)/gi, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 /** Decode the entities an attacker could use to hide `javascript:` (numeric and a few named). */
@@ -72,7 +71,8 @@ export function sanitizePartial(html: string, { maxBytes = 120_000 }: { maxBytes
     const name = m[1].toLowerCase();
     if (dropping) { if (closing && name === dropping) dropping = null; continue; }
     const inStyle = stack[stack.length - 1] === "style";
-    if (text) out.push(inStyle ? cleanCss(text) : esc(text));
+    // text nodes are never painted: the veil shows shapes only, so no model words reach the child before the gate checked them
+    if (text && inStyle) out.push(cleanCss(text));
     if (DROP_WITH_CONTENT.has(name)) { if (!closing && !/\/\s*$/.test(m[2])) dropping = name; continue; }
     if (!ALLOWED.has(name)) continue;
     if (closing) {
@@ -91,7 +91,7 @@ export function sanitizePartial(html: string, { maxBytes = 120_000 }: { maxBytes
     // an unterminated tag at the end of a stream chunk is dropped, never shown as text
     const cut = tail.lastIndexOf("<");
     const t = cut >= 0 ? tail.slice(0, cut) : tail;
-    if (t) out.push(inStyle ? cleanCss(t) : esc(t));
+    if (t && inStyle) out.push(cleanCss(t));
   }
   while (stack.length) out.push(`</${stack.pop()}>`);
   return out.join("");

@@ -8,9 +8,10 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { staticChecks } from "../server/studio/qa/static.js";
 import { GRADERS, graderFor, rightAnswers } from "../server/studio/qa/graders.js";
-import { gateWhiteboard, numbersIn, partitionCounts } from "../server/studio/qa/whiteboard.js";
+import { gateWhiteboard, numbersIn, partitionCounts, withheldValues, kitNumbers } from "../server/studio/qa/whiteboard.js";
 import { stateGraph } from "../server/studio/qa/gate.js";
-import { planWhiteboard, _setChat, redactLine, fitOps, expandOps, clausesOf } from "../server/studio/plan.js";
+import { planWhiteboard, _setChat, redactLine, fitOps, expandOps, clausesOf, sectorsForCutCircles, speechMsOf, REPAIR_MIN_MS } from "../server/studio/plan.js";
+import { createLanes } from "../server/lanes.js";
 import { archetype, FRAME_ARCHETYPES } from "../server/studio/archetypes/index.js";
 import { cspFor, runtimeSource } from "../server/studio/qa/page.js";
 
@@ -151,7 +152,7 @@ test("whiteboard planner: child-free prompt, layout fixers, one repair from the 
   let call = 0;
   _setChat(async (_dep, msgs, o) => {
     sent.push(msgs.map((m) => m.content).join("\n"));
-    assert.equal(o.quotaLane, "background");
+    assert.equal(o.quotaLane, "hot", "the live board is a hot call (W2-E patch w2e-plan-whiteboard-hot)");
     call++;
     // first answer writes a number she never said; the repair is told so and fixes it
     return { json: { ops: compact(call === 1 ? GOOD_OPS.map((x) => (x.id === "t1" ? { ...x, text: "9 parts" } : x)) : GOOD_OPS) }, usage: { prompt_tokens: 10, completion_tokens: 10 } };
@@ -165,6 +166,7 @@ test("whiteboard planner: child-free prompt, layout fixers, one repair from the 
   assert.equal(r.script.line.teacherReplySeq, 7);
   assert.equal(r.script.anchor, "line_audio_start");
   assert.equal(r.script.facts.archetype, "whiteboard");
+  assert.ok(r.usd > 0, "the board's spend is counted (both rounds)");
   // nothing to draw → no board; a stalled model → the deadline, never a late board
   _setChat(async () => ({ json: { ops: [] } }));
   assert.equal((await planWhiteboard(ask)).empty, true);
@@ -211,4 +213,104 @@ test("whiteboard continue mode: new words never land on the previous board's wor
   const fixed = fitOps(ops, { w: 400, h: 300 }, 6, prior);
   assert.ok(fixed.fixes.includes("separate:n2"));
   assert.ok(!failing(gateWhiteboard(S(fixed.ops, { mode: "continue" }), ctx({ prior }))).includes("W2.no_text_overlap"));
+});
+
+// ───────────────────────────── W9: the board never answers the question she asks ─────────────────────────────
+
+const ASK = "Ab tum batao, 3/8 aur 2/8 ko jodo, kitna hoga?";
+const QKIT = {
+  items: [
+    { id: "i1", prompt_en: "Add 3/8 and 2/8.", prompt_hi: "3/8 aur 2/8 jodo.", answer: "5/8", acceptable: ["10/16"] },
+    { id: "i2", prompt_en: "Add 245 and 132.", answer: "377" },
+    { id: "i3", prompt_en: "Mark 7 on the number line from 0 to 10.", answer: "7" },
+    { id: "i4", prompt_en: "What is the top number of a fraction called?", answer: "numerator" },
+  ],
+  workedExample: { problem: "1/5 + 2/5", steps: ["Same denominator: add the tops.", "1/5 + 2/5 = 3/5"], answer: "3/5" },
+};
+const qctx = (reply, itemId = "i1") => ({ reply, kit: QKIT, withhold: withheldValues(QKIT, { itemId, line: reply }) });
+const T = (o) => ({ startMs: 300, endMs: 1200, ...o });
+
+test("W9 no reveal: an equation, a column sum, a number-line target and a fraction result that answer an item are refused", () => {
+  const cases = [
+    ["equation result", [T({ id: "e", op: "text", at: [200, 150], text: "3/8 + 2/8 = 5/8", size: "m" })], ASK],
+    ["equal fraction of the answer", [T({ id: "e", op: "numwork", at: [120, 150], layout: "equation", rows: [["3/8", "+", "2/8", "=", "10/16"]] })], ASK],
+    ["column_add result", [T({ id: "c", op: "numwork", at: [150, 80], layout: "column_add", rows: [["2", "4", "5"], ["+", "1", "3", "2"], ["3", "7", "7"]] })], "245 aur 132 ko jodo, kitna aaya?"],
+    ["fraction layout result", [T({ id: "f", op: "numwork", at: [120, 150], layout: "fraction", rows: [["3", "+", "2", "=", "5"], ["8", "", "8", "", "8"]] })], ASK],
+    ["number-line tick at the answer", [T({ id: "n", op: "numwork", at: [80, 150], layout: "number_line", range: [0, 10], rows: [["0", "7", "10"]] })], "0 se 10 tak line hai, ab tum batao kahan aayega?"],
+  ];
+  for (const [what, ops, reply] of cases) {
+    const r = gateWhiteboard(S(ops), qctx(reply, what.startsWith("column") ? "i2" : what.startsWith("number") ? "i3" : "i1"));
+    assert.ok(failing(r).includes("W9.no_reveal"), `${what}: expected W9, got ${failing(r).join(",") || "pass"}`);
+  }
+  // a dot placed at the answer's position on the number line (no label) is a reveal too
+  const nl = T({ id: "n", op: "numwork", at: [80, 150], layout: "number_line", range: [0, 10], rows: [["0", "10"]] });
+  const g = gateWhiteboard(S([nl]), qctx("0 se 10 tak line, kahan aayega?", "i3"));
+  assert.deepEqual(failing(g), [], JSON.stringify(g.checks.filter((c) => !c.pass)));
+  const box = g.script.ops[0];
+  const W = 160, x7 = box.at[0] + 12 + 0.7 * (W - 24);
+  const dot = T({ id: "d", op: "circle", c: [x7, 150], r: 6, fill: "accent", startMs: 1300, endMs: 1600 });
+  assert.ok(failing(gateWhiteboard(S([nl, dot]), qctx("0 se 10 tak line, kahan aayega?", "i3"))).includes("W9.no_reveal"), "a dot at 7");
+  // the asked item's word answer, written on the board
+  const word = gateWhiteboard(S([GOOD_OPS[0], T({ id: "l", op: "label", at: [300, 60], text: "numerator", to: [160, 110] })]),
+    qctx("Fraction ka upar wala number kya kehlata hai?", "i4"));
+  assert.ok(failing(word).includes("W9.no_reveal"), "the word answer of the asked item");
+});
+
+test("W9 no reveal: the worked example, the item's givens, an evenly spaced axis and a value she says herself all pass", () => {
+  const we = "Dekho, 1/5 aur 2/5: same denominator, toh upar wale jodo, 3/5.";
+  const r1 = gateWhiteboard(S([T({ id: "e", op: "text", at: [200, 150], text: "1/5 + 2/5 = 3/5", size: "m" })]), qctx(we));
+  assert.ok(!failing(r1).includes("W9.no_reveal"), JSON.stringify(r1.checks.filter((c) => !c.pass)));
+  const setup = gateWhiteboard(S([T({ id: "e", op: "text", at: [200, 150], text: "3/8 + 2/8 = ?", size: "m" })]), qctx(ASK));
+  assert.ok(!failing(setup).includes("W9.no_reveal"), "the setup with an empty answer");
+  const holder = gateWhiteboard(S([T({ id: "f", op: "numwork", at: [150, 150], layout: "fraction", rows: [["1"], ["?"]] }), T({ id: "t", op: "text", at: [200, 60], text: "1/__", size: "m" })]),
+    qctx("Ek tukda, toh upar 1, neeche kitna?"));
+  assert.deepEqual(failing(holder), [], "a placeholder is the setup's shape, not an invented number");
+  const axis = gateWhiteboard(S([T({ id: "n", op: "numwork", at: [40, 150], layout: "number_line", range: [0, 10], rows: [["0", "2", "4", "6", "8", "10"]] })]), qctx("0 se 10 tak, do do ke kadam.", "i3"));
+  assert.ok(!failing(axis).includes("W9.no_reveal"), "an axis is not a target");
+  const said = "Haan, 3/8 aur 2/8 milke 5/8 hota hai.";
+  const r2 = gateWhiteboard(S([T({ id: "e", op: "text", at: [200, 150], text: "3/8 + 2/8 = 5/8", size: "m" })]), qctx(said));
+  assert.deepEqual(failing(r2), [], "she said it: the board only repeats her");
+  // answers are never "allowed numbers" from the kit (W4) and the item's givens are never withheld
+  assert.ok(!kitNumbers(QKIT).has("377"));
+  assert.ok(kitNumbers(QKIT).has("3/5"), "the worked example stays");
+  // the choices she reads out are hers to draw; unsaid, the answer stays withheld even though the prompt shows it
+  assert.deepEqual(withheldValues({ items: [{ id: "c", prompt_en: "Which is bigger, 3/4 or 2/3?", answer: "3/4" }] }, { itemId: "c", line: "3/4 aur 2/3, kaun bada hai?" }).values, []);
+  assert.deepEqual(withheldValues({ items: [{ id: "c", prompt_en: "Which is bigger, 3/4 or 2/3?", answer: "3/4" }] }, { itemId: "c", line: "kaun bada hai?" }).values, ["3/4"]);
+});
+
+test("whiteboard numbers: number words past twelve in both languages, and 'teen bata aath'", () => {
+  const n = numbersIn("pachees aur twenty-five; chaubees hazaar; teen bata aath");
+  for (const x of ["25", "24", "1000", "3/8"]) assert.ok(n.has(x), x);
+  assert.ok(!n.has("50"), "never summed across aur");
+  const r = gateWhiteboard(S([T({ id: "t", op: "text", at: [200, 150], text: "25", size: "l" })]), { reply: "Ek class mein pachees bachche hain." });
+  assert.ok(!failing(r).includes("W4.numbers_from_truth"), JSON.stringify(r.checks.filter((c) => !c.pass)));
+});
+
+test("whiteboard timing: the line's duration counts what the voice says, not the digits", () => {
+  assert.ok(speechMsOf("3/8 + 2/8 = 5/8") > Math.round(("3/8 + 2/8 = 5/8".length / 12) * 1000) * 2, "fractions are spoken as words");
+  assert.ok(REPAIR_MIN_MS >= 3000);
+});
+
+test("pizza fixer: a circle cut by lines through its centre becomes N equal sectors when N is her count (shape, never truth)", () => {
+  const c = { id: "p", op: "circle", c: [150, 150], r: 80, startMs: 0, endMs: 600 };
+  const dia = (id, deg, t) => { const a = (deg * Math.PI) / 180; return { id, op: "line", from: [150 - 80 * Math.sin(a), 150 + 80 * Math.cos(a)], to: [150 + 80 * Math.sin(a), 150 - 80 * Math.cos(a)], startMs: t, endMs: t + 300 }; };
+  const ops = [c, dia("a", 0, 700), dia("b", 45, 1000), dia("c", 90, 1300), dia("d", 135, 1600)];
+  const fixes = [];
+  const out = sectorsForCutCircles(ops, new Set([8]), fixes);
+  assert.deepEqual(fixes, ["sectors:px8"]);
+  assert.equal(out.filter((o) => o.op === "sector").length, 8);
+  assert.equal(out.filter((o) => o.op === "line").length, 0);
+  const line = "Pizza ko 8 barabar hisson mein kaato.";
+  assert.deepEqual(failing(gateWhiteboard(S(out), { reply: line })).filter((x) => x.startsWith("W8")), []);
+  assert.ok(failing(gateWhiteboard(S(ops), { reply: line })).includes("W8.counts_match_line"), "uncut by the fixer: refused");
+  assert.equal(sectorsForCutCircles(ops, new Set([6]), []).length, ops.length, "N must be a count she said");
+});
+
+test("lanes: the hot whiteboard call is never queued, even on a shared pool whose background share is used up by builds", () => {
+  let t = 0;
+  const L = createLanes({ now: () => t, setTimer: () => 0, shared: ["taxila-fast"] });
+  for (let i = 0; i < 3; i++) for (let k = 0; k < 20; k++) L.admit({ quotaLane: "background", deployment: "taxila-fast", kind: "chat_stream", estTokens: 20_000 });
+  assert.ok(L.admit({ quotaLane: "background", deployment: "taxila-fast", kind: "chat" }) instanceof Promise, "background is saturated");
+  for (let i = 0; i < 10; i++) assert.equal(L.admit({ quotaLane: "hot", deployment: "taxila-fast", kind: "chat" }), undefined, `whiteboard ${i + 1} goes at once`);
+  assert.equal(L.caps["taxila-gpt6-luna"], 500_000);
 });

@@ -1,0 +1,23 @@
+{
+  "same": true,
+  "score": 3.7,
+  "expressions": {
+    "rest": "reads as intended (soft baseline smile close to REF)",
+    "talking": "reads as slight smirk, not clearly mid-syllable speech",
+    "thinking": "reads as mild curiosity rather than deep thinking",
+    "delight": "reads as intended (open joyful smile)",
+    "concern": "reads as intended but too subtle for premium impact",
+    "surprise": "reads as intended (wide-eyed shock)",
+    "playful": "reads as intended (cheeky wink)",
+    "concern (second take)": "reads as mild disappointment instead of renewed concern",
+    "head turned ~10 degrees": "reads as slight smile with turn, but perspective feels off"
+  },
+  "defects": [
+    "talking (top row, center): lips too flat and closed, no syllable transition visible, breaks speech animation flow",
+    "thinking (top row, right): eye direction and brow angle too similar to rest pose, no clear pensive quality, located in upper face",
+    "concern (middle row, center): insufficient brow furrow and eye tension vs REF softness, reads weak at 2m distance",
+    "concern (second take) (bottom row, center): mouth shape inconsistent with first concern, pulls character off-model in lower lip area",
+    "head turned ~10 degrees (bottom row, right): nose and cheek contour fail to rotate with head, creating flat 2D artifact on left side of face"
+  ],
+  "top_fix": "Rebuild eye and brow rig for consistent soft Memoji roundness across all expressions, especially thinking and concern frames, to pass side-by-side premium test with REF"
+}

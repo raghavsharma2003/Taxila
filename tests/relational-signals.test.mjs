@@ -87,3 +87,43 @@ test("word count works for Roman and Devanagari (the withdrawal yardstick)", () 
   assert.equal(wordCount("मुझे नहीं पता"), 3);
   assert.equal(wordCount(""), 0);
 });
+
+// ── W2-I fixer (2026-10-05): the in-lesson negative corpus and the held-out sets (rj-w2i-unanchored-leave-lexicon) ──
+import { readFileSync } from "node:fs";
+import { INLESSON_NEGATIVES, LEAVE_POSITIVES } from "../evals/relational-os/inlesson-negatives.mjs";
+import { scanSafety, wantsToStop } from "../server/director/safety.js";
+
+const FALSE_KINDS = new Set(["goodbye", "end_request", "goodbye_distress", "contact_ask", "secret_ask", "romance", "warmth_offer", "permanence_ask", "night_ask", "loneliness", "harm"]);
+function falsesOn(list) {
+  const out = [];
+  for (const x of list) {
+    const ks = signalsOf(x.text).filter((s) => FALSE_KINDS.has(s.kind) || s.thirdParty).map((s) => s.kind + (s.thirdParty ? "*" : ""));
+    if (ks.length || wantsToStop(x.text) || scanSafety(x.text).distress) out.push(`${x.text} → ${ks} ${wantsToStop(x.text) ? "STOP" : ""}${scanSafety(x.text).distress ? "DISTRESS" : ""}`);
+  }
+  return out;
+}
+
+test("in-lesson negatives (hand, n ≥ 300, classes 4-7, en/hl/hi): 0 goodbye/stop, 0 boundary, 0 third-party, 0 distress", () => {
+  assert.ok(INLESSON_NEGATIVES.length >= 300, `n=${INLESSON_NEGATIVES.length}`);
+  for (const lang of ["en", "hl", "hi"]) assert.ok(INLESSON_NEGATIVES.some((x) => x.lang === lang), lang);
+  for (const cls of [4, 5, 6, 7]) assert.ok(INLESSON_NEGATIVES.some((x) => x.cls === cls), `class ${cls}`);
+  assert.deepEqual(falsesOn(INLESSON_NEGATIVES), []);
+});
+
+test("held-out in-lesson negatives (model-written, two families, v1 + v2): 0 false triggers", () => {
+  for (const f of ["inlesson-heldout.json", "inlesson-heldout-v2.json"]) {
+    const held = JSON.parse(readFileSync(new URL(`../evals/relational-os/${f}`, import.meta.url), "utf8"));
+    assert.ok(held.sets.negatives.length >= 300, f);
+    assert.deepEqual(falsesOn(held.sets.negatives), [], f);
+  }
+});
+
+test("recall guard: real goodbyes, stop phrases and third-party asks still fire after the anchoring", () => {
+  for (const t of LEAVE_POSITIVES.goodbye) assert.ok(kinds(t).includes("goodbye"), `goodbye: ${t} → ${kinds(t)}`);
+  for (const t of LEAVE_POSITIVES.end_request) assert.ok(kinds(t).includes("end_request"), `end_request: ${t} → ${kinds(t)}`);
+  for (const t of LEAVE_POSITIVES.third_party) assert.ok(kinds(t).includes("contact_ask*") || kinds(t).includes("secret_ask*"), `third party: ${t} → ${kinds(t)}`);
+  for (const t of LEAVE_POSITIVES.contact_self) assert.ok(kinds(t).includes("contact_ask"), `contact: ${t} → ${kinds(t)}`);
+  // the original reported probes, word for word
+  for (const t of ["see you have to add 5 and 3 to get 8", "the answer is bye", "he wants a number bigger than 10", "woh bola number 5 hai",
+    "i'm done, it's 24", "can you call me Ravi", "carbon dating", "photo bhejo diagram ka"]) assert.deepEqual(kinds(t), [], t);
+});

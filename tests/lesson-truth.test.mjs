@@ -320,6 +320,11 @@ test("plan: an accidental or crashed lesson (nothing graded, a few minutes) is n
   assert.equal(countsAsDone({ minutes: 0.2, did: [] }), false);
   assert.equal(countsAsDone({ minutes: 0.2 }), false);
   assert.equal(countsAsDone({ minutes: 12, did: [], abandoned: true }), false);
+  // W2 integration: a Practice or an Ask never uses up the day's lesson; a Learn lesson (or a legacy row with no purpose) does
+  assert.equal(countsAsDone({ minutes: 12, did: ["i1"], ctx: { purpose: "practice" } }), false);
+  assert.equal(countsAsDone({ minutes: 12, did: ["i1"], ctx: { purpose: "doubt" } }), false);
+  assert.equal(countsAsDone({ minutes: 12, did: ["i1"], ctx: { purpose: "lesson" } }), true);
+  assert.equal(countsAsDone({ minutes: 12, did: ["i1"], ctx: {} }), true);
   assert.equal(countsAsDone({ minutes: 1, did: [{ kind: "item" }] }), true, "one graded answer");
   assert.equal(countsAsDone({ minutes: 6, did: [] }), true, "a real stretch of lesson");
 });

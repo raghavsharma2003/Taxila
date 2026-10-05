@@ -321,7 +321,15 @@ export async function chatStream(deployment, messages, opts = {}) {
       }
       if (finishReason === CONTENT_FILTER) err = new AzureError(`${kind} ${deployment} completion blocked by the content filter`, 200, CONTENT_FILTER);
       // a 200 whose stream closed before a single event is a cut connection, not an empty answer
-      else if (!events && !err) err = new AzureError(`${kind} ${deployment} stream closed with no events`, 200, "empty_stream");
+      else if (!events && !err) {
+        err = new AzureError(`${kind} ${deployment} stream closed with no events`, 200, "empty_stream");
+        // who answered: a 200 with no events in a few ms is either a cut connection or not our endpoint at all (a proxy,
+        // a stale pooled socket). Headers only (never the key, never a body), for the log and the caller's diagnostics.
+        const h = {};
+        for (const [k, v] of res.headers) if (/^(content-type|content-length|server|via|date|x-|apim-|azureml-|transfer-encoding|connection)/i.test(k)) h[k] = String(v).slice(0, 120);
+        err.diag = { status, url: String(res.url || "").replace(/[?#].*$/, ""), redirected: !!res.redirected, type: res.type, headers: h, ms: Math.round(performance.now() - t0) };
+        console.warn(`[azure] ${kind} ${deployment} empty_stream ${JSON.stringify(err.diag)}`);
+      }
     }
   } catch (e) {
     err = why ? new AzureError(`${kind} ${deployment} ${why} after ${Math.round(performance.now() - t0)} ms`, 0, why)

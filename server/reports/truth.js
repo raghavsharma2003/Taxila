@@ -19,6 +19,7 @@ import { q as dbq } from "../db.js";
 import { ITEM_CLASSES, isDelayedSuccess, outcomeName } from "../learner/kt/outcomes.js";
 import { nextTopicFor } from "../content/next-topic.js";
 import { DELAY_MS } from "./config.js";
+import { learningDay } from "../conductor/clock.js";
 
 /** A lesson that ran this long (start → end) counts even with nothing graded (V2 §3.13: shorter is an accidental start). */
 export const COUNTED_MIN_MS = 5 * 60_000;
@@ -241,8 +242,37 @@ export async function loadTruth(child, { skillIds = null, q = dbq } = {}) {
 export const claimRows = (rows) => rows.filter((r) => r.scored).sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
   .map((r) => ({ at: r.at, outcome: r.firstTryUnaided ? "correct" : r.outcome === "correct" && r.hintsUsed === 0 ? "partial" : r.outcome, hintsUsed: r.hintsUsed }));
 
-/** The ONE next-topic function (child home, parent "Next lesson", the child's and the parent's "Next time"). */
-export const nextTopicOf = (child) => nextTopicFor(child).catch(() => null);
+/**
+ * PURE. A parent-entered school test window (019 child_controls.test_window) that covers the learning `day`, or null.
+ * @param {any} w  the stored {subject, from, to}  @param {string} day  YYYY-MM-DD (learningDay)
+ */
+export const activeWindow = (w, day) => (w && w.subject && w.from <= day && w.to >= day ? { subject: w.subject, from: w.from, to: w.to } : null);
+
+/** The child's school test window covering today (its own tz's learning day), or null. Read-only and defensive. */
+export async function testWindowOf(child, { now = new Date(), q = dbq } = {}) {
+  try {
+    const [r] = await q(`select c.test_window, r.tz from child_controls c left join child_routine r on r.child_id = c.child_id where c.child_id = $1`, [child.id]);
+    return activeWindow(r?.test_window, learningDay(now, r?.tz || "Asia/Kolkata"));
+  } catch { return null; }
+}
+
+/**
+ * The ONE next-topic function (child home, parent "Next lesson", Progress "next"/"here", the child's and the parent's
+ * "Next time", the lesson-end summary and a lesson start with no topic): inside an active school test window it is
+ * scoped to the test's subject (the lesson revises it), otherwise the plain sequence. `testWindow` may be passed when
+ * the caller already read it (undefined: read here; null: no window).
+ */
+export async function nextTopicForPlan(child, { testWindow } = {}) {
+  const w = testWindow === undefined ? await testWindowOf(child) : testWindow;
+  if (w) {
+    const t = await nextTopicFor(child, { subject: w.subject }).catch(() => null);
+    if (t) return t;
+  }
+  return nextTopicFor(child).catch(() => null);
+}
+
+/** The ONE next-topic function, never throwing (see nextTopicForPlan). */
+export const nextTopicOf = (child, o) => nextTopicForPlan(child, o).catch(() => null);
 
 // ───────────────────────────── lesson summary from facts, and its claim check ─────────────────────────────
 
@@ -300,8 +330,13 @@ export function summaryClaimsHold(summary, rawRows) {
   const items = live.filter((r) => NAMES[r.cls] && nm(r) !== undefined && nm(r) !== "NA");
   const first = items.filter((r) => ["C0", "first_correct"].includes(nm(r)) && !r.pre_attempt_help && !(Number(r.entry_rung) > 0)).length;
   const hint = items.filter((r) => ["C1", "C2", "C3"].includes(nm(r)) || (["C0", "first_correct"].includes(nm(r)) && (r.pre_attempt_help || Number(r.entry_rung) > 0))).length;
+  // "explained in own words": its own label table (probe.why outcome 0 = full, probe.teachback outcome 0 = high), never a game row
+  const EXPLAINED = { "probe.why": "full", "probe.teachback": "high" };
+  const PROBES = { "probe.why": ["full", "partial", "none", "misconception"], "probe.teachback": ["high", "mid", "low", "misconception"] };
+  const explained = live.filter((r) => EXPLAINED[r.cls] && PROBES[r.cls][Number(r.outcome)] === EXPLAINED[r.cls] && r.via !== "game").length;
   const why = [];
   for (const l of summary.lines) {
+    if (l.key === "explained" && l.k !== explained) why.push(`explained ${l.k} ≠ ${explained}`);
     if (l.key === "tried" && l.n !== items.length) why.push(`tried ${l.n} ≠ ${items.length}`);
     if (l.key === "first_try" && (l.k !== first || l.n !== items.length)) why.push(`first_try ${l.k}/${l.n} ≠ ${first}/${items.length}`);
     if (l.key === "with_hint" && (l.k !== hint || l.n !== items.length)) why.push(`with_hint ${l.k}/${l.n} ≠ ${hint}/${items.length}`);
@@ -310,5 +345,6 @@ export function summaryClaimsHold(summary, rawRows) {
   }
   if (items.length && !summary.lines.some((l) => l.key === "tried")) why.push("items scored but no tried line");
   if (first && !summary.lines.some((l) => l.key === "first_try")) why.push("first-try successes not stated");
+  if (explained && !summary.lines.some((l) => l.key === "explained")) why.push("own-words explanations not stated");
   return why;
 }

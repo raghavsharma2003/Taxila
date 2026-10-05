@@ -151,7 +151,9 @@ function create(api: EngineApi, spec: AreaSpec): EngineInstance {
   }
   function drawCompare(ctx: Ctx, c: { shapes: { w: number; h: number }[]; per: number }, a: number) {
     ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = "rgba(10,12,18,.8)"; ctx.fillRect(0, 0, W, H);
-    api.text(ctx, `SAME PERIMETER (${c.per}) · DIFFERENT AREA`, 500, 140, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 880 });
+    // two short lines, not one 860-unit line: the long line ran into the PiP corner (safe-zone battery, 2026-10-05)
+    api.text(ctx, `SAME PERIMETER (${c.per})`, 500, 140, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", track: 3, maxWidth: 620 });
+    api.text(ctx, `DIFFERENT AREA`, 500, 190, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 3, maxWidth: 620 });
     const cs = 34;
     c.shapes.forEach((sh, i) => {
       const cx = 290 + i * 420, x = cx - (sh.w * cs) / 2, y = 330 - (sh.h * cs) / 2;

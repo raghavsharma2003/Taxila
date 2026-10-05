@@ -4261,3 +4261,833 @@ pilot's size in the same simulation.
 
 ## Merged inbox entries (write-up from the entry text)
 - `voice-final-diya-2026-10-04` (2026-10-04): Diya (DragonHD) stays the production voice; TTS hunting stops. Tune pace after the Devanagari step and use punctuation-led phrasing (not SSML breaks) for the tiny natural pauses raters asked for. Reverse if the owner's own scores put another voice ahead.
+
+## Duplex critique decisions (2026-10-04, proposed; inbox `duplex-critique.json`)
+
+- **`duplex-verdict-anchor-last-voice`**: the G7 verdict clock anchors on the later of the last value's end and the
+  child's last voiced frame, then waits VERDICT.delayMs (2.0 s). It was re-chosen on TaxilaFDB train F1: 1.2 s gave
+  2-4/40, 1.6 s gave 1/40, 2.0 s gave 0/40. **Reverse if:** real-child sessions show verdicts on repaired values, or
+  listeners rate the wait as slow.
+- **`duplex-idk-tail-only`**: an IDK licenses idk_help only at the tail of the turn. **Reverse if:** real transcripts
+  show missed IDK replies above 2%.
+- **`duplex-echo-by-audio-span`**: echo candidates are her words audible inside the item's audio span, whatever the
+  text's arrival time. This also covers empty-skeleton tails, and on word-timed sources a single token aligned with her
+  same word. **Reverse if:** recorded sessions show children's words deleted (> 1% of answers).
+- **`duplex-unreadable-script`**: other-script STT output is unreadable. It is never complete, never re-voiced, and the
+  Director asks again. **Reverse if:** the STT stops hallucinating scripts.
+- **`duplex-turn-pace`**: within-turn pace. The longest resumed pause × 1.3 floors the later backstops and the verdict
+  delay; k was chosen on train. **Reverse if:** missed replies rise > 3 pt with no cut-off gain in ET-2.
+
+Evidence: `m-d8-duplex-critique-stress-2026-10-04`, docs/research/duplex/CRITIQUE.md.
+
+## voicesig verify pass (2026-10-04)
+
+### `vs-verify-guards-2026-10-04`
+Guards added to server/voicesig:
+1. Register-aware lexical filler (`fillerLexOf`).
+2. The acoustic filler lead counts only when it is unusual for this child (baselined z ≥ 1).
+3. The detector is ignored on narrowband routes (`NARROWBAND_MIC`).
+4. A voice-only licence requires g > 0, which means a mature baseline and usable audio.
+5. A safety abstain returns `shadow: true, licence: null`.
+
+**Reverse (3)** if phone or BT-recorded child audio shows event recall ≥ 0.5 on narrowband. **Reverse (2)** if the pilot shows the absolute lead predicts O1 better than z does.
+
+## W2-A fixer: review findings closed (2026-10-04; inbox `context/inbox/w2-a-fix.json`)
+
+### `w2a-safety-hold-refuses-start`
+A Conductor `safety_hold` refuses every lesson start: lesson, Practice and Ask. `startRefusal` in `server/routes/lesson.js` (W2-E's file; a one-line seam patch) answers 409 `{state: "safety_hold", control: "safety"}`. On the client:
+- `refusalOf` accepts the hold.
+- `RefusedScreen` shows the hold card: calm copy, Childline 1098 and Tele-MANAS 14416 printed, Back home only, and no grown-up "open now".
+- The lesson, Practice and Ask routes send the child home when this device's last plan read saw the hold (`cachedHold`).
+
+**Reverse if:** the safeguarding protocol (O24 reviewer) decides some supervised activity may run during a hold. Even then it is a new purpose with its own rule, never a plain lesson.
+
+### `w2a-hold-copy-trusted-adult`
+The hold home now says "Talk to a grown-up you trust." It used to say "Talk to a grown-up at home." A hold follows a safeguarding incident, and that incident can be at home. The floor's rule ("a trusted adult the child chooses, not an assumed parent") outranks the spec row, so STUDENT-FLOW §4.2 is corrected to match.
+
+**Reverse if:** never on the spec's say-so. Only the child-safety reviewer can change floor wording.
+
+### `w2a-reset-link-no-fallback`
+Reset links are built only from `TAXILA_URL`, else `PUBLIC_BASE_URL`. With neither set, no email is sent: the server logs `[account] reset email not sent: TAXILA_URL unset` and still answers 200. The old fallback to `https://taxila.app` would have mailed live tokens inside links to a domain the owner may not control.
+
+**Reverse if:** never. To change the host, set the env.
+
+### `w2a-reset-timing-and-token-spend`
+For an existing email, forgot-password now sends the 200 first and then does the account's work: the rate count, the token insert, the audit row and the mail. A real email therefore no longer answers measurably slower than an unknown one. The exception is the operator-keyed `@taxila.test` path, which still awaits because it needs `testToken`.
+
+A successful reset also spends the account's other outstanding tokens in the same transaction.
+
+The timing equality is by construction and has not been measured.
+
+**Reverse if:** a stored request is lost often enough that parents notice. Then queue the work instead of awaiting it.
+
+### `w2a-hear-listen-speakable`
+Two voice routes now pass their text through `speakable()` before `tts`:
+- "Hear {T}" through `skillLineSaid(child, text)`.
+- The parent's Listen through `speechSaid(text, mode)`.
+
+The unit test covers every class 4-7 maths skill label, in 3 languages, 4 states and the resolved address form: no digit reaches tts. Of the 424 labels, 48 contain digits (reviewer count).
+
+**Reverse if:** `w2g-speakable` is reversed.
+
+### `w2a-skill-line-address`
+The Garden and Sky line resolves the address form with `resolveAddress`, exactly as the lessons do, and every Hinglish and Hindi line has an aap variant. The secure line now says "Ek aur din bhi" / "on a later day" instead of "days later", because the delayed check is 20 h.
+
+**Reverse if:** G-REG-1 changes. This line follows it automatically.
+
+### `w2a-card-ticks-from-engine`
+The lesson card now has one count, `summary.counts`. `did.tried` and the did-based "No answers were checked" line are removed.
+
+- **DidCards:** quotes only. Each tick, and "with a hint", comes from the engine row of the same turn (`engineTick`). No engine row means no tick, and a C1 second try reads "with a hint".
+- **Per-skill counts:** `attempts` counts item rows only. Probes appear as a separate "Explained it: k".
+
+**Reverse if:** never towards two sources. If old lessons without did seq need ticks, backfill the seq rather than reading the legacy verdict.
+
+### `w2a-next-topic-for-plan`
+`nextTopicForPlan` / `nextTopicOf` in `reports/truth.js` is the one next-topic answer. Inside an active school test window it is scoped to the test's subject; otherwise it is the plain sequence. It is used by:
+- the child home and its "Next time";
+- the map's "here";
+- the parent home, and Progress next/here;
+- a lesson start with no topic;
+- the lesson-end and summary-read "Next time", read after the lesson.
+
+The `/api/lesson/end` and `summaryRead` changes are W2-E seam patches.
+
+**Reverse if:** the owner wants test windows to affect only the home card. That would contradict "next topic identical across surfaces".
+
+### `w2a-checker-explained-line`
+`summaryClaimsHold` now counts own-words explanations with its own label table: probe.why full and probe.teachback high, never via game. It fails a summary whose count differs from that, and one that leaves the line out.
+
+This rule is narrower than the weekly letter's `st.explained`, which also counts teachback mid. The two are different claims ("explained in their own words" vs "explained"), but a reviewer should reconcile them (open item).
+
+**Reverse if:** the reconciliation picks high|mid. Then change the builder and the checker together.
+
+### `w2a-ask-routing-margin`
+Ask routing now uses:
+- light stemming (plural, -ing, final e);
+- Hinglish verb stems;
+- a Devanagari synonym table;
+- concepts read from number notation (1/2, 0.5) and "plants + food", both weighted ×2.
+
+The winner must beat the best topic from another chapter by 1.5; same-chapter siblings count as the same idea. Each class below the child's weighs 1.5 less. Evidence: `m-w2a-ask-routing-2026-10-04`.
+
+**Reverse if:** a larger held-out set (≥ 50 real child questions) shows null misses above 20%, or any wrong topic above 3%.
+
+## W2-B fixer (2026-10-05; inbox `context/inbox/w2-b-fix.json`)
+
+### w2bfix-open-item-board-guard
+**Decision:** a show move (explain / reteach / worked example) on an item the child is still answering never puts that
+item's answer on screen. `modules.js openItemOf` names the open item (the move's item until it is in `itemsDone`, else
+the active item). The explain rung then draws the open item's own sum with "?" in the result cells (`hideResult` in
+column-op, combine-count, number-line-hop, equal-groups, area-grid; facts say `result ? (child works it out)`), tries
+the worked example next, and refuses EVERY script (code, library, live fill, terms) and every engine show whose facts,
+texts, number-work cells or digit rows state a key or acceptable answer (`server/forge/explainer/guard.js`). A number
+the prompt itself states is never a leak. Evidence: `m-w2bfix-open-item-leaks-2026-10-05` (0 / 12,093 mounts).
+- **Reverse if:** a reteach that shows the result is measured to teach better AND the turn gate stops her saying it
+  (never while the never-an-answer floor is the rule).
+
+### w2bfix-truth-devanagari-script
+**Decision:** the truth vocabulary and the whiteboard's token reader count combining marks as part of a word (`\p{M}`),
+so Devanagari words are whole; a Devanagari word is checked whatever its length. A label must be Latin or Devanagari
+(digits and plain punctuation allowed; ZWJ/ZWNJ only beside Devanagari), never a cloze blank (`_`), never narration
+(`truth.js sentenceShaped`: a Hindi finite clause or the ergative ने, English negation, a pronoun subject, past-tense
+narration, five or more words). The model fill prompt now asks for noun phrases. library.json was rebuilt against it
+(`m-w2bfix-library-rebuild-2026-10-05`).
+- **Reverse if:** a teacher review of the library finds the clause rule retiring good labels at > 10%.
+
+### w2bfix-frame-line-anchor
+**Decision:** the live board (explainer@1, inside the sandboxed frame) follows her voice. ModuleHost hears
+`taxila:line-audio-start` in the app window and posts `set_param cue {ageMs, n}` to engines that follow the anchor
+(never into the replay history; on the handshake when the anchor fired ≤ 2.5 s before the mount); the frame stamps its
+receipt time so the anchor is exact on the frame's own clock. With no anchor in 1.2 s (the text lane, or a lane that does
+not mark it yet) it draws on its own. `clause` anchors: `normalizeScript` keeps them only with `{clauses: true}` (strict
+refuses, lenient drops), and the Player shifts clause ops by `clauseOnsets` when the caller has them, so the gate and the
+renderer never disagree.
+- **Reverse if:** W2-G / W2-D deliver per-clause onsets: then the frame gets `clauseOnsets` too and normalise keeps clauses.
+
+### w2bfix-geometry-data-templates
+**Decision:** five code templates close the empty geometry / measurement / data beats: `angle@1`, `shape@1` (polygons,
+the circle's centre/radius/diameter, two congruent copies), `symmetry@1` (grid ground, mirror line, a dot N squares
+away and its image), `area-grid@1` (unit squares ≤ 12×8, else a scaled rectangle; area or perimeter), `bar-chart@1`.
+Code picks them from the move's text with the kit's own part words. Signed-integer ± problems hop on the number line;
+"how many more" is a subtraction.
+- **Reverse if:** W2-F's whiteboard archetype draws these per moment with the same truth (then these stay as the floor).
+
+### w2bfix-terms-last-rung
+**Decision:** the explain ladder's last rung is the topic's own key terms as a parts@1 board (`terms.js`), so no explain
+beat is empty (Rev 2 "0 empty trays").
+- **Reverse if:** a teacher review rates the terms board worse than an empty tray, or Studio's rungs cover every beat.
+
+### w2bfix-screen-guard-content
+**Decision (supersedes w2b-screen-guard-predicate):** `screenContradiction` allows the screen's part counts plus the
+move's content counts (`module.contentParts`, written by `writeFactsRow`, so the live caller in `server/brain/say.js`
+is unchanged). A screen with no part counts no longer passes everything: a maths screen flags any count outside the
+content, a diagram flags only forms that can only be part counts. A board's counts come from its facts and fraction
+number work, never its coordinates (`rj-w2bfix-coordinates-as-fractions`). The rewrite reason names the allowed counts.
+The stale `w2b-screen-guard.patch` for lesson.js is deleted: the guard has been live in brain/say.js since W2-E BR1.
+- **Reverse if:** it rewrites > 5% of explain turns in production without a measured contradiction.
+- **Code repair (with it):** a rewrite that still contradicts the screen loses the sentences that name stray counts
+  (`stripStrayParts`; the kit's posed question always stays); the reply path's half is
+  `server/forge/seam-patches/w2b-parts-repair.patch` for W2-E (brain/say.js, beside the `screen` repair).
+
+### w2bfix-spare-frame
+**Decision (supersedes w2b-frame-prewarm):** one pre-booted spare module frame per page (`prewarm.ts`, booted at lesson
+start from `useDesk` with `enginesForTopic(topicId)`). ModuleHost adopts it for the next mount with `Element.moveBefore`
+(the document stays alive) and hands it init + port; a browser without `moveBefore` gets a fresh frame as before. The
+frame accepts exactly one adopting init; a pre-imported engine renders in the init's own commit. Security is unchanged
+(same sandbox, CSP, origin checks; a page-level message after the port still kills it). Evidence:
+`m-w2bfix-spare-mount-2026-10-05`, `tests/w2b-whiteboard-browser.test.mjs` (adoption in the real app).
+- **Reverse if:** moveBefore misbehaves on Android WebView (a reload on move would show as a second load → killed), or the
+  spare's memory shows up on low-end phones.
+
+### w2bfix-watch-only-board, w2bfix-board-tap-evidence, w2bfix-continue-prior-ids, w2bfix-pick-interest-representation
+- The board's facts row says `use watch only`; the reply guard's half (a tap/pick line over a watch-only board with no
+  chips) is `server/forge/seam-patches/w2b-watch-only.patch` for W2-E (director/say.js). Reverse if a board gains a
+  Director-asked tap.
+- After drawing, each written word on the board is a tap target emitting `explainer.tap {opId, label}` (host-graded);
+  material for W2-C/E covert probes. Reverse if taps are measured to distract during her line.
+- A `continue` script may target the earlier board's ops by their own ids (`priorIds`); a remount draws on the same
+  board; an earlier op fades at its eraser's time. Reverse if W2-F's planner never emits continue.
+- The misconception's remediation picture and the consented interest choose HOW a fraction is drawn (bar / roti /
+  circle), never a value; the live fill gets the interest id and the kit's interest contexts. Reverse if it ever
+  changes a value (a test asserts it does not).
+
+## W2-C fixer: review findings closed (2026-10-05; inbox `context/inbox/w2-c-fix.json`)
+
+### `w2cfix-repaired-now-counts`
+`comprehension/reteach.js` `RESOLVED` now holds the outcome `resolve.js` actually writes: `repaired_now`, `resolved_next`, `resolved_delayed`. The old set held `resolved_now`, which is never produced, so a day-1 re-teach whose re-check in the same lesson was right was still invisible on day 2. Two consumers:
+- **child_history** uses `heldRepair`: `resolved_next` or `resolved_delayed`, or `repaired_now` that is not yet final. A final `repaired_now` was lost on the next lesson's first answer, so it is no proof.
+- **The delayed-fail recap (RT9)** uses any `RESOLVED` outcome: forgot is not never understood, and that arm did work once.
+
+`resolveAttempts` attempts now carry `final`. An end-to-end test (`tests/comprehension-reteach.test.mjs`) runs `resolveAttempts` → day-2 `selectReteach` with no hand-picked outcome, plus two controls: a lost repair, and an arm that failed twice.
+
+**Reverse if:** resolve.js renames its stages. The test then fails first.
+
+### `w2cfix-fade-gap-not-in-view`
+`fadeStepIndex` skips a candidate gap when its key is already in view, and walks back to the next recoverable step. If none is left, the kit keeps the full worked example. "In view" is checked by `gapGivenAway`: `items.js revealsAnswer` runs on the bare key, with no prompt to excuse a mention, over three things:
+- the problem;
+- the steps shown before the gap;
+- the gap line itself.
+
+A function-word key ("for", "has", "ka") is also skipped, because she says it in almost any sentence and the leak guard would spoil the step.
+
+`workedLeadContent` never shows the gap's own step. That was 31 of the review's leaks: with the gap at step 0, the lead showed `steps[0]`. Evidence: `m-w2cfix-faded-coverage-2026-10-05`.
+
+**Reverse if:** fewer than 70% of class 4-7 kits keep a faded step after a kit rewrite. Then fix the kits (write gaps whose key is not in the problem), not the filter.
+
+### `w2cfix-board-keeps-gap`
+`fadeBoard` never cuts the gap line:
+- the problem is shortened with `clip`, at a word edge with an ellipsis;
+- a gap line that is over 120 characters on its own is cut around its `___`.
+
+The first-step and worked-example boards use `clip(problem, 120)` instead of a silent hard cut at 80 characters. A test checks every fade board in classes 1-9 for `___` within 120 characters.
+
+**Reverse if:** the W2-B whiteboard renderer draws a steps board (the lines in sequence, sized to its stage). The faded step should then emit that board, and this text form becomes the fallback.
+
+### `w2cfix-stuck-routing-signal`
+**Recording.** A child who says "pata nahi" to everything leaves no outcome rows (a don't-know is `no_evidence`, and a rung-4 reveal returns none), so day 2 read them like a child the record could not tell about. The Director now records, per skill and once per item, the items the child got stuck on: rung 4 reached, or the item left after don't-knows or "An easier one" (`state.stuck`, `noteStuck`).
+
+**Routing.** `lesson.js` `loadRecentStuck` sums the last 5 lessons within 14 days. Only `guidanceLevel` and `equityProfile` read it; KT, beliefs, the parent report and evidence never see it. The routing rules:
+- one stuck item with nothing right on the skill, or two whatever else → the worked example, with no first-step probe;
+- stuck with no correct outcome → the low-baseline equity profile.
+
+No migration: the signal lives in `lesson.state`.
+
+**Reverse if:** on production, children routed by `history.stuck` get right-first-time on their first practice item at a rate within 10 points of the probe arm (n ≥ 30 per arm). The extra worked example then buys nothing.
+
+### `w2cfix-ask-start-safety`
+An Ask's first words pass the same predicate a child turn does (`director/safety.js scanSafety`, passive ideation included) at lesson start, before they become `ctx.askText`. A hit:
+- opens on the safeguard move, with the helplines on the board and in her opening;
+- writes an incident row (`detail.at = "ask_start"`);
+- sets no `askText`.
+
+**One consumer of the question.** The start returns `ui.askConsumed` when it handled the first words (answered them, or met them with the safeguard). `useDesk` then shows the question card without sending the words again as a turn, so the question is no longer explained twice. `askConsumed` is a new optional field in `UiDirectives`.
+
+**Reverse if:** the Ask flow moves the first words to turn 1 (the start would then open neutrally). Then drop `askText` and `askConsumed` together.
+
+### `w2cfix-wheel-spin-through-engine`
+P21 wheel spinning (`affect.js wheelSpinning`, over outcomes carried across lessons) is now a `wheel_spin` trigger inside `engineReteach`. The arm comes from `selectReteach`, child history first, and is written to `reteach_attempts`. Before this, it came from `afterMiss`'s generic "change approach" move, which fired early on day 2 and pre-empted the arm that had repaired the child on day 1.
+
+`afterMiss` keeps the generic move as the fallback when there is no belief. Either way it happens once per skill per lesson (`changedApproach`).
+
+**Reverse if:** wheel-spin re-teaches chosen by the engine resolve less often than the generic change of approach (arm posteriors, n ≥ 50 per path).
+
+### `w2cfix-assertion-before-break-repose`
+In `practice()`, an item whose answer was asserted (rung 4) goes to its isomorph before the after-break re-pose. It is never posed again "fresh". Seen in the Director: rung 4, then a frustration break, then the same faded step posed again.
+
+**Reverse if:** never. Re-posing an asserted item is a copy job.
+
+### `dc-w2c-support-rise-intended`
+Two arms rise by more than the acceptance's +1 teaching turn per skill at the median, compared with the legacy novice boolean. Both rises are intended support (W2-C #2), because legacy sent both children attempt-first on a prior it read as knowledge:
+- **struggling child:** +3;
+- **uncertain prior (0.5) who cannot start:** +3, on the probe path.
+
+`director-sim --teach-turns` names this decision for those two arms instead of waiving them silently, and prints the population median (all arms weighted equally): +3. Evidence: `m-w2cfix-teach-turns-2026-10-05`.
+
+**Reverse if:** production shows those children's first-practice right-first-time rate does not beat the attempt-first rate they had before (n ≥ 30 each). Then the support costs time for nothing.
+
+### `w2cfix-talk-gate-persona-change`
+The child-talk-share gate can now block a change. Its parts:
+- `evals/results/talk-baseline.json`: n = 3 director-sim lessons, median 0.238;
+- `scripts/talk-gate.mjs`;
+- `verify-release --persona-change <candidate.json>`, which runs the gate. The candidate file comes from `director-sim --save-talk`.
+
+A median drop of more than 10% fails. So do fewer than 3 lessons on either side ("not decided"), for a persona or model change.
+
+**Reverse if:** the talk share proves noisy at n = 3: a rerun of the same tree moves its median by more than 10%. Then raise n for both the baseline and the candidate.
+
+### `w2cfix-brief-entry-per-skill`
+In the CHILD-BRIEF v2, the ladder's skill gets the lesson's entry. Every other learning skill gets its own `guidanceLevel` from its own record, so an unseen second skill is `worked_step` and is never shown as `hint_first` just because skill 1 is attempt-level.
+
+**Reverse if:** the brief stops listing per-skill entries.
+
+### `w2cfix-evals-test-db-only`
+`evals/director-sim.mjs` and `evals/never-answer.mjs --live`:
+- never touch the main database. In-process they set `DATABASE_URL` to `CONDUCTOR_TEST_DATABASE_URL` (or `TAXILA_DB_URL`), and refuse to run without one;
+- open the parent's lesson hours, so a run after 20:30 IST is not refused;
+- delete the whole account with `DELETE /api/account {password, confirm}`. never-answer also does this on SIGTERM.
+
+never-answer also runs one child per variant ("done for today" refuses a second start), six at a time: 30 lessons in sequence outran a 600 s timeout and leaked the account.
+
+**Reverse if:** never for the database rule.
+
+### `w2cfix-chosen-by-child-history-020`
+Migration `020_reteach_child_history.sql` widens `reteach_attempts_chosen_by_check` to add `child_history`. 007 allowed only kit_primary, thompson, explore, recap and pick. The `reteach_attempts` insert rides the turn's one transaction (`brain/turn.js`), so the first turn on which `selectReteach` personalised the re-teach would have failed: a lesson error.
+
+It is applied to the Neon test branch (2026-10-05). **Production must apply 020 before this code deploys.** A test checks every chooser name in `reteach.js` against the newest check.
+
+**Reverse if:** never. Dropping a chooser value would need the code to stop writing it first.
+
+### `w2cfix-wheel-spin-none-is-not-absent`
+`engineReteach` confirms the `wheel_spin` trigger when the ledger view says `confirm`, or when the child's outcome record spins. The record rule is the same P21 rule `afterMiss` applies.
+
+`skillsMapFor` always sets `wheelSpin`: `none`, or `warn` until the view confirms a spin. So a `??` fallback to the record never ran, and a `warn` produced no trigger at all, which left the generic re-teach to fire. Evidence: personalisation-diff (b) went from 0/3 to 3/3 (`m-w2cfix-personalisation-diff-2026-10-05`).
+
+**Reverse if:** the ledger view starts reading cross-lesson outcomes itself. The history check is then redundant.
+
+## W2-D fixer: review findings closed (2026-10-05; inbox `context/inbox/w2-d-fix.json`)
+
+### `w2dfix-pace-adds-only`
+The pace knob can now only make a live call wait longer for the child, never shorter. Server VAD `silence_duration_ms` is the larger of the minted base (900 ms) and the knob, clamped to 900-1200. `ENDPOINT_MIN_MS` is 900 in both twins (`server/voice/realtimeSession.js`, `src/lesson/realtime.ts`), and `VoiceLink.setPace` never goes below the minted value.
+
+Why: W2-C's knob defaults to 700 ms (840 ms boosted), so from the first mint every live call ended the child's turn at 700 ms. `voice-turn-config` says 600 ms cut a child's mid-thought pause and 900 ms did not. A child cut off mid-answer is evidence we then grade (owner priority 1).
+
+Tested: the default vibe on every band, boosted or not, mints at least 900 ms. The production test asserts 900-1200.
+
+**Reverse if:** a measured run on class 4-7 children shows that a silence below 900 ms does not cut answers (reversal condition of `voice-turn-config`).
+
+### `w2dfix-link-stalled-soft-state`
+`LinkConnection` gains a soft state, `"stalled"`:
+- **When:** emitted at ICE `disconnected`; `connected` follows when ICE heals.
+- **Only `reconnect()` emits `"reconnecting"`.**
+- **Runtime and floor:** on `stalled` they discard nothing (no `TeacherTurns.clear`, no floor reset).
+- **useDesk:** the 4.5 s notice clock starts on `stalled`, `reconnecting` or `failed`.
+
+A blip that heals now keeps her last question, so the answer to it still carries it.
+
+**Reverse if:** the realtime transport changes so that a disconnect always loses the session's conversation.
+
+### `w2dfix-lane-resume-turn`
+After the switch, the client takes the realtime turns she finished but no child turn has carried yet, before the old link closes. It sends them on a resume turn (`TurnRequest.laneResume`, which is now in the contracts). What `server/brain/turn.js` does with that turn:
+- **Heard turn:** accepted once (`state.laneSwitch.resumed`), stored, and checked like any voice turn: answer leak, spoiled item, floor families, the helpline after a safeguard move, and the floor correction for the next compile.
+- **Transcript:** a `[lane: realtime → cascade]` system row instead of a child row.
+- **Evidence:** none. The turn is never classified and plans as a hold.
+- **Re-voicing:** if the move planned for the child's last answer was never voiced (nothing heard, or heard cut off), the cascade voices `lastMove` now.
+
+This replaces the empty ASR-0 repair turn (`rj-w2d-repair-turn-after-switch`). turn.js is W2-E's file; the edit is additive and gated on `body.laneResume`, and the replay suite in `tests/brain-turn.test.mjs` still passes.
+
+**Reverse if:** W2-E's lanes rework (BR2b) carries lane changes another way. Keep the checks on the heard turn.
+
+### `w2dfix-lane-switch-keeps-voice`
+After a switch, the rest of the sitting keeps the voice the child has been hearing: the character's `teacher.voice` on gpt-4o-mini-tts, not DragonHD. `styleForChild(…, { laneSwitched })` skips the dhd override when `lesson.state.laneSwitch` is set. This covers the turn prewarm, tts-stream and the prelude warm, and `/api/tts` Hear skips `dhdHear`. Voice choice stays config-driven.
+
+`voice.js` and `tts.js` belong to W2-G, so these are small seam edits that W2-G should know about.
+
+**Reverse if:** the realtime and cascade lanes are given the same voice (for example Voice Live on DragonHD, W4-A).
+
+### `w2dfix-lane-switch-resilience`
+- **Re-mint refused:** when `reconnect()` gets a 503 `{fallback:"cascade"}`, it stops retrying and emits `MINT_REFUSED`.
+- **Reconnects exhausted while online:** it emits `REALTIME_UNAVAILABLE`.
+- **Mapping:** both are marked fatal, so a lesson that cannot switch still fails as before. The runtime maps them to `switchToCascade("mint_refused" | "unavailable")`.
+- **Switch refused by the server:** the lesson stays on the realtime link and the switch can be tried again (`laneSwitching` resets).
+- **Switch taken, cascade link fails:** if the server took the switch but the cascade link cannot connect, the lesson fails and is closed on the server.
+
+**Reverse if:** never on its own. Revisit if the cascade lane can come back without network.
+
+### `w2dfix-rate-limit-retry-once`
+The first realtime `RATE_LIMITED` is retried once, after the rate-limit reset hint the session last sent (at least 1 s, at most 5 s). A second refusal within 30 s switches lanes. A pending safeguarding hand-off never waits: the Help sheet opens and the lesson switches at once.
+
+**Reverse if:** the soak shows retried refusals mostly fail again. Then switch on the first refusal.
+
+### `w2dfix-lane-a-verdict-blind`
+`compile/realtime.js` takes its row from `expressive/moment.js rowOf` (the cascade's own mapping) and only words each row for the realtime model. Flipping the verdict now never changes the note, which is HV-17, and is tested over every display × move × engagement. A safeguard move still gets no note.
+
+**Reverse if:** HUMAN-VOICE changes HV-17.
+
+### `w2dfix-lane-a-note-before-turn-shape`
+`withDeliveryNote` puts the lane-A note just before the instructions' last line, so the compiler's turn-shape rule stays last. `check-prompt-budget` now counts the longest note on top of the worst compile: 1664 of 2600 tokens. The flag stays off.
+
+**Before the flag goes on:** run the full never-deny-AI battery on both arms (5 per arm so far).
+
+### `w2dfix-face-cue-expiry` / `w2dfix-gaze-priority`
+**Queued cues:** `TutorFace` queues cues only on the 3D tiers, and stamps them:
+- at boot it drops a look older than 1.5 s and an affect older than 15 s;
+- a plate tier clears the queue.
+
+**Gaze targets:** `gazeElement` resolves them in priority order: the Studio stage (and the whiteboard on it) before the trays and the chalk board.
+
+**Open:** a glance per whiteboard drawing step waits for W2-B's stroke and beat events.
+
+### `w2dfix-nudge-reads-pace`
+The re-ask timer in `useDesk` now uses `state.pace.waitNudgeSec` (accepted between 4 and 30 s) once a turn has carried it. This is a one-line seam edit in W2-A's file.
+
+## W2-E fixer (2026-10-05; inbox `context/inbox/w2-e-fix.json`)
+
+### `w2efix-studio-slot-on-the-turn`
+The turn now calls W2-H's `studioSeam.slotFor` before the reply (W2-H's `w2h-turn-slot.patch`, hand-merged around W2-D's lane-resume edits, plus `w2h-say-screen-targets.patch`). An accepted reveal reaches the child as `ui.studioSlot` with `tray: "studio"`, and the reply guard counts it as a screen target. A reveal that `slotFor` holds (the Director owns the tray this turn, or the beat moved on) is stripped from `TurnResponse.studio`, so `onReveal` never writes a `studio_mount` row or counts a "Made for {child}" piece the child never saw. The trace records it as `studio_rejected.held`. The content-filter re-plan (a late safeguard) also clears the slot and calls `onSafety`.
+
+**Reverse if:** never. The rule is that a reveal is visible or it did not happen.
+
+### `w2efix-live-board-replaces-rung`
+On explain beats the live whiteboard is the explanation surface and W2-B's template rung (`explainer@1` in the module tray) is its fallback. When the rung is the Director's only new thing on screen, the ask costs no attention and carries `replacesRung`. Once `requestIntent` acks:
+- the rung's mount and `set_param` commands go (or it is unmounted if it was already up);
+- `state.module` is cleared;
+- its facts row leaves `lastContent`, so the next turn never points at values that are not on screen.
+
+A null ack keeps the rung and is traced as `studio_rejected.declined_by_studio`. An interactive catalog engine show (place-value, number-line, geoboard and the like) still outbids the board (`over_budget.attention`), because the child can act on it.
+
+**Reverse if:** a blind owner review prefers the template rung, or the engine show, over the live board on explain turns. Also reverse if the board's async failure rate (see `m-w2efix-acceptance-local-2026-10-05`) leaves too many calm trays. In that case, carry the rung's params in the slot as a fallback (an open item for W2-H).
+
+### `w2efix-whiteboard-ask-gating`
+`whiteboardAskOf` now takes the move and Studio's view. It declines with:
+- `studio_rejected.not_explain` on a repair, hint, hold or module turn inside an explain beat (all four used to ask);
+- `studio_rejected.attention` while an interactive Studio piece is on screen (`requestIntent`'s own refusal rule);
+- `studio_rejected.reveal_ready` when Studio proposes a reveal this turn (the piece made for the beat wins and is not lost to the ask's higher urgency).
+
+**Reverse if:** a hint turn is found to need a drawing (it would then be its own beat, not the explain beat's ask).
+
+### `w2efix-lanes-shared-hot-only`
+`server/lanes.js` applies the 30% background window only to `SHARED_HOT` deployments: `taxila-fast`, `grok-4-1-fast-non-reasoning` and `taxila-realtime`, plus the `DEPLOY_REPLY/CLASSIFY/FAST/REALTIME` and classify-fallback deployments the server runs on. `TAXILA_SHARED_HOT` overrides the list. A background call on a Studio build arm is never queued. The live whiteboard planner should also be a hot call. That is W2-F's file, so it ships as `server/brain/seam-patches/w2e-plan-whiteboard-hot.patch`. Until it is applied, the board is safe only because `taxila-gpt6-luna` is unshared.
+
+**Reverse if:** a Studio arm starts carrying hot traffic. Add it to `SHARED_HOT` (env) rather than reverting.
+
+### `w2efix-classify-hedge-to-fallback`
+The classify hedge now goes to the FALLBACK deployment (`hedgedFallback`; MODEL-ROUTER §0: `taxila-fast`, the other family, 16/16 on S2, 37/40 vs grok's 38/40 with 0 graded wrong). It fires at 1.5 s, or at once when the primary fails fast. Neither call retries, because each is the other's retry. A content-filter block on either one decides immediately (fails closed). `distressCheck` hedges the same way, so in an outage it no longer fails open to the predicate alone. A fallback label carries `cls.fallback` (`cls_source.fallback` in the trace). `TAXILA_DRILL_HANG_DEPLOY` is a drill-only hook that makes the named deployment's classify calls hang.
+
+**Reverse if:** a classify accuracy run shows the fallback's labels on slow-tail turns measurably worse than grok's. In that case, keep the fallback for failures only and hedge to the same deployment.
+
+### `w2efix-trace-comprehension-trail`
+`brain_trace` now answers the comprehension question from the row alone (owner priority 1). It adds closed families:
+- `cls.*` and `cls_source.*` (model, fallback, error, asr, content_filter, exact, lexical, chip, module, help…);
+- `verdict.*` (the verdict on the child's screen);
+- `guard.*` (replaced, rewritten, repaired and the families the guard caught);
+- `component_error.<seam>`, from a per-turn wrapper around `seamSafe` that keeps the same fallback contract;
+- `turn.fallback_reply`;
+- `release.goodbye_wrap` and `release.check_in_given`;
+- W2-D's `turn.lane_resume[_revoice]`, which `knownReasons` was silently dropping.
+
+`016_brain.sql` gains nullable `item_id` and `misconception_id` (kit ids). These are written only when a once-per-process column probe sees them, so a database on the first 016 never fails a turn.
+
+**Reverse if:** never for the codes. Drop the id columns only if the parent-facing page stops needing item-level answers.
+
+### `w2efix-authority-on-the-real-turn`
+G-AUTHORITY is now enforced on the turn, not only on `arbitrate()`. After each `kernelRun()` the move sent must equal `kernel.arb.move`. A mismatch is logged and traced as `component_error.director`; there were none in the replays or the local runs. W2-I's `w2i-turn-say.patch` is applied: the vetted safety opening, the relational never-rules on her words, `cls.relRelease` on a relational RELEASE, and `verdictReversed`. The stop check itself (`w2i-state-stop-check.patch`) is W2-C's file and stays for W2-C at integration. Its test in `tests/brain-turn.test.mjs` is skipped until `state.js` has it. It passed 6/6 in a scratch copy with the patch applied.
+
+**Reverse if:** never.
+
+### `w2efix-held-fragment-never-lost`
+With `turn.predictive` on, `CascadeLink.close()` delivers a held fragment before teardown, and a resumed hold has a ceiling (`holdMsFor + 2 s`, `FragmentMerger.drain`). A held line can be a disclosure. The flag stays off.
+
+**Reverse if:** never.
+
+### `w2efix-small-loose-ends`
+- `pace` is sent only when the kernel accepted the vibe knobs (a safeguarding turn freezes them; absent means unchanged on the client).
+- `HOLD_ONE_TURN` is surfaced as `relationalEffects().holdOneTurn` and traced, with W2-D's realtime lane as its open consumer.
+- The whiteboard intent's band comes from the one bands table, `server/learner/bands.js`.
+
+### `w2efix-opening-keeps-floor-phrase`
+Applying W2-I's `w2i-turn-say.patch` made `safeguardLine` / `fallbackReply` on a safeguard use the vetted opening. Its English DISCLOSURE text said "Childline on 1098" and "Tele-MANAS is 14416", which tripped the floor test in `tests/lesson-truth.test.mjs`. That test requires the literal "Childline 1098" and "Tele-MANAS 14416". The fix is in the opening, not the test. The wording is now "You can call Childline 1098, free, any time. To talk about worries, call Tele-MANAS 14416." It is changed in both `server/relational/openings.js` and `src/lesson/safetyStrings.ts`, which stay byte-identical. The relational openings, never-rules and floor tests pass.
+
+**Reverse if:** never. Every language's opening keeps the literal helpline phrases.
+
+## W2-G fixer (2026-10-05; inbox `context/inbox/w2-g-fix.json`)
+
+### `w2gfix-helpline-separator-forms`
+Helplines are read digit by digit in every separator form a model writes, in every spoken cell (Hinglish, Hinglish at a Hindi-medium school, Hindi, English). The forms covered, for both 1098 and 14416:
+- plain `1098`;
+- hyphens, spaces or en dashes between the digits (`1-0-9-8`, `1 0 9 8`, `1–0–9–8`) and split groups (`10 98`);
+- dots between the digits (`1.0.9.8`);
+- brackets and pairs (`(1098)`, `1098/14416`).
+
+How the match works, in `server/voice/spoken.js` (`safetyRe`):
+- Each gap may be one space, hyphen or en dash. A dot counts only when every gap is a dot, so the decimal `10.98` stays a decimal and `10 - 98` stays maths.
+- The number is never joined to another digit through a hyphen or a dot.
+- Accepted edge: a bare countdown that spells a helpline (`10 9 8`) is read as the helpline. The safety reading wins.
+
+`safetyRegister` matches the same forms (`mentionsHelpline`). This was a blocker: `1-0-9-8` was spoken as "one to zero to nine to eight".
+
+**Reverse if:** never. Only widen it, if a new written form turns up.
+
+### `w2gfix-sticky-engine-fallback`
+When DragonHD fails and the voice falls back to gpt-4o-mini-tts, the switch now sticks (`server/voice/speech.js`). It works on three levels:
+- **Circuit breaker, per DragonHD voice:** one failure opens it for 60 s. After that, a single request probes it. A probe that gets headers closes the breaker and starts a new epoch.
+- **Per reply (`voiceLane`):** each part waits until the part before it has chosen its engine. That wait (about 0.3 s, the headers) is hidden behind the part that is still playing. If any part fell back, every later part of that reply speaks mini-tts. If a part spoke DragonHD, the rest of the reply tries DragonHD even if the breaker opened in the meantime.
+- **Per lesson:** a lesson that fell back stays on mini-tts until the breaker closes, so it is never the probe.
+
+`voice.expr.engine_fallback` counts one switch per lesson. "Hear" obeys the breaker too.
+
+**Reverse if:** a blind test shows that a mid-reply voice change is not noticed, which is very unlikely. Tune `BREAKER_OPEN_MS` from production fallback telemetry.
+
+### `w2gfix-echo-only-when-prelude-plays`
+The child's echo is stripped from the reply only when the uptake prelude is certain to have played:
+- `renderParts` builds part 0 twice: stripped, and `full0`, which keeps the echo (`withEcho`).
+- `streamParts` speaks `full0` on a `prelude_miss`.
+- tts-stream without a prewarm renders with `prelude: false`.
+- "Hear" compiles `withEcho(plan)`, and strips an ungoverned filler (HV-4).
+
+**Reverse if:** never. This is HV-2 applied to the audio the child actually hears.
+
+### `w2gfix-prelude-token-closed-class`
+The prelude token passes `preludeTokenOk` (`server/voice/expressive/prelude.js`) in both `align()` and `warmPrelude`. A token is allowed only if both hold:
+- **It is in a closed class:** a number of 1 to 4 digits (or a simple decimal or fraction), a spoken number word, a term from the spoken lexicon, or a word from `moment.uptakePrelude.vocab`.
+- **It is clean:** no never-rule hit, no personal data, and not the child's name.
+
+**Reverse if:** W2-E's `keyTokenOf` itself picks only from the item's answer vocabulary. Even then, keep the screen as a second check.
+
+### `w2gfix-clause-events-on-player-clock`
+The whiteboard now takes its timing from `PcmStreamPlayer`, not from the network:
+- It marks `markLineAudioStart` at the scheduled time of the first sample, on `performance.now()`.
+- It emits each clause onset (`playAt`) when that sample is scheduled.
+- Onsets that were scheduled but never heard are emitted again on resume.
+
+Clause frames reach the player through a `ClauseSink`. Both `fetchSpeechStream` and the parked turn-audio fold send them there. `textLink.ts` passes the request.
+
+`cascadeLink.ts` (W2-E) needs one line, to be handed over:
+```ts
+const playback = this.player.play((signal, sink) => this.speech({ lessonId: this.lessonId, seq }, signal, sink), { req: { lessonId: this.lessonId, seq } });
+```
+Until that line lands, the cascade gets a wildcard line anchor, and its clause events still fire at parse time.
+
+**Reverse if:** never.
+
+### `w2gfix-safety-skips-silence-cap`, `w2gfix-stage-directions-never-spoken`, `w2gfix-identity-positive-forms`
+- **Silence cap:** the governor's silence cap skips the safety register, so the 300 ms gap holds at every boundary.
+- **Stage directions:** `spokenRun` strips `[…]` and `*…*` stage directions before DragonHD. DragonHD reads tags aloud (12/12).
+- **Identity answers:** the plain answer "Haan, main AI hoon" / "I am an AI" / "मैं AI हूँ" is spoken in the safety register. The greeting ("main AI teacher hoon") is not.
+
+**Reverse if:** never for the first two. Revisit the identity forms only if the greeting gets flattened again.
+
+### `w2gfix-hinglish-roman-fillers`, `w2gfix-hinglish-hindi-medium-operators`
+- **Fillers:** Hinglish replies get Roman fillers. Devanagari fillers are used only for Hindi.
+- **Operator words:** for a Hinglish child at a Hindi-medium school, the cell keeps Hindi number words but uses plus / minus / into / divided by / equals. `RENDERER_VERSION` is now `sp2-2026-10-05`.
+
+Neither has been checked by ear. Both are on the owner's HV-9 blind page.
+
+**Reverse if:** the HV-9 raters prefer Devanagari fillers or formal operators for these cells.
+
+### `w2gfix-unmeasured-voice-stays-oai`
+An unprobed DragonHD row (Uma) is not used. That character speaks her own gpt-4o-mini-tts voice until the row is probed, or until the owner picks a voice in config.
+
+**Reverse if:** the row is probed (set `measured: true`, with its base rate).
+
+### `w2gfix-expect-engine-gate`
+The prod test `w2g-voice.mjs` with `TAXILA_EXPECT_ENGINE=dhd` fails when the opening or "Hear" uses mini-tts (`/api/tts` now sends `x-tts-engine`).
+
+**Reverse if:** never.
+
+
+## W2-H fixer (2026-10-05): Studio in the lesson, review findings closed
+
+### `w2hfix-grade-by-item`
+The Studio host grades BY ITEM, never by a pointer (server/studio/grade.js): an answer is graded against the item it names (skeletons send itemId), else the first open item, else a closed item it fits (alreadyClosed: right, no second row); the verdict is still qa/graders.js graderFor run on that one item. The stage sends a mount key per StudioStage mount + 'Show me again' epoch; a new key restarts open/closed bookkeeping but items that wrote evidence stay remembered. Answers past 12 per item are graded, never counted.
+
+**Reverse if:** builds carry item ids through studio-kit (then the no-id fallback can go).
+
+### `w2hfix-facts-row-from-slot`
+Studio's facts row for the reply is built in turn() AFTER the kernel and slotFor, from the slot the turn actually shows (studioSeam.factsRowForSlot), and instructions are recompiled only when the row changed; no row for a refused/held reveal, a piece hidden by the Director's tray, or a whiteboard. The row carries the piece's values, 'state just shown' on the reveal turn, and the host's 'last answer / wrong tries / finished' after.
+
+**Reverse if:** W2-E's kernel produces screen facts itself (then factsRowForSlot feeds it instead).
+
+### `w2hfix-studio-answers-reach-lesson`
+Studio answers reach the conversation through the module-event path (WorkTray studioToLesson): the finished piece is goal_met (Director celebrates the method), every 2nd wrong try on an item is stuck (Director's 'one small nudge on the activity'), single wrong/right tries ride along as interaction; no client 'correct' is sent. StudioTurnView gains outcome {lastVerdict, wrongCount, complete} and suggest reteach/advance (advisory until W2-E BR2b reads it).
+
+**Reverse if:** the Director gains a Studio-aware reteach move (then suggest drives it).
+
+### `w2hfix-retire-incorrect-evidence`
+When a revealed piece leaves the tray (beat exit, replaced, Not this one, the child's next lesson start, LRU eviction; never a safety retire) each item answered wrong and never right writes ONE incorrect event (same deterministic id as a correct close, episodeEnded → C4). Contrast pieces: a right answer carries discriminates=misconceptionId, a wrong answer matching the belief's signature (the diagnostic option tagged with the misconception) carries misconceptionId (a hit).
+
+**Reverse if:** the ×0.75 studio weight proves miscalibrated for incorrect closes in the W3-A fairness study.
+
+### `w2hfix-contrast-params-from-misconception`
+Prefetch personalisation, stated honestly: the SELECTION is the child's (their own misconceptions and re-teach rows first, filtered to THIS kit; else one kit diagnostic misconception the kit can prove, after the explanation piece); the PARAMS are personal only for contrast pieces whose kit diagnostic states fractions (seam.misconceptionTruth: right option, then the belief's option, then the prompt), passed to plan.js chooseArchetype as truth. Every other piece uses generic paramsFromKit params.
+
+**Reverse if:** W3-B truth packs give per-misconception params for non-fraction topics.
+
+### `w2hfix-one-task-at-a-time`
+slotFor holds a NEW reveal while the Director's move poses its own kit item (probe/practice/retrieval/teachback with an itemId: the turn passes hint.asking); a piece already on screen stays.
+
+**Reverse if:** practice pieces are rebuilt to BE the Director's item (W3-E per-step pieces).
+
+### `w2hfix-two-row-bars`
+The fraction bar skeleton lays out d>6 as two rows across 336 units (a 10-part bar = 5+5 parts of 67 units; d=12 = 56 units); dense number lines label every other tick; the marker moves only by 54-unit arrow buttons.
+
+**Reverse if:** AT-12 shows two-row bars confuse the part-whole picture in the child tests.
+
+### `w2hfix-spend-row-at-race`
+A live build's spend is written to studio_mount (source 'live', revealed_at null) the moment the race returns, whatever the outcome; a reveal completes the same row and keeps source 'live' (facts.shownAs records a skeleton fallback). No schema change.
+
+**Reverse if:** spend moves to a dedicated ledger table.
+
+### `w2hfix-frame-incidents-two-lessons`
+frame-error carries a reason; only csp / runtime / navigated count against a build (library.noteIncident, one per lesson in record.incidentLessons). At 2 distinct lessons an unreviewed build is retired and a promoted one is demoted to transfer_passed (review queue); not_ready (slow phone), unavailable and bytes swap to the skeleton for that child only.
+
+**Reverse if:** incident telemetry shows single-lesson incidents are always real build defects.
+
+### `w2hfix-minor-hardening`
+onReveal never reveals after a safety event; the frame runtime takes the init port in the capture phase and stops propagation (a build cannot answer through the port); parent_off / safety_mode at prefetch makes no piece at all; a missing bond snapshot fails safe to 'meeting'; module-only turns do not move the retire/gap clocks; the lesson registry is LRU; a 409 on answer drops the piece to the calm ground; the More menu is placed inside the clipping stage; the veil paints shapes only (no unchecked model text).
+
+**Reverse if:** never for the safety items.
+
+## W2-F fixer (2026-10-05; inbox `context/inbox/w2-f-fix.json`): review findings closed
+
+### `w2f-whiteboard-no-reveal`
+The whiteboard gate has a check W9 (`server/studio/qa/whiteboard.js` `withheldValues` + `revealsOf`, gate `wb-gate@2`). Nothing drawn may equal the answer of any kit item unless she says that value in this line. Answers are compared as rationals, so 10/16 matches 5/8. W9 checks:
+- drawn numbers and results the gate re-computes;
+- column, fraction and equation results;
+- a number-line tick labelled with the answer (an evenly spaced axis of 4 or more labels is exempt);
+- a dot, arrow head or label leader placed at the answer's position on a number line;
+- the asked item's word answer (3 words or fewer).
+
+Why every item and not only the asked one: `StudioAsk` carries no ledger of the items already asked. A bare `0` or `1` label is exempt, because it marks an origin or a whole, not a result.
+
+`kitNumbers()` no longer lists item answers or acceptable forms. The worked example (steps and answer) stays allowed. `WB_SYSTEM` gets a last-position shape note: on a question line, draw the setup only, with `?` or an empty box. A W9 repair is told in words what to remove. A placeholder (`1/?`, `3/__`) counts only its digits for W4.
+
+Without W9, the bench's boards would have shown the answer on 5 of 31 production lines, and the covert-comprehension signal (owner priority 1) would be corrupted.
+
+**Reverse if:** never the rule itself. Narrow the "every item" withholding once `StudioAsk` carries the ledger of items already asked.
+
+### `w2f-whiteboard-hot-lane`
+`planWhiteboard` calls the model with `quotaLane: "hot"`. This applies W2-E's patch `server/brain/seam-patches/w2e-plan-whiteboard-hot.patch`. The board is child-facing beside her voice, so `server/lanes.js` never queues it behind Studio builds, even if `STUDIO_WB_DEPLOY` is pointed at a shared pool.
+
+`lanes.js TPM` gains `taxila-gpt6`, `taxila-gpt6-luna` and `taxila-gpt61-sol` at 500k each (ARM listing 2026-10-05, `w2f-azure-deployments-2026-10-05`).
+
+The output cap is `WB_MAX_TOKENS` 1100, down from 2200; measured output tokens are p90 375, max 659. A repair runs only when at least `REPAIR_MIN_MS` (3 s) of the 7 s budget is left. The op guidance is now "4-16 ops", down from 6-24.
+
+**Reverse if:** a whiteboard bench at n ≥ 30 shows the 1100 cap truncating JSON on any line. If so, raise the cap and keep the hot lane.
+
+### `w2f-luna-reserved-for-whiteboard`
+`routes.json` drops the opportunistic `luna6-low` (`taxila-gpt6-luna`) third arm from every Studio race (the defaults and all 12 archetypes). That deployment carries the live whiteboard: one call per line, beside her voice, with a 7 s budget. A race arm can stream up to 16k output tokens from it.
+
+**Deviation from MODEL-ROUTER §0.** §0 lists luna as the third opportunistic race arm. The measured gain from that arm was 14/15 → 15/15 P(pass by 60 s), p50 29.6 → 26.7 s (`model-refresh` studio races, n = 15 each, CIs overlap). The whiteboard is owner priority 6.
+
+**Reverse if:** a dedicated whiteboard deployment exists (`STUDIO_WB_DEPLOY`, e.g. `taxila-gpt6-luna-wb`). Then restore the arm. Also reverse if a load run shows no whiteboard 429s or deadline misses with the arm racing (n ≥ 30 boards under at least 3 concurrent races).
+
+### `w2f-whiteboard-not-a-build`
+The router's whiteboard rule (rule 2):
+- **`meeting` (the first session):** the whiteboard IS allowed there. It is not a build: there is no code and nothing to interact with, and our code draws a gated script.
+- **"Only ready-made ones" (parent control `ready_made`):** the whiteboard is refused (`studio.ready_made_only`), because a model-written board is not ready-made.
+
+`seam.requestIntent` now asks `routerDecide`. Tests: `tests/studio-router.test.mjs`.
+
+**Reverse if:** first-session board incidents appear (a W9 or W5 escape reported by a parent), or parent research shows the meeting should stay voice-only.
+
+### `w2f-whiteboard-spend-one-mount-per-beat`
+Spend:
+- `planWhiteboard` returns `usd`: the sum of `usdOf` over the usage of each round, drawn or not.
+- The seam books it in the global `breaker.spend`.
+
+Mount rows:
+- The seam writes ONE `studio_mount` row per whiteboard beat, from the beat's first board, carrying any spend still pending.
+- Later "continue" boards of the same beat add their spend to that row (`usd = usd + x`) instead of writing a row per line.
+
+The Made-for-you feed already skips `source = 'whiteboard'` rows.
+
+**Reverse if:** parents ask for each board of a beat in the feed. Then write per-line rows that are hidden from the feed by default.
+
+### `w2f-late-script-fast-forward`
+`src/modules/whiteboard/clock.ts` (a W2-B file, coordinated per the review) now takes an anchor that fired for EXACTLY the script's line (same `teacherReplySeq`), however old it is. The Player's clock is `now − anchor`. So a script that arrives after she has started speaking shows at once what she has already said, then follows her voice. It no longer waits out the grace and replays from t = 0 after her line.
+
+A loose match (no reply seq) still needs to be recent. The resolution reports `AnchorTiming {lateMs, source}`, and StudioWhiteboard posts it to `POST /api/studio/wb-timing`. The seam logs `[studio] wb_timing` and keeps p50/p90 stats (`wbTimingStats`). This is the production sync telemetry.
+
+**Reverse if:** a browser study shows a late board's at-once catch-up confuses children more than a replay does.
+
+### `w2f-wb-speech-from-spoken-text`
+The whiteboard's line duration (W6) and clause onsets are estimated from `toSpoken(text)` (`server/voice/spoken.js`), not the written line. "3/8" is spoken as words, so number-heavy lines were underestimated before.
+
+W4 also reads number words past twelve in both languages:
+- the comprehension normaliser's phrase reader, per clause and never across aur/and;
+- the translit table's Roman Hindi 0-99;
+- "teen bata aath" as 3/8.
+
+**Reverse if:** DeliveryPlan clause onsets reach the planner. Then use those and drop the estimate.
+
+### `w2f-pizza-sectors-fixer`
+`plan.js sectorsForCutCircles` (inside `fitOps`) replaces a circle cut by lines through its centre with N exact equal sectors, under these rules:
+- k diameters give 2k parts, and k radii give k parts.
+- N must be a count her line gives.
+- Mixed cuts, or a cut that another op targets, are left alone.
+
+This fixes shape, never truth. A 4-part cut where she said 8 is still refused by W8. A fixed bench line was added for it.
+
+**Reverse if:** never. It only changes shape.
+
+### `w2f-chatstream-empty-stream-diagnostics`
+On `empty_stream`, `chatStream` attaches `err.diag`: status, url, redirected, type, a whitelist of headers and ms. It also logs one warning. The test server stamps a nonce header, so a flake now shows whether this server answered.
+
+No retry was added: a retry would hide a real production failure mode (`rj-w2f-chatstream-retry`). The root cause is unconfirmed. The flake did not reproduce in this session's split full-suite run, and the builder's proxy explanation is rejected (`rj-w2f-chatstream-proxy-explanation`).
+
+**Reverse if:** a diag shows a stale pooled socket or a foreign responder. Then fix that root cause in `azure.js`.
+
+### `w2f-router-bench-not-comparable` (deviation, for the main loop to accept or reject)
+BUILD-PLAN W2-F says the router bench must reproduce the LIVE-STUDIO §14 numbers within their ranges. It cannot be compared directly. §14's probe built at a 360 × 640 portrait viewport, while the bench gates at the 360 × 320 tray (`rj-w2f-probe-portrait-viewport`). The earlier hand-in said "Deviations: none". That was wrong, and this entry records the deviation explicitly.
+
+**Reverse if:** a probe re-run at the tray viewport becomes the §14 reference.
+
+## W2-I fixer (2026-10-05): relational core and safety floor, in-lesson precision
+
+### `w2ifix-leave-anchoring`
+A goodbye or stop phrase counts only when it closes its clause (`server/relational/signals.js` anchoredLeave):
+- after the hit come only filler words (address terms, "now", "ok", "for today"); a pure greeting may carry one name;
+- the clause has no number and no answer word;
+- the hit does not follow a copula or a modelling verb ("the answer is bye", "say bye").
+
+Clauses are judged per comma sub-clause, so "it's 24, bye" is an answer and then a goodbye.
+
+A stop phrase has two extra rules:
+- It is void for the whole turn when the turn answers, skips or steers ("i'm done, it's 24", "this one, give another", "can we do science", "stop now i got it").
+- Its tail may also carry lesson words ("can we end today's lesson", "क्लास यहीं खत्म कर दें").
+
+Some lexicon forms are now position-restricted:
+- bare "i'm done" only as a whole clause;
+- "time for dinner" only after it's / now / my;
+- "chalta hoon" and "tata" only bare or after a closing word;
+- "band karo" / "बंद करो" only opening the clause.
+
+**Reverse if** the in-lesson negatives (`evals/relational-os/inlesson-negatives.mjs` and both held-out sets) show any false release with a looser rule. Also reverse if a measured classifier backstop makes the lexical goodbye redundant.
+
+### `w2ifix-third-party-ask-verb`
+The F6 third-party (grooming) branch fires in only two cases:
+- a lexicon contact or secret form inside a reporting frame;
+- an actor plus an ASK verb (maanga, poocha, asked for, bhejo, send…) plus data that points at the child (a possessive, "where I live", "ghar ka pata"), with the data word not followed by a numeral. An actor plus an explicit meeting or secrecy ask also counts, unless it is a surprise or a gift.
+
+Generic say / want verbs never fire it. The bare PERSONAL_DATA fallback is gone. The contact lexicon now requires her data or the child's data:
+- "send me a picture of the triangle" no longer fires;
+- bare "my number" ("my number is 5") no longer fires;
+- "call me <name>" is removed (it belongs to the address fold);
+- "can we meet at 12 o clock" no longer fires.
+
+Romance "dating" is narrowed to "dating me/you/someone".
+
+**Reverse if** a third-party report written in the child's own words is missed that the old fallback caught. On v2, the new rules caught 23/48 and the old ones 15/48.
+
+### `w2ifix-pleading-never-releases`
+`policy.js` releases only on leaving: a true goodbye, or a second stop phrase.
+- Pleading with no goodbye ("i feel lonely", "please don't go", "mujhe akela lagta hai") gets one CHECK_IN (checkin_point_out). After that it gets POINT_OUT (point_out_person) and the lesson goes on.
+- Pleading together with a goodbye still gets the one check-in, and then releases.
+
+**Reverse:** never. Ending the lesson on a child who said they feel alone is the opposite of I-7.
+
+### `w2ifix-harm-on-safety-turns`
+On a safety turn, `seam.decide` now lets the predicate run (`harm` is no longer forced false), and a classifier `distressKind` of self_harm, abuse or fear counts as harm. A disclosure said with pleading ("mat jao didi, papa mujhe roz maarte hain") is therefore new distress, and its goodbye gets its own check-in before release.
+
+### `w2ifix-wantstostop-anchored`
+`safety.js wantsToStop` changes:
+- "bye" / "good night" / "goodbye" count only when they close the turn, at its start or after a closing word.
+- Devanagari forms are letter-bounded with \p{M} ("बायाँ", "बायोलॉजी" are left and biology).
+- "मैं चलता/जाता हूं" counts only at the end of its clause.
+- "बंद करो" counts only when it opens the turn.
+
+Longer goodbyes are left to the anchored relational lexicon. **Reverse if** a measured goodbye corpus shows misses that only the old unanchored "bye" caught and that the relational lexicon and the classifier also miss.
+
+### `w2ifix-abuse-gap-report-nonhuman`
+The four-word-gap abuse rule (actor … maar/peet) is switched off when the gap holds a reporting verb (ne bataya, bola, kaha, kehte, padhaya…) or a non-human subject (plants, paudhe, cells, keede, log, janwar, saanp…). "mummy ne bola papa marte hain" still fires through the adjacent-actor rule, and "Papa gussa hote hain toh maarte hain" still fires. **Reverse if** a real disclosure phrased with a reporting verb in the gap is missed.
+
+### `w2ifix-goodbye-hooks-widened`
+At a goodbye, these now count as hooks:
+- GOODBYE_TEASER: "phir / agli baar / next time … practice / padh / rakhiye / kijiye", except "dhyan / khayal / aaram rakhiye / kijiye";
+- GOODBYE_AVAILABLE: "jab aap / tum phir / dobara / chahein / mann ho";
+- kin_self: the third-person "Asha didi se" / "Arjun bhaiya se".
+
+Both replies observed in the 2026-10-04 runs are now positives in `never-rules.data.mjs`. The coded-corpus gate still passes.
+
+### `w2ifix-gender-possessive-repair`
+`GENDER_FORMS` adds possessive self-reference ("main aapki AI teacher hoon" from a male persona sheet, and the reverse). `repairSelfGender` swaps that one possessive word deterministically on the text and cascade lanes before the reply is stored or spoken. This is one line in `server/brain/turn.js`, beside the relational-floor check. **Reverse if** the repair ever changes a word other than the self-referential possessive.
+
+### `w2ifix-tables-probe-at-load`
+- **Table probe:** `relational/seam.js` probes the 018 tables once at module load, but only when a database is configured and never under `node --test`. A lesson end after a restart therefore still writes its rows when its session is in memory.
+- **Missed-end counter:** a lesson end that finds no in-memory session (a restart, or another replica) is now counted and logged. Before, it was silent.
+
+Per-process session state across replicas is still open.
+
+### `w2ifix-stop-case-warn-until-patch`
+`tests/prod/w2i-release.mjs` now carries the plan's stop-phrase case: one check-in with three chips, then the stop chip or a repeat ends the lesson, steering is not a stop, and the lesson is marked stoppedEarly. `w2i-safety.mjs` carries:
+- check-in then release;
+- pleading plus disclosure;
+- passive ideation.
+
+Both detect W2-C's `stopAsked` in `server/director/state.js`. Without it they WARN and skip; they never pass. **Reverse:** these become plain assertions once W2-C applies `w2i-state-stop-check.patch`. It applies with `patch -p1`, offsets only; `git apply` refuses it.
+
+### `w2ifix-compile-note-position-deferred` (rejected minor, with reason)
+I did not move the RELEASE / CHECK_IN / WARM_BOUNDARY notes to the appended-last slot of the `w2i-compile-rel-shapes.patch`. Two reasons:
+- The move is only meaningful with an AT-B1 cascade re-run, about USD 40, on W2-C's compile once the patch is applied.
+- Moving it without that run would be reasoning in place of measuring.
+
+**Do it when** W2-C applies the patch. The plan's own trigger (F5/F8 > 0 after the patch) already holds.
+
+### `w2ifix-atb1-method-deviation`
+For the record, two deviations in AT-B1:
+- Its audio-in used our in-house TTS, not the probe fleet's fake media.
+- Its two model coders have κ ≈ 0 on romance and exclusivity.
+
+So the W2 exit run needs human coders (O22c), or at least a third adjudicating coder.
+
+
+<!-- merged from inbox/duplex-engine.json -->
+## Duplex engine model + TaxilaFDB (2026-10-04, inbox duplex-engine.json; merge AFTER duplex-v2.json)
+- `duplex-stage-a-ships-2026-10-04`: stage A (rules + governor) is the engine. The LLM semantic estimate and stage B both stay off behind their flags.
+  - Test split (960 streams, held-out families and voices), thinking-pause cut-offs:
+
+    | arm | cut-offs |
+    |---|---|
+    | stage A | 2.3-2.6% |
+    | cascade-900 | 31% |
+    | silence-640 | 74-83% |
+    | Smart Turn | 37-64% |
+
+  - Stage A's decision gap is p50 370 ms on the fast lane and 1,140 ms on D4.
+  - Reversal: real-child audio (E1), or a real-audio stage B that passes the closed-loop gates. Write-up in docs/research/duplex/ENGINE-MODEL.md.
+- `duplex-stageb-features-only-no-vouch`: only an audio-reading model may vouch for unseen audio at G5. A features-only stage B that vouched spoke 32 verdicts on repaired values.
+- `duplex-safety-alt-readings`: duplex partial safety scans the echo-stripped and punctuation-free readings with the same predicate. Result: 84/84 distress detected on test, 0 safeguards over a talking child.
+- `duplex-wait-time-ii-backstop`: the open-explanation backstop is now 2.5-3.5 s, and a yield tag can end an explanation.
+  - Train split, fast lane: cut-offs 9.8% → 2.0%, missed replies 11.2% → 1.8%.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rs1-ui-v3-scoped-tree` (2026-10-04): The ages 9-15 design system lives in a new tree src/ui-v3/** whose tokens and classes are scoped to .v3 and prefixed v3-. With the ui.v3 flag off (the default: localStorage tx.flag.ui.v3, ?uiv3=1|0|default, VITE_UI_V3=1), Wave 2 screens render exactly as integrated, and 0 shipped dist files contain v3 classes. Reverse if integration finds the two token sets must merge (one :root set): port tokens.css to src/styles/tokens.css and drop the scope.
+- `rs1-face-slot-contract` (2026-10-04): v3 screens never draw a teacher face. They render <FaceSlot>, whose default renderer is src/avatar's <TutorFace> (3D head, else the 2D plate of the same look). `still` forces the plate wherever several faces share a screen, so a page holds at most one live WebGL face: the lesson mounts the tile OR the PiP, never both. RS-7 swaps in the style-C puppet with setFaceRenderer() and no screen changes. No portrait or raster may appear in src/ui-v3; lint L-RASTER enforces it (owner O-R1). Reverse if RS-7's renderer needs per-screen props the slot does not carry; then extend FaceSlotProps.
+- `rs1-schedule-rules-pure` (2026-10-04): All scheduling rules live as pure functions in src/ui-v3/schedule.ts, and the caller passes 'today' and 'now' (the controls never read the device clock). The rules: a 15-minute rail that never lets a lesson end after lesson hours; a 14-day strip that disables clash days and days off with the reason in the accessible name; a time grid where past, outside-hours and clash rules are evaluated in that order, with a 15-min lead today. The server can re-validate with the same file, and no native date/time input exists anywhere (lint L-NATIVE). Reverse if a family's time zone must be resolved client-side; it is server-side by design.
+- `rs1-toast-predicate` (2026-10-04): A toast may carry only real-world facts (saved, offline, mic). A predicate in src/ui-v3/toast.ts drops build, generation, loading, error, model, server and retry copy, plus emoji and '!!', before render, and counts what it drops. This is safety by predicate, not by instruction to callers (R9). Reverse if a real-world fact the child must act on is ever dropped; then add it to the pass cases in tests/ui-v3-lint.test.mjs first.
+- `rs1-day-amber-965700` (2026-10-04): Day-theme amber changed from #A86200 (DESIGN-V3 / v3.css) to #965700, because #A86200 measured 4.76:1 on white and missed the spec's own ≥ 5:1 rule. #965700 measures 5.74 on bg-1, 5.31 on bg and 5.03 on bg-3, and its hue stays 34.8°. Reverse if the design owner prefers to keep #A86200 and drop amber text from white grounds (icon-only verdicts).
+- `rs1-tomorrow-not-printed` (2026-10-04): The 14-day strip prints 'Today', then weekdays. 'Tomorrow' is announced (aria) but not printed, because it spilled out of the 56 px cell at every viewport. Reverse if the cells widen to ≥ 72 px.
+- `rs4-v2-rung1-engine-spec` (2026-10-05): Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner.
+- `rs4-shared-pure-grader` (2026-10-05): Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame).
+- `rs4-host-recorded-input` (2026-10-05): Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s).
+- `rs4-safe-zone-measured` (2026-10-05): The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs).
+- `rs4-erasable-ts` (2026-10-05): shared/studio-spec.ts and src/studio-v2/core|engines use erasable TypeScript only (no parameter properties, enums or namespaces), so Node 22 type stripping can import them in tests and on the server without a build. Reverse if the production image cannot run Node >= 22.18 (then bundle studio-spec for the server with esbuild).
+- `rs4-junk-labels-rejected` (2026-10-05): Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens.
+- `rs4-explainer-establish-subject` (2026-10-05): An explainer's repair must keep the subject on stage from beat 1. angle-sum injects a show-triangle cue on the first beat when repair removed it. Reason: fuzz seeds 3, 9 and 11 produced a blank stage for 2.5 s. Reverse if an explainer's design intends a dark open longer than 1 s; in that case the fuzz's blank-stage rule must allow it explicitly.
+- `rs6-content-f0-selection` (2026-10-04): Content F0 (patch docs/design/reset/prework/rs6/patches/01-content-f0.patch, flag TAXILA_CONTENT_F0, on by default): items 1-2 by expected success (0.85, 0.75; θ default C-0.5), never ge <= C-2 unless the child is weak, measured ge preferred over the difficulty proxy, opener floor ge >= C-1, never the topic's top level when two items sit below it, diagnostic at position 3+ off item 1's motif, cap across skills dropping the easiest; harderThan (null at the top, never a step down), fastForwardSkips, testedOut; topic start = school chapter > placement startGE > calendar x 0.8. Reverse if real-child first-item P(correct) for on-track children falls below 0.6 (M-OD-10 lower band): lower the floor or the target.
+- `rs6-placement-cat` (2026-10-04): Placement CAT (server/placement): ability.js gridPosterior as a library; 4PL with c = 1/K for choices, item b set so P = 0.7 at the item's GE anchor; prior N(C-0.5, 1.25) (start mid-class, q50 for unimodal near-grade posteriors, q30 otherwise); first item near GE C-0.7; then P-target selection (0.8 after a miss, 0.65 after a hit) among items with P in [0.45, 0.9]; caps 8 below / 4 on / 4 above grade / 12 total; IDK = half an observation of not knowing; result.placement is an own-evidence site for initialBase. Code-graded only. Reverse the selection rule to 'blend' if real sessions show the down-move is not needed (blend RMSE 0.58 vs 0.61); reverse IDK weight if IDK rates differ by ability less than 2:1 in real data.
+- `rs6-rubric-v2` (2026-10-04): Calibration rubric v2 (evals/content-level-v2/rubric-v2.mjs, frozen by sha): rater not shown chapter/topic/outcome; given the 2025-26 NCERT chapter scope of classes C-2..C+1; returns grade + demand + needsC, verdict computed by code (too easy = grade <= C-2). Two raters from different families: taxila-gpt6 + DeepSeek-V4-Pro. ge = mean grade - 0.5. Used for agreement and calibration, NOT as a sole gate (precision < 90%). Reverse if a teacher-rated anchor set shows v2 grades off by > 0.5 class on average.
+- `rs6-overlay-not-kits` (2026-10-04): Re-levelled items live as an overlay (data/kits-relevel) merged by data/kits-relevel/merge.mjs into an output dir; only blind-solver-agreed, not-too-easy items merge; data/kits is written only after the human pass. Reverse when the human pass is complete: merge into data/kits and retire the overlay.
+- `rs7-translit-roman-to-devanagari` (2026-10-05): Roman Hinglish -> Devanagari step before TTS (server/voice/translit, flag TAXILA_VOICE_DEVANAGARI, OFF by default): per sentence, hand lexicon (numbers 0-100 + scale/ordinal/fraction words mapped to spoken-lexicon WORDS.hi.below100, core words, verb-inflection generator) > dev-learned lexicon > ambiguous words by context (strong-prior set: par/do/main/hum...) > number context (teen sau saath -> साठ) > की/कि after verb forms > rule transliteration for unknown Hindi-looking words; English words, names, acronyms stay Latin so langRuns wraps only Hindi in <lang hi-IN>; a sentence with no unambiguous Hindi word is untouched; safety text (helpline, identity, safety register/moment; predicate on the WRITTEN text) is byte-identical. Wired by patch 01 at dhd.js spokenRun (covers dhd, mai, omni) and patch 02 at speech.js ttsInput, via spoken.devanagari. Reverse if: a human listen on the RS-7 20 number lines finds Devanagari worse than Roman on any voice, or held-out word accuracy falls below 95% on a refreshed corpus.
+- `rs7-voice-switch` (2026-10-05): Voice switch server/voice/voice-switch.js: TAXILA_TEACHER_VOICE=diya|priya|marin behind one interface (styleFor maps onto the existing dhd/oai pipeline style; documentFor/synthesize standalone). Unset (default) = no change, voices.js decides as today; production default voice unchanged. priya refused unless TAXILA_ALLOW_PREVIEW_VOICE=1 (voice-ga-only-for-minors). Respects W2-D laneSwitched (a lane-switched lesson keeps the realtime voice). Lives in a new file because voices.js already exists. Reverse if: the owner's pick needs per-teacher voices (then fold into voices.js VOICE_TABLE).
+- `rs7-devanagari-all-three-voices` (2026-10-05): All three switch rows carry devanagari: true (still behind the flag): the step raised number words heard on Diya 87.0 -> 98.2%, Priya 74.7 -> 93.7%, marin 91.0 -> 97.6% (rs7-m-render-diya, rs7-m-render-voices). Reverse if: a human listen prefers Roman on a voice.
+- `rs7-fallback-rules-not-model` (2026-10-05): Unknown-word fallback default = rules (heuristic classifier + rule transliteration), not the char n-gram NB model: the model adds +0.2 pt word accuracy but turns 1.3 pt more English words into Devanagari (English kept 99.5 -> 98.2%), the expensive error. Model kept as opt-in arm (TAXILA_TRANSLIT_FALLBACK=model). Reverse if: on a refreshed corpus the model's English-kept is >= the rules arm's while recall is higher.
+- `studio-v2-engine-plus-spec` (2026-10-04): Studio V2 (docs/design/reset/STUDIO-V2.md, answers owner-reset R3/R4/R9/R14): the default generation path is a hand-built archetype engine (craft, physics, truth, juice, failure handling) driven by a small model-written JSON spec (items, pairing, pacing, goals from a closed predicate list, narration cues, strings; 1.2-3.4 KB). The engine validates, recomputes every truth from the kit, repairs or falls back to its reviewed default. Live code builds (LIVE-STUDIO) become the opportunistic fallback for needs no engine covers. Catalogue: 36 game/sim and 27 animation archetypes mapped to NCERT 4-7 ids. Reverse if a live code arm reaches P(strict gate pass by deadline) >= 0.95 on n >= 30 per archetype AND blind child/owner craft ratings match the engine pieces (>= 4/5).
+- `studio-v2-static-layers` (2026-10-04): Studio engines paint static art (full-screen gradients, star fields, floor grids, large additive glows) once per backing-store size into a layer (lib/stage.js st.layer) and blit it 1:1; only moving or twinkling elements stay live. Reverse if a real-device trace on the reference phone shows layer memory (about 4 MB per layer at 1830x824) costs more frames, through GC or upload stalls, than it saves.
+- `studio-v2-frame-guard` (2026-10-04): Studio loop runs every frame inside a guard: a throwing frame restores the last good image (snapshotted every 0.5 s); 3 errors in 1 s stop the loop and raise engine_failed so the host cross-fades to the board version; a malformed spec (truncated JSON, array, null) never throws, params() returns {} and the engine plays its reviewed default (spec_unparseable logged). Reverse: never (zero visible failure is owner-reset R9).
+- `voicesig-shared-encoder-smart-turn` (2026-10-04): One shared audio front-end for duplex and voice signals: the existing 16 kHz tap, dsp.ts contours, one incremental log-mel ring, and ONE ORT-web session running the Smart Turn v3.2 backbone (BSD-2, data CC-BY-4.0, 8.7 MB int8) with its frame sequence (layer_norm_8) and pooled embedding (sum_1) exposed as extra outputs. One pass per committed turn end feeds pTurnEnd (duplex) and the knowledge head (voicesig); the backbone stays frozen through K2; a later fine-tune is multi-task and ships only if end-of-turn metrics do not regress. Devices too slow for the pass degrade to prosody + scalars. Reverse if VSP-M2 shows the embedding adds no knowledge signal over handcrafted features (voicesig drops the encoder; duplex keeps it), or VSP-M1 fails the mid device class (3 s window or prosody-only).
+- `voicesig-outcome-defined-labels` (2026-10-04): Label test for every voice-derived output: (1) its training target is a task outcome (correct now, delayed/transfer success, recognition-probe success after 'yaad nahi', a wrong answer persisting after feedback, replication on an isomorphic item), never a human rating of how the child seemed to feel or sound (E1 coder labels may evaluate, never train); (2) names from a closed knowledge vocabulary (Research A's state names fluentRecall, fragileCorrect, heldBelief, searching, absent, effortfulGuess, rapidGuess, workingAloud, answerReliability, plus q and ABSTAIN; each defined by the outcome it predicts), never unsure/confident/doubt/confused; (3) enters decisions only as evidence weights or move licences, never as a description in a prompt, never shown or stored as a state; (4) lint-enforced. Rationale: restriction 12 lists Ekman-type emotions; the EU guidelines Microsoft aligns with treat attitude and emotion as equivalent, so renaming alone does not move a model; an outcome target does. Reverse if Microsoft answers in writing that restriction 12 or 4 reaches outcome-trained knowledge evidence from speech timing or prosody (voice then reduces to Tier T plus timing-free features).
+- `voicesig-training-cpu-first` (2026-10-04): Voice knowledge-model training runs on CPU in India first (K1 on E1 and K2 monthly refits: an ACA job in southindia, under USD 2 [E]); GPU only for a K3 encoder fine-tune, on AWS g5/g6 spot through the existing scripts/gpu harness (self-shutdown, EventBridge backstop, reaper, terminate on exit), estimated USD 22-36 spot (at most 64 on-demand) against the USD 80 cap, behind a taxila-voicesig budget with a deny-RunInstances action. K3 waits for a Mumbai G-spot quota so P4 child audio stays in India, unless the P4 notice names US processing. Production uploads head outputs only; embeddings and audio for training come only from the P4 cohort. Reverse if Azure grants GPU quota in India (move K3 there), or K1/K2 show the encoder adds nothing (no K3).
+- `voicesig-baselines-main-db` (2026-10-04): Per-child voice baselines and head calibration stay in the main database (Azure PG Flexible, South India), under an opt-in parental grant (V2), keyed by an HMAC pseudonym, loaded at lesson start and written once at lesson end; the voicesig.* schema is Neon-portable. Storing numbers in a database is not use of a Microsoft AI service; Neon has no India region and would need a second deletion path. Reverse if the owner or counsel prefers separating voice-signal data from Microsoft (move to Neon, accepting Singapore residency and an outbox/reconciliation deletion path).

@@ -1729,3 +1729,340 @@ in Node.
 into later files.
 
 **Replaced by:** saving and restoring the four globals in `finally`.
+
+## Duplex critique rejections (2026-10-04; inbox `duplex-critique.json`)
+
+- **`rj-duplex-verdict-anchor-value-word`**
+  - **Tried:** the verdict gate at the last value's end + 2.0 s.
+  - **What broke:** a unit word ate the wait. In "पंद्रह | सेंटीमीटर [1.4 s] सॉरी बारह" the gate fell 90 ms before "सॉरी",
+    and the verdict on 15 played (TaxilaFDB test 4/40, FAST).
+- **`rj-duplex-idk-anywhere`**
+  - **Tried:** idk_help licensed by an IDK phrase anywhere in the turn.
+  - **What broke:** "पता नहीं … कभी कभी लगता है मैं ना" got a reply committed 30 ms after the last word, before the distress
+    phrase was visible.
+- **`rj-duplex-echo-arrival-window`**
+  - **Tried:** echo candidates taken from a 2 s window before the text's arrival.
+  - **What broke:** late straddling items kept her tail. 92/181 stage A reply texts began with her own last word, and
+    the uptake re-voiced it.
+- **`rj-duplex-verbatim-stt-sim-as-gate`**
+  - **Tried:** an L1 simulated STT that returns the script verbatim, used as the gate for lexical and safety behaviour.
+  - **What broke:** the real transcriber returned only 42/90 child segments verbatim on the same streams, and 5/90 in
+    another script.
+    - With calibrated errors, the shared safety predicate caught 68/84 distress lines.
+    - Stage A's missed replies rose 8.7 → 15.3%.
+  - **Replaced by:** the `sttReal` world in every duplex report, and TaxilaFDB v2 on real transcripts.
+
+## voicesig verify pass (2026-10-04)
+
+### `rj-vs-haanji-as-filler`
+**Tried:** taking `fillerLex` from server/signals' `fillerLead`.
+**Broke:** `PLANNING` includes haan, han, ji, ok, okay, achha. So `readText("haan ji, paanch").fillerLead.v === true` (measured), and a deferential child's correct answer counted as Tier-T hesitation, agreeing with fragileCorrect.
+**Now:** `server/voicesig/rules.js fillerLexOf(toks)` skips deference tokens, and the adapter uses it whenever `ling.toks` is passed. The fix for signals' own D1 L4 is proposal A2b in INTEGRATION.md.
+
+### `rj-vs-absolute-filler-lead`
+**Tried:** an E term on raw `fillerLeadMs >= 300`.
+**Broke:** it fires on every turn for a child who habitually opens with "aaa", and on about 7% of fluent read utterances through false alarms (`m-vs-verify-fleurs-lead-2026-10-04`). On narrowband audio the detector collapses (recall 0.15).
+**Now:** the lead counts only when the child's baselined z is ≥ 1, and it is ignored on `bt` and `speaker_route`.
+
+## W2-A fixer rejections (2026-10-04; inbox `context/inbox/w2-a-fix.json`)
+
+### `rj-madefor-child-id-column`
+- **What was built:** `server/reports/madeFor.js` followed LIVE-STUDIO §10's sketch. It read `studio_mount.child_id` and treated `outcome` as text.
+- **What 017 actually has:** no `child_id` on `studio_mount` (016's rule: rows are keyed by `lesson_id`, so erasure cascades), and `outcome` is jsonb.
+- **What broke:** every query failed with 42703, and the defensive catch returned `[]`. The Made for you shelf and the parent's card could never show anything, and nothing told anyone.
+- **The fix:** join `lesson.child_id`; read only an explicit `outcome.result`; skip whiteboard and hidden pieces; name a piece with no build row by its image alt, else its topic.
+- **Lesson:** a defensive catch that turns a schema error into an empty result needs an acceptance test that renders real rows.
+
+### `rj-ask-route-tie-only`
+- **What was tried:** an Ask question went to the top topic whenever it scored ≥ 3, unless two subjects tied exactly.
+- **What broke:** 6 of the 30 fixture questions went to a wrong topic:
+  - "ped khana kaise banate hain" (class 6) → microbes;
+  - "integers ko kaise jodte hain" → multiplying integers;
+  - "rectangle ka kshetrafal" → area of a triangle. Here the plural stripper turned "rectangles" into "rectangl".
+- **Why it matters:** a wrong topic is worse than null, because null keeps the plan's topic.
+
+## W2-B fixer rejections (2026-10-05; inbox `context/inbox/w2-b-fix.json`)
+
+### `rj-w2bfix-coordinates-as-fractions`
+**Tried:** `partsOnScreen` (and the teacher-screen eval's metric) turned every `[a,b]` in `JSON.stringify(params)` into
+`a/b` and read the denominators. **Broke:** on a board every point is `[x, y]`, so a flow diagram "showed" part counts
+118, 152 … and the guard let almost any part count through; the eval's metric was loose the same way. **Now:** a
+board's counts come from its facts (`fraction`, `parts`, `groups`) and fraction number work only.
+
+### `rj-w2bfix-paint-test-sleep-in-span`
+**Tried:** `w2b-first-paint.mjs` waited 400 ms after every turn response before looking for the paint. **Broke:** the
+400 ms sat inside the measured span, so every first paint read ≥ 400 ms (443/466 reported) whatever the client did; the
+adopted frame actually paints ~50 ms after the response. **Now:** the explain turn is measured at once, over 12 topics.
+
+### `rj-w2bfix-guard-skip-empty-screen`
+**Tried:** `screenContradiction` returned null when the screen had no part counts. **Broke:** "5/4" said over a flow
+board passed by design (the 97.5% bar's one miss). **Now:** `w2bfix-screen-guard-content`.
+
+### `rj-w2bfix-sentence-rule-four-words`
+**Tried:** a sentence-shape rule of "≥ 4 words, or a capitalised word followed by an -ed/-es word". **Broke:** it retired
+181 of 331 library entries, plain noun phrases among them ("Rights and duties", "Healthy body and mind", "Carbon dioxide
+and water"). **Now:** clause markers only (Hindi finite endings / ने, negation, pronoun subject, past narration) and ≥ 5
+letter words: 53 retired, all clauses, questions or truncations.
+
+### `rj-w2bfix-defer-paint-to-probe-fleet`
+**Tried:** reporting the 300 ms first paint and the 150 ms warm mount as gates only the Azure probe fleet can judge.
+**Broke:** both spans start with the response in hand and fetch nothing when warm: they are client work, which the
+fleet cannot make faster. **Now:** a spare frame removes the boot from the span, and the gate applies in the sandbox.
+
+### `rj-w2bfix-number-minus-as-negative`
+**Tried:** a signed-integer pick that read every "−N" as negative. **Broke:** "8 − 3" became start 8, hop −3 on a number
+line instead of a take-away; products like "4 × (−3)" hopped too. **Now:** a sign is negative only where no operand
+precedes it; ×, ÷ and algebra lines never hop.
+
+## W2-C fixer (2026-10-05; inbox `context/inbox/w2-c-fix.json`)
+
+### `rj-w2c-resolved-now-token`
+**Tried:** matching re-teach outcomes against `resolved_now`.
+
+**Broke:** `resolve.js` writes `repaired_now`, so child_history and the delayed-fail recap never saw a repair made in the same lesson. The W2-C unit test fed `resolved_next` by hand and hid this.
+
+**Now:** `RESOLVED` uses the real token, and an end-to-end test runs `resolveAttempts` → `selectReteach` with no hand-picked outcome.
+
+### `rj-w2c-stuck-threshold-two`
+**Tried:** routing to the worked example only after 2 stuck items.
+
+**Broke:** an all-"pata nahi" day-1 lesson of 14 turns reaches the assertion once (the Director alone, `c5-maths-ch01-t01`), so that child still got the first-step probe on day 2.
+
+**Now:** 1 stuck item with nothing right, or 2 whatever else.
+
+### `rj-w2c-generic-wheel-spin-first`
+**Tried:** leaving P21 wheel spinning to `afterMiss`'s generic "change approach" re-teach.
+
+**Broke:** with outcomes carried across lessons, it fires early on day 2 and pre-empted the arm that had repaired the child on day 1. personalisation-diff (b) scored 0/3, and no `reteach_attempts` row was written on day 2.
+
+**Now:** a `wheel_spin` trigger inside `engineReteach`.
+
+### `rj-w2c-fade-board-tail-cut`
+**Tried:** cutting "problem · gap line" at 120 characters from the end.
+
+**Broke:** in 93 of 341 class 4-7 kits the `___` itself fell off the board, so the child could not see the step they were asked to fill.
+
+**Now:** the gap line is never cut.
+
+### `rj-w2c-child-history-unwritable`
+**Tried:** adding chosen_by `child_history` in `selectReteach` without widening 007's `reteach_attempts` check.
+
+**Broke:** the insert rides the turn's one transaction, so the first personalised re-teach would have failed the turn. It never fired in W2-C's runs, because the step was dead behind the `resolved_now` token, and that is why nothing failed.
+
+**Now:** migration 020, and a test over the chooser names.
+
+## W2-D fixer (2026-10-05; inbox `context/inbox/w2-d-fix.json`)
+
+### `rj-w2d-pace-knob-below-base`
+**Tried:** letting the vibe knob set server VAD silence directly, clamped to 600-1200 ms.
+
+**What broke:** W2-C's 700 ms default cut every live call from 900 ms to 700 ms. That contradicts `voice-turn-config` (600 ms cut children off mid-thought), and none of that decision's reversal conditions had been met.
+
+**Fixed by:** `w2dfix-pace-adds-only`.
+
+### `rj-w2d-stall-as-reconnecting`
+**Tried:** reporting ICE `disconnected` as `"reconnecting"`.
+
+**What broke:** the runtime reads that state as a rebuilt call and wipes the teacher turns it holds. So every blip that healed lost her last question before the answer could carry it:
+- the answer-leak and spoiled-item checks never ran;
+- the answer was graded as real evidence.
+
+**Fixed by:** `w2dfix-link-stalled-soft-state`.
+
+### `rj-w2d-repair-turn-after-switch`
+**Tried:** an empty ASR-0 "repair" turn after a lane switch.
+
+**What broke:**
+- it stored a fake `[no speech]` child row;
+- the last realtime turn was cleared on the client, and the server, already on cascade, would have ignored it anyway;
+- the Director answered with an unrelated fresh move, so the child never heard the feedback on their last answer.
+
+**Fixed by:** `w2dfix-lane-resume-turn`.
+
+### `rj-w2d-lane-a-verdict-arc`
+**Tried:** lane A choosing its arc by verdict (`not_yet` / `partial` → calm → reassuring → curious).
+
+**What broke:**
+- it violates HV-17;
+- the two lanes voiced one Moment differently;
+- the unit test asserted the violation.
+
+**Fixed by:** `w2dfix-lane-a-verdict-blind`.
+
+## W2-E fixer (2026-10-05; inbox `context/inbox/w2-e-fix.json`)
+
+### `rj-w2efix-reveal-without-slot`
+**Tried:** the kernel accepting a Studio reveal while the turn never called `slotFor`.
+
+**What broke:** `TurnResponse.studio.reveal` went out with no `ui.studioSlot`, and the client's Desk shows the studio tray only with a slot. `onReveal` still marked the piece revealed and wrote `studio_mount`, so "Made for {child}" and the spend caps counted pieces the child never saw. W2-H's slot patch sat unapplied.
+
+**Fixed by:** `w2efix-studio-slot-on-the-turn`.
+
+### `rj-w2efix-board-beside-rung`
+**Tried:** the whiteboard ask costing one attention unit beside W2-B's template rung.
+
+**What broke:** the rung spent the turn's attention on every explain move, so the ask was rejected on 52 of 66 explain turns (2 of 2 in a local lesson). The builder blamed the missing `requestIntent`.
+
+**Fixed by:** `w2efix-live-board-replaces-rung`.
+
+### `rj-w2efix-same-deployment-hedge`
+**Tried:** the classify hedge duplicating the same deployment, with the azure.js default retry and the fallback only after both had failed.
+
+**What broke:** the 404 drill fails fast, so it passed. A real hang, 5xx or 429 would have cost the child about 15-21 s, and `distressCheck` failed open to the predicate alone.
+
+**Fixed by:** `w2efix-classify-hedge-to-fallback`.
+
+### `rj-w2efix-bg-cap-everywhere`
+**Tried:** the 30% background window on every deployment.
+
+**What broke:** the Studio build arms carry no hot traffic and are not in the TPM table, so they were capped at 60k tokens a minute. The 21st prefetch build queued 55 s, and the live whiteboard planner (tagged background, on a build arm) queued behind builds past its 7 s budget.
+
+**Fixed by:** `w2efix-lanes-shared-hot-only`.
+
+### `rj-w2efix-unknown-codes-dropped`
+**Tried:** emitting `turn.lane_resume[_revoice]` (W2-D) with no entry in the closed vocabulary.
+
+**What broke:** `knownReasons` dropped the codes silently, so the trace never showed a lane resume. Fixed by adding them. A new code must land in `reasons.js` in the same change.
+
+### Deferred (not rejected)
+- **Speculation on relational turns:** not changed. `state.rel` does not reach the compile until W2-C applies `w2i-compile-rel-shapes.patch`. Once it does, measure the hit rate with an overlay against without one in `evals/cascade-latency.mjs` before choosing a separate prompt slot or pre-speculation decide. A change now would be unmeasurable.
+- **The `scanSafety` miss on "mujhe ghar pe bahut maar padti hai":** confirmed (W2-I's file, the safety floor). Left to W2-I, who owns the file and has it modified in the working tree. The classify hedge now keeps the model backup alive in an outage.
+
+## W2-G fixer (2026-10-05; inbox `context/inbox/w2-g-fix.json`)
+
+### `rj-w2g-helpline-plain-form-only`
+Helplines were matched only in their plain form. A model writing `1-0-9-8` had it spoken as a range ("one to zero to …"), and `10 98` was spoken as "ten ninety-eight". The HV-3 fixtures used only the plain forms, so the tests never saw it. Replaced by `w2gfix-helpline-separator-forms`.
+
+### `rj-w2g-per-part-engine-fallback`
+The fallback was decided separately for each TTS part:
+- One failed sentence changed the voice in the middle of an utterance (Diya → marin → Diya).
+- While DragonHD was degraded, every part waited out the 4 s header timeout again.
+
+Replaced by `w2gfix-sticky-engine-fallback`.
+
+### `rj-w2g-strip-echo-before-prelude-known`
+The echo was stripped at plan time, before anyone knew whether the prelude would play. Three paths then dropped the first words of the reply: tts-stream without a prewarm, "Hear", and a prelude miss. `preserved()` still passed, because it counts the stripped text as present. Replaced by `w2gfix-echo-only-when-prelude-plays`.
+
+### `rj-w2g-clause-events-at-parse-time`
+Clause events were emitted when their frame was parsed, carrying the server's `atMs`:
+- The start lead, underrun gaps and pause/resume all moved real playback away from `atMs`.
+- Nothing marked the line anchor, so the board always ran on its 1.2 s grace clock.
+
+Replaced by `w2gfix-clause-events-on-player-clock`.
+
+
+## W2-H fixer rejections (2026-10-05)
+
+### `rj-w2hfix-pointer-grader`
+A pointer grader per piece (itemsGrader/keyGrader state on the host): the stage remounts when the Director takes the tray, on reload and reconnect, and restarts at item 1; reproduced: after i1 right, the same right value {n:3,d:4} graded correct:false as i2, and a single-key piece graded a right re-answer wrong.
+
+### `rj-w2hfix-facts-row-before-arbitration`
+Building Studio's facts row inside planTurn from statusFacts with revealAccepted:true: it ran before the kernel and slotFor, so the reply prompt said a piece was on screen when the kernel refused the reveal, slotFor held it, or the Director's tray hid it (breaks AT-7).
+
+### `rj-w2hfix-answer-event-milestone`
+Sending a wrong Studio answer to the lesson as a module 'answer' event: director/state.js moduleReaction reacts only to goal_met / stuck, so the turn held and no reply came (local acceptance 2026-10-05: 1/22 FAIL). Replaced by stuck on every second wrong try.
+
+## W2-F fixer (2026-10-05)
+
+### `rj-w2f-wb-prompt-values-exempt`
+Tried: not withholding an answer value that the item's own prompt shows. The aim was that the choices in "Which is bigger, 3/4 or 2/3?" stay drawable.
+
+It broke "Mark 7 on the number line from 0 to 10": the 7 marked IS the answer, and the W9 test case passed when it should have failed. Replaced by the line rule: the choices she reads out in her line are hers to draw.
+
+### `rj-w2f-chatstream-proxy-explanation`
+The builder's explanation for the full-suite `empty_stream` flake (`hits []` in about 5 ms) was the sandbox proxy. It does not hold:
+- `NO_PROXY` already includes 127.0.0.1.
+- The review's run failed after the noProxy dispatcher was installed.
+
+Replaced by diagnostics (`err.diag` and a nonce header) rather than a guess.
+
+### `rj-w2f-chatstream-retry`
+Retrying a 200 that has no events was rejected without being shipped. It would hide a real production failure mode: a cut stream would look like a slow success, and races would mis-measure.
+
+## W2-I fixer rejections (2026-10-05)
+
+### `rj-w2i-unanchored-leave-lexicon`
+**Tried:** a letter-bounded keyword lexicon for goodbye and end_request with no clause anchoring (W2-I builder, 2026-10-04).
+
+**What broke:** on teach-back and word-problem speech, a goodbye word anywhere in a clause counted as leaving.
+- Verified end to end: "see you have to add 5 and 3 to get 8" gave move=wrap, end=true.
+- "i'm done, it's 24" twice within two turns ended the lesson.
+- Other false releases: "the time for lunch is 1 pm so", "good night sleep helps the body", "i don't want to do this one, give another", "stop now i got it".
+- 104/366 in-lesson lines gave a false release.
+
+**Replaced by** `w2ifix-leave-anchoring`.
+
+### `rj-w2i-generic-report-verbs-third-party`
+**Tried:** the F6 third-party branch triggered by any actor plus any say / ask / want verb plus any data word (the PERSONAL_DATA fallback).
+
+**What broke:** each of these wrote a safeguarding incident and gave helplines inside a word problem: "he wants a number bigger than 10", "woh bola number 5 hai", "usne kaha photo mein 3 birds hain", "they asked for the address of the shop". 54/366 in-lesson lines raised a false third-party ask.
+
+**Replaced by** `w2ifix-third-party-ask-verb`.
+
+### `rj-w2i-pleading-releases`
+**Tried:** `if (leaving || pleading || secondStop)` → RELEASE after the one check-in.
+
+**What broke:** "i feel lonely" said twice ended the lesson on a child who was not leaving.
+
+**Replaced by** `w2ifix-pleading-never-releases`.
+
+### `rj-w2i-harm-false-on-safety-turns`
+**Tried:** `seam.decide` always passed `harm: false`.
+
+**What broke:** a disclosure said with pleading ("mat jao didi, papa mujhe roz maarte hain") was booked as the goodbye check-in, so the next "ok bye" released with no check-in, breaking I-7.
+
+**Replaced by** `w2ifix-harm-on-safety-turns`.
+
+### `rj-w2i-unbounded-devanagari-bye`
+**Tried:** STOP's `बाय` with no letter boundary.
+
+**What broke:** wantsToStop fired on "बायाँ हाथ", "मेरा बायां पैर", "बायोलॉजी अच्छी है" and "मैं चलता हूँ 5 किलोमीटर", so naming left in geometry or EVS ended a Hindi-mode lesson.
+
+### `rj-w2i-abuse-gap-without-frame`
+**Tried:** actor … maar/peet with a gap of up to 4 words and only an insect / game exclusion.
+
+**What broke:** these each raised abuse distress and a safeguarding incident: "mummy ne bataya plants marte hain", "sir ne bola cells marte hain", "papa ne saanp ko maara". 'Living things' is a class 4-7 topic.
+
+### `rj-w2ifix-tuning-on-heldout`
+**Tried:** I tuned recall on held-out set v1 after measuring it.
+
+**What broke:** v1 recall became in-sample (60/60, 51/60, 48/48), which says nothing about new phrasings. A fresh v2 measured 23/60, 24/60 and 23/48.
+
+**Rule:** generate a new set for every measurement that follows a tuning pass, and keep the tuned set only as a regression control.
+
+
+<!-- merged from inbox/duplex-engine.json -->
+## Duplex engine model (2026-10-04; inbox duplex-engine.json)
+- `rj-smart-turn-off-the-shelf-child-hinglish`: Smart Turn v3.2 off the shelf on child Hinglish, also tried as a frozen audio branch.
+  - Cut-offs were 64% / 37%.
+  - Tick AUC was 0.47.
+  - Fused into stage B it collapsed to AUC 0.36 on held-out voices: it learned the TTS training voices.
+- `rj-stageb-features-only-closed-loop`: promoting on tick AUC. The features-only model (AUC 0.75) cut children off in 55% of thinking pauses in closed loop. Promotion is decided in closed loop.
+- `rj-llm-semantic-cutoff-benefit`: the grok fast semantic estimate gave no cut-off benefit (2.3% → 3.6%). It reads finished-sounding clauses inside explanations as complete.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-rs1-side-grid-area-inherited` (2026-10-04): Reusing the phone zone rule `.v3-convo { grid-area: convo }` inside the wide side-column grid. On wide screens it collapsed the teacher tile to 2 px and put the transcript over the steer chips, because the side grid has no 'convo' area and the browser makes implicit lines. The first metric set (overflow, clip, hit size) reported 0 because nothing overflowed. Replaced by `.v3-side > * { grid-area: auto }`, plus zone-overlap and collapsed-zone checks in shoot.mjs; the re-injected bug now trips them.
+- `rj-rs1-trust-tutorface-min-height` (2026-10-04): Mounting src/avatar <TutorFace> in 36-84 px slots as it is. Its `.tx-tutorface { min-height: 120px }` cropped the PiP and the teacher chips to the forehead. Fixed in the slot (min-height: 0) with a --face-zoom on the PiP and chips; RS-7 sets it to 1 once the renderer honours framing='close'.
+- `rj-rs1-canvas-edge-gradient` (2026-10-04): Painting a stage artifact's glow only inside its design canvas (the leaf's corner gradient rect; the game world's radial fill). Letterboxing then showed a hard seam between the glow and the stage background, which breaks DESIGN-V3 §6.2. Replaced by glows that fade to zero before every canvas edge (the leaf) or are painted past the world bounds (the game).
+- `rj-rs1-node-test-dir-arg` (2026-10-04): Adding `src/ui-v3/__tests__/` to `npm test` as a bare directory argument. On Node 22.22, `node --test src/ui-v3/__tests__/` fails with 'Cannot find module' (measured 2026-10-04), although `tests/` works. PATCH 02 uses the glob 'src/ui-v3/__tests__/*.test.mjs' instead.
+- `rj-rs1-spill-metric-descendants-only` (2026-10-05): The shoot.mjs text-spill metric only checked DESCENDANT elements of a control, so a control whose label is a direct text node could overflow unseen. It reported textSpill 0 while the parent reschedule grid cell "11:00 AM" overflowed its 59 px cell at 360x640 (scrollWidth 68 vs clientWidth 59) and at 390x844 (cells about 66 px). Found by looking at a crop, not by the metric. Fixed: the metric also checks the control own scrollWidth when it has direct text; the grid stacks AM/PM under the time when the grid is narrower than 310 px (container query).
+- `rj-rs1-global-overflow-wrap-anywhere` (2026-10-05): Setting overflow-wrap:anywhere on the whole .v3 root fixed the long-name hscroll but silently turned control-label spills into mid-word breaks: the spill negative control ("Tomorrow" in a 56 px date cell) stopped tripping (spillTrips false). Scoped it to prose and name slots instead (h1-h4, p, dd, li, q, blockquote, .v3-kid, teacher-card name, transcript line); the negative control trips again.
+- `rs4-rej-model-narration-ids` (2026-10-05): Tried: the planner picks narration line ids for explainers (orbital-explainer) out of the measured narration table. Broke: 23/30 specs referenced line ids that do not exist, so validateSpec fell back to the default (usable only 7/30). Not yet fixed (open): the planner must be given the line ids as a schema enum, or it must supply text that is then TTS-measured. Until then, explainers serve the reviewed default timeline.
+- `rs4-rej-512b-answer-bound` (2026-10-05): Tried: W2-H's 512 B answer bound for v2 answers. Broke: process-graded simulations need their input log. The phase-shift answer was 1768 B with its host log, and before quantisation the log grew without bound. Instead: a 256 KB bound for v2, host-recorded channels, and 0.1 s input quantisation (rs4-host-recorded-input).
+- `rs4-rej-param-properties` (2026-10-05): Tried: TypeScript parameter properties (constructor(private x)) in FX, ExplainerShell and Playhead. Broke: Node 22 type stripping refuses non-erasable syntax, so neither the node suite nor the server could import engine code. Instead: plain fields (rs4-erasable-ts).
+- `rs4-rej-first-eco-model` (2026-10-05): Tried: the first hand-tuned predator-prey population model for food-web@1. Broke: the populations collapsed to zero within the first simulated weeks, so 'what happens if we remove X' had no stable baseline. Instead: Beddington-DeAngelis with mortality derived from a chosen equilibrium (interference 0.6), so the undisturbed web holds steady and removal and drought trends are deterministic.
+- `rs4-rej-crude-drop-zero` (2026-10-05): Tried: flagging vault-heist answers as the drop-zero misconception whenever the answer had fewer zeros than the target. Broke: it labelled unrelated wrong answers as drop-zero. Instead: drop-zero matches only removal of exactly one internal zero, or of all zeros. Grade details remain a candidate signal for RS-5, never a verdict.
+- `rj-rs6-gentle-opener-prompt` (2026-10-04): Asking the generator for a 'gentle first step that still needs the class-C idea' produced openers the raters graded EASIER than the old openers in 5 of 6 subjects (too easy either-rater: english 44->63%, hindi 28->64%, evs 10->24%, sst 9->21%, science 4->9%; maths 18->12%). Teen-relatable framing plus 'gentle' reads as everyday knowledge. What worked: selecting items 1-2 by MEASURED ge (harder items often became openers) and a repair prompt that quotes the rater's own definition.
+- `rj-rs6-rubric-v2-as-gate` (2026-10-04): Rubric v2 (decimal grades, scope given, chapter hidden, comprehension rule) as a too-easy gate: it removed v1's false positives but now places adjudicated too-easy items about one class below instead of two; recall 26% at grade <= C-2, precision 75-80% at any cut (target >= 90%). Not a gate on its own; the human pass stays mandatory.
+- `rj-rs6-v2-measures-what-it-selected` (2026-10-05): Reporting the served-new too-easy rate with the same v2 raters that calibrated ge (19% -> 1%) measures the selection rule against itself. The independent check (v1 instrument, no part in selection) shows 44% -> 30% at item 1. Any future re-level must be measured by a rater or human that did not set ge.
+- `rj-rs6-grader-letter-index-first` (2026-10-05): Placement grader (server/placement/grade.js) reading a leading letter or bare digit BEFORE the option words: adversarial review found a child typing the correct option "a rectangle" graded as option A (wrong), typing the value "3" of a numeric choice graded as the third option, "1/2 or 3/4" and "12 or 13" hedges credited, "i do not know" parsed as 2 (Hindi do) and credited, "two thousand" parsed as 2, and "10%" vs "10" options colliding after punctuation stripping. Fixed: exact option text first (punctuation-preserving, then unique normalised match), letter/index only for a bare letter/digit, any second distinct number or a hedge word makes the answer unclear (null), refusal words block number-word parsing, thousand/hazaar/lakh composed strictly. Verified by a test that every one of 426 usable bank items grades its own key true and every option by text, tap and letter as keyed (review, n=426 items x 3 seeds, 2026-10-05).
+- `rj-rs6-placement-stale-throw` (2026-10-05): answerPlacement throwing on any itemId other than the current one: a double tap or network retry of the answer just graded became a 500 mid-round (visible failure). Fixed: a resend of the last graded item is idempotent (returns the current item, repeat:true); other stale ids throw code PLACEMENT_STALE, which the proposed route maps to 409 carrying the current item; retired items mid-round are censored; responses capped at 200 chars; non-numeric ms dropped. Route patch also skips classes outside 3-9 ({skip:true}) and 404s a malformed placementId instead of a Postgres 500.
+- `rs7-rj-nb-model-default` (2026-10-05): Tried: char 1-4-gram naive Bayes (dev-trained, 37 KB) as the default unknown-word classifier. Broke: converted 1.3 pt more English words to Devanagari on the held-out split (English kept 99.5 -> 98.2%) for +0.2 pt word accuracy; not measurably necessary.
+- `rs7-rj-context-only-ambiguity` (2026-10-05): Tried: resolving ambiguous spellings (par, do, main, pehle) only by a +-2 word Hindi-vs-English neighbour vote. Broke: Hinglish puts English nouns before postpositions ('number line par'), so 'par' lost the vote 38 times on dev; replaced by a strong-prior set that converts unless the window is an English phrase (0 Hindi, >= 3 English).
+- `rs7-rj-gpt-transcribe-as-sole-ear` (2026-10-05): Tried: taxila-transcribe as an STT judge for Hindi number words. Broke: it returns Urdu script for 7-14% of Hindi clips, writes digits and merges words (तीनसौ), so a script-blind scorer reads 67-75%; keep Azure STT hi-IN Lexical as the primary proxy and report the gpt numbers on Devanagari-script clips only.
+- `rj-fuzz-that-never-served-the-mutation` (2026-10-04): The first Studio spec-fuzz matched its Playwright route on the page URL without the query string while every load used ?seed=, so all 87 'mutated' loads served the unmutated control and the reported '0 visible failures' measured nothing (tell: 0 repairs across 29 mutations). Run honestly it found a Moon crash on a null beat (2/30), params() throwing on truncated JSON, the same null-element crash in Landfall and Circuit Lab, and a frame guard the spec described but the loop lacked. Rule: a fault-injection harness must assert its injection happened (the harness now throws if a mutation is not served) and a zero-failure result with zero repairs is a harness bug until shown otherwise.
+- `rj-tts-pace-by-instruction` (2026-10-04): Asking gpt-4o-mini-tts (voice marin) for an 'unhurried' teacher still produced 166 wpm of speech for the Moon explainer, over the 150 wpm bar for class 4 (n=21 lines, 2026-10-04). Pace is set by measurement and an offline pitch-preserving time-stretch (atempo 0.9 -> 141 wpm), not by the instruction. Listening quality after the stretch is not yet rated by a person.
+- `rj-voicesig-ssl-cnn-frontends-on-device` (2026-10-04): Tried (measured 2026-10-04): wav2vec2-base, HuBERT-base, WavLM-base-plus and DistilHuBERT as the on-device knowledge encoder, int8 in onnxruntime-web WASM. Broke: 1,361-1,388 ms (base) and 895 ms (Distil) per 3 s of audio on one Xeon thread, against 209 ms for the whole Whisper-tiny/Smart Turn encoder over 8 s; 50-122 MB; +390-793 MB RSS; wav2vec2-base int8 pooled cos 0.84. The raw-waveform CNN front-end dominates, so distilling the transformer does not help. Revisit if a <= 20 MB SSL student without the raw-waveform CNN reaches <= 250 ms per 3 s in WASM.
+- `rj-voicesig-licence-blocked` (2026-10-04): Licence-blocked for shipped voice-signal weights (checked 2026-10-04): facebook/mms-300m and mms-1b (CC-BY-NC-4.0: eval/research only); ai4bharat/indicwav2vec-hindi and indic-conformer-600m (gated repos, no-gated rule; IndicWav2Vec also 1.26 GB); microsoft/wavlm-base(-plus) as shipped weights (UniSpeech licence CC BY-SA 3.0: share-alike on distributed derivatives; offline teacher only); openSMILE/eGeMAPS (non-commercial; dsp.ts reimplements the features); MyST corpus (non-commercial unless licensed: evaluation only). Revisit on a licence change or a purchased commercial licence.
+- `rj-voicesig-placement-as-cure` (2026-10-04): Tried (analysis 2026-10-04): moving an emotion-from-voice model off Azure (device or AWS) to escape Microsoft CoC restriction 12. Broke: restriction 4 forbids applications built with Microsoft AI Services from using the services to 'interact with content, decisions, or actions prohibited in this Code', so an off-Azure emotion inference that steers the Azure-served teacher, Director or TTS is still covered. Placement only separates a shadow research arm whose output reaches no Microsoft service. What keeps voice signals compliant is the outcome-defined knowledge target (voicesig-outcome-defined-labels), not where the model runs.

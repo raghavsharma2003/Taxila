@@ -8,16 +8,16 @@ import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
-import { nextTopicFor } from "../content/next-topic.js";
+import { nextTopicOf } from "../reports/truth.js";
 import { hasAbilityLabel } from "../learner/brief.js";
-import { buildChildBrief, loadRecentOutcomes } from "../learner/model.js";
+import { buildChildBrief, loadRecentOutcomes, loadRecentStuck } from "../learner/model.js";
 import { canWrite } from "../learner/mode.js";
 import { canWriteMemory, formatTrialStmt, memoryStmt, relSessionStmt } from "../learner/writer.js";
 import { skillsMapFor, snapshotFromKt, loadLive, dueForChecks } from "../learner/live.js";
 import { misconceptionView } from "../learner/kt/misconception.js";
 import { beliefFor, planChecks, onTopicPlanned, consumeExpired, weaveExpire, BAND_BUDGET, bandOf } from "../comprehension/index.js";
 import { weaveStmts } from "../comprehension/store.js";
-import { scrubPii } from "../director/safety.js";
+import { scrubPii, scanSafety } from "../director/safety.js";
 import { initLessonState, step, LIMITS, shortTitleOf } from "../director/state.js";
 import { resolveAddress } from "../director/register.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -100,20 +100,22 @@ export { forgeSeam };
 
 const START_PURPOSES = new Set(["lesson", "practice", "doubt"]);
 /**
- * PURE. Why a lesson cannot start in this plan state (null: it can). capped and resting refuse everything; done
+ * PURE. Why a lesson cannot start in this plan state (null: it can). safety_hold, capped and resting refuse everything; done
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
  * @param {import("../../shared/contracts").ChildHomeState} state  @param {string | undefined} purpose
  */
 export function startRefusal(state, purpose) {
   const p = START_PURPOSES.has(purpose) ? purpose : "lesson";
+  // the Conductor's safety hold (STUDENT-FLOW §4.2) refuses every purpose: no lesson, no Practice, no Ask
+  if (state === "safety_hold") return "lessons are paused for now";
   if (state === "capped") return "today's lesson time is used up";
   if (state === "resting") return "outside today's lesson hours";
   if (state === "done" && p === "lesson") return "today's lesson is done";
   return null;
 }
 
-/** Which parent control (or day rule) a refusal comes from: "hours" (lesson hours), "daily_limit", "done" (today's lesson). */
-export const refusalControl = (state) => (state === "resting" ? "hours" : state === "capped" ? "daily_limit" : state === "done" ? "done" : null);
+/** Which parent control (or day rule) a refusal comes from: "hours" (lesson hours), "daily_limit", "done" (today's lesson), "safety" (a safety hold). */
+export const refusalControl = (state) => (state === "safety_hold" ? "safety" : state === "resting" ? "hours" : state === "capped" ? "daily_limit" : state === "done" ? "done" : null);
 
 /** How long "Open now" opens the lesson hours for (Controls; BUILD-PLAN W1-A item 2). */
 export const OPEN_NOW_MS = 3600_000;
@@ -163,7 +165,8 @@ async function start(req, res, body) {
     ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose, firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
     : null;
   const routed = asked?.topicId ? getTopic(asked.topicId) : null;
-  const topic = routed ?? (body.topicId ? getTopic(body.topicId) : await nextTopicFor(child));
+  // no topic: the ONE next-topic answer (reports/truth.js), so a start inside a school test window revises its subject
+  const topic = routed ?? (body.topicId ? getTopic(body.topicId) : await nextTopicOf(child));
   if (!topic) throw bad(body.topicId ? `unknown topic ${body.topicId}` : "no topic available for this class");
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
@@ -195,7 +198,9 @@ async function start(req, res, body) {
   forgeSeam.wovenSubStep(hosted[0] ?? null);
   const warmupItems = await warmupItemsFor(checks.openers);
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
-  const [history, brief0] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory })]);
+  const [history, brief0, stuck] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory }),
+    // W2-C review: items stuck on in recent lessons (rung 4 / left after don't-knows) route the guidance ladder; never evidence
+    loadRecentStuck(child.id, kit.skills.map((s) => s.id))]);
   // The interests the parent picked reach the teacher only under "Remember what {child} likes" (the memory consent;
   // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
   const interests = memory ? lessonInterests(brief0.interests) : [];
@@ -211,8 +216,14 @@ async function start(req, res, body) {
   const seqIds = topicSequence(topic.classLevel, topic.subject);
   const nextTopic = getTopic(seqIds[seqIds.indexOf(topic.id) + 1]);
   const lessonId = randomUUID();
+  // An Ask's first words are the child's own (W2-C review: safety by predicate, not instruction). The same predicate
+  // every child turn passes (director/safety.js scanSafety, passive ideation included) runs BEFORE they become the
+  // question her opening answers: a disclosure opens on the safeguard move with the helplines, never on an explain.
+  const askRaw = purpose === "doubt" && typeof body.firstText === "string" ? body.firstText.trim() : "";
+  const askSafety = askRaw ? scanSafety(askRaw.slice(0, 500)) : { distress: false, kind: null };
+  const askText = askRaw && !askSafety.distress ? askRaw.slice(0, 200) : "";
   const state0 = initLessonState({
-    topicId: topic.id, kit, skills, history, warmupItems, activeMisconceptionIds, now,
+    topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,
     seed: Math.floor(Math.random() * 2 ** 32),
     openers: warmupItems.map((w) => w.skillId), comp: skillsMapFor(live.state, kit, skillIds, now),
     ctx: {
@@ -229,12 +240,15 @@ async function start(req, res, body) {
       ...(practice ? { practice } : {}),
       // the purpose and, for an Ask, the child's own question (W2-C #7: the Director answers it first, no greeting)
       purpose,
-      ...(purpose === "doubt" && typeof body.firstText === "string" && body.firstText.trim() ? { askText: body.firstText.trim().slice(0, 200) } : {}),
+      ...(askText ? { askText } : {}),
       // the bond stage RELATIONAL-OS pinned for this lesson (W2-I snapshot), for the turn's Moment (W2-E TB6)
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
   });
-  const first = step(state0, { event: "start", kit, now });
+  const first = askSafety.distress
+    ? step(state0, { event: "start", kit, now, cls: { outcome: "no_evidence", confidence: 1, source: "predicate",
+      flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
+    : step(state0, { event: "start", kit, now });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
   const state = r.state;
   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
@@ -243,7 +257,14 @@ async function start(req, res, body) {
     safety: r.move.kind === "safeguard", lane: mode === "voice" ? "voice" : mode === "cascade" ? "cascade" : "text" });
 
   let teacherOpening, teacherOpeningSeq, rows = [], openingFloor = [];
-  if (mode !== "voice") {
+  if (mode !== "voice" && askSafety.distress) {
+    // A disclosure as an Ask's first words: the fixed safeguarding line (both helplines, the child's language and
+    // address form), never a model draft that might open with a welcome or the topic (seen: "welcome. Aaj hum Numbers
+    // karenge…" before the helpline).
+    teacherOpening = safeguardLine(state.ctx);
+    rows = stageTurns(state, [{ speaker: "teacher", text: teacherOpening, meta: { move: r.move.kind, fixed: true } }]);
+    teacherOpeningSeq = rows[0].seq;
+  } else if (mode !== "voice") {
     const opened = await textReply({ instructions, state, kit, childText: "", trace, ui: r.ui, module: state.module });
     teacherOpening = opened.reply;
     openingFloor = opened.floor ?? [];
@@ -262,6 +283,9 @@ async function start(req, res, body) {
     { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
     ...(openingIncident ? [openingIncident] : []),
+    // a disclosure in an Ask's first words leaves the same incident row a turn's predicate hit does (no transcript)
+    ...(askSafety.distress ? [{ text: "insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
+      params: [child.id, lessonId, { source: "predicate", family: askSafety.kind, at: "ask_start" }] }] : []),
     // the weave queue after this topic was planned (topicsSince, hosted, expired-as-callback): only the open entries
     ...(canWrite(child, "kt") && weaveRows.length ? weaveStmts(child, plannedQ) : []),
     // Seam (W1-D): the Conductor's lesson-start event lands with the lesson row, or not at all.
@@ -288,7 +312,10 @@ async function start(req, res, body) {
   const out = {
     lessonId, topic: { id: topic.id, title: topic.title, chapter: topic.chapter.title },
     ...clientInstructions(mode, instructions), teacher: teacherCard(teacher), moduleCommands: r.moduleCommands,
-    ui: withAsk(r.ui, teacherOpening, state.beat ? { beat: uiBeatOf(state.beat) } : {}), address, moment: openingMoment,
+    ui: withAsk(r.ui, teacherOpening, { ...(state.beat ? { beat: uiBeatOf(state.beat) } : {}),
+      // the Ask's first words were handled here (answered, or met by the safeguard): the client shows the question
+      // card and does NOT send them again as a turn (W2-C review: the same question was explained twice)
+      ...(askRaw ? { askConsumed: true } : {}) }), address, moment: openingMoment,
     ...(teacherOpening ? { teacherOpening, teacherOpeningSeq } : {}),
   };
   send(res, 201, debugFor(req) ? { ...out, debug: { move: r.move, kitVerified: kit.verified, timings: trace } } : out);
@@ -433,6 +460,12 @@ export function lessonSummary(state, { topic, teacher }) {
   };
 }
 
+/** A lesson summary with "Next time" from the ONE next-topic answer (falls back to the start's pinned title). */
+async function withPlanNext(did, child) {
+  const next = await nextTopicOf(child);
+  return { ...did, nextTitle: next?.title ?? did.nextTitle ?? null };
+}
+
 /**
  * Was this end the page-hide beacon (src/lesson/api.ts endBeacon)? Its body is sent as text/plain (navigator.sendBeacon
  * with a text/plain Blob, or the keepalive fetch fallback with a bare string body); every other end is a JSON POST.
@@ -446,8 +479,10 @@ async function end(req, res, body) {
   const { lesson, guardian, child } = await loadLessonFor(req, need(body, "lessonId").lessonId);
   const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName);
   const topicRow = getTopic(lesson.topic_id);
-  const did = (st) => lessonSummary(st, { topic: topicRow, teacher });
-  const already = (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: did(row?.state ?? lesson.state) });
+  // "Next time" on the end summary is the ONE next-topic answer read NOW (after this lesson's evidence), the same the
+  // home, Progress and the parent read (reports/truth.js nextTopicForPlan), never the sequence-next pinned at the start
+  const did = async (st) => withPlanNext(lessonSummary(st, { topic: topicRow, teacher }), child);
+  const already = async (row) => send(res, 200, { summary: row?.summary ?? null, parentNote: row?.parent_note ?? null, alreadyEnded: true, did: await did(row?.state ?? lesson.state) });
   if (lesson.ended_at) return already(lesson);
   // Claim the lesson BEFORE the slow summary: of two overlapping ends (a double tap, a retry on timeout) only
   // one gets the row back; the other writes nothing (sessions were once counted twice, memories duplicated).
@@ -535,7 +570,7 @@ async function end(req, res, body) {
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
   send(res, 200, { summary, parentNote, memoriesSaved: writes.filter((w) => /insert into memory/.test(w.text)).length, sessions: relAt > 0 ? results[relAt][0].sessions : null,
-    did: did(state), ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
+    did: await did(state), ...(debugFor(req) ? { debug: { facts, timings: trace } } : {}) });
 }
 
 /** GET /api/lesson/summary?lessonId= — the summary screen's data again (a reload, the "Show a grown-up" view). */
@@ -543,7 +578,7 @@ async function summaryRead(req, res) {
   const id = new URL(req.url || "/", "http://x").searchParams.get("lessonId");
   const { lesson, child } = await loadLessonFor(req, id);
   const teacher = teacherForLesson(child, lesson.state?.ctx?.teacherId, lesson.state?.ctx?.teacherName);
-  send(res, 200, { lessonId: lesson.id, ended: !!lesson.ended_at, did: lessonSummary(lesson.state, { topic: getTopic(lesson.topic_id), teacher }) });
+  send(res, 200, { lessonId: lesson.id, ended: !!lesson.ended_at, did: await withPlanNext(lessonSummary(lesson.state, { topic: getTopic(lesson.topic_id), teacher }), child) });
 }
 
 /** POST /api/lesson/turn: a thin adapter over the Brain's turn handler (every refusal is a thrown HttpError). */

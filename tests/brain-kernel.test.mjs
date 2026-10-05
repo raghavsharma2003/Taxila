@@ -180,3 +180,47 @@ test("trace rows: codes and digests only (no words), one statement per turn, ide
   assert.equal(reteachDecisionOf({ turn: 4, lastReteach: { turn: 4, move: "reteach", armId: "arm1", chosenBy: "kit_primary", skillId: "s" } }, { lessonId: "L", legalMode: "M1" }).params[6], false);
   assert.equal(reteachDecisionOf({ turn: 5, lastReteach: { turn: 4, move: "reteach", armId: "arm1" } }, { lessonId: "L", legalMode: "M1" }), null);
 });
+
+test("the whiteboard ask (W2-E fixer): only on moves that explain, never over an interactive piece or a ready reveal; it REPLACES the template rung", () => {
+  const ex = { id: "b2-explain", type: "explain" };
+  for (const kind of ["repair", "hint", "hold", "show_module"]) {
+    const w = whiteboardAskOf({ beat: ex, lane: "text", move: { kind } });
+    assert.deepEqual(w.proposals, [], `${kind} inside an explain beat does not ask`);
+    assert.equal(w.declined, "studio_rejected.not_explain");
+    assert.ok(isReason(w.declined));
+  }
+  for (const kind of ["explain", "worked_example", "reteach", "recap"]) assert.equal(whiteboardAskOf({ beat: ex, lane: "text", move: { kind } }).proposals.length, 1, kind);
+  const game = { onScreen: { kind: "game", archetype: "shade_fraction", onScreen: {} }, statuses: [] };
+  assert.equal(whiteboardAskOf({ beat: ex, lane: "text", move: { kind: "explain" }, studioView: game }).declined, "studio_rejected.attention", "never pull a game away");
+  const ready = { onScreen: null, statuses: [], propose: { reveal: "i9" } };
+  assert.equal(whiteboardAskOf({ beat: ex, lane: "text", move: { kind: "explain" }, studioView: ready }).declined, "studio_rejected.reveal_ready", "the piece made for this beat wins");
+  // the Director's template rung (explainer@1 in the module tray) costs the turn's attention: the ask that replaces it does not
+  const rungDir = directorProposalOf({ move: { kind: "explain" }, proposal: directorProposal({ kind: "explain" }, { ui: { tray: "module" } }) });
+  const plain = arbitrate([rungDir, ...whiteboardAskOf({ beat: ex, lane: "text", move: { kind: "explain" } }).proposals]);
+  assert.ok(plain.rejected.some((x) => x.p.kind === "ask_whiteboard" && x.why === "over_budget.attention"), "beside an engine show it waits");
+  const rung = whiteboardAskOf({ beat: ex, lane: "text", move: { kind: "explain" }, rungMounted: true });
+  assert.equal(rung.proposals[0].payload.replacesRung, true);
+  assert.equal(rung.proposals[0].costs.attention, 0);
+  assert.ok(arbitrate([rungDir, ...rung.proposals]).accepted.some((p) => p.kind === "ask_whiteboard"), "it replaces the rung");
+  for (const code of ["studio.replaces_rung", "studio.rung_replaced", "studio_rejected.held", "studio_rejected.declined_by_studio", "cls.correct", "cls_source.fallback",
+    "verdict.not_yet", "guard.replaced", "release.check_in_given", "release.goodbye_wrap", "component_error.director", "turn.lane_resume"]) assert.ok(isReason(code), code);
+});
+
+test("relational adapter: HOLD_ONE_TURN is surfaced (holdOneTurn) rather than silently dropped", () => {
+  const out = arbitrate([directorProposalOf({ move: { kind: "practice" }, proposal: directorProposal({ kind: "practice" }) }), ...relationalProposals({ floor: "HOLD_ONE_TURN" })]);
+  assert.equal(relationalEffects(out).holdOneTurn, true);
+  assert.equal(relationalEffects(arbitrate([directorProposalOf({ move: { kind: "practice" }, proposal: directorProposal({ kind: "practice" }) })])).holdOneTurn, false);
+});
+
+test("trace rows: item_id / misconception_id only when the database has the columns; the comprehension trail is codes", async () => {
+  const { comprehensionReasons } = await import("../server/brain/trace.js");
+  const base = { lessonId: "l", turn: 1, lane: "text", move: "practice", inputsHash: "x", proposals: [], arb: { accepted: [], rejected: [] }, legalMode: "M1" };
+  assert.equal(brainTraceStmt(base).params.length, 13);
+  const w = brainTraceStmt({ ...base, withIds: true, itemId: "i1", misconceptionId: "m-edges" });
+  assert.equal(w.params.length, 15);
+  assert.deepEqual(w.params.slice(13), ["i1", "m-edges"]);
+  assert.deepEqual(comprehensionReasons({ cls: { outcome: "incorrect", source: "model", fallback: true }, classified: true, uiVerdict: "not_yet", guard: { caught: ["praise"], replaced: true } }),
+    ["cls.incorrect", "cls_source.fallback", "verdict.not_yet", "guard.replaced", "guard.praise"]);
+  assert.deepEqual(comprehensionReasons({ cls: null, classified: false, help: true }), ["cls.none", "cls_source.help", "verdict.ungraded"]);
+  for (const c of comprehensionReasons({ cls: { outcome: "misconception", source: "exact" }, classified: true, uiVerdict: "not_yet", guard: { caught: ["leak", "drift"], rewritten: true } })) assert.ok(isReason(c), c);
+});

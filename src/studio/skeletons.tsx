@@ -30,10 +30,11 @@ function useRun() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   useEffect(() => { setFb(null); setBusy(false); setDone(false); }, [m.epoch]);
-  const submit = async (v: unknown) => {
+  /** `itemId`: the item on screen (the host grades by item: a remounted activity restarts at item 1 and is graded as item 1). */
+  const submit = async (v: unknown, itemId?: string) => {
     if (!m.interactive || busy || done) return null;
     setBusy(true);
-    const r = await m.answer(v);
+    const r = await m.answer(v, itemId ? { itemId } : undefined);
     setBusy(false);
     if (!r) return null;
     setFb(r.correct ? "right" : "wrong");
@@ -85,25 +86,29 @@ function FractionParts({ p, s, young }: SkProps) {
   if (!it) return null;
   const toggle = (i: number) => { if (!run.live || run.done) return; run.setFb(null); setShaded((cur) => { const n = new Set(cur); n.has(i) ? n.delete(i) : n.add(i); return n; }); };
   const check = async () => {
-    const r = await run.submit({ n: shaded.size, d: it.d });
+    const r = await run.submit({ n: shaded.size, d: it.d }, it.id);
     if (r?.correct && !r.complete) setTimeout(() => { setIdx((i) => i + 1); setShaded(new Set()); run.setFb(null); }, 900);
   };
   const parts = Array.from({ length: it.d }, (_, i) => i);
   const bh = T(young);
+  // the bar: one row while every part keeps the target minimum (336 / d ≥ 54 units: d ≤ 6), else two rows (a 10-part bar
+  // is 5 + 5 parts of 67 units, never 10 slivers of 30: real class 7 kits ask for tenths)
+  const rows = it.d > 6 ? 2 : 1, cols = Math.ceil(it.d / rows), BW = 336 / cols, BH = rows === 1 ? Math.max(70, bh) : bh;
+  const barBottom = 76 + rows * BH + (rows - 1) * 4;
   return (
     <g data-item={it.id}>
       <Title text={`${word(s, "instr", "shade", { f: "" })}`} y={26} />
       <text className="sk-big" x={180} y={62} textAnchor="middle" data-target="1">{`${it.n}/${it.d}`}</text>
       {p.picture === "bar"
         ? parts.map((i) => {
-          const W = 300 / it.d;
-          return <rect key={i} className={`sk-part${shaded.has(i) ? " is-on" : ""}`} x={30 + i * W} y={110} width={W} height={Math.max(70, bh)} data-part={i} data-shaded={shaded.has(i)}
+          const r = Math.floor(i / cols), c = i % cols;
+          return <rect key={i} className={`sk-part${shaded.has(i) ? " is-on" : ""}`} x={12 + c * BW} y={76 + r * (BH + 4)} width={BW} height={BH} data-part={i} data-shaded={shaded.has(i)}
             role="button" aria-pressed={shaded.has(i)} tabIndex={0} onClick={() => toggle(i)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(i); } }} />;
         })
         : parts.map((i) => <path key={i} className={`sk-part${shaded.has(i) ? " is-on" : ""}`} d={sectorPath(130, 168, 82, (360 / it.d) * i, (360 / it.d) * (i + 1))} data-part={i}
           data-shaded={shaded.has(i)} role="button" aria-pressed={shaded.has(i)} tabIndex={0} onClick={() => toggle(i)}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(i); } }} />)}
-      <Btn x={p.picture === "bar" ? 220 : 236} y={p.picture === "bar" ? 206 : 196} w={110} h={bh} label={word(s, "check", "check")} onTap={check} disabled={!run.live || run.busy || run.done} testid="sk-check" />
+      <Btn x={p.picture === "bar" ? 238 : 236} y={p.picture === "bar" ? barBottom + 8 : 196} w={110} h={bh} label={word(s, "check", "check")} onTap={check} disabled={!run.live || run.busy || run.done} testid="sk-check" />
       <Feedback fb={run.fb} s={s} done={run.done} />
     </g>
   );
@@ -125,10 +130,13 @@ function NumberLine({ p, s, young }: SkProps) {
   const value = +(p.min + pos * p.step).toFixed(6);
   const move = (d: number) => { if (!run.live || run.done) return; run.setFb(null); setPos((k) => Math.max(0, Math.min(steps, k + d))); };
   const check = async () => {
-    const r = await run.submit({ value });
+    const r = await run.submit({ value }, it.id);
     if (r?.correct && !r.complete) setTimeout(() => { setIdx((i) => i + 1); run.setFb(null); }, 900);
   };
   const bh = T(young);
+  // a dense line (tenths) labels every other tick so labels never collide; the marker moves by the 54-unit arrow
+  // buttons, never by tapping a 30-unit tick
+  const every = Math.max(1, p.labelEvery ?? 1, steps > 6 ? 2 : 1);
   return (
     <g data-item={it.id}>
       <Title text={word(s, "instr", "jump", { f: "" })} y={26} />
@@ -137,7 +145,7 @@ function NumberLine({ p, s, young }: SkProps) {
       {Array.from({ length: steps + 1 }, (_, k) => (
         <g key={k}>
           <line className="sk-tick" x1={X(k)} y1={130} x2={X(k)} y2={150} />
-          {k % Math.max(1, p.labelEvery ?? 1) === 0 && <text className="sk-small" x={X(k)} y={170} textAnchor="middle">{fmtFrac(p.min + k * p.step, den)}</text>}
+          {k % every === 0 && <text className="sk-small" x={X(k)} y={170} textAnchor="middle">{fmtFrac(p.min + k * p.step, den)}</text>}
         </g>
       ))}
       <g className="sk-marker" transform={`translate(${X(pos)},120)`} data-value={value}><path d="M0,18 L-10,0 L10,0 Z" /></g>
@@ -383,7 +391,7 @@ function Balance({ p, s, young }: SkProps) {
   if (!it) return null;
   const tap = async (v: number) => {
     setPick(v);
-    const r = await run.submit({ value: v });
+    const r = await run.submit({ value: v }, it.id);
     if (r?.correct && !r.complete) setTimeout(() => { setIdx((i) => i + 1); setPick(null); run.setFb(null); }, 900);
   };
   const box = (x: number, v: string, k: number) => <g key={k} className="sk-weight"><rect x={x} y={92} width={34} height={30} rx={6} /><text className="sk-small" x={x + 17} y={107} textAnchor="middle" dominantBaseline="central">{v}</text></g>;

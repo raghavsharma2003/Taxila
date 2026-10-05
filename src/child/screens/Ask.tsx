@@ -12,7 +12,7 @@ import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { LessonScreen } from "../lesson/LessonScreen.tsx";
 import { Icon } from "../pictos.tsx";
-import { usePlan } from "../plan.ts";
+import { cachedHold, usePlan } from "../plan.ts";
 
 export function Ask() {
   const { cid, child, band, family } = useChild();
@@ -25,6 +25,8 @@ export function Ask() {
   // Homework help (STUDENT-FLOW §4.2 `homework`, parent-switched) is open to every class; plain Ask is Older only
   const homework = search.get("homework") === "1";
   if (family === "young" && !homework) return <Navigate to={`/c/${cid}`} replace />;
+  // a safety hold: no Ask (STUDENT-FLOW §4.2); the server refuses the start too
+  if (plan.state === "safety_hold" || cachedHold(cid)) return <Navigate to={`/c/${cid}`} replace />;
   if (asked) return <LessonScreen variant="doubt" firstText={asked} />;
   const ready = text.trim().length > 0;
   return (

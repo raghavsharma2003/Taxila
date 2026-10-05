@@ -1,0 +1,276 @@
+{
+ "nodes": [
+  {
+   "id": "w2bfix-open-item-board-guard",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Never-an-answer on the board: a show move on an OPEN item (not in itemsDone: the move's item, else the active one; modules.js openItemOf) draws the method with '?' in the result cells (templates hideResult), then the worked example; every rung (code, library, live fill, terms) and every engine show is refused when its facts / texts / number work / digit rows state a key or acceptable answer of the open item (server/forge/explainer/guard.js leaksOpenItem); numbers the prompt itself says are never leaks"
+  },
+  {
+   "id": "w2bfix-truth-devanagari-script",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Truth and token checks read letters WITH combining marks (\\p{M}) in truth.js and shared/whiteboard.js TOKEN_RE; a Devanagari word is checked whatever its grapheme count; a label must be Latin or Devanagari (+digits, plain punctuation; ZWJ/ZWNJ only beside Devanagari), never a cloze stub (_), never narration (sentenceShaped: Hindi finite clause / ergative ne, English negation, pronoun subject, past-tense narration, >= 5 letter words); library.json rebuilt"
+  },
+  {
+   "id": "w2bfix-frame-line-anchor",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "explainer@1 in the sandboxed frame draws from her line's first audio sample: ModuleHost listens for taxila:line-audio-start and posts set_param cue {ageMs, n} to cue engines (never queued into history; sent on the handshake when the anchor fired up to 2.5 s before mount); the frame stamps rxAt so anchor = rxAt - ageMs on its own clock; no anchor within 1.2 s (or delayMs if larger) -> it draws on its own. Clause anchors: normalizeScript keeps `clause` only with {clauses:true} (strict refuses, lenient drops); the Player shifts clause ops by clauseOnsets when given"
+  },
+  {
+   "id": "w2bfix-geometry-data-templates",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Five more code templates: angle@1 (1-3 angles, right-angle square / arc, arm & corner/vertex labels in the kit's words), shape@1 (polygons, circle with centre/radius/diameter, two congruent copies), symmetry@1 (mirror line, dot N squares away and its image), area-grid@1 (unit squares or a scaled rectangle; area or perimeter, '?' when open), bar-chart@1 (2-6 bars, friendly scale); code-picked from the move's text; signed-integer +/- picks to number-line-hop; 'how many more' picks subtraction"
+  },
+  {
+   "id": "w2bfix-terms-last-rung",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The explain ladder's last rung (server/forge/explainer/terms.js): the topic's short title (or most used term) with its 2-4 most used one/two-word kit terms (>= 2 uses across items / worked example / misconception pictures, ideas-weighted, never across punctuation) as a parts@1 board, so no explain beat has an empty tray"
+  },
+  {
+   "id": "w2bfix-screen-guard-content",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "screenContradiction(text, module, contentLines?) allows partsOnScreen ∪ the move's content part counts (stored as module.contentParts by writeFactsRow, so the live caller in server/brain/say.js needs no change); a screen with no part counts no longer passes everything: a maths screen flags any outside count, a diagram flags only forms that can only be part counts (fractions, 'N equal parts', plural part words); equal groups count as parts; the rewrite reason names the allowed counts; the stale lesson.js patch is deleted (the guard has been live in brain/say.js since W2-E BR1); after a rewrite that still contradicts, stripStrayParts drops the sentences naming stray counts (the kit's question stays): seam patch w2b-parts-repair.patch for brain/say.js"
+  },
+  {
+   "id": "w2bfix-spare-frame",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "src/modules/prewarm.ts keeps ONE pre-booted spare module frame (#spare:<engines>: runtime + React up + the lesson's likely engine chunks imported, then 'ready'), booted at lesson start from useDesk with enginesForTopic(topicId); ModuleHost adopts it for the next mount with Element.moveBefore (document kept alive) and hands it init + port; a browser without moveBefore gets a fresh frame; extra engines are warmed by queued #warm: frames (never dropped); bootstrap accepts exactly one adopting init and renders a pre-imported engine in the init's commit"
+  },
+  {
+   "id": "w2bfix-watch-only-board",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The board's facts row carries 'use watch only'; the reply guard's half (a tap/pick line over a watch-only explainer board with no chips is a screen problem; 'look at the board' stays fine) is a ready seam patch for W2-E: server/forge/seam-patches/w2b-watch-only.patch (director/say.js)"
+  },
+  {
+   "id": "w2bfix-board-tap-evidence",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "After the drawing ends every written word on an explainer@1 board is a tap target emitting explainer.tap {opId, label} (graded by the host from the op id, never by the frame): material for W2-C/E covert 'point to the stamen' probes; nothing asks for it yet"
+  },
+  {
+   "id": "w2bfix-continue-prior-ids",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A 'continue' whiteboard script may highlight / erase / label ops of the earlier board by the ids that board gave them (normalizeScript priorIds; StudioWhiteboard maps them to the re-scoped ids); the board before a script is kept so a remount of the same script draws on it again; an earlier op fades at its eraser's time"
+  },
+  {
+   "id": "w2bfix-pick-interest-representation",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The active misconception's remediation picture and the child's consented interest choose HOW a code pick draws (a fraction as bar / roti / circle), never a value; the live model fill gets the interest as an id plus the kit's own interest contexts (labels stay truth-checked)"
+  },
+  {
+   "id": "m-w2bfix-open-item-leaks-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Open-item key on the board or the facts row: 0 / 12,093 planModule mounts (every c1-c9 maths item × reteach / explain / worked_example, item open; 6,789 boards, 5,193 engine shows). Before: the reviewer found 6 code-pick boards + 42 library/facts cases; my first pass of the check found 42 incl. 15 engine-show facts rows. Offline, node, 2026-10-05; asserted in tests/w2b-explainer.test.mjs"
+  },
+  {
+   "id": "m-w2bfix-library-rebuild-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "library.json under the new truth check: 331 entries -> 74 failed (label_sentence 53, not_in_kit 16 Hindi now really checked, label_script 5); 3 rebuild passes with taxila-fast (60 / 38 / 31 tried, 22 / 7 / 4 accepted): now 316 = 257 kept + 51 rebuilt + 8 new; 23 retired (+2 stale entries of topics that now have a code pick); 0 CJK/katakana or '__' labels. 2026-10-05"
+  },
+  {
+   "id": "m-w2bfix-render-check-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Strict render-check (evals/forge-explainer.mjs) 100% per template on the sweep (incl. angle 10, shape 16, symmetry 7, area-grid 48, bar-chart 6) and on every c4-c7 real code pick / library entry (angle 83, shape ~161, symmetry 64, area-grid 53, bar-chart 50, flow 197, compare 96 ...); coverage through the real Director: 387/387 c4-c7 explain moves show something (engine 97, board 290, none 0; was 383/394 with 11 empty); numbers-match 299/299. Offline, 2026-10-05"
+  },
+  {
+   "id": "m-w2bfix-spare-mount-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "First mount of an explainer@1 board at 4x CPU, localhost dist (evals/engines-prewarm.mjs, n=10): cold p50 314 / p90 511 ms; warm caches 245 / 329; second mount 318 / 348; spare adopted 23 / 28 ms timed inside the frame (138 / 193 ms with Playwright's polling, the method of the other arms). 2026-10-05"
+  },
+  {
+   "id": "m-w2bfix-teacher-screen-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Teacher's part counts vs the screen (evals/forge-teacher-screen.mjs, n=40 per run, real reply deployment; metric reads the board's real part counts): 4 runs; final run with the code repair after the rewrite: no facts row 72.5%, facts row 92.5%, facts + guard + repair 40/40 = 100% (0 empty lines). Earlier runs of the guard arm: 95%, 97.5% (one 429 error), 97.5% (a rewrite kept 'aadha'). 2026-10-05"
+  },
+  {
+   "id": "rj-w2bfix-coordinates-as-fractions",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "partsOnScreen (and the teacher-screen eval's metric) scanned JSON.stringify(params) for N/M after turning [a,b] into a/b: on a board every [x, y] point became a 'fraction' (flow board -> part counts 118, 152 …), so the guard allowed almost any part count and the metric was loose. Now a board's counts come from its facts and fraction number work only"
+  },
+  {
+   "id": "rj-w2bfix-paint-test-sleep-in-span",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2b-first-paint.mjs slept 400 ms after every turn response, INSIDE the measured span: every reported first paint was >= 400 ms whatever the client did (443/466 ms reported; the adopted frame actually paints ~50 ms after the response). The explain turn is now measured at once, n=12"
+  },
+  {
+   "id": "rj-w2bfix-guard-skip-empty-screen",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "screenContradiction returned null whenever the screen had no part counts: '5/4' said over a flow board passed by design. Replaced by w2bfix-screen-guard-content"
+  },
+  {
+   "id": "rj-w2bfix-sentence-rule-four-words",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "A first sentence-shape rule (>= 4 words, or capitalised word + an -ed/-es word) retired 181 of 331 library entries including plain noun phrases ('Rights and duties', 'Healthy body and mind', 'Carbon dioxide and water'); narrowed to clause markers, >= 5 letter words: 53 retired, all clauses / questions / truncations"
+  },
+  {
+   "id": "rj-w2bfix-defer-paint-to-probe-fleet",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Deferring the 300 ms first-paint and 150 ms warm-mount gates to the Azure probe fleet: both spans start with the turn response in hand and (warm) fetch nothing, so they are client work the fleet cannot make faster; the gate now applies in the sandbox"
+  },
+  {
+   "id": "rj-w2bfix-number-minus-as-negative",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "A first signed-integer pick read the minus of '8 - 3' as -3 and turned subtraction items into number-line hops; a sign is now negative only where no operand precedes it, and products / quotients / algebra lines never hop"
+  },
+  {
+   "id": "m-w2bfix-first-paint-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Explain response -> rung painted in the real child client (local dist, Chromium 360x800, measured at once): run 1 n=10 p50 49 / p90 62 ms; run 2 n=9 p50 42 / p90 178 ms; run 3 n=8 41-61 ms; frame fills the tray on every topic. Before: 443/466 ms incl. the test's own 400 ms sleep. Unmeasured: c4-evs-ch01-t01 (headless Chromium crashes during the opening TTS, spare disabled too) and c4-maths-ch01-t02 (no explain within 8 typed turns in the browser)"
+  },
+  {
+   "id": "m-w2bfix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Local acceptance 2026-10-05: w2b-explain-rungs 36/36 (12/12, 0 empty trays); w2b-first-paint p90 <= 300 ms in both complete runs; w2seam-contracts 7/8 (409 'today's lesson is done' on the Practice start: Conductor/purpose, not W2-B); w1b-mounts 37/40 with the same 3 item-bound FAILs under HEAD's modules.js (A/B): not W2-B; no W2-B account left"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2bfix-open-item-board-guard",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "part_of",
+   "dst": "w2b-explainer-library"
+  },
+  {
+   "src": "w2bfix-frame-line-anchor",
+   "rel": "part_of",
+   "dst": "w2b-whiteboard-renderer"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "supersedes",
+   "dst": "w2b-screen-guard-predicate"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "supersedes",
+   "dst": "w2b-frame-prewarm"
+  },
+  {
+   "src": "w2bfix-watch-only-board",
+   "rel": "part_of",
+   "dst": "w2b-teacher-sees-screen"
+  },
+  {
+   "src": "w2bfix-board-tap-evidence",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-continue-prior-ids",
+   "rel": "part_of",
+   "dst": "w2b-whiteboard-renderer"
+  },
+  {
+   "src": "w2bfix-pick-interest-representation",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-open-item-board-guard",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-open-item-leaks-2026-10-05"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-library-rebuild-2026-10-05"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-render-check-2026-10-05"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-render-check-2026-10-05"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-spare-mount-2026-10-05"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-teacher-screen-2026-10-05"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-guard-skip-empty-screen"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-coordinates-as-fractions"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-sentence-rule-four-words"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-defer-paint-to-probe-fleet"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-number-minus-as-negative"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-paint-test-sleep-in-span"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-first-paint-2026-10-05"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-local-acceptance-2026-10-05"
+  }
+ ],
+ "md": {}
+}

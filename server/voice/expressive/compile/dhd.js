@@ -21,9 +21,14 @@ export function langRuns(escaped) {
 }
 const rateAttr = (n) => `${n >= 0 ? "+" : ""}${Math.round(n)}%`;
 const speak = (voice, body) => `<speak ${XMLNS} xml:lang="en-IN"><voice name="${escapeXml(voice)}">${body}</voice></speak>`;
+/** Remove [bracketed] and *asterisked* stage directions from spoken text (after speakable: no maths "*" is left). */
+export const stripStageDirections = (s) => String(s).replace(/\[[^\]]*\]|\*[\p{L}][^*]*\*/gu, " ").replace(/\s{2,}/g, " ").replace(/\s+([,.!?।])/g, "$1");
 /** A spoken run: speakable text, escaped, Devanagari wrapped. Empty when nothing speakable is left. */
 export function spokenRun(text, spoken) {
-  const s = speakable(text, spoken ?? {}).trim();
+  // A bracketed or asterisked stage direction ("[laughs]", "*smiles*") is never spoken: DragonHD reads tags aloud
+  // (12/12). Replies are stripped upstream (say.js stripStage); openings, kit and Forge narration may not be. Captions
+  // keep the written text (fixer 2026-10-05).
+  const s = stripStageDirections(speakable(text, spoken ?? {})).trim();
   return s ? langRuns(escapeXml(s)) : "";
 }
 

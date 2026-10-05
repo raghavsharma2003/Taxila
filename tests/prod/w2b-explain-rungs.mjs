@@ -5,6 +5,7 @@
 //   - every explainer@1 mount carries a script that passes the STRICT normalise and the layout lint (shared/whiteboard.js)
 //     and has facts (what the teacher's facts row is written from);
 //   - every mount is an engine in ENGINES (no unknown engine);
+//   - 0 empty trays: every explain move reached has something on the tray (Rev 2; the terms board is the last rung);
 //   - Studio forced off: today no Studio rung is live (W2-F/H), so every explain beat above already IS the
 //     Studio-off case; when studio.enabled exists this file asserts it per account (open item w2b-studio-off-flag).
 // Run: NODE_USE_ENV_PROXY=1 node tests/prod/w2b-explain-rungs.mjs   (TAXILA_BASE for a local server)
@@ -52,5 +53,7 @@ const reached = rows.filter((r) => r.explainReached);
 const rung = reached.filter((r) => r.engine);
 const board = reached.filter((r) => r.engine === "explainer@1");
 ok(rung.length >= 10, `an engine show or the board on the explain move in ≥ 10 of 12 topics (${rung.length}/${rows.length}; board ${board.length}, engine ${rung.length - board.length})`);
+// Rev 2: 0 empty trays: EVERY explain move reached shows something (the key-terms board is the last rung: W2-B fixer)
+ok(reached.every((r) => r.tray && r.tray !== "none" && r.engine), `no explain move with an empty tray (${reached.filter((r) => !r.engine || r.tray === "none").map((r) => r.topicId).join(",") || "none"})`);
 ok(reached.every((r) => r.engine ? r.tray === "module" : true), "the explain move's tray is the module tray whenever something is mounted");
 done();

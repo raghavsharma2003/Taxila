@@ -57,10 +57,11 @@ export function textBox(text, size = "m", at = [0, 0], align = "middle") {
 /**
  * Validate and normalise a script. Lenient (default): out-of-board points are clamped, bad ops dropped, timings repaired
  * (each a `fix`); a script with nothing drawable left, or a broken envelope, is not ok. Strict (the gate): every fix is
- * an error, so a planner is told exactly what it got wrong.
+ * an error, so a planner is told exactly what it got wrong. `clauses`: keep clause anchors (only with onsets to apply).
+ * `priorIds`: the ids of the board a "continue" script draws on (valid targets).
  * @returns {{ ok: boolean, script: any | null, errors: string[], fixes: string[] }}
  */
-export function normalizeScript(raw, { strict = false } = {}) {
+export function normalizeScript(raw, { strict = false, clauses = false, priorIds = null } = {}) {
   const errors = [], fixes = [];
   const fix = (m) => (strict ? errors : fixes).push(m);
   if (!raw || typeof raw !== "object") return { ok: false, script: null, errors: ["not_an_object"], fixes };
@@ -79,7 +80,11 @@ export function normalizeScript(raw, { strict = false } = {}) {
     return [round1(q[0]), round1(q[1])];
   };
   const ops = [];
+  // a "continue" script may point at the board it draws on (highlight / erase / label an earlier op): those ids count
+  // as seen targets, never as this script's own ids
+  const prior = new Set(priorIds ?? []);
   const seen = new Set();
+  const isTarget = (id) => seen.has(id) || prior.has(id);
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -92,7 +97,13 @@ export function normalizeScript(raw, { strict = false } = {}) {
     if (!(e >= s)) { bad("endMs"); e = s; }
     if (e > LIMITS.maxDurationMs) { bad("over_duration"); e = LIMITS.maxDurationMs; s = Math.min(s, e); }
     const base = { id: o.id, op: o.op, startMs: Math.round(s), endMs: Math.round(e) };
-    if (Number.isInteger(o.clause) && o.clause >= 0 && o.clause < 64) base.clause = o.clause;
+    // `clause` makes an op's times relative to that clause's onset in her line. Only a caller that HAS the onsets (the
+    // renderer given clauseOnsets) keeps it; otherwise strict refuses it and lenient drops it, so the gate and the
+    // renderer can never disagree about when an op draws (W2-B fixer, major 1).
+    if (o.clause !== undefined) {
+      if (clauses && Number.isInteger(o.clause) && o.clause >= 0 && o.clause < 64) base.clause = o.clause;
+      else bad(clauses ? "clause" : "clause_unsupported");
+    }
     if (o.ink !== undefined) { if (INKS.includes(o.ink)) base.ink = o.ink; else bad("ink"); }
     if (o.weight !== undefined) { if ([1, 2, 3].includes(o.weight)) base.weight = o.weight; else bad("weight"); }
     const fill = (k = "fill") => (o[k] === undefined ? {} : INKS.includes(o[k]) ? { [k]: o[k] } : (bad(k), {}));
@@ -161,7 +172,7 @@ export function normalizeScript(raw, { strict = false } = {}) {
           if (["start", "middle", "end"].includes(o.align)) op.align = o.align;
         } else {
           if (o.to !== undefined) { const to = P(o.to, `${where}.to`); if (to) op.to = to; else bad("label_to"); }
-          if (typeof o.target === "string") { if (seen.has(o.target)) op.target = o.target; else bad("label_target"); }
+          if (typeof o.target === "string") { if (isTarget(o.target)) op.target = o.target; else bad("label_target"); }
         }
         break;
       }
@@ -183,7 +194,7 @@ export function normalizeScript(raw, { strict = false } = {}) {
       }
       case "highlight":
       case "erase": {
-        if (typeof o.target !== "string" || !seen.has(o.target)) { bad("target"); break; }
+        if (typeof o.target !== "string" || !isTarget(o.target)) { bad("target"); break; }
         op = { ...base, target: o.target };
         if (o.op === "highlight") op.style = ["circle", "underline", "pulse"].includes(o.style) ? o.style : (bad("style"), "circle");
         break;
@@ -243,7 +254,8 @@ export function stepsAt(script, t) {
 
 // ───────────────────────────── tokens and facts ─────────────────────────────
 
-const TOKEN_RE = /[\p{L}\p{N}]+(?:[./:][\p{N}]+)*/gu;
+// letters WITH combining marks (\p{M}): without it a Devanagari word splits at every matra / virama (W2-B fixer)
+const TOKEN_RE = /[\p{L}\p{M}\p{N}]+(?:[./:][\p{N}]+)*/gu;
 /** Every token the board writes (text, labels, number work cells), lower-cased: the gate checks these ⊆ reply ∪ kit. */
 export function scriptTokens(script) {
   const out = [];

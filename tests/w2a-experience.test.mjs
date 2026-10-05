@@ -237,3 +237,132 @@ test("every new W2-A label is English chrome (no Devanagari, no exclamation mark
     assert.ok(!v.includes("!"), k);
   }
 });
+
+// ───────────────────────────── W2-A fixer (review findings, 2026-10-04) ─────────────────────────────
+
+const { startRefusal, refusalControl } = await import("../server/routes/lesson.js");
+const { refusalOf } = await import("../src/child/lesson/answers.ts");
+const { appBase, resetMail } = await import("../server/routes/account.js");
+const { skillLineSaid } = await import("../server/routes/child.js");
+const { speechSaid, lessonSpeech, engineTick } = await import("../server/routes/parent.js");
+const { resolveAddress } = await import("../server/director/register.js");
+const { activeWindow } = await import("../server/reports/truth.js");
+const { ASK_FIXTURE } = await import("./fixtures/ask-routing.mjs");
+const { topicSequence } = await import("../server/content/curriculum.js");
+const { kitFromFile } = await import("../server/content/kits.js");
+
+test("safety_hold refuses EVERY start (lesson, practice, Ask) as a 'safety' refusal the client shows as the hold card", () => {
+  for (const p of ["lesson", "practice", "doubt", undefined]) assert.ok(startRefusal("safety_hold", p), `safety_hold refuses ${p}`);
+  assert.equal(refusalControl("safety_hold"), "safety");
+  const r = refusalOf({ error: "lessons are paused for now", state: "safety_hold", control: "safety" });
+  assert.equal(r?.state, "safety_hold");
+  assert.equal(r?.control, "safety");
+});
+
+test("the hold copy names a trusted grown-up, never 'at home' (the floor outranks the spec row), and both helplines", () => {
+  assert.ok(!/at home/i.test(W2A["home.hold.sub"]), W2A["home.hold.sub"]);
+  assert.match(W2A["home.hold.sub"], /trust/);
+  assert.match(W2A["home.hold.lines"], /1098/);
+  assert.match(W2A["home.hold.lines"], /14416/);
+});
+
+test("a reset link is never built on a guessed domain: no TAXILA_URL / PUBLIC_BASE_URL → no email at all", () => {
+  const g = { email: "p@example.com", name: "P" };
+  assert.equal(appBase({}), null);
+  assert.equal(resetMail({ g, token: "t".repeat(43) }, {}), null, "nothing is mailed when no app origin is set");
+  assert.equal(appBase({ TAXILA_URL: "not a url" }), null);
+  const m = resetMail({ g, token: "abc_DEF-123" }, { TAXILA_URL: "https://taxila.dev/" });
+  assert.ok(m.text.includes("https://taxila.dev/start/reset?token=abc_DEF-123"));
+  assert.ok(!/taxila\.app/.test(m.text));
+  assert.equal(resetMail({ g, token: "x" }, { PUBLIC_BASE_URL: "https://host.example" }).to, "p@example.com");
+});
+
+test("no digit reaches tts from 'Hear {T}' (every class 4-7 maths skill label, both address forms) or the parent's Listen", () => {
+  let labels = 0;
+  for (const cl of [4, 5, 6, 7]) for (const id of topicSequence(cl, "maths")) {
+    let kit = null;
+    try { kit = kitFromFile(getTopic(id)); } catch { kit = null; }
+    for (const sk of kit?.skills ?? []) {
+      for (const lang of ["hinglish", "hindi", "english"]) for (const st of ["not_started", "practising", "got_it", "secure"]) {
+        const child = { class_level: cl, language_pref: lang };
+        const said = skillLineSaid(child, skillLineOf(lang, st, childLabelOf(sk.title), resolveAddress({ classLevel: cl, lang })));
+        assert.ok(!/\d/.test(said), `digit to tts: ${said}`);
+      }
+      labels++;
+    }
+  }
+  assert.ok(labels > 100, `labels checked: ${labels}`);
+  const lesson = speechSaid(lessonSpeech("Riya", { topic: "Compare two 4-digit numbers", ended: true, checked: 4, unaided: 3 }));
+  assert.ok(!/\d/.test(lesson), lesson);
+  assert.ok(!/\d/.test(speechSaid("Childline 1098, Tele-MANAS 14416")), "helplines are spoken, digit by digit");
+});
+
+test("her Garden/Sky line uses the lessons' address form: class 6 default is aap, class 4 tum, the parent's choice wins", () => {
+  const a6 = resolveAddress({ classLevel: 6, lang: "hinglish" });
+  assert.equal(a6, "aap");
+  assert.match(skillLineOf("hinglish", "practising", "Fractions", a6), /Aap achhi koshish kar rahe hain/);
+  assert.ok(!/\btum/i.test(skillLineOf("hinglish", "got_it", "Fractions", a6)));
+  assert.match(skillLineOf("hindi", "got_it", "भिन्न", "aap"), /आपने/);
+  assert.match(skillLineOf("hinglish", "got_it", "Fractions", resolveAddress({ classLevel: 4, lang: "hinglish" })), /tumne/);
+  assert.match(skillLineOf("hinglish", "got_it", "Fractions", resolveAddress({ classLevel: 6, lang: "hinglish", parent: "tum" })), /tumne/);
+  assert.ok(!/days later/.test(skillLineOf("english", "secure", "Fractions", null)), "the delayed check is 20 h, not days");
+});
+
+test("a 6-word label cut never leaves a dangling phrase", () => {
+  assert.equal(childLabelOf("Order several 4-digit numbers from smallest to largest"), "Order several 4-digit numbers");
+  assert.equal(childLabelOf("Compare two 4-digit numbers"), "Compare two 4-digit numbers");
+});
+
+test("the claim checker re-derives the 'explained' line: a builder that over-counts it is caught", () => {
+  seqN = 0;
+  const raw = [ev({ turn: 3, o: "C0" }), ev({ turn: 4, cls: "probe.why", o: "full", k: 1 }), ev({ turn: 5, cls: "probe.teachback", o: "mid", k: 2 })];
+  const rows = supersede(raw).map(engineRow);
+  const good = lessonFactsSummary({ topicTitle: "T", rows });
+  assert.deepEqual(summaryClaimsHold(good, raw), []);
+  assert.equal(good.counts.explained, 1);
+  const over = { ...good, lines: good.lines.map((l) => (l.key === "explained" ? { ...l, k: 2 } : l)) };
+  assert.ok(summaryClaimsHold(over, raw).some((w) => /explained/.test(w)), "over-counted explained fails");
+  const silent = { ...good, lines: good.lines.filter((l) => l.key !== "explained") };
+  assert.ok(summaryClaimsHold(silent, raw).some((w) => /own-words/.test(w)), "an unstated explanation fails");
+});
+
+test("a DidCard's tick comes from the engine row of the same turn (C1 second try = with a hint; no row = no tick)", () => {
+  seqN = 0;
+  const here = supersede([ev({ turn: 3, o: "C0" }), ev({ turn: 5, o: "C1", k: 1 }), ev({ turn: 7, o: "C4", k: 2 }), ev({ turn: 9, cls: "probe.teachback", o: "high", k: 3 })])
+    .map(engineRow).filter((r) => r.scored);
+  assert.deepEqual(engineTick(here, 3), { tick: true, withHelp: false });
+  assert.deepEqual(engineTick(here, 5), { tick: true, withHelp: true }, "a second try is not 'on their own'");
+  assert.deepEqual(engineTick(here, 7), { tick: false, withHelp: false });
+  assert.deepEqual(engineTick(here, 9), { tick: true, withHelp: false });
+  assert.deepEqual(engineTick(here, 11), { tick: false, withHelp: false }, "no engine row: no claim");
+  assert.deepEqual(engineTick(here, null), { tick: false, withHelp: false });
+});
+
+test("Made for you reads 017's real studio_mount shape (jsonb outcome, no build row: image alt, else the topic)", () => {
+  const it = madeForItem({ intent_id: "i1", revealed_at: at(0), kind: "image", topic_id: "c5-maths-ch02-t02", facts: { artifact: { kind: "image", alt: "Two pizzas cut in halves and quarters" } },
+    outcome: { answers: 2, complete: true, last: "right" } });
+  assert.equal(it.title, "Two pizzas cut in halves and quarters");
+  assert.equal(it.result, null, "an outcome without an explicit result makes no claim about the child");
+  const t = madeForItem({ intent_id: "i2", revealed_at: at(0), kind: "game", topic_id: "c5-maths-ch02-t02", facts: {}, outcome: { result: "on_own" } });
+  assert.equal(t.title, getTopic("c5-maths-ch02-t02").title);
+  assert.equal(t.result, "on_own");
+});
+
+test("a school test window covers its days only", () => {
+  const w = { subject: "maths", from: "2026-10-03", to: "2026-10-06" };
+  assert.deepEqual(activeWindow(w, "2026-10-04"), w);
+  assert.equal(activeWindow(w, "2026-10-07"), null);
+  assert.equal(activeWindow(null, "2026-10-04"), null);
+});
+
+test("routed Ask over 30 Hinglish/Hindi/English questions, classes 4-7: no wrong topic, ≥ 27 right (null where none exists)", () => {
+  let ok = 0;
+  const wrong = [];
+  for (const [cl, q, want] of ASK_FIXTURE) {
+    const id = matchTopic(q, cl)?.topicId ?? null;
+    if (want === null ? id === null : want.includes(id)) ok++;
+    else if (id !== null) wrong.push(`c${cl} "${q}" → ${id}`);
+  }
+  assert.deepEqual(wrong, [], "a wrong topic is worse than null");
+  assert.ok(ok >= 27, `routed ${ok}/${ASK_FIXTURE.length}`);
+});

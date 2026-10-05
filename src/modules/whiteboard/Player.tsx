@@ -30,6 +30,28 @@ export interface WhiteboardPlayerProps {
   onDone?: () => void;
   /** Time to show when not animating (tests, the reduced-motion snapshot): overrides the clock. */
   frozenAt?: number;
+  /**
+   * Onset (ms from the anchor) of each clause of her line (HUMAN-VOICE DeliveryClause index). An op with `clause` is timed
+   * from its clause's onset; without onsets the script was normalised without clauses (shared/whiteboard.js), so none
+   * carries one. An op whose clause has no onset is drawn from the anchor.
+   */
+  clauseOnsets?: readonly number[];
+  /**
+   * Once the drawing is done, every written word (text / label op) becomes a tap target and reports its op (W2-B fixer,
+   * minor 12: "point to the stamen" style covert checks, graded by the host from the op id, never by the frame).
+   */
+  onTapText?: (op: { id: string; text: string }) => void;
+}
+
+/** The script with clause-relative ops moved onto the line's clock (and its duration stretched to cover them). */
+export function onLineClock(script: WhiteboardScript, clauseOnsets?: readonly number[]): WhiteboardScript {
+  if (!clauseOnsets?.length || !script.ops.some((o) => o.clause !== undefined)) return script;
+  const ops = script.ops.map((o) => {
+    const on = o.clause !== undefined ? clauseOnsets[o.clause] : undefined;
+    return typeof on === "number" && Number.isFinite(on) && on > 0 ? { ...o, startMs: o.startMs + on, endMs: o.endMs + on } : o;
+  });
+  const end = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
+  return { ...script, ops, durationMs: Math.max(script.durationMs, end) };
 }
 
 /** The clock: t (ms since startAt), advanced on animation frames only while the script is still drawing. */
@@ -57,12 +79,17 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt }: WhiteboardPlayerProps) {
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, onTapText }: WhiteboardPlayerProps) {
+  const script = useMemo(() => onLineClock(given, clauseOnsets), [given, clauseOnsets]);
   const pal = paletteFor(script.board.ground);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
   const byId = useMemo(() => new Map(all.map((o) => [o.id, o])), [all]);
-  const geoms = useMemo(() => new Map(all.map((o) => [o.id, opGeometry(o, byId)])), [all, byId]);
+  // geometry is computed when an op first draws (a board's first paint, before any stroke, computes none of it)
+  const geoms = useMemo(() => {
+    const cache = new Map<string, OpGeometry>();
+    return { get: (id: string) => { let g = cache.get(id); if (!g) { const o = byId.get(id); if (!o) return undefined; g = opGeometry(o, byId); cache.set(id, g); } return g; } };
+  }, [byId]);
   const er = useMemo(() => erasers({ ...script, ops: all }), [script, all]);
   const priorIds = useMemo(() => new Set((prior ?? []).map((o) => o.id)), [prior]);
   const t = useTimeline(startAt, script.durationMs, frozenAt, onDone);
@@ -79,12 +106,20 @@ export function WhiteboardPlayer({ script, prior, startAt, reducedMotion = false
       {pal.grid && <Grid w={BW} h={BH} color={pal.grid} />}
       {all.map((op) => {
         if (op.op === "erase") return null;
-        const vis = visibleShare(op, priorIds.has(op.id) ? Infinity : t, er);
+        // an earlier board's op fades when THIS script erases it, at the eraser's time (not at once)
+        const vis = visibleShare(op, t, er);
         const p = q(op);
         if (p <= 0 || vis <= 0) return null;
         return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} />;
       })}
       {pulseBox && <PulseRing key={pulse!.seq} box={pulseBox} color={pal.ink.mark} reducedMotion={reducedMotion} />}
+      {onTapText && t >= script.durationMs && script.ops.filter((o) => (o.op === "text" || o.op === "label") && visibleShare(o, t, er) > 0).map((o) => {
+        const b = geoms.get(o.id)!.box;
+        const text = (o as { text: string }).text;
+        // a hit area a little larger than the word (a child's finger), transparent: the word itself stays as drawn
+        return <rect key={`tap-${o.id}`} data-tap={o.id} x={b.x - 6} y={b.y - 6} width={b.w + 12} height={b.h + 12} fill="transparent" style={{ cursor: "pointer" }}
+          role="button" aria-label={text} onClick={() => onTapText({ id: o.id, text })} />;
+      })}
     </svg>
   );
 }

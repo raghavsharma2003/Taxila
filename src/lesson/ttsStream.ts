@@ -7,6 +7,7 @@
 // resume() replays from just before where she was cut (a cough, the TV or a "hmm" must not eat her question).
 import type { TtsRequest, TurnRequest, TurnResponse } from "../../shared/contracts.ts";
 import { ApiError } from "./api.ts";
+import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
 
 export const PCM_RATE = 24_000;
 /** Lead before the first chunk plays: absorbs network jitter between chunks without audible delay. */
@@ -84,7 +85,13 @@ export interface StreamPlayback {
   remainingS(): number;
 }
 
-export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal) => Promise<ReadableStream<Uint8Array>>;
+/**
+ * Where a reply's clause onsets go when a player plays it (PcmStreamPlayer.play passes one to `open`): the player then
+ * emits each clause on ITS clock, when the sample is scheduled (fixer 2026-10-05, w2g-clause-events-on-player-clock).
+ * Without a sink, clause frames go straight to onTtsEvent when they are parsed (the old behaviour).
+ */
+export interface ClauseSink { clause(ev: TtsClauseEvent): void }
+export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: ClauseSink) => Promise<ReadableStream<Uint8Array>>;
 
 // ───────────── framed TTS v2 (HUMAN-VOICE §5.14, server/voice/frames.js) ─────────────
 // `[type u8][len u24 BE][payload]`: 0 PCM, 1 event JSON, 2 header JSON, 3 turn JSON (turn-audio), 4 end JSON. The
@@ -97,8 +104,12 @@ export interface TtsFrame {
   /** PCM bytes for type 0, the parsed JSON otherwise. */
   payload: Uint8Array | Record<string, unknown>;
 }
-/** A clause onset in the reply's audio: `atMs` from the reply's first sample (the whiteboard's clause anchor). */
-export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number }
+/**
+ * A clause onset in the reply's audio: `atMs` from the reply's first sample (the whiteboard's clause anchor). `playAt` is
+ * set when a PcmStreamPlayer emitted it: the performance.now() time that sample actually sounds (start lead, underrun
+ * gaps and pause/resume included) — the time a renderer should key on.
+ */
+export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number; playAt?: number }
 /** What the frame stream tells listeners: the reply it belongs to, plus the frame's JSON. */
 export type TtsEvent = { req: TtsRequest } & ({ kind: "header"; data: Record<string, unknown> } | { kind: "clause"; data: TtsClauseEvent }
   | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> });
@@ -224,11 +235,15 @@ export function turnAudioEnabled(): boolean {
   return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO === "1";
 }
 
-const folded = new Map<string, { stream: ReadableStream<Uint8Array>; at: number }>();
+interface Fold { stream: ReadableStream<Uint8Array>; at: number; req: TtsRequest; sink: ClauseSink | null; pending: TtsClauseEvent[] }
+const folded = new Map<string, Fold>();
 const FOLD_TTL_MS = 30_000;
 const foldKey = (lessonId: string, seq: number) => `${lessonId}:${seq}`;
-/** The audio a turn-audio response carried for (lessonId, seq), once; null when none is parked. */
-export function takeFoldedAudio(lessonId: string, seq: number): ReadableStream<Uint8Array> | null {
+/**
+ * The audio a turn-audio response carried for (lessonId, seq), once; null when none is parked. Its clause events (held
+ * while it was parked) go to `sink`, or to onTtsEvent when there is none.
+ */
+export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink): ReadableStream<Uint8Array> | null {
   const k = foldKey(lessonId, seq);
   const f = folded.get(k);
   folded.delete(k);
@@ -237,6 +252,9 @@ export function takeFoldedAudio(lessonId: string, seq: number): ReadableStream<U
     void f.stream.cancel().catch(() => {});
     return null;
   }
+  const req = f.req;
+  f.sink = sink ?? { clause: (data) => emit({ req, kind: "clause", data }) };
+  for (const ev of f.pending.splice(0)) f.sink.clause(ev);
   return f.stream;
 }
 
@@ -272,6 +290,7 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
   const writer = writable.getWriter();
   const body = res.body;
   let ttsReq: TtsRequest | null = null;
+  let fold: Fold | null = null;
   let gotTurn = false;
   let audioFollows = false;
   void (async () => {
@@ -287,7 +306,8 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
             // parked only when this response carries the audio; else the link fetches it by seq as before
             if (audioFollows) {
               const k = foldKey(req.lessonId, ttsReq.seq);
-              folded.set(k, { stream: readable, at: Date.now() });
+              fold = { stream: readable, at: Date.now(), req: ttsReq, sink: null, pending: [] };
+              folded.set(k, fold);
               // nobody took it (the runtime chose not to speak): release the response
               const timer: unknown = setTimeout(() => {
                 if (folded.get(k)?.stream === readable) {
@@ -304,7 +324,11 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
         } else if (ttsReq) {
           const e = eventOf(ttsReq, f);
           if (e?.kind === "end" && (e.data.audio === "none" || e.data.audio === "rate_limited")) folded.delete(foldKey(ttsReq.lessonId, ttsReq.seq));
-          if (e) emit(e);
+          // clause onsets belong to whoever plays the parked audio (its player's clock), held until it is taken
+          if (e?.kind === "clause" && fold) {
+            if (fold.sink) fold.sink.clause(e.data);
+            else fold.pending.push(e.data);
+          } else if (e) emit(e);
         }
       }
       if (!gotTurn) rejectTurn(new ApiError(502, "turn-audio ended without a turn", null));
@@ -319,8 +343,8 @@ export async function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Pro
 }
 
 /** POST /api/voice/tts-stream → the PCM body stream (framed v2 when the server supports it; events to onTtsEvent). */
-export const fetchSpeechStream: SpeechStreamFetch = async (req, signal) => {
-  const parked = takeFoldedAudio(req.lessonId, req.seq);
+export const fetchSpeechStream: SpeechStreamFetch = async (req, signal, sink) => {
+  const parked = takeFoldedAudio(req.lessonId, req.seq, sink);
   if (parked) return parked;
   const res = await fetch("/api/voice/tts-stream", {
     method: "POST",
@@ -333,7 +357,8 @@ export const fetchSpeechStream: SpeechStreamFetch = async (req, signal) => {
   if (!isFramed(res)) return res.body;
   return pcmOfFrames(res.body, (f) => {
     const e = eventOf(req, f);
-    if (e) emit(e);
+    if (e?.kind === "clause" && sink) sink.clause(e.data);
+    else if (e) emit(e);
   });
 };
 
@@ -368,8 +393,13 @@ export class PcmStreamPlayer {
     g.setTargetAtTime(level, this.ctx.currentTime, 0.01);
   }
 
-  /** Play one streamed reply; a previous one is stopped first. */
-  play(open: (signal: AbortSignal) => Promise<ReadableStream<Uint8Array>>): StreamPlayback {
+  /**
+   * Play one streamed reply; a previous one is stopped first. `opts.req` names the reply: the player marks the
+   * whiteboard's line anchor (clock.ts markLineAudioStart) at the time its FIRST sample is scheduled to sound, and emits
+   * the reply's clause onsets (handed to `open` as a ClauseSink) on onTtsEvent with `playAt` = when that sample sounds.
+   * Fixer 2026-10-05 (w2g-clause-events-on-player-clock): the player is the source of timing, never the network.
+   */
+  play(open: (signal: AbortSignal, sink: ClauseSink) => Promise<ReadableStream<Uint8Array>>, opts: { req?: TtsRequest } = {}): StreamPlayback {
     this.current?.stop();
     this.duck(1);
     const ctx = this.ctx;
@@ -386,6 +416,29 @@ export class PcmStreamPlayer {
     let streamDone = false;
     let paused = false;
     let resuming = false;
+    // clause onsets: pending until the sample they name is scheduled; `emitted` = already told to listeners
+    const clauses: TtsClauseEvent[] = [];
+    const emitted = new Set<TtsClauseEvent>();
+    const req = opts.req;
+    const perfNow = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+    /** Emit every not-yet-emitted onset inside [from, to), which starts sounding at ctx time `startAt`. */
+    const emitClauses = (from: number, to: number, startAt: number) => {
+      if (!req) return;
+      const base = perfNow() + (startAt - ctx.currentTime) * 1000;
+      for (const ev of clauses) {
+        if (emitted.has(ev) || ev.atSample >= to || ev.atSample < from) continue;
+        emitted.add(ev);
+        emit({ req, kind: "clause", data: { ...ev, playAt: base + ((ev.atSample - from) / PCM_RATE) * 1000 } });
+      }
+    };
+    const sink: ClauseSink = {
+      clause: (ev) => {
+        if (finished) return;
+        clauses.push(ev);
+        // an onset for audio already scheduled (it came after its PCM): emit it on the timeline it already has
+        if (ev.atSample < schedPos && ev.atSample >= anchor.pos) emitClauses(anchor.pos, schedPos, anchor.at);
+      },
+    };
     let resolveStart!: (at: number) => void;
     let rejectStart!: (err: unknown) => void;
     let resolveEnd!: (s: "completed" | "stopped" | "failed") => void;
@@ -457,7 +510,14 @@ export class PcmStreamPlayer {
       if (!didStart) {
         didStart = true;
         resolveStart(Date.now() + Math.max(0, (nextAt - now) * 1000));
+        // the whiteboard's anchor: her first sample, on the performance.now() clock clock.ts uses
+        try {
+          markLineAudioStart(req ? { lessonId: req.lessonId, teacherReplySeq: req.seq } : {}, perfNow() + Math.max(0, (nextAt - now) * 1000));
+        } catch {
+          /* a renderer's bug never stops the voice */
+        }
       }
+      emitClauses(schedPos, total, nextAt);
       nextAt += ab.duration;
       schedPos = total;
       sources.add(src);
@@ -472,7 +532,7 @@ export class PcmStreamPlayer {
 
     void (async () => {
       try {
-        const body = await open(abort.signal);
+        const body = await open(abort.signal, sink);
         const reader = body.getReader();
         abort.signal.addEventListener("abort", () => void reader.cancel().catch(() => {}), { once: true });
         for (;;) {
@@ -507,6 +567,8 @@ export class PcmStreamPlayer {
         paused = true;
         silenceSources();
         schedPos = Math.min(pos, total);
+        // onsets that were scheduled but never sounded are told again, on the resumed timeline
+        for (const ev of clauses) if (ev.atSample >= schedPos) emitted.delete(ev);
         nextAt = 0;
         return sounding;
       },

@@ -7,7 +7,12 @@ import type { LevelMeter } from "./level.ts";
 
 export type LessonMode = "voice" | "text";
 export type TeacherStatus = NonNullable<UiDirectives["status"]>;
-export type LinkConnection = "idle" | "connecting" | "connected" | "reconnecting" | "closed" | "failed";
+/**
+ * "stalled": the transport says it is down (ICE "disconnected") but the call has not been rebuilt; it often heals by itself,
+ * so nothing the link holds is discarded. "reconnecting": the call is being rebuilt with a fresh session (its
+ * conversation is gone).
+ */
+export type LinkConnection = "idle" | "connecting" | "connected" | "stalled" | "reconnecting" | "closed" | "failed";
 export type ResponseStatus = "completed" | "cancelled" | "failed" | "incomplete";
 
 /** Everything a link reports. Times are epoch ms on the client clock. */
@@ -85,11 +90,12 @@ export interface TeacherLink {
   micTap?(): MicTap | null;
   /**
    * Realtime lane (W2-D #2): the Director's pace knob (TurnResponse.pace) → server VAD end-of-turn silence, clamped to
-   * 600-1200 ms. Absent on text lanes (the cascade's endpointing is the client VAD's).
+   * 900-1200 ms (the knob only adds time on top of the minted base). Absent on text lanes (the cascade's endpointing is the client VAD's).
    */
   setPace?(pace: { waitNudgeSec: number; endpointSilenceMs: number }): void;
   /**
-   * Realtime lane A (W2-D #3, HUMAN-VOICE B6): the delivery note for the next reply, appended LAST to the instructions
+   * Realtime lane A (W2-D #3, HUMAN-VOICE B6): the delivery note for the next reply, inserted just before the last line
+   * (the compiler's turn-shape rule) of the instructions
    * the link applies (null clears it). `apply` re-sends the current instructions with it now; false waits for the next
    * applyInstructions (so a turn that also carries instructions sends one session.update, not two).
    */

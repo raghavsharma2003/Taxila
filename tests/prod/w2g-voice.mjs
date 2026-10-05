@@ -9,11 +9,21 @@
 //      register bypasses delivery: proven by tests/voice-expressive-plan.test.mjs HV-3, observed here end to end).
 //   4. The text lane's "Hear" (/api/tts) answers audio/mpeg in the lesson's voice.
 //   5. Refusals: turn-audio without a session is 401, a malformed lesson id 400, before any frame.
+// TAXILA_EXPECT_ENGINE=dhd (the main loop sets it for prod / India runs): a mini-tts header frame or a mini-tts "Hear" is
+// a FAIL, not a warning, so a deploy that lost AZURE_SPEECH_REGION/_KEY cannot pass. Local runs: .env.local carries only
+// the AZURE_SPEECH_*_SIN variables (deploy-azure.mjs maps them); export AZURE_SPEECH_REGION / AZURE_SPEECH_KEY from them
+// before `node server/serve.mjs`, or the local server speaks mini-tts.
 // Deletes its account.
 import { withTestAccount, ok, warn, done, BASE, isLocal, dbq } from "./lib.mjs";
 import { parseFrames, FRAME } from "../../server/voice/frames.js";
 
 const ACCEPT = "application/x-taxila-pcm-frames;v=2";
+const EXPECT_ENGINE = process.env.TAXILA_EXPECT_ENGINE || "";
+/** The engine check: a FAIL under TAXILA_EXPECT_ENGINE, else a warning. */
+const engineCheck = (engine, what) => {
+  if (EXPECT_ENGINE) ok(engine === EXPECT_ENGINE, `${what} speaks with ${engine} (expected ${EXPECT_ENGINE})`);
+  else if (engine !== "dhd") warn(`${what}: the target speaks with ${engine}: DragonHD needs AZURE_SPEECH_REGION/_KEY on the deployment (the India profile sets them)`);
+};
 async function post(api, path, body, accept) {
   const t0 = performance.now();
   const res = await fetch(`${BASE}${path}`, { method: "POST", headers: { "content-type": "application/json", cookie: api.cookie(), ...(accept ? { accept } : {}) }, body: JSON.stringify(body) });
@@ -64,7 +74,7 @@ await withTestAccount(async ({ api, child }) => {
   ok(clauses.length >= 1 && clauses[0].atSample === 0 && clauses.every((c, i) => i === 0 || c.atSample > clauses[i - 1].atSample), `one clause event per part, sample-exact and increasing (${clauses.map((c) => c.atMs).join(", ")} ms)`);
   ok(pcm > 24_000 && pcm % 2 === 0, `PCM arrives in frames (${(pcm / 48_000).toFixed(2)} s of audio)`);
   ok(f.at(-1)?.type === FRAME.end && f.at(-1).payload.status === "ok", "an end frame closes the stream");
-  if (header?.engine !== "dhd") warn(`the target speaks with ${header?.engine}: DragonHD needs AZURE_SPEECH_REGION/_KEY on the deployment (the India profile sets them)`);
+  engineCheck(header?.engine, "the opening");
   const raw = await post(api, "/api/voice/tts-stream", { lessonId: s.lessonId, seq: s.teacherOpeningSeq });
   ok(raw.res.status === 200 && /audio\/pcm/.test(raw.res.headers.get("content-type") ?? "") && raw.body.length > 24_000, `an old client still gets raw audio/pcm (${raw.body.length} bytes)`);
 
@@ -112,6 +122,7 @@ await withTestAccount(async ({ api, child }) => {
   const hear = await fetch(`${BASE}/api/tts`, { method: "POST", headers: { "content-type": "application/json", cookie: api.cookie() }, body: JSON.stringify({ lessonId: s.lessonId, seq: s.teacherOpeningSeq }) });
   const mp3 = Buffer.from(await hear.arrayBuffer());
   ok(hear.status === 200 && /audio\/mpeg/.test(hear.headers.get("content-type") ?? "") && mp3.length > 2000, `"Hear" replays her line as mp3 (${mp3.length} bytes)`);
+  engineCheck(hear.headers.get("x-tts-engine") ?? "unknown", `"Hear"`);
   await api("POST", "/api/lesson/end", { lessonId: s.lessonId });
 
   // ── 5. refusals ──

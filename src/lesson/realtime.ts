@@ -47,14 +47,21 @@ export function isRateLimit(err: unknown): boolean {
   return /rate[_ ]?limit|too many (requests|tokens)|quota/i.test(text);
 }
 
-/** The link error code the runtime reads as "move this lesson to the cascade lane". */
+/** The link error code the runtime reads as "the realtime model refused a response for quota" (retried once, then cascade). */
 export const RATE_LIMITED = "rate_limited";
+/** A re-mint after a dropped call was refused for quota (503 {fallback: "cascade"}): move to the cascade lane now. */
+export const MINT_REFUSED = "mint_refused";
+/** The call dropped and every reconnect failed while the device is online: move to the cascade lane now. */
+export const REALTIME_UNAVAILABLE = "realtime_unavailable";
 
-/** Server VAD end-of-turn silence bounds for the pace knob (twin of server/voice/realtimeSession.js). */
-export const ENDPOINT_MIN_MS = 600;
+/**
+ * Server VAD end-of-turn silence bounds for the pace knob (twin of server/voice/realtimeSession.js). The floor is the
+ * measured base (decision voice-turn-config: 600 ms cut children off mid-thought, 900 ms did not): the knob only adds time.
+ */
+export const ENDPOINT_MIN_MS = 900;
 export const ENDPOINT_MAX_MS = 1200;
 
-/** TurnResponse.pace → server VAD silence (ms), clamped to 600-1200; null when the knob is missing. */
+/** TurnResponse.pace → server VAD silence (ms), clamped to 900-1200; null when the knob is missing. */
 export function endpointSilenceOf(pace: { endpointSilenceMs?: number } | null | undefined): number | null {
   const ms = Number(pace?.endpointSilenceMs);
   if (!Number.isFinite(ms) || ms <= 0) return null;

@@ -16,15 +16,16 @@ import { bad, need, send } from "../http.js";
 import { requireChild, hasConsent } from "../auth.js";
 import { getTopic, topicSequence, SUBJECT_ORDER } from "../content/curriculum.js";
 import { kitFromFile } from "../content/kits.js";
-import { nextTopicFor } from "../content/next-topic.js";
 import { learningDay, localTime, zonedToUtc } from "../conductor/clock.js";
 import { teacherFor, teacherCard, CHARACTERS, offerMode } from "../compiler/characters/index.js";
 import { eligibleTutors } from "../../shared/tutors.js";
 import { defaultControls, parentState } from "./parent.js";
-import { loadTruth, MAP_SHAPE, nextTopicOf } from "../reports/truth.js";
+import { loadTruth, MAP_SHAPE, nextTopicOf, activeWindow } from "../reports/truth.js";
 import { madeForOf } from "../reports/madeFor.js";
 import { tts, AzureError } from "../azure.js";
 import { allowSpeech, MAX_TTS_CHARS } from "./tts.js";
+import { speakable, spokenOptsForChild } from "../voice/spoken.js";
+import { resolveAddress } from "../director/register.js";
 import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
@@ -45,6 +46,9 @@ export const DONE_MIN_MINUTES = 5;
  * (state.did) or it ran DONE_MIN_MINUTES; an abandoned zero-turn lesson (closed by lesson start) never does.
  */
 export const countsAsDone = (state) => !state?.abandoned
+  // W2 integration: only a Learn sitting is "today's lesson" (STUDENT-FLOW §4.2 done row: Practice and Ask are what a
+  // done day still offers, so they never use up the day; a Practice first must not refuse the lesson with 409).
+  && (state?.ctx?.purpose ?? "lesson") === "lesson"
   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
 
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
@@ -118,7 +122,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
-  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, next, hold, test, madeFor] = await Promise.all([
+  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor] = await Promise.all([
     controlsOf(child),
     hasConsent(guardian.id, child.id, "learning_profile"),
     one(`select l.id, l.topic_id, l.started_at, l.state->'lastUi'->'ask'->>'text' as ask,
@@ -129,13 +133,13 @@ export async function planFor(child, guardian, now = new Date()) {
     one("select exists(select 1 from lesson where child_id = $1) as any", [child.id]),
     one("select used_min, cap_min from conductor_usage where child_id = $1 and learning_day = $2", [child.id, day]).catch(() => null),
     one("select version, plan from day_plan where child_id = $1 and day = $2 order by version desc limit 1", [child.id, day]).catch(() => null),
-    nextTopicOf(child),
+    null, // the next topic is read below, once the test window is known (the ONE next-topic answer, truth.js)
     // the Conductor's safety hold (decide.js safety.incident → mode safety_hold): the home offers no lesson
     one("select mode from conductor_state where child_id = $1", [child.id]).catch(() => null),
     // a school test the parent entered, covering today (019 child_controls.test_window)
     one("select test_window from child_controls where child_id = $1", [child.id]).then((r) => {
-      const w = r?.test_window;
-      return w && w.from <= day && w.to >= day ? { subject: w.subject, from_day: w.from, to_day: w.to } : null;
+      const w = activeWindow(r?.test_window, day);
+      return w ? { subject: w.subject, from_day: w.from, to_day: w.to } : null;
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
@@ -152,8 +156,9 @@ export async function planFor(child, guardian, now = new Date()) {
     from: controls.from, to: controls.to, anyLesson: !!anyRow?.any, openNow: !!controls.openUntil,
     safetyHold: hold?.mode === "safety_hold", homework: !!controls.homeworkUntil, testWindow: !!test });
   const teacher = teacherFor(child);
-  // test window: today's lesson revises the test's subject (the one next-topic function, scoped to that subject)
-  const nextT = test && state === "test_window" ? (await nextTopicFor(child, { subject: test.subject }).catch(() => null)) ?? next : next;
+  // the ONE next-topic answer (truth.js nextTopicForPlan): inside an active test window it revises the test's subject,
+  // on every surface (home topic, "Next time", parent next lesson, Progress, the lesson-end summary)
+  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null });
   const topic = nextT ? { id: nextT.id, title: nextT.title, shortTitle: shortTitleOf(nextT.title), chapter: nextT.chapter.title, subject: nextT.subject,
     minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
   const last = doneRows[0];
@@ -163,7 +168,7 @@ export async function planFor(child, guardian, now = new Date()) {
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next
-    today: last ? { lessonId: last.id, summary: { ...lessonSummary(last.state, { topic: getTopic(last.topic_id), teacher }), nextTitle: next?.title ?? null } } : null,
+    today: last ? { lessonId: last.id, summary: { ...lessonSummary(last.state, { topic: getTopic(last.topic_id), teacher }), nextTitle: nextT?.title ?? null } } : null,
     capRemaining, capMin, usedMin, opensAt: state === "resting" ? controls.from : null,
     packReady: null, day, tz, teacher: teacherCard(teacher),
     surfaces: { map: !!profile, notebook: !!profile, resume: !!profile },
@@ -187,7 +192,13 @@ export function childLabelOf(title, authored = null) {
   if (typeof authored === "string" && authored.trim()) return authored.trim();
   let s = String(title ?? "").replace(/\s*\([^)]*\)/g, "").trim();
   s = s.split(/\s*(?:;|:|\s+using\s|\s+including\s|\s+with\s|\s+and explain\s|\s+by\s|\s+(?:in|on)\s+(?:a|an|the)\s)/i)[0];
-  const words = s.split(/\s+/).filter(Boolean).slice(0, 6);
+  const all = s.split(/\s+/).filter(Boolean);
+  const words = all.slice(0, 6);
+  // a cut that leaves a dangling phrase ("Order several 4-digit numbers from smallest") drops the phrase from its preposition
+  if (all.length > 6) {
+    const i = words.findLastIndex((w, k) => k >= 2 && k >= words.length - 2 && /^(from|than|into|between|to|of|with|for)$/i.test(w));
+    if (i > 0) words.length = i;
+  }
   while (words.length > 2 && /^(of|a|an|the|to|and|for|on|in|at|from|or|its|their)$/i.test(words.at(-1).replace(/[,.]$/, ""))) words.pop();
   return words.join(" ").replace(/[,;]$/, "") || String(title ?? "");
 }
@@ -266,15 +277,32 @@ async function map(req, res) {
  * shapes per map state (never model text, never client text), so "Hear {T}" speaks server-held words only.
  */
 const SKILL_LINE = {
-  hinglish: { not_started: (l) => `${l}, yeh hum jald saath mein karenge.`, practising: (l) => `${l} par hum kaam kar rahe hain. Tum achha try kar rahe ho.`,
-    got_it: (l) => `${l} tumne kar ke dikhaya!`, secure: (l) => `${l} ab pakka ho gaya. Kuch din baad bhi tumne sahi kiya.` },
-  hindi: { not_started: (l) => `${l}, यह हम जल्द साथ में करेंगे।`, practising: (l) => `${l} पर हम काम कर रहे हैं। तुम अच्छी कोशिश कर रहे हो।`,
-    got_it: (l) => `${l} तुमने करके दिखाया!`, secure: (l) => `${l} अब पक्का हो गया। कुछ दिन बाद भी तुमने सही किया।` },
-  english: { not_started: (l) => `${l}: we will do this together soon.`, practising: (l) => `We are working on ${l.charAt(0).toLowerCase() + l.slice(1)}. You are trying well.`,
-    got_it: (l) => `You showed me ${l.charAt(0).toLowerCase() + l.slice(1)}!`, secure: (l) => `${l} is secure now. You got it right days later too.` },
+  hinglish: {
+    tum: { not_started: (l) => `${l}, yeh hum jald saath mein karenge.`, practising: (l) => `${l} par hum kaam kar rahe hain. Tum achhi koshish kar rahe ho.`,
+      got_it: (l) => `${l} tumne karke dikhaya!`, secure: (l) => `${l} ab pakka ho gaya. Ek aur din bhi tumne sahi kiya.` },
+    aap: { not_started: (l) => `${l}, yeh hum jald saath mein karenge.`, practising: (l) => `${l} par hum kaam kar rahe hain. Aap achhi koshish kar rahe hain.`,
+      got_it: (l) => `${l} aapne karke dikhaya!`, secure: (l) => `${l} ab pakka ho gaya. Ek aur din bhi aapne sahi kiya.` },
+  },
+  hindi: {
+    tum: { not_started: (l) => `${l}, यह हम जल्द साथ में करेंगे।`, practising: (l) => `${l} पर हम काम कर रहे हैं। तुम अच्छी कोशिश कर रहे हो।`,
+      got_it: (l) => `${l} तुमने करके दिखाया!`, secure: (l) => `${l} अब पक्का हो गया। एक और दिन भी तुमने सही किया।` },
+    aap: { not_started: (l) => `${l}, यह हम जल्द साथ में करेंगे।`, practising: (l) => `${l} पर हम काम कर रहे हैं। आप अच्छी कोशिश कर रहे हैं।`,
+      got_it: (l) => `${l} आपने करके दिखाया!`, secure: (l) => `${l} अब पक्का हो गया। एक और दिन भी आपने सही किया।` },
+  },
+  english: {
+    tum: { not_started: (l) => `${l}: we will do this together soon.`, practising: (l) => `We are working on ${l.charAt(0).toLowerCase() + l.slice(1)}. You are trying well.`,
+      got_it: (l) => `You showed me ${l.charAt(0).toLowerCase() + l.slice(1)}!`, secure: (l) => `${l} is secure now. You got it right on a later day too.` },
+  },
 };
-export function skillLineOf(lang, state, label) {
-  const L = SKILL_LINE[lang] ?? SKILL_LINE.hinglish;
+/**
+ * PURE. Her line for one map state, in the family's language and the SAME address form the lessons use
+ * (resolveAddress, G-REG-1: aap from class 5 or the parent's choice), so the teacher never says aap in the lesson and
+ * tum on the Garden / Sky sheet (owner priority 2, one consistent personality). English has no address form.
+ * @param {string} lang  @param {string} state  @param {string} label  @param {"aap" | "tum" | null} [address]
+ */
+export function skillLineOf(lang, state, label, address = "tum") {
+  const T = SKILL_LINE[lang] ?? SKILL_LINE.hinglish;
+  const L = (address === "aap" && T.aap) || T.tum;
   return (L[state] ?? L.practising)(label);
 }
 
@@ -284,12 +312,16 @@ async function skillLineFor(req) {
   const skillId = String(sp.get("skillId") ?? "");
   if (!skillId || skillId.length > 120) throw bad("invalid skillId");
   if (!(await hasConsent(guardian.id, child.id, "learning_profile"))) throw new HttpError(404, "no map for this child");
-  const truth = await loadTruth(child, { skillIds: [skillId] });
+  const [truth, controls] = await Promise.all([
+    loadTruth(child, { skillIds: [skillId] }),
+    one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
+  ]);
+  const address = resolveAddress({ classLevel: child.class_level, lang: child.language_pref, parent: controls?.address ?? null });
   let title = null;
   try { title = (await import("../content/index.js").then((m) => m.skillById(skillId)))?.title ?? null; } catch { title = null; }
   if (!title) throw new HttpError(404, "unknown skill");
   const state = MAP_STATE[truth.state(skillId).key];
-  return { child, guardian, text: skillLineOf(child.language_pref, state, childLabelOf(title)), state };
+  return { child, guardian, text: skillLineOf(child.language_pref, state, childLabelOf(title), address), state };
 }
 
 /** GET /api/child/skill-line?childId=&skillId= → { text, state } */
@@ -298,12 +330,16 @@ async function skillLine(req, res) {
   send(res, 200, { text, state });
 }
 
+/** PURE. What "Hear {T}" gives the voice: the spoken form in the child's cell (no digits), within the speech limit. */
+export const skillLineSaid = (child, text) => speakable(String(text), spokenOptsForChild(child)).slice(0, MAX_TTS_CHARS);
+
 /** GET /api/child/skill-line/audio?childId=&skillId= → audio/mpeg in her voice ("Hear {T}"). */
 async function skillLineAudio(req, res) {
   const { guardian, child, text } = await skillLineFor(req);
   if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
   let audio;
-  try { audio = await tts(text.slice(0, MAX_TTS_CHARS), teacherFor(child).voice); } catch (e) {
+  // speakable() is the last step before every voice (w2g-speakable): "Compare two 4-digit numbers" reaches tts as words
+  try { audio = await tts(skillLineSaid(child, text), teacherFor(child).voice); } catch (e) {
     if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
     throw e;
   }

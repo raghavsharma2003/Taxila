@@ -1,0 +1,46 @@
+--- a/server/routes/tts.js	2026-10-05 01:37:27.242326168 +0000
++++ b/server/routes/tts.js	2026-10-05 01:37:27.293117988 +0000
+@@ -15,6 +15,8 @@
+ import { lintSsml } from "../voice/expressive/lint.js";
+ import { deliveryFor } from "../voice/prewarm.js";
+ import { count } from "../voice/expressive/telemetry.js";
++import { voiceChoice, spokenFor, VOICE_CHOICES } from "../voice/voice-switch.js";
++import { devanagariOn } from "../voice/translit/index.js";
+ 
+ /** Teacher replies are a few sentences; anything longer is a bug upstream, not a reply. */
+ export const MAX_TTS_CHARS = 1200;
+@@ -53,15 +55,16 @@
+   // The lesson's own teacher (pinned at start), never the child's CURRENT pick: a switch between turns of an
+   // open lesson must not change the voice under the same persona and face.
+   const teacher = teacherForLesson(child, lesson.teacher_id);
+-  const { voice } = teacher;
++  const choice = lesson.lane_switched ? null : voiceChoice();   // RS-7 voice switch (unset = today's path)
++  const voice = choice?.engine === "oai" ? choice.voice : teacher.voice;
+   let audio;
+   // HUMAN-VOICE B5: the text lane's "Hear" speaks in the SAME voice as the streamed reply (one identity across paths):
+   // DragonHD when it is the configured engine, with the delivery plan /turn made for this turn when this process has it.
+   // ... except after a realtime → cascade switch (W2-D): the child has been hearing the character's realtime voice, which
+   // the rest of the sitting keeps (styleForChild laneSwitched).
+-  if (cascadeEngine() === "dhd" && !lesson.lane_switched) {
++  if (choice ? choice.engine !== "oai" : cascadeEngine() === "dhd" && !lesson.lane_switched) {
+     try {
+-      audio = await dhdHear(lessonId, seq, text, teacher.id, spokenOptsForChild(child));
++      audio = await dhdHear(lessonId, seq, text, teacher.id, spokenOptsForChild(child), choice);
+     } catch (e) {
+       count("engine_fallback");
+       console.warn(`[voice] identity change on Hear: dhd → oai ${voice} (${e?.code || e?.status || "error"})`);
+@@ -93,9 +96,12 @@
+ }
+ 
+ /** One DragonHD document for the whole turn (planned when the plan is known, else plain), as mp3. */
+-async function dhdHear(lessonId, seq, text, teacherId, spoken) {
++async function dhdHear(lessonId, seq, text, teacherId, spoken0, choice) {
+   const v = dhdVoiceFor(teacherId);
+-  const dv = { voice: v.dhd, baseRate: v.baseRate };
++  const dv = choice
++    ? { voice: choice.voice, baseRate: choice.baseRate, ...(choice.engine === "mai" ? { compiler: "mai", styles: [...choice.styles] } : {}) }
++    : { voice: v.dhd, baseRate: v.baseRate };
++  const spoken = choice ? spokenFor(choice, spoken0) : devanagariOn() ? spokenFor(VOICE_CHOICES.diya, spoken0) : spoken0;
+   const d = expressiveOn("dhd") ? deliveryFor(lessonId, seq) : null;
+   let ssml = d?.plan ? compileDhd(d.plan.clauses.map((c, i) => ({ ...c, sentenceStart: i === 0 || c.sentenceStart })), dv, { register: d.plan.register, pitch: d.plan.pitch ?? 0, spoken }) : null;
+   if (ssml && lintSsml(ssml, "dhd").some((b) => b === "paralinguistic_tag" || b.startsWith("unknown_marker"))) { count("lint_fail"); ssml = null; }

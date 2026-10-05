@@ -313,7 +313,7 @@ function create(api: EngineApi, spec: MoonSpec): EngineInstance {
         pixelCheck: (E: number) => { const c = document.createElement("canvas"); c.width = c.height = 220; const g = c.getContext("2d")!; g.fillStyle = "#000"; g.fillRect(0, 0, 220, 220); moonPhaseDisc(g, 110, 110, 100, E); return c.toDataURL().length; } };
     },
     bot() {
-      if (head.mode === "timeline") { if (!head.playing) return { type: "tap", at: [500, 300] }; return { type: "key", key: "ArrowRight", after: 900 }; }   // skim the explainer: seek ahead 5 s per step
+      if (head.mode === "timeline") { if (!head.playing) return { type: "tap", at: [500, 300] }; return head.t < 20 ? { type: "wait", ms: 500 } : { type: "key", key: "ArrowRight", after: 1500 }; }   // natural opening, then skim
       if (live.done || live.theta == null) return { type: "wait", ms: 500 };
       const theta = live.theta, E = elong(theta), want = live.task === 0 ? (live.verdict === "look" || E < 200 ? 90 : 270) : 180;
       const target = theta + (((want - E + 540) % 360) - 180);

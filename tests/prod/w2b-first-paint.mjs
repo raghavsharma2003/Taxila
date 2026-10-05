@@ -3,13 +3,17 @@
 // (explainer@1) or an engine; the child types short replies until the explain turn. Measured from the explain turn's
 // response (Playwright's response event) to the rung painted in its frame (the board's SVG or the engine's first control):
 //   - the rung appears on the explain move, inside the Work tray (frame height = tray height ± 2 px);
-//   - first paint p90 ≤ 300 ms (BUILD-PLAN W2-B: a TIMING gate, meaningful only from the Azure probe fleet with no route
-//     interception; from the sandbox it is reported, and checked only as ≤ 1500 ms so a broken pre-warm still fails).
+//   - first paint p90 ≤ 300 ms (BUILD-PLAN W2-B). Measured from the response in hand to the paint, so it is client work
+//     only (the pre-booted spare frame is adopted: no fetch on the path); the gate applies in the sandbox too.
 // Run: NODE_USE_ENV_PROXY=1 node tests/prod/w2b-first-paint.mjs   (TAXILA_BASE for a local server)
 import { withTestAccount, ok, warn, done, launch, BASE } from "./lib.mjs";
 
-const TOPICS = ["c6-science-ch02-t04", "c7-sst-ch20-t01", "c5-evs-ch02-t01", "c6-maths-ch02-t01"];
-const LINES = ["haan, main ready hoon", "ok", "haan", "samjhao na", "ok", "theek hai"];
+// 12 topics, as the plan says (4 maths incl. geometry, 4 science / EVS, 4 SST / languages), so p90 is not just the max
+const TOPICS = process.env.W2B_TOPICS ? process.env.W2B_TOPICS.split(",") : ["c6-science-ch02-t04", "c7-sst-ch20-t01", "c5-evs-ch02-t01", "c6-maths-ch02-t01",
+  "c4-maths-ch01-t02", "c5-maths-ch02-t01", "c7-maths-ch01-t02", "c6-science-ch03-t01",
+  "c7-science-ch07-t02", "c4-evs-ch01-t01", "c6-sst-ch13-t01", "c5-english-ch06-t01"];
+// 8 lines, as w2b-explain-rungs walks: c4-maths-ch01-t02 can take 7 turns to reach its explain move
+const LINES = ["haan, main ready hoon", "ok", "haan", "samjhao na", "ok", "theek hai", "haan", "ok"];
 const PROBE = process.env.TAXILA_PROBE === "1";   // set by the Azure probe fleet: the timing gate applies
 const times = [];
 
@@ -35,7 +39,13 @@ for (const topicId of TOPICS) {
         }
         await page.fill("input.dk-input, textarea.dk-input", line).catch(() => {});
         await page.keyboard.press("Enter");
-        await page.waitForResponse((r) => r.url().includes("/api/lesson/turn"), { timeout: 45_000 }).catch(() => null);
+        const res = await page.waitForResponse((r) => r.url().includes("/api/lesson/turn"), { timeout: 45_000 }).catch(() => null);
+        // the explain turn: measure at once (W2-B fixer: the 400 ms settle below used to sit INSIDE the measured span,
+        // so every "first paint" was ≥ 400 ms whatever the client did)
+        if (res && (await res.json().catch(() => null))?.move?.kind === "explain") {
+          for (let i = 0; i < 50 && !explainAt; i++) await new Promise((r) => setTimeout(r, 2));
+          break;
+        }
         await page.waitForTimeout(400);
       }
       if (!explainAt) { warn(`${topicId}: no explain move reached`); return; }
@@ -59,6 +69,7 @@ for (const topicId of TOPICS) {
 const s = [...times].sort((a, b) => a - b);
 const p90 = s.length ? s[Math.min(s.length - 1, Math.ceil(0.9 * s.length) - 1)] : null;
 console.log(`first paint after the explain response: n=${s.length} p50=${s[Math.floor(s.length / 2)] ?? "-"} p90=${p90 ?? "-"} ms`);
-if (PROBE) ok(p90 !== null && p90 <= 300, `first paint p90 ≤ 300 ms from the probe fleet (${p90} ms)`);
-else ok(p90 !== null && p90 <= 1500, `first paint p90 ≤ 1500 ms from the sandbox (${p90} ms; the 300 ms gate runs on the probe fleet)`);
+// The paint is CLIENT work (the turn response is in hand; with the spare frame adopted no fetch is on the path), so the
+// 300 ms gate applies everywhere: the probe fleet adds nothing to it (W2-B fixer, major 4)
+ok(p90 !== null && p90 <= 300, `first paint p90 ≤ 300 ms after the explain response (${p90} ms, n=${s.length}${PROBE ? ", probe fleet" : ""})`);
 done();

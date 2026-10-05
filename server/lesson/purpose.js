@@ -45,15 +45,50 @@ const SYNONYMS = {
   tense: "tense", poem: "poem", kavita: "poem", story: "story", kahani: "story",
 };
 
-/** Lower-case word tokens (Latin + Devanagari) with light plural stripping; numbers kept. */
+/**
+ * Devanagari words → concept words (W2-A fixer: a Hindi question always returned null). Matched as whole tokens; the
+ * question's own Hindi words never reach a model.
+ */
+const HI_SYNONYMS = {
+  "भिन्न": "fraction", "भिन्नों": "fraction", "अंश": "fraction numerator", "हर": "fraction denominator", "आधा": "half fraction",
+  "गुणा": "multiplication multiply", "गुणन": "multiplication multiply", "भाग": "division divide", "विभाजन": "division divide",
+  "जोड़": "addition add", "जोड": "addition add", "जोड़ना": "addition add", "घटाना": "subtraction subtract", "घटाव": "subtraction subtract",
+  "क्षेत्रफल": "area", "परिमाप": "perimeter", "आयत": "rectangle", "वर्ग": "square", "त्रिभुज": "triangle", "वृत्त": "circle",
+  "कोण": "angle angles", "प्रकार": "types", "दशमलव": "decimal", "पूर्णांक": "integer", "संख्या": "number", "समय": "time", "घड़ी": "clock time",
+  "पौधा": "plant", "पौधे": "plant", "पौधों": "plant", "पत्ती": "leaf plant", "भोजन": "food", "खाना": "food", "बनाते": "make", "बनाता": "make",
+  "चुंबक": "magnet", "चुम्बक": "magnet", "दिशा": "direction", "परछाई": "shadow", "छाया": "shadow", "प्रकाश": "light", "रोशनी": "light",
+  "पानी": "water", "जल": "water", "भाप": "evaporation steam", "वाष्पीकरण": "evaporation", "हवा": "air", "सूरज": "sun", "पृथ्वी": "earth",
+  "जानवर": "animal", "पक्षी": "bird", "शरीर": "body", "दांत": "teeth", "बिजली": "electricity", "पैसे": "money", "रुपये": "money",
+};
+
+/** Hinglish verb stems → concept words: "jodte", "jodna", "jodo" all mean add (a stem, not one spelling). */
+const HINGLISH_STEMS = [
+  [/^jo(?:d|r)/, "addition add"], [/^ghat(?:a|aa)/, "subtraction subtract"], [/^gun(?:a|aa)/, "multiplication multiply"],
+  [/^bh(?:a|aa)g/, "division divide"], [/^baant/, "division share"], [/^kheench|^khinch/, "attract magnetic"],
+  [/^bh(?:a|aa)p/, "evaporation"], [/^parch(?:a|aa)i|^chhaya/, "shadow"], [/^disha/, "direction"], [/^kshetra/, "area"],
+];
+
+/**
+ * Light English stemming so a question and a title meet ("comparing" / "compare", "adding" / "add", "rectangles" /
+ * "rectangle"): plural -s/-es (after s, x, z, ch, sh only), then -ing (a doubled consonant undoubled), then a final -e.
+ */
+export function stem(w) {
+  if (!/^[a-z]+$/.test(w) || w.length <= 3) return w;
+  if (w.length > 4 && /(?:s|x|z|ch|sh)es$/.test(w)) w = w.slice(0, -2);
+  else if (w.endsWith("ies") && w.length > 4) w = w.slice(0, -3) + "y";
+  else if (w.endsWith("s") && !w.endsWith("ss") && !w.endsWith("us") && !w.endsWith("is")) w = w.slice(0, -1);
+  if (w.length > 5 && w.endsWith("ing")) {
+    w = w.slice(0, -3);
+    if (/([bgmnpt])\1$/.test(w)) w = w.slice(0, -1); // running → run, but adding → add
+  }
+  if (w.length > 4 && w.endsWith("e") && !w.endsWith("ee")) w = w.slice(0, -1);
+  return w;
+}
+
+/** Lower-case word tokens (Latin + Devanagari) with light stemming; numbers kept. */
 export function tokens(text) {
   const out = [];
-  for (const raw of String(text ?? "").toLowerCase().match(/[\p{L}\p{M}]+|\d+(?:[./]\d+)?/gu) ?? []) {
-    let w = raw;
-    if (/^[a-z]+$/.test(w) && w.length > 4 && w.endsWith("es") && !w.endsWith("ses")) w = w.slice(0, -2);
-    else if (/^[a-z]+$/.test(w) && w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) w = w.slice(0, -1);
-    out.push(w);
-  }
+  for (const raw of String(text ?? "").toLowerCase().match(/[\p{L}\p{M}]+|\d+(?:[./]\d+)?/gu) ?? []) out.push(stem(raw));
   return out;
 }
 
@@ -61,19 +96,34 @@ export function tokens(text) {
 export function conceptTokens(text) {
   const raw = String(text ?? "");
   const set = new Set();
-  for (const t of tokens(raw)) {
-    if (STOP.has(t)) continue;
-    if (/^\d+\/\d+$/.test(t)) { set.add("fraction"); continue; }
-    if (/^\d+\.\d+$/.test(t)) { set.add("decimal"); continue; }
+  const notation = new Set(); // concepts read from the number's own shape (1/2, 0.5, 3 x 4): stronger than any word
+  const add = (words) => { for (const s of String(words).split(" ")) if (s) for (const x of tokens(s)) set.add(x); };
+  for (const rawTok of String(raw).toLowerCase().match(/[\p{L}\p{M}]+|\d+(?:[./]\d+)?/gu) ?? []) {
+    const t = stem(rawTok);
+    if (STOP.has(rawTok) || STOP.has(t)) continue;
+    if (/^\d+\/\d+$/.test(t)) { set.add("fraction"); notation.add("fraction"); continue; }
+    if (/^\d*\.\d+$/.test(t)) { set.add("decimal"); notation.add("decimal"); continue; }
     if (/^\d+$/.test(t)) { if (t.length >= 5) set.add("large"); continue; }
+    if (HI_SYNONYMS[rawTok]) { add(HI_SYNONYMS[rawTok]); continue; }
+    if (/[\u0900-\u097F]/.test(rawTok)) continue; // an unknown Hindi word carries no concept here
     if (t.length >= 3) set.add(t);
-    for (const s of (SYNONYMS[t] ?? "").split(" ")) if (s) for (const x of tokens(s)) set.add(x);
+    add(SYNONYMS[rawTok] ?? SYNONYMS[t] ?? "");
+    for (const [re, words] of HINGLISH_STEMS) if (re.test(rawTok)) add(words);
   }
   if (/\d\s*[x×*]\s*\d/.test(raw)) set.add("multiplication");
   if (/\d\s*÷\s*\d/.test(raw)) set.add("division");
   if (/%/.test(raw)) set.add("percent");
-  return set;
+  if (/(?:^|\s)\.\d|\d\.\d/.test(raw)) set.add("decimal");
+  // "how do plants make food" is photosynthesis, not "food" (the spoil / transport topics share the words)
+  const boost = new Set(notation);
+  if (set.has("plant") && set.has("food")) { set.add("photosynthesis"); boost.add("photosynthesis"); }
+  return Object.assign(set, { boost });
 }
+
+/** The winner must beat the runner-up topic by this much (measured on tests/fixtures-ask-routing.mjs). */
+export const ROUTE_MARGIN = 1.5;
+/** A topic one class below weighs this much less (the child's own class first). */
+export const ROUTE_CLASS_STEP = 1.5;
 
 let TOPIC_INDEX = null;
 /** class → [{ id, subject, title tokens, chapter tokens, body tokens }] (built once from the curriculum files). */
@@ -86,7 +136,7 @@ function topicIndex() {
       for (const id of topicSequence(cl, subject)) {
         const t = getTopic(id);
         const set = (s) => new Set(tokens(s).filter((x) => !STOP.has(x) && x.length >= 3));
-        list.push({ id, subject, title: set(t.title), chapter: set(t.chapter.title), body: set([...t.outcomes, ...t.misconceptions, ...t.hooks].join(" ")) });
+        list.push({ id, subject, chapterId: t.chapter.id ?? id.replace(/-t\d+$/, ""), title: set(t.title), chapter: set(t.chapter.title), body: set([...t.outcomes, ...t.misconceptions, ...t.hooks].join(" ")) });
       }
     }
     TOPIC_INDEX.set(cl, list);
@@ -109,15 +159,19 @@ export function matchTopic(question, classLevel) {
     if (cl < 1) break;
     for (const t of topicIndex().get(cl) ?? []) {
       let s = 0;
-      for (const w of q) s += (t.title.has(w) ? 3 : 0) + (t.chapter.has(w) ? 2 : 0) + (t.body.has(w) ? 1 : 0);
-      if (s) scored.push({ topicId: t.id, subject: t.subject, score: s - d * 0.5 });
+      for (const w of q) s += ((t.title.has(w) ? 3 : 0) + (t.chapter.has(w) ? 2 : 0) + (t.body.has(w) ? 1 : 0)) * (q.boost?.has(w) ? 2 : 1);
+      if (s) scored.push({ topicId: t.id, subject: t.subject, chapter: t.chapterId, score: s - d * ROUTE_CLASS_STEP });
     }
   }
   scored.sort((a, b) => b.score - a.score || (a.topicId < b.topicId ? -1 : 1));
   const best = scored[0];
   if (!best || best.score < 3) return null;
-  const rival = scored.find((x) => x.subject !== best.subject);
-  if (rival && rival.score === best.score) return null;
+  // a near tie is a guess: the winner must beat the runner-up topic by MARGIN, else null (the plan's topic stays,
+  // which is better than a confident wrong topic)
+  // Siblings in the winner's own chapter are the same idea (any of them is a fine place to answer), so the margin is
+  // measured against the best topic from ANOTHER chapter.
+  const runner = scored.find((x) => x.chapter !== best.chapter);
+  if (runner && best.score - runner.score < ROUTE_MARGIN) return null;
   return { topicId: best.topicId, score: best.score };
 }
 

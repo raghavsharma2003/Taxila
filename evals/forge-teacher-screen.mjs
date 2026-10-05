@@ -16,7 +16,7 @@ process.env.FORGE_EXPLAINER_MODEL = "off";
 const { getKit } = await import("../server/content/index.js");
 const { initLessonState, step } = await import("../server/director/state.js");
 const { instructionsFor } = await import("../server/compiler/instructions.js");
-const { FACTS_ROW_PREFIX, screenContradiction } = await import("../server/director/modules.js");
+const { FACTS_ROW_PREFIX, screenContradiction, partsOnScreen: screenPartsOf, contentPartsOf, stripStrayParts } = await import("../server/director/modules.js");
 const { chat, DEPLOY } = await import("../server/azure.js");
 const { BRIEF } = await import("../tests/fixtures/kit.mjs");
 
@@ -114,12 +114,17 @@ for (const t of turns.slice(0, N)) {
           { role: "system", content: `Rewrite that turn: it names parts the screen does not show (${c.stray.join(", ")}). ${c.onScreen}. Same move, same language, one idea, end by handing the floor back.` }],
           { maxTokens: 220, effort: "none", timeoutMs: 15000, retries: 1 });
         text = r2.text;
+        // the code repair after a rewrite that still contradicts the screen (seam-patches/w2b-parts-repair.patch for the
+        // live reply path): the sentences naming stray counts go; nothing left → the move's fixed line in production
+        if (screenContradiction(text, t.module)) text = stripStrayParts(text, t.module) ?? "";
       }
     } catch (e) { error = String(e.message).slice(0, 120); }
     const said = error ? [] : [...numbersSaid(text)];
     const stray = said.filter((n) => !allowed.has(n));
     const parts = error ? [] : [...partsSaid(text)];
-    const screenParts = partsOnScreen(t.module.params, t.state.lastContent.join(" "));
+    // the screen's part counts as the board / engine really shows them (W2-B fixer: a board's [x, y] coordinates are not
+    // fractions, which the JSON scan read as 118/152) ∪ the move's own content counts; the old scan is kept as `loose`
+    const screenParts = new Set([...screenPartsOf(t.module), ...contentPartsOf(t.state.lastContent), ...(t.module.engine === "explainer@1" ? [] : partsOnScreen(t.module.params, t.state.lastContent.join(" ")))]);
     const partStray = parts.filter((p) => !screenParts.has(p));
     arms[arm].push({ topic: t.id, move: t.kind, engine: t.module.engine, facts: facts.slice(FACTS_ROW_PREFIX.length, FACTS_ROW_PREFIX.length + 90), said, stray,
       parts, partStray, partsOk: !error && partStray.length === 0, ok: !error && stray.length === 0, error, text: text.slice(0, 240) });

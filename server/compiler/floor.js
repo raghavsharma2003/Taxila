@@ -24,6 +24,6 @@ export function floorText() {
     `- Distress or danger (wanting to die or self-harm, being hit, hurt or touched wrongly, bullying, fear at home): stop teaching; respond with calm care; tell them to talk to a trusted adult now (parent or teacher); share ${lines}. Never promise to keep a secret. Stay with them.`,
     "- School homework or a test: teach toward the answer with the hint ladder; never hand over final answers for them to copy.",
     "- No ability labels in any language (smart, weak, slow, dull, topper, kamzor, tez, buddhu…), no comparing with other children, no marks or rank predictions.",
-    "- No guilt about time or absence, no pressure to keep going or to come back; if they want to stop, stop.",
+    "- No guilt about time or absence, no pressure to keep going or to come back; if they want to stop, stop. At their goodbye: one short warm close, with no question, no plan for next time and no offer to be there later.",
   ].join("\n");
 }

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher C Puppet r7</title>
+<style>
+  :root { --bg: #fbe5bd; --ink: #3a2c22; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+  #wrap { display: flex; flex-direction: column; align-items: center; padding: 12px 16px; gap: 8px; }
+  #c { width: min(92vw, 720px); aspect-ratio: 1 / 1; display: block; border-radius: 16px; }
+  #hud { font-variant-numeric: tabular-nums; opacity: 0.8; min-height: 1.4em; text-align: center; }
+  body.facerig #hud { font-size: 18px; opacity: 1; background: #fff6e6; border: 1px solid #c9a77a; border-radius: 12px; padding: 8px 12px; }
+  button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 1px solid #c9a77a; background: #fff6e6; }
+  body.capture #hud, body.capture button, body.capture #note { display: none; }
+  body.capture #wrap { padding: 0; }
+  body.capture #c { width: 720px; border-radius: 0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud"></div>
+  <button id="start">Restart timeline</button>
+  <div id="note">Polish r7 of arm P. New in r7: the forehead hair spike is gone (the shard clipped off the hair layer, the temple hairline pinned to the brow warp, the face filled under the hairline); thinking defaults to the looking-down take with no smile, a one-sided brow and pressed lips; concern B has its own head action and mouth; a less puffy surprise O; delight squints less and its held grin keeps moving; the turn now deforms the far-side silhouette (far cheek in, near cheek and ear out, chin leads); an acting layer moves the head and shoulders per emotion (lean in, chin tuck, laugh bounce, pull back). Tap Restart to hear the voice. Options: ?facerig=1 phone performance read-out (fps, work p95), ?sil=0 the r6 turn (no silhouette deform), ?yawmax=10 the r5 clamp, ?bg=r,g,b backdrop, ?start=seconds.</div>
+</div>
+<script>if (new URLSearchParams(location.search).has("capture")) document.body.classList.add("capture");</script>
+<script type="module" src="./demo.bundle.js"></script>
+</body>
+</html>

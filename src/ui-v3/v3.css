@@ -10,6 +10,11 @@
   font-variant-numeric: tabular-nums;
   -webkit-tap-highlight-color: transparent;
 }
+/* Zero visible failure under bad input: a 24-char unbroken name or a pasted URL wraps inside prose instead of pushing the page
+   sideways (review 2026-10-05: onboarding Ready, home and the parent header scrolled sideways at 360 px). Scoped to prose and
+   name slots, NOT controls: a control label that does not fit must stay a measurable spill (shoot.mjs M-SPILL), never a
+   silent mid-word break. */
+.v3 :where(h1, h2, h3, h4, p, dd, li, q, blockquote, .v3-kid, .v3-tcard-meta b, .v3-line) { overflow-wrap: anywhere; }
 .v3 *, .v3 *::before, .v3 *::after { box-sizing: border-box; }
 .v3 :where(button, input, select, textarea) { font: inherit; color: inherit; }
 .v3 :where(button) { cursor: pointer; }
@@ -159,8 +164,11 @@ button.v3-node:focus-visible { outline-offset: 0; }
 .v3-date[aria-checked="true"] { background: var(--ink); color: var(--bg-1); border-color: transparent; }
 .v3-date[aria-checked="true"] small { color: inherit; opacity: .75; }
 .v3-date.is-disabled { opacity: .38; background: transparent; border-style: dashed; }
-.v3-times { display: grid; gap: 6px; }
-.v3-time { min-height: 44px; white-space: nowrap; border-radius: 10px; border: 1px solid var(--line-2); background: var(--bg-1); font: 600 13px/1 var(--f-mono); padding: 0 4px; }
+.v3-times { display: grid; gap: 6px; container-type: inline-size; }
+.v3-time { min-height: 44px; white-space: nowrap; border-radius: 10px; border: 1px solid var(--line-2); background: var(--bg-1); font: 600 13px/1 var(--f-mono); padding: 0 4px;
+  display: flex; align-items: center; justify-content: center; gap: .4em; }
+/* "11:00 AM" needs ~70 px; on phone widths a 4-column cell is ~59-66 px, so the meridiem drops under the time (measured spill at 360 and 390) */
+@container (max-width: 310px) { .v3-time { flex-direction: column; gap: 3px; } .v3-time-ap { font-size: 11px; letter-spacing: .06em; } }
 .v3-time[aria-checked="true"] { background: var(--ink); color: var(--bg-1); border-color: transparent; }
 .v3-time.is-disabled { opacity: .38; text-decoration: line-through; background: transparent; }
 

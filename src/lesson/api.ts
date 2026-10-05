@@ -8,6 +8,7 @@ import type {
   TurnRequest,
   TurnResponse,
 } from "../../shared/contracts.ts";
+import { postTurnAudio, turnAudioEnabled } from "./ttsStream.ts";
 
 export class ApiError extends Error {
   readonly status: number;
@@ -65,7 +66,8 @@ export type LaneSwitchReason = "rate_limit" | "mint_refused" | "unavailable";
 
 export const httpLessonApi: LessonApi = {
   start: (req) => postJson("/api/lesson/start", req),
-  turn: (req, signal) => postJson("/api/lesson/turn", req, signal),
+  // W2-G #7 round-trip fold: off by default (voice.turnAudio flag); same TurnResponse and the same ApiError mapping.
+  turn: (req, signal) => (turnAudioEnabled() ? postTurnAudio(req, signal) : postJson("/api/lesson/turn", req, signal)),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),
   endBeacon: (lessonId) => {
     const body = JSON.stringify({ lessonId });

@@ -71,7 +71,10 @@ test("the partial sanitiser keeps markup inert against the XSS corpus", () => {
   assert.match(keep, /<div class="a" data-part="0">/);
   assert.match(keep, /<rect x="1" y="1" width="4" height="4" fill="#fa0">/);
   assert.match(keep, /<use href="#p">/);
-  assert.match(keep, /<button>Check<\/button>/);
+  assert.match(keep, /<button><\/button>/);
+  // text nodes are never painted under the veil (the gate has not checked the model's words yet): shapes only
+  assert.doesNotMatch(sanitizePartial(`<div><p>Riya, yeh lo</p><svg><text x="1">3/4 wrong</text></svg>tail words</div>`), /Riya|3\/4|tail|wrong/);
+  assert.match(sanitizePartial(`<style>.a{fill:red}</style>`), /\.a\{fill:red\}/, "style text (CSS) survives, cleaned");
   assert.equal(cleanCss("a{background:url(x)}"), "a{background:none}");
 });
 
@@ -484,4 +487,242 @@ test("a safeguarding turn freezes Studio: the piece on screen is retired and not
   assert.equal(seamMod._lesson(LESSON).onScreen, null);
   for (let i = 0; i < 6; i++) assert.equal(seam.statusFacts(LESSON, { beat: "practice_set" })?.propose?.reveal, undefined);
   assert.equal(seam.requestIntent({ intent: { intentId: `${LESSON}:wb:20`, lessonId: LESSON, kind: "whiteboard" }, line: { lessonId: LESSON, text: "x y" }, mode: "fresh", kit: {} }), null);
+});
+
+// ───────────────────────────── W2-H fixer (2026-10-05): the findings' regression tests ─────────────────────────────
+
+test("graded by item, not by a pointer: a remounted activity answering item 1 again is right, and writes no second row", async () => {
+  const g = createGradeSession("shade_fraction", { items: [{ id: "i1", n: 3, d: 4 }, { id: "i2", n: 2, d: 5 }], picture: "pizza" });
+  assert.equal(g.grade({ n: 3, d: 4 }).closedItem, true);
+  // the reproduced blocker: the same right value again (a frame restarted at item 1, no item named) used to grade wrong as i2
+  const again = g.grade({ n: 3, d: 4 });
+  assert.equal(again.correct, true);
+  assert.equal(again.itemId, "i1");
+  assert.equal(again.alreadyClosed, true);
+  assert.equal(again.closedItem, false);
+  // a named item is graded as that item, whatever is open
+  assert.equal(g.grade({ n: 3, d: 4 }, { itemId: "i1" }).correct, true);
+  assert.equal(g.grade({ n: 1, d: 5 }, { itemId: "i2" }).correct, false);
+  assert.equal(g.grade({ n: 2, d: 5 }, { itemId: "i2" }).complete, true);
+  // a single-key piece already answered: a right re-answer is right (it used to be graded wrong)
+  const k = createGradeSession("bar_chart_read", { data: [{ key: "a", value: 3 }, { key: "b", value: 9 }], question: "most" });
+  assert.equal(k.grade("b").closedItem, true);
+  assert.deepEqual([k.grade("b").correct, k.grade("b").alreadyClosed], [true, true]);
+  // sequence: a restarted order re-places the closed steps as right, then goes on
+  const q = createGradeSession("sequence_steps", { shown: ["x", "y", "z"], order: ["x", "y", "z"] });
+  assert.equal(q.grade({ key: "x" }).correct, true);
+  assert.equal(q.grade({ key: "y" }).correct, true);
+  assert.equal(q.grade({ key: "x" }).alreadyClosed, true);
+  assert.equal(q.grade({ key: "z" }).complete, true);
+});
+
+test("a remount (new mount key) restarts the host's bookkeeping, never the evidence: answer i1, remount, answer i1 → right, one row", async () => {
+  const { seam, evidence } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  for (let i = 0; i < 4; i++) seam.statusFacts(LESSON, { beat: "practice_set" });
+  const p = [...seamMod._lesson(LESSON).pieces.values()].find((x) => x.archetype === "shade_fraction");
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: p.intentId } });
+  const [i1] = p.params.items;
+  const a = await seamMod.hostAnswer({ lessonId: LESSON, intentId: p.intentId, value: { n: i1.n, d: i1.d }, itemId: i1.id, mount: "m1.0", child: CHILD, lesson: { id: LESSON } });
+  assert.equal(a.correct, true);
+  assert.equal(evidence.length, 1);
+  // the Director took the tray, the stage came back: a new mount key, the activity restarted at item 1
+  const b = await seamMod.hostAnswer({ lessonId: LESSON, intentId: p.intentId, value: { n: i1.n, d: i1.d }, itemId: i1.id, mount: "m2.0", child: CHILD, lesson: { id: LESSON } });
+  assert.equal(b.correct, true);
+  assert.equal(b.alreadyClosed, true);
+  assert.equal(evidence.length, 1, "no duplicate evidence row");
+  // a frame (no item named) after its remount: item 1's value is item 1, right
+  const c = await seamMod.hostAnswer({ lessonId: LESSON, intentId: p.intentId, value: { n: i1.n, d: i1.d }, mount: "m3.0", child: CHILD, lesson: { id: LESSON } });
+  assert.equal(c.correct, true);
+  assert.equal(evidence.length, 1);
+});
+
+test("answers past the per-item cap are graded but never counted", () => {
+  const g = createGradeSession("shade_fraction", { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" });
+  for (let i = 0; i < 12; i++) g.grade({ n: 0, d: 4 }, { itemId: "i1" });
+  const r = g.grade({ n: 3, d: 4 }, { itemId: "i1" });
+  assert.equal(r.correct, true);
+  assert.equal(r.capped, true);
+  assert.equal(r.closedItem, false, "a brute-forced item writes no evidence");
+});
+
+test("a piece retired with an item answered wrong and never right writes ONE incorrect event; a contrast piece marks its misconception", async () => {
+  const { seam, evidence } = await seamWith();
+  await startLesson(seam);
+  const L = seamMod._lesson(LESSON);
+  const contrast = [...L.pieces.values()].find((x) => x.need === "contrast_misconception");
+  assert.ok(contrast, "a contrast piece for the child's misconception");
+  assert.equal(contrast.misconceptionId, "mis.bigger-denominator");
+  assert.equal(contrast.personal, true, "its numbers come from the misconception's own diagnostic");
+  for (let i = 0; i < 4; i++) seam.statusFacts(LESSON, { beat: "contrast" });
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: contrast.intentId } });
+  const [i1, i2] = contrast.params.items;
+  // a right answer on a contrast piece discriminates the misconception
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: contrast.intentId, value: { n: i1.n, d: i1.d }, itemId: i1.id, child: CHILD, lesson: { id: LESSON } });
+  assert.equal(evidence.at(-1).discriminates, "mis.bigger-denominator");
+  assert.equal(evidence.at(-1).misconceptionId, undefined);
+  // two wrong answers on the next item, then the piece leaves the tray (beat exit)
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: contrast.intentId, value: { n: 0, d: i2.d }, itemId: i2.id, child: CHILD, lesson: { id: LESSON } });
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: contrast.intentId, value: { n: 0, d: i2.d }, itemId: i2.id, child: CHILD, lesson: { id: LESSON } });
+  assert.equal(evidence.length, 1, "wrong answers alone write nothing while the piece is on screen");
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 9, studio: { retire: contrast.intentId } });
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(evidence.length, 2, "one incorrect event on retire");
+  const inc = evidence[1];
+  assert.equal(inc.id, `${LESSON}:studio:${contrast.intentId}:${i2.id}`);
+  assert.equal(inc.via, "studio");
+  assert.ok(inc.outcome > 0, "an ended episode without a correct answer (C4), not a first-try correct");
+  assert.equal(inc.misconceptionId, undefined, "a plain wrong answer is not a hit on the belief");
+});
+
+test("a wrong answer matching the misconception's signature is a hit on it", async () => {
+  const kit = { ...KIT, misconceptions: [{ id: "mis.bigger-denominator", skillId: "frac.compare", diagnostic: { prompt_en: "Which is bigger, 1/2 or 1/4?",
+    options: [{ text: "1/2", correct: true, misconceptionId: null }, { text: "1/4", correct: false, misconceptionId: "mis.bigger-denominator" }] } }] };
+  const mt = seamMod.misconceptionTruth(kit.misconceptions[0]);
+  assert.deepEqual(mt.truth.shade_fraction.items.map((i) => `${i.n}/${i.d}`), ["1/2", "1/4"], "the right option first, then the belief's");
+  assert.deepEqual(mt.signature, ["1/4"]);
+  const { seam, evidence } = await seamWith();
+  await seam.prefetch({ lessonId: LESSON, child: CHILD, topicId: kit.topicId, kit, band: "B2", mode: "text", purpose: "lesson", skillIds: ["frac.part", "frac.compare"],
+    activeMisconceptionIds: ["mis.bigger-denominator"], reteach: null, bond: { stage: "acquainted" } });
+  const p = [...seamMod._lesson(LESSON).pieces.values()].find((x) => x.need === "contrast_misconception");
+  for (let i = 0; i < 4; i++) seam.statusFacts(LESSON, { beat: "contrast" });
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: p.intentId } });
+  // item 1 is 1/2: the child shades 1 of 4 parts' worth (1/4), the belief's answer
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: p.intentId, value: { n: 1, d: 4 }, itemId: "i1", child: CHILD, lesson: { id: LESSON } });
+  await seamMod.hostFeedback({ lessonId: LESSON, intentId: p.intentId, action: "not_this" });
+  await new Promise((r) => setTimeout(r, 5));
+  assert.equal(evidence.length, 1);
+  assert.equal(evidence[0].misconceptionId, "mis.bigger-denominator");
+});
+
+test("pieces are chosen for THIS child: another topic's misconception is ignored, the kit's own diagnostic is used for a child with none", () => {
+  const ctx = { lessonId: LESSON, child: CHILD, kit: KIT, band: "B2", skillIds: ["frac.part", "frac.compare"], reteach: null };
+  const other = seamMod.candidateIntents({ ...ctx, activeMisconceptionIds: ["c7-maths-ch01-t01-m-crore-million"] });
+  assert.ok(other.every((c) => c.intent.misconceptionId !== "c7-maths-ch01-t01-m-crore-million"), "a belief from another topic is never stored on a piece");
+  const none = seamMod.candidateIntents({ ...ctx, activeMisconceptionIds: [] });
+  const kitPiece = none.find((c) => c.intent.need === "contrast_misconception");
+  assert.ok(kitPiece, "the kit's diagnostic misconception gives a contrast piece");
+  assert.equal(kitPiece.personal, true);
+  assert.equal(none[0].intent.need, "explain", "a kit diagnostic comes after the explanation when the child has no belief of their own");
+  // a contrast piece differs from the generic practice piece (its numbers are the misconception's)
+  const practice = none.find((c) => c.intent.need === "practice");
+  if (practice && practice.archetype === kitPiece.archetype) assert.notDeepEqual(practice.params, kitPiece.params);
+});
+
+test("the facts row comes from the slot the turn shows: none for a held reveal or a hidden piece; 'just shown' on the reveal turn; host outcome after", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  for (let i = 0; i < 3; i++) seam.statusFacts(LESSON, { beat: "practice_set" });
+  const v = seam.statusFacts(LESSON, { beat: "practice_set" });
+  const id = v.propose.reveal;
+  // the Director's move asks its own question: the new piece waits (one task at a time), so there is no slot and no row
+  assert.equal(seam.slotFor(LESSON, { reveal: id }, { beat: "practice_set", tray: "none", asking: true }), null);
+  assert.equal(seam.factsRowForSlot(LESSON, null), null);
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: id } });
+  assert.equal(seamMod._lesson(LESSON).onScreen, null, "a held reveal is not revealed");
+  seam.statusFacts(LESSON, { beat: "practice_set" });
+  const slot = seam.slotFor(LESSON, { reveal: id }, { beat: "practice_set", tray: "none" });
+  const row = seam.factsRowForSlot(LESSON, slot);
+  assert.ok(seamMod.isStudioRow(row), row);
+  assert.match(row, /state just shown/);
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 6, studio: { reveal: id } });
+  // the Director takes the tray: the piece is hidden this turn, so the reply gets no row for it
+  assert.equal(seam.slotFor(LESSON, null, { beat: "practice_set", tray: "tiles" }), null);
+  const p = seamMod._lesson(LESSON).pieces.get(id);
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: id, value: { n: 0, d: 4 }, child: CHILD, lesson: { id: LESSON } });
+  await seamMod.hostAnswer({ lessonId: LESSON, intentId: id, value: { n: 0, d: 4 }, child: CHILD, lesson: { id: LESSON } });
+  const back = seam.slotFor(LESSON, null, { beat: "practice_set", tray: "none" });
+  assert.match(seam.factsRowForSlot(LESSON, back), /last answer wrong · wrong tries 2/);
+  const view = seam.statusFacts(LESSON, { beat: "practice_set", moduleOnly: true });
+  assert.deepEqual(view.outcome, { lastVerdict: "wrong", wrongCount: 2, complete: false });
+  assert.equal(view.suggest, "reteach");
+  // a whiteboard slot or a module row is never mistaken for Studio's row
+  assert.equal(seam.factsRowForSlot(LESSON, { slotId: "x", intentId: `${LESSON}:wb:1`, state: "revealed", artifact: { kind: "whiteboard", script: {} } }), null);
+  assert.equal(seamMod.isStudioRow(`${seamMod.STUDIO_ROW_PREFIX}explainer · step 2`), false);
+  assert.ok(p.grade.wrongCount === 2);
+});
+
+test("module-only turns do not move the retire clock; the registry keeps an active lesson (LRU)", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  const L = seamMod._lesson(LESSON);
+  const t0 = L.turn;
+  for (let i = 0; i < 5; i++) seam.statusFacts(LESSON, { moduleOnly: true });
+  assert.equal(L.turn, t0, "Studio answers are not conversation turns");
+  seam.statusFacts(LESSON, {});
+  assert.equal(L.turn, t0 + 1);
+  // 400 other lessons start; this one is used in between and stays
+  for (let i = 0; i < seamMod.STUDIO_LIMITS.lessonsInMemory + 5; i++) {
+    seam.requestIntent({ intent: { intentId: `x${i}:wb:1`, lessonId: `x${i}`, kind: "whiteboard" }, line: { lessonId: `x${i}`, text: "" }, mode: "fresh", kit: {} });
+    seamMod.studioSeam.prefetch({ lessonId: `00000000-0000-4000-8000-${String(i).padStart(12, "0")}`, child: null, kit: {}, purpose: "practice" });
+    if (i % 50 === 0) seam.statusFacts(LESSON, {});
+  }
+  assert.ok(seamMod._lesson(LESSON), "the active lesson was not evicted");
+});
+
+test("a safety event freezes reveals even when the turn's move was not 'safeguard'", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  for (let i = 0; i < 4; i++) seam.statusFacts(LESSON, { beat: "practice_set" });
+  const id = [...seamMod._lesson(LESSON).pieces.keys()][0];
+  seam.onSafety(LESSON);
+  await seam.onReveal({ lessonId: LESSON, childId: CHILD.id, turn: 5, studio: { reveal: id } });
+  assert.equal(seam.slotFor(LESSON, null), null);
+  assert.equal(seamMod._lesson(LESSON).onScreen, null);
+});
+
+test("parent control off or a safety mode at prefetch: no piece at all; no bond snapshot fails safe to a first session", async () => {
+  const { seam } = await seamWith();
+  await startLesson(seam, { child: { ...CHILD, studio_control: "off" } });
+  const L = seamMod._lesson(LESSON);
+  assert.ok([...L.pieces.values()].every((p) => p.state === "failed" && p.retired), "nothing revealable");
+  for (let i = 0; i < 6; i++) assert.equal(seam.statusFacts(LESSON, { beat: "practice_set" })?.propose?.reveal, undefined);
+  await startLesson(seam, { bond: null });
+  assert.equal(seamMod._lesson(LESSON).bondStage, "meeting");
+});
+
+test("live-build spend is recorded when the race returns, even when it failed into the skeleton (the caps see it)", async () => {
+  const { seam, db } = await seamWith();
+  seamMod._setDeps({ gateAvailable: () => true, buildRace: async () => ({ ok: false, usd: 0.07, winner: null }) });
+  _setRoutes({ ...loadRoutes(), archetypes: { shade_fraction: { live: true, leadMs: 1000, arms: loadRoutes().defaults.arms, race: 2 } } });
+  try {
+    await startLesson(seam, { activeMisconceptionIds: [] });
+    const failed = [...seamMod._lesson(LESSON).pieces.values()].find((x) => x.reasons?.includes("studio.live_failed"));
+    assert.ok(failed);
+    const spend = db.calls.find((c) => /^insert into studio_mount/.test(c.text) && /'live'/.test(c.text));
+    assert.ok(spend, "a spend row with source 'live'");
+    assert.equal(spend.params[1], failed.intentId);
+    assert.equal(spend.params.at(-1), 0.07);
+    assert.match(spend.text, /revealed_at\)\s*values[\s\S]*null\)/, "not revealed: Made for you never shows it");
+  } finally { seamMod._setDeps({ buildRace: null, gateAvailable: () => false }); loadRoutes(true); }
+});
+
+test("a frame that is slow on one phone never retires a build; csp / runtime incidents from 2 lessons do (a promoted one goes to review)", async () => {
+  const calls = [];
+  let incidents = 0, status = "promoted";
+  lib._setQuery(async (text, params) => {
+    calls.push(text);
+    if (/^update studio_build set incidents = incidents \+ 1/.test(text)) { incidents++; return [{ incidents, status, identity: "id" }]; }
+    return [];
+  });
+  const piece = (lessonId) => {
+    const L = seamMod._lesson(lessonId) ?? (seamMod.studioSeam.requestIntent({ intent: { intentId: `${lessonId}:wb:0`, lessonId, kind: "whiteboard" }, line: { lessonId, text: "" } }), seamMod._lesson(lessonId));
+    return L;
+  };
+  seamMod._reset();
+  for (const [n, lessonId] of [[1, LESSON], [2, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"]]) {
+    seamMod.studioSeam.prefetch({ lessonId, child: null, kit: {}, purpose: "practice" });
+    const L = seamMod._lesson(lessonId);
+    L.pieces.set(`${lessonId}:st:1`, { intentId: `${lessonId}:st:1`, slotId: "s", kind: "game", archetype: "shade_fraction", source: "library", buildSha: "a".repeat(64), state: "revealed",
+      params: { items: [{ id: "i1", n: 1, d: 2 }], picture: "pizza" }, strings: {} });
+    const slow = await seamMod.hostFrameError({ lessonId, intentId: `${lessonId}:st:1`, reason: "not_ready" });
+    assert.equal(slow.slot.artifact.kind, "skeleton", "this child gets the skeleton");
+    assert.equal(incidents, n - 1, "a slow phone is not an incident");
+    L.pieces.get(`${lessonId}:st:1`).source = "library"; L.pieces.get(`${lessonId}:st:1`).buildSha = "a".repeat(64);
+    await seamMod.hostFrameError({ lessonId, intentId: `${lessonId}:st:1`, reason: "csp" });
+    assert.equal(incidents, n);
+  }
+  assert.ok(calls.some((t) => /set status = 'transfer_passed'/.test(t)), "a promoted build goes back to review after 2 lessons' incidents");
+  assert.ok(!calls.some((t) => /set status = 'retired'/.test(t)), "and is not retired outright");
+  void piece;
 });

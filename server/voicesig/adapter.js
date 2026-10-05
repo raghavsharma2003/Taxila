@@ -8,7 +8,7 @@
 // LR voice adds over text alone, gate it (audio quality × baseline maturity), clip to the ladder cap.
 // The LR REPLACES the onset/filler term of SIGNALS lrE (never stacks on it): see replaceTimingTerm().
 import { CHEAP, LICENCE, capFor, levelOf, LADDER } from "./ladder.js";
-import { score } from "./rules.js";
+import { score, fillerLexOf } from "./rules.js";
 import { VsBaseline } from "./baseline.js";
 
 export const ADAPTER_VER = "vs-adapter/1";
@@ -23,6 +23,12 @@ const MIC = new Set(["builtin", "wired", "bt", "speaker_route", "unknown"]);
 const LANG = new Set(["hi", "hinglish", "en", "unk"]);
 /** Mic-class factor on audio quality (SPEC §4.2) [E]. */
 export const MIC_FACTOR = Object.freeze({ builtin: 1, wired: 1, bt: 0.8, speaker_route: 0.5, unknown: 0.8 });
+/**
+ * Mic routes on which the filler detector's output is NOT used (verify pass 2026-10-04, AMI test channels, proxy chain):
+ * 300-3400 Hz narrowband without AGC dropped word AUROC 0.93 → 0.71 and event recall 0.64 → 0.15 (precision 0.90 → 0.31).
+ * Bluetooth HFP and speakerphone routes are narrowband / heavily processed, so their detector lead is ignored.
+ */
+export const NARROWBAND_MIC = Object.freeze(new Set(["bt", "speaker_route"]));
 /** State thresholds on h (SPEC §1.3) [U]. */
 export const TH = Object.freeze({ fluent: 0.85, fragile: 0.55, held: 0.5, rapidAgree: 0.6, searching: 0.6, absent: 0.35 });
 
@@ -116,10 +122,13 @@ export function deriveState(s, x) {
 export function toSignalInput(kvIn, ctx) {
   const mode = ctx.mode ?? "off";
   // SL-1: a safety turn suppresses everything voicesig would say, before any other work.
-  if (ctx.safety) return { ver: ADAPTER_VER, abstain: true, state: null, lrV: 1, lrVApplied: 1, reasons: [] };
+  // shadow:true and licence:null so no consumer check of the form `!vs.shadow` or `vs.licence` can read an abstain as live.
+  if (ctx.safety) return { ver: ADAPTER_VER, abstain: true, shadow: true, state: null, licence: null, lrV: 1, lrVApplied: 1, reasons: [] };
   if (mode === "off") return null;
   const kv = validateKv(kvIn);
   if (!kv) return null;
+  // Register-aware lexical filler: with the turn's tokens, "haan ji" / "ok" / "achha" never count as hesitation.
+  if (Array.isArray(ctx.ling?.toks)) ctx = { ...ctx, ling: { ...ctx.ling, fillerLex: fillerLexOf(ctx.ling.toks) === true } };
   const context = ctx.context ?? "answer";
   const langMode = kv.q.langMode !== "unk" ? kv.q.langMode : (ctx.langMode ?? "unk");
   const form = ctx.form ?? "number";
@@ -128,7 +137,7 @@ export function toSignalInput(kvIn, ctx) {
   const { z, n } = base.z(context, langMode, form, zf);
   const s = score({
     verdict: ctx.verdict, safety: false, ling: ctx.ling, z, f: kv.f, words: ctx.words, o3History: ctx.o3History,
-    qAudio: Math.min(kv.q.audio, fin(ctx.qSignals) ? ctx.qSignals : 1), det: kv.q.det, raw: kv.q.raw,
+    qAudio: Math.min(kv.q.audio, fin(ctx.qSignals) ? ctx.qSignals : 1), det: kv.q.det && !NARROWBAND_MIC.has(kv.q.micClass) ? 1 : 0, raw: kv.q.raw,
     deltaFitted: ctx.deltaFitted, deltaZ: ctx.deltaZ, ageBand: ctx.ageBand, cal: ctx.cal,
   });
   const d = deriveState(s, { ...ctx, z });
@@ -148,6 +157,9 @@ export function toSignalInput(kvIn, ctx) {
   const licenceRow = d.state ? LICENCE[d.state] : null;
   let licence = licenceRow ? (d.tAgree ? licenceRow.withT : licenceRow.voiceOnly) : null;
   if (licence && !d.tAgree && !CHEAP.has(licence)) licence = "none";
+  // Voice alone may buy even a cheap move only when its evidence is usable: audio quality ok AND a mature child baseline
+  // (g > 0). Before 8 baselined turns a slow / shy child's ordinary pace is unknown (verify pass 2026-10-04).
+  if (licence && !d.tAgree && g === 0) licence = "none";
   const live = mode === "on" && level >= 1 && s.calibrated;
   const head = d.head;
   const why = head ? s.terms[head].map((t) => `${t.id}:${t.tier}`) : [];

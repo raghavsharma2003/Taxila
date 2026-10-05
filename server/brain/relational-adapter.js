@@ -50,7 +50,9 @@ export function relationalProposals(d) {
  * What the accepted relational proposals mean for the turn.
  * @param {{ accepted: import("../../shared/brain").Proposal[] }} arb
  * @returns {{ release: boolean, safety: boolean, overlay: { kind: string, shapeId: string } | null, callbackId: string | null,
- *   noticeId: string | null, floorFix: string[] }}
+ *   noticeId: string | null, floorFix: string[], holdOneTurn: boolean }}
+ * holdOneTurn: the relational floor asked the realtime lane to hold one turn (RELATIONAL-OS §9). Surfaced so the turn traces
+ * it; nothing acts on it yet (the realtime lane, W2-D, is its consumer: an open item, never silently dropped).
  */
 export function relationalEffects(arb) {
   const acc = arb?.accepted ?? [];
@@ -65,5 +67,6 @@ export function relationalEffects(arb) {
     callbackId: rel.find((p) => p.kind === "callback")?.payload?.callbackId ?? null,
     noticeId: rel.find((p) => p.kind === "notice" && p.payload?.noticeId)?.payload?.noticeId ?? null,
     floorFix: acc.filter((p) => p.kind === "floor_fix").flatMap((p) => p.payload?.families ?? []),
+    holdOneTurn: acc.some((p) => p.source === "safety" && p.kind === "hold_one_turn"),
   };
 }

@@ -1,7 +1,7 @@
 // W2-D (BUILD-PLAN §4): voice lanes and presence, everything that runs without a DOM or a model.
 //   #1 the realtime seam (truncation, the mint fallback), the mid-sitting realtime → cascade switch, rate_limits logging,
 //      the app-voice stall notice at 4.5 s;
-//   #2 the pace knob → server VAD silence (600-1200 ms), the nudge timer's store field;
+//   #2 the pace knob → server VAD silence (never below the minted 900 ms, at most 1200), the nudge timer's store field;
 //   #3 lane A's delivery note (HV-13: never a sound word, nothing on safety turns, appended LAST, flagged off);
 //   #4 the face producer (RELATIONAL-OS R4 face half): display → face, ReactionGate, AT-U12 (verdict-blind), gaze cues,
 //      queued affect, voice events;
@@ -13,7 +13,11 @@ import { readFileSync } from "node:fs";
 import { realtimeSeam, endpointSilenceOf as serverSilence, isQuotaError, realtimeDeployment, RETENTION_RATIO, routes as laneRoutes } from "../server/voice/realtimeSession.js";
 import { realtimeDeliveryLine, lintDeliveryLine, SOUND_WORDS, DELIVERY_LABEL } from "../server/voice/expressive/compile/realtime.js";
 import { voiceLiveDelivery } from "../server/voice/expressive/compile/voicelive.js";
-import { RealtimeProtocol, RATE_LIMITED, isRateLimit, endpointSilenceOf as clientSilence, withEndpointSilence, ENDPOINT_MIN_MS, ENDPOINT_MAX_MS } from "../src/lesson/realtime.ts";
+import { RealtimeProtocol, RATE_LIMITED, MINT_REFUSED, REALTIME_UNAVAILABLE, isRateLimit, endpointSilenceOf as clientSilence, withEndpointSilence, ENDPOINT_MIN_MS, ENDPOINT_MAX_MS } from "../src/lesson/realtime.ts";
+import { withDeliveryNote, isLaneFallback } from "../src/lesson/voiceLink.ts";
+import { newPersonaState, personaKnobs } from "../server/persona/adapter.js";
+import { rowOf } from "../server/voice/expressive/moment.js";
+import { gazeElement, GAZE_SELECTOR } from "../src/avatar/faceCues.ts";
 import { LessonRuntime } from "../src/lesson/runtime.ts";
 import { ApiError } from "../src/lesson/api.ts";
 import { classifyTrouble, T2_LINK_MS } from "../src/lesson/trouble.ts";
@@ -46,17 +50,32 @@ test("shapeSession: the live call gains truncation and keeps logprobs, instructi
   assert.ok(!/child|name/i.test(JSON.stringify(out.truncation)));
 });
 
-test("pace: endpointSilenceMs → server VAD silence, clamped to 600-1200 ms, same rule on server and client", () => {
-  for (const [ms, want] of [[300, 600], [600, 600], [850, 850], [1200, 1200], [4000, 1200], [undefined, null], [0, null], ["x", null]]) {
+test("pace: endpointSilenceMs → server VAD silence, never below the measured 900 ms base, at most 1200 ms, same rule on server and client", () => {
+  for (const [ms, want] of [[300, 900], [600, 900], [700, 900], [850, 900], [1000, 1000], [1200, 1200], [4000, 1200], [undefined, null], [0, null], ["x", null]]) {
     assert.equal(serverSilence({ endpointSilenceMs: ms }), want, `server ${ms}`);
     assert.equal(clientSilence({ endpointSilenceMs: ms }), want, `client ${ms}`);
   }
-  assert.equal(ENDPOINT_MIN_MS, 600);
+  assert.equal(ENDPOINT_MIN_MS, 900, "decision voice-turn-config: 600 ms cut children off mid-thought, 900 ms did not");
   assert.equal(ENDPOINT_MAX_MS, 1200);
   const out = realtimeSeam.shapeSession(liveSession(), { kind: "lesson", pace: { waitNudgeSec: 9, endpointSilenceMs: 1500 } });
   assert.equal(out.audio.input.turn_detection.silence_duration_ms, 1200);
   assert.equal(out.audio.input.transcription.model, "t", "the rest of audio.input is kept");
   assert.deepEqual(withEndpointSilence({ type: "semantic_vad" }, 700), { type: "semantic_vad" }, "only server VAD takes a silence");
+});
+
+test("pace: the DEFAULT vibe (and its boosted turn) never mints a live call below 900 ms; the knob only adds time", () => {
+  for (const band of ["B1", "B2", "B3", "B4"]) {
+    const st = newPersonaState({ band, classLevel: band === "B1" ? 3 : band === "B2" ? 5 : band === "B3" ? 7 : 9 });
+    for (const boost of [0, 2]) {
+      const knobs = personaKnobs({ ...st, knobs: { ...st.knobs, endpointBoostTurns: boost } });
+      const out = realtimeSeam.shapeSession(liveSession(), { kind: "lesson", pace: { waitNudgeSec: knobs.waitNudgeSec, endpointSilenceMs: knobs.endpointSilenceMs } });
+      assert.ok(out.audio.input.turn_detection.silence_duration_ms >= 900, `${band} boost ${boost}: ${out.audio.input.turn_detection.silence_duration_ms}`);
+    }
+  }
+  // a session minted with a longer base keeps it (the knob never shortens what was minted)
+  const long = liveSession();
+  long.audio.input.turn_detection.silence_duration_ms = 1100;
+  assert.equal(realtimeSeam.shapeSession(long, { kind: "lesson", pace: { waitNudgeSec: 9, endpointSilenceMs: 950 } }).audio.input.turn_detection.silence_duration_ms, 1100);
 });
 
 test("the premium-lane model is config: TAXILA_REALTIME_TIER=mini mints on DEPLOY_REALTIME_MINI", () => {
@@ -161,8 +180,9 @@ function fakeApi({ turn, mintRefused = false } = {}) {
   };
 }
 
+const pendingTimers = [];
 function timers() {
-  return { setTimeout: () => 0, clearTimeout: () => {} };
+  return { setTimeout: (fn, ms) => { if (ms <= 5_000) pendingTimers.push(fn); return 0; }, clearTimeout: () => {} };
 }
 
 test("a rate-limited realtime response moves the lesson to cascade mid-sitting and she speaks again", async () => {
@@ -173,6 +193,19 @@ test("a rate-limited realtime response moves the lesson to cascade mid-sitting a
   await rt.start("child-1", "voice");
   const voice = links[0];
   assert.equal(voice.mode, "voice");
+  pendingTimers.length = 0;
+  // she finished a question on the realtime lane that no child turn has carried yet
+  voice.emit({ type: "response_start", responseId: "r1", at: Date.now() - 2000 });
+  voice.emit({ type: "teacher_done", responseId: "r1", text: "Teen chauthai mein kitne hisse?" });
+  voice.emit({ type: "response_done", responseId: "r1", status: "completed" });
+  // the FIRST refusal is retried once (a TPM refusal often clears in seconds), not switched
+  voice.emit({ type: "error", message: "the realtime lane is full", code: RATE_LIMITED, fatal: false });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.deepEqual(api.calls.lane, [], "one refusal does not leave the lane");
+  assert.equal(pendingTimers.length, 1, "the retry is scheduled");
+  pendingTimers.shift()();
+  assert.equal(voice.prompts.length, 2, "the retry asks her again (opening + retry)");
+  // a second refusal inside 30 s switches
   voice.emit({ type: "error", message: "the realtime lane is full", code: RATE_LIMITED, fatal: false });
   for (let i = 0; i < 10; i++) await flush();
   assert.deepEqual(api.calls.lane, [["L1", "rate_limit"]], "the server is told once");
@@ -183,10 +216,13 @@ test("a rate-limited realtime response moves the lesson to cascade mid-sitting a
   assert.equal(rt.state.mode, "text");
   assert.equal(rt.state.phase, "live", "the lesson carries on");
   assert.equal(rt.state.laneSwitch?.reason, "rate_limit");
-  // she speaks again: a "the line dropped" repair turn (empty, ASR confidence 0: no evidence either way)
+  // she speaks again: a resume turn (no child row, no evidence) that carries the realtime turn last heard, once
   assert.equal(api.calls.turn.length, 1);
   assert.equal(api.calls.turn[0].childText, "");
-  assert.equal(api.calls.turn[0].asrConfidence, 0);
+  assert.equal(api.calls.turn[0].laneResume, true);
+  assert.equal(api.calls.turn[0].asrConfidence, undefined, "not a failed-ASR child turn");
+  assert.equal(api.calls.turn[0].teacherText, "Teen chauthai mein kitne hisse?", "the heard question is not lost in the switch");
+  assert.equal(api.calls.turn[0].teacherInterrupted, false);
   assert.deepEqual(cascade.prompts, ["reply 1"]);
   // a second refusal does nothing more
   voice.emit({ type: "error", code: RATE_LIMITED, message: "x", fatal: false });
@@ -247,6 +283,113 @@ test("TurnResponse.pace reaches the store (nudge timer) and the link (server VAD
   rt.dispose();
 });
 
+test("a transport blip (stalled → connected) keeps her finished turn; it rides with the next child turn", async () => {
+  const api = fakeApi();
+  const links = [];
+  const rt = new LessonRuntime({ api, timers: timers(), voiceFeatures: false, outboxStore: () => Promise.reject(new Error("no idb")), createLink: (m, ctx) => { const l = new FakeLink(m, ctx); links.push(l); return l; } });
+  await rt.start("child-1", "voice");
+  const v = links[0];
+  v.emit({ type: "response_start", responseId: "q1", at: Date.now() - 3000 });
+  v.emit({ type: "teacher_done", responseId: "q1", text: "Aadha aur chauthai mein bada kaun?" });
+  v.emit({ type: "response_done", responseId: "q1", status: "completed" });
+  v.emit({ type: "connection", state: "stalled" });
+  assert.equal(rt.state.connection, "stalled");
+  v.emit({ type: "connection", state: "connected" });
+  v.emit({ type: "child_final", text: "aadha", startedAt: Date.now(), typed: false });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.equal(api.calls.turn[0].teacherText, "Aadha aur chauthai mein bada kaun?", "the question survives the blip");
+  // a rebuilt call ("reconnecting") still starts clean
+  v.emit({ type: "response_start", responseId: "q2", at: Date.now() - 1000 });
+  v.emit({ type: "teacher_done", responseId: "q2", text: "Shabash!" });
+  v.emit({ type: "response_done", responseId: "q2", status: "completed" });
+  v.emit({ type: "connection", state: "reconnecting" });
+  v.emit({ type: "connection", state: "connected" });
+  v.emit({ type: "child_final", text: "agla", startedAt: Date.now(), typed: false });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.equal(api.calls.turn[1].teacherText, undefined);
+  rt.dispose();
+});
+
+test("a lane switch the server refused (network blip) can be tried again; the lesson stays on the realtime link", async () => {
+  const api = fakeApi();
+  let fails = 1;
+  const switchLane = api.switchLane;
+  api.switchLane = async (...a) => { if (fails-- > 0) throw new Error("network"); return switchLane(...a); };
+  const links = [];
+  const rt = new LessonRuntime({ api, timers: timers(), voiceFeatures: false, outboxStore: () => Promise.reject(new Error("no idb")), createLink: (m, ctx) => { const l = new FakeLink(m, ctx); links.push(l); return l; } });
+  await rt.start("child-1", "voice");
+  links[0].emit({ type: "error", code: MINT_REFUSED, message: "full", fatal: true });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.equal(rt.state.phase, "live");
+  assert.equal(rt.state.mode, "voice");
+  assert.ok(!links[0].closed, "still on the realtime link");
+  links[0].emit({ type: "error", code: MINT_REFUSED, message: "full", fatal: true });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.deepEqual(api.calls.lane, [["L1", "mint_refused"]], "the second attempt went through");
+  assert.equal(rt.state.mode, "text");
+  rt.dispose();
+});
+
+test("a switch the server took whose cascade link cannot connect fails the lesson (no dead 'live' lesson)", async () => {
+  const api = fakeApi();
+  const links = [];
+  const rt = new LessonRuntime({ api, timers: timers(), voiceFeatures: false, outboxStore: () => Promise.reject(new Error("no idb")),
+    createLink: (m, ctx) => { const l = new FakeLink(m, ctx); if (ctx.cascade) l.fail = new Error("no audio"); links.push(l); return l; } });
+  await rt.start("child-1", "voice");
+  links[0].emit({ type: "error", code: REALTIME_UNAVAILABLE, message: "dropped", fatal: true });
+  for (let i = 0; i < 10; i++) await flush();
+  assert.deepEqual(api.calls.lane, [["L1", "unavailable"]]);
+  assert.equal(rt.state.phase, "error");
+  assert.deepEqual(api.calls.end, ["L1"], "the lesson is closed on the server");
+});
+
+test("reconnect outcomes: a re-mint refused for quota and exhausted reconnects while online move to cascade; offline stays fatal", async () => {
+  assert.ok(isLaneFallback(new ApiError(503, "x", { fallback: "cascade" })));
+  assert.ok(!isLaneFallback(new ApiError(503, "x", null)) && !isLaneFallback(new ApiError(429, "x", { fallback: "cascade" })) && !isLaneFallback(null));
+  // with the lane switch off (or no switch API), the same fatal codes still fail the lesson
+  const api = fakeApi();
+  delete api.switchLane;
+  const links = [];
+  const rt = new LessonRuntime({ api, timers: timers(), voiceFeatures: false, outboxStore: () => Promise.reject(new Error("no idb")), createLink: (m, ctx) => { const l = new FakeLink(m, ctx); links.push(l); return l; } });
+  await rt.start("child-1", "voice");
+  links[0].emit({ type: "error", code: REALTIME_UNAVAILABLE, message: "dropped", fatal: true });
+  for (let i = 0; i < 5; i++) await flush();
+  assert.equal(rt.state.phase, "error");
+  const src = readFileSync(new URL("../src/lesson/voiceLink.ts", import.meta.url), "utf8");
+  assert.match(src, /isLaneFallback\(err\)[\s\S]{0,400}MINT_REFUSED/, "reconnect() stops retrying on a quota refusal");
+  assert.match(src, /navigator\.onLine[\s\S]{0,300}REALTIME_UNAVAILABLE/, "exhausted reconnects while online name the fallback");
+  assert.match(src, /state: "stalled"/, "ICE disconnected reports the soft state");
+});
+
+test("after a lane switch the cascade keeps the voice she has been speaking in (teacher.voice, never DragonHD)", async () => {
+  const keep = { ...process.env };
+  Object.assign(process.env, { AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "test-key" });
+  delete process.env.TAXILA_CASCADE_ENGINE;
+  try {
+    const { styleForChild } = await import("../server/routes/voice.js");
+    const child = { id: "c", class_level: 5, teacher_id: "asha", prefs: {} };
+    const normal = styleForChild(child, undefined, "asha");
+    assert.equal(normal.engine, "dhd", "the cascade's own default is DragonHD here");
+    const switched = styleForChild(child, undefined, "asha", undefined, { laneSwitched: true });
+    assert.notEqual(switched.engine, "dhd");
+    assert.equal(switched.voice, normal.voice, "the character's realtime voice name (teacher.voice) on gpt-4o-mini-tts");
+  } finally {
+    for (const k of ["AZURE_SPEECH_REGION", "AZURE_SPEECH_KEY", "TAXILA_CASCADE_ENGINE"]) { if (k in keep) process.env[k] = keep[k]; else delete process.env[k]; }
+  }
+});
+
+test("gaze selectors: the Studio stage wins over the trays; the board look prefers a whiteboard on the stage", () => {
+  const doc = (present) => ({ querySelector: (sel) => (present.includes(sel) ? { getBoundingClientRect: () => ({ width: 10 }), sel } : null) });
+  const stage = '[data-testid="studio-stage"]', tray = '[data-testid="tray"]', board = '[data-testid="board"]', wb = '[data-testid="studio-stage"][data-kind="whiteboard"]';
+  assert.equal(gazeElement("tray", doc([tray, stage])).sel, stage);
+  assert.equal(gazeElement("tray", doc([tray])).sel, tray);
+  assert.equal(gazeElement("board", doc([board, stage, wb])).sel, wb);
+  assert.equal(gazeElement("board", doc([board, stage])).sel, board);
+  assert.equal(gazeElement("board", doc([tray])).sel, tray);
+  assert.equal(gazeElement("tray", doc([])), null);
+  assert.deepEqual(GAZE_SELECTOR.tray, [stage, tray]);
+});
+
 // ───────────── #3 lane A delivery ─────────────
 
 const DISPLAYS = ["delight", "warm_pride", "enthusiasm", "gentle_concern", "playful", "calm_curious", "sheepish_own", "neutral_warm", "calm_steady"];
@@ -269,16 +412,32 @@ test("HV-13: no delivery note ever carries a sound word, a bracket or a second l
   assert.ok(!lintDeliveryLine(`${DELIVERY_LABEL} [laughter] warm`));
 });
 
-test("lane A: no note on safety turns or without a moment; the verdict picks only the correction licence", () => {
+test("lane A: no note on safety turns or without a moment; display and move shape it; band sets energy", () => {
   assert.equal(realtimeDeliveryLine(null), null);
   assert.equal(realtimeDeliveryLine(moment({ safety: true, move: "explain" })), null);
   assert.equal(realtimeDeliveryLine(moment({ move: "safeguard" })), null);
-  assert.match(realtimeDeliveryLine(moment({ move: "probe", verdict: "not_yet" })), /calm → reassuring/);
-  assert.match(realtimeDeliveryLine(moment({ move: "probe", verdict: "correct" })), /curious/);
+  assert.match(realtimeDeliveryLine(moment({ move: "probe" })), /curious/);
+  assert.match(realtimeDeliveryLine(moment({ move: "hint" })), /calm → reassuring/, "the correction row comes from the move, as on the cascade");
   // affect comes only from teacherAffect, and a delight display shapes the note whatever the verdict
   const a = realtimeDeliveryLine(moment({ verdict: "correct", teacherAffect: { display: "delight", intensity: 2, cause: "insight", turn: 2 } }));
   assert.match(a, /bright on the method/);
   assert.match(realtimeDeliveryLine(moment({ band: "B4" })), /understated/);
+});
+
+test("HV-17: flipping the verdict with teacherAffect fixed never changes lane A's note; both lanes share moment.js rowOf", () => {
+  for (const display of DISPLAYS) for (const move of MOVES) for (const engagement of ["engaged", "strained"]) {
+    const m = (verdict) => moment({ move, verdict, engagement, teacherAffect: { display, intensity: 1, cause: "none", turn: 1 } });
+    const lines = ["correct", "not_yet", "partial", "ungraded"].map((v) => realtimeDeliveryLine(m(v)));
+    assert.ok(lines.every((l) => l === lines[0]), `${display} ${move} ${engagement}: ${lines.join(" | ")}`);
+    if (rowOf(m("correct")) === "safety" || move === "safeguard") assert.equal(lines[0], null, "a safeguarding move never gets a note");
+    else assert.ok(lines[0], `${display} ${move}: a non-safety row has a note`);
+  }
+});
+
+test("lane A: the note goes just BEFORE the instructions' last line (the turn-shape rule keeps the last place)", () => {
+  assert.equal(withDeliveryNote("A\nB\nTURN SHAPE", "NOTE"), "A\nB\nNOTE\nTURN SHAPE");
+  assert.equal(withDeliveryNote("A\nTURN", null), "A\nTURN");
+  assert.equal(withDeliveryNote("ONLY", "NOTE"), "NOTE\nONLY");
 });
 
 test("lane B (Voice Live) gets the lane-A treatment until P-VL says markers are rendered silently", () => {

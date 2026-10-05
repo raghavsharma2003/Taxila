@@ -1,0 +1,232 @@
+{
+ "source": "voicesig build 2026-10-04: src/voicesig/**, server/voicesig/**, evals/voicesig/**, scripts/voicesig/k1-train.mjs, models/voicesig/filler-gru.*, docs/design/voice-signals/{INTEGRATION.md,migration-proposal.sql}; write-ups appended to context/decisions.md, measurements.md, rejected.md under 'voicesig build (2026-10-04)'",
+ "nodes": [
+  {
+   "id": "m-vs-filler-ami-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Filler detector (bi-GRU 32, 10,817 params, 45 KB fp32) on the product front-end's 22-dim relative features, AMI CC BY 4.0, speaker-disjoint (train 48 spk 10.3 h / val 12 / test 32 spk 7.2 h = all Indian-L1 series). Test word AUROC 0.942 [0.929, 0.955] vs shipped flat-run proxy 0.561 [0.526, 0.594]; event P/R 0.753/0.601 vs proxy 0.278/0.166; ECE 0.0073 calibrated. Indian-L1 adults 0.922 [0.907, 0.936]. ICSI cross-corpus 0.956 (block clusters, optimistic), P/R 0.696/0.626. FLEURS read-speech runs/speech-min hi 3.80 vs en 3.36. Not covered: children, Hindi fillers, phone AGC capture."
+  },
+  {
+   "id": "m-vs-filler-onnx-latency-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Filler ONNX p50 1 thread: node 0.31/0.92/1.76 ms, WASM 0.57/1.49/2.99 ms for 5/15/30 s turns (N=50, shared Xeon). int8 dynamic larger (47,092 B) and rejected; fp32 ships. Phone x2-4 [E]."
+  },
+  {
+   "id": "m-vs-frontend-cpu-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "CPU per audio-s (process.cpuUsage, 60 s): FrameCore 6.5 ms; 10 ms log-mel 9.85 ms with mixed-radix FFT (22.9 ms direct DFT); 20 ms mel 4.8 ms. Adapter toSignalInput p50 0.006 / p99 0.029 ms (n=20k)."
+  },
+  {
+   "id": "m-vs-whisper-mel-parity-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Streaming log-mel ring vs HF WhisperFeatureExtractor(chunk_length=8) on one 8 s clip: interior max abs diff 1.7e-6 (mean 4.6e-8)."
+  },
+  {
+   "id": "m-vs-sy1-sy2-synthetic-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "SY-1/SY-2 clean synthetic (n=21 turns, gaps 0.3-6 s, gains x0.25/x1/x4): onset error -10 ms constant; pauseFrac gain-invariant. Noise/child not covered."
+  },
+  {
+   "id": "m-vs-sim-power-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "SIMULATED pilot power through the product adapter + harness (20 reps, B=200): 95% half-width of dAUROC 0.042 at 30 children, 0.012 at 200; null median -0.001; effect x1 median 0.086 (pass 19/20 at 30); effect x0.5 median 0.010 at 30, 0.033 at 200 (pass 12/20). Null false-pass of the 80%-CI L2 bar 10/60 = 16.7% at 30 children."
+  },
+  {
+   "id": "vs-no-paid-compute-cpu-training",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "K3 encoder fine-tune approved (then scripts/gpu + taxila-voicesig USD 80 budget action).",
+   "title": "All training in this build on the session CPU (filler GRU, K1 heads); AWS USD 0, Azure USD 0, no instance launched."
+  },
+  {
+   "id": "vs-filler-detector-ami",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "VS-A8 on child pilot audio: filler recall < 0.6 at <= 0.05 FP.",
+   "title": "Stage-2 public-data component = per-frame filled-pause detector trained on AMI (CC BY 4.0) over the product front-end features; feeds F3 acoustic only."
+  },
+  {
+   "id": "vs-z-on-server",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A device stage-2 head needs z inputs (K2 embedding branch).",
+   "title": "Device sends raw measurements KnowledgeVoice.f; server z-scores against the voicesig baseline (deviation from SPEC 1.5 z-on-device)."
+  },
+  {
+   "id": "vs-voice-lr-over-text",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A fitted head without a text-only counterfactual; then dAUROC-matched calibration.",
+   "title": "lrV = odds(h all terms)/odds(h text-only terms), gated qA x maturity, clipped to ladder cap; replaces SIGNALS A1/L4 term (replaceTimingTerm)."
+  },
+  {
+   "id": "vs-age-factor-once",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "VS-M6 measures 9-10 cue strength.",
+   "title": "9-10 age halving applied once, to E terms in rules.js, not again in gating (SPEC applied it twice)."
+  },
+  {
+   "id": "vs-adapter-inside-signals-step",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "Signals owner prefers the turn handler calling it (one extra readText).",
+   "title": "Proposal A2: signals step() calls server/voicesig/adapter.js after readText/quality; one G-SIG-PURE allowlist line."
+  },
+  {
+   "id": "vs-l2-bar-95ci-200",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A cluster-robust interval shows nominal coverage at pilot size in the same simulation.",
+   "title": "PROPOSED: ladder L2 needs dAUROC >= 0.03 with the 95% child-clustered CI excluding 0 on >= 200 children."
+  },
+  {
+   "id": "rj-vs-knowledge-head-on-public-data",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Training h1-h4 on public corpora: none carries O1-O4 outcomes; IndicVoices/Vaani are gated; proxy labels would break the outcome-only label test."
+  },
+  {
+   "id": "rj-vs-direct-dft-logmel",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Direct 400-pt DFT log-mel cost 22.9 ms CPU/audio-s (> 20 ms budget); replaced by mixed-radix FFT 9.85 ms."
+  },
+  {
+   "id": "rj-vs-whole-channel-extraction-shared-box",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Whole-channel AMI extraction at load 15-23 projected ~4 h; replaced by owner-speech regions +-2 s."
+  },
+  {
+   "id": "rj-vs-sim-null-not-null",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Simulator effect 0 still carried rapid-guess onset; harness showed dAUROC 0.025 / 8 of 20 passes at the fake null; fixed."
+  },
+  {
+   "id": "rj-vs-l2-bar-80ci-at-pilot-scale",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "80%-CI L2 bar false-passes 16.7% (10/60) of 30-child null pilots."
+  },
+  {
+   "id": "rj-vs-r-chunk-reset-alignment",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Per-chunk R buffer reset misaligned R windows vs P; replaced by FIFO with join padding."
+  },
+  {
+   "id": "rj-vs-worklet-globals-in-shared-test-process",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Worklet global stubs would leak across the single-process npm test; now restored in finally."
+  },
+  {
+   "id": "m-vs-verify-rerun-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Verify pass: filler-detector eval re-run from the shipped ONNX on the same AMI/ICSI/FLEURS features reproduced every test, ICSI and FLEURS number exactly (word AUROC 0.9421 [0.9294, 0.9546], event P/R 0.7526/0.6012). Split re-checked: series-disjoint, speaker-disjoint asserted; threshold, Platt and epoch chosen on val only."
+  },
+  {
+   "id": "m-vs-verify-capture-chain-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Capture-chain proxies on 4 AMI test channels (3 Indian-L1, 303 filler words; perturb_eval.py): word AUROC / event P,R: clean 0.932 / 0.895,0.644; AGC 0.933 / 0.882,0.597; spectral NS+15 dB noise 0.935 / 0.900,0.535; TV speaker at -10 dB 0.928 / 0.874,0.594; narrowband 300-3400 Hz alone 0.707 / 0.310,0.152; narrowband+AGC+NS 0.917 / 0.902,0.366. Fires in non-own stretches: clean 1.9/min, AGC 4.3/min, NS 0.3/min. Proxies, not phone recordings."
+  },
+  {
+   "id": "m-vs-verify-fleurs-lead-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "False LEADING filler >= 300 ms on fluent read utterances (FLEURS): hi_in 7.4% of 95, en_us 7.3% of 41; any false run in 27% of utterances (median 6-8 s). AMI test true-filler rate 6.67 per own-speech minute vs 3.4-3.8 false runs/min on read speech."
+  },
+  {
+   "id": "rj-vs-haanji-as-filler",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "server/signals fillerLead counts haan/ji/ok/achha as planning fillers: readText('haan ji, paanch').fillerLead.v === true, so a deferential child's correct answer supplied Tier-T agreement for fragileCorrect. voicesig now uses register-aware rules.fillerLexOf(toks); signals fix proposed as A2b."
+  },
+  {
+   "id": "rj-vs-absolute-filler-lead",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "An absolute fillerLeadMs >= 300 ms E term fired every turn for a child who habitually opens with 'aaa', and on ~7% of fluent utterances by false alarm. Now the acoustic lead counts only at baselined z >= 1 (mature per-child baseline), and is ignored on bt / speaker_route."
+  },
+  {
+   "id": "vs-verify-guards-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Verify-pass guards in server/voicesig: (1) register-aware lexical filler; (2) acoustic filler lead only when unusual for this child; (3) detector ignored on narrowband mic routes; (4) voice-only licence only when g > 0; (5) safety abstain carries shadow:true, licence:null. Reverse (3) if a phone/BT-recorded child set shows narrowband recall >= 0.5; reverse (2) if pilot shows absolute lead predicts O1 better than z."
+  }
+ ],
+ "edges": [
+  {
+   "from": "vs-l2-bar-95ci-200",
+   "to": "rj-vs-l2-bar-80ci-at-pilot-scale",
+   "rel": "motivated-by"
+  },
+  {
+   "from": "vs-filler-detector-ami",
+   "to": "m-vs-filler-ami-2026-10-04",
+   "rel": "evidence"
+  },
+  {
+   "from": "vs-filler-detector-ami",
+   "to": "rj-vs-knowledge-head-on-public-data",
+   "rel": "motivated-by"
+  },
+  {
+   "from": "vs-no-paid-compute-cpu-training",
+   "to": "m-voicesig-train-cost-2026-10-04",
+   "rel": "evidence"
+  },
+  {
+   "from": "m-vs-frontend-cpu-2026-10-04",
+   "to": "rj-vs-direct-dft-logmel",
+   "rel": "supersedes"
+  },
+  {
+   "from": "vs-voice-lr-over-text",
+   "to": "vs-adapter-inside-signals-step",
+   "rel": "related"
+  },
+  {
+   "from": "vs-verify-guards-2026-10-04",
+   "to": "rj-vs-haanji-as-filler",
+   "rel": "motivated-by"
+  },
+  {
+   "from": "vs-verify-guards-2026-10-04",
+   "to": "rj-vs-absolute-filler-lead",
+   "rel": "motivated-by"
+  },
+  {
+   "from": "vs-verify-guards-2026-10-04",
+   "to": "m-vs-verify-capture-chain-2026-10-04",
+   "rel": "evidence"
+  },
+  {
+   "from": "rj-vs-absolute-filler-lead",
+   "to": "m-vs-verify-fleurs-lead-2026-10-04",
+   "rel": "evidence"
+  },
+  {
+   "from": "m-vs-verify-rerun-2026-10-04",
+   "to": "m-vs-filler-ami-2026-10-04",
+   "rel": "evidence"
+  }
+ ]
+}

@@ -9,7 +9,7 @@
 //   hum       ≥ 180 s since the last
 //   laugh / chuckle  ≥ 300 s since the last; never in the 2 turns after a not_yet verdict
 //   sigh_relief      ≥ 600 s apart
-//   silence   planned pauses ≤ 1.5 s per turn; any excess is trimmed proportionally
+//   silence   planned pauses ≤ 1.5 s per turn; any excess is trimmed proportionally (never on a safety turn)
 // DEVIATION (w2g-governor-in-memory): the spec persists this in lesson.state.voice so a resume keeps it; the turn's
 // writer is W2-E's hot file and the seam passes no lesson id, so the state lives here, per process. A different
 // replica or a restart starts a fresh window: at worst one extra filler, never a broken floor rule.
@@ -77,9 +77,10 @@ export function createGovernor({ now = () => Date.now() } = {}) {
         s.last[key] = sec;
         if (k === "breath") breaths++;
       }
-      // ── silence cap (planned pauses only)
+      // ── silence cap (planned pauses only). Never on a safety turn: HV-3's fixed 300 ms between sentences is the
+      // safety register itself, and a long safeguarding reply must keep it at every boundary (fixer 2026-10-05).
       const total = clauses.reduce((a, c) => a + (c.pauseBeforeMs || 0), 0);
-      if (total > SILENCE_CAP_MS) {
+      if (total > SILENCE_CAP_MS && plan.register !== "safety") {
         const k = SILENCE_CAP_MS / total;
         for (const c of clauses) c.pauseBeforeMs = Math.floor((c.pauseBeforeMs || 0) * k);
         out.governed.trimmedMs = total - clauses.reduce((a, c) => a + c.pauseBeforeMs, 0);

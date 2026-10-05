@@ -1,0 +1,2517 @@
+{
+ "class": 4,
+ "subject": "english",
+ "version": 1,
+ "generator": "taxila-gpt6",
+ "date": "2026-10-04",
+ "topics": [
+  {
+   "topicId": "c4-english-ch01-t01",
+   "replacesOpeners": [
+    "c4-english-ch01-t01-i01",
+    "diag:c4-english-ch01-t01-m-rhyme-spelling",
+    "c4-english-ch01-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch01-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch01-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Read these lines aloud: “We plan our play / And help each other through the day. / We pass the ball across the ground / And hear a joyful sound.” Which two words rhyme at the ends of the first two lines?",
+     "prompt_hi": "Ye lines zor se padho: “We plan our play / And help each other through the day. / We pass the ball across the ground / And hear a joyful sound.” Pehli do lines ke end par kaunse words rhyme karte hain?",
+     "answer": "play and day",
+     "acceptable": [
+      "day and play",
+      "play, day"
+     ],
+     "hints": [
+      "Where does each of the first two lines end?",
+      "Listen to the ending sounds, not just the spelling.",
+      "The rhyming pair is ___ and ___.",
+      "Play and day rhyme because they end with the same sound."
+     ],
+     "verified": {
+      "solverAnswer": "play and day",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch01-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch01-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "For the school exhibition, Aarav drew diagrams while Sana wrote labels. They finished a display neither could have completed in time alone. Which message fits better: “Sharing tasks helps a team” or “Drawing matters more than writing”?",
+     "prompt_hi": "School exhibition ke liye Aarav ne diagrams banaye aur Sana ne labels likhe. Dono ne milkar display time par poora kiya. Kaunsa message better hai: “Sharing tasks helps a team” ya “Drawing matters more than writing”?",
+     "answer": "Sharing tasks helps a team",
+     "acceptable": [
+      "sharing tasks helps a team",
+      "sharing work helps a team"
+     ],
+     "hints": [
+      "What did each student contribute?",
+      "Think about how dividing the work changed the result.",
+      "The message is that sharing ___ helps a team.",
+      "Sharing tasks helps a team; both contributions completed the display."
+     ],
+     "verified": {
+      "solverAnswer": "Sharing tasks helps a team",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch01-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch01-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "A kabaddi team lost when every player chased the raider. Next round, they guarded different parts of the court and stopped the raider. Why did the second plan work better? Answer in a short phrase.",
+     "prompt_hi": "Kabaddi team pehle haari jab sab players raider ke peeche bhaage. Agle round mein unhone court ke alag-alag parts sambhale aur raider ko rok liya. Doosra plan better kyun chala? Short phrase mein batao.",
+     "answer": "They worked together and shared roles",
+     "acceptable": [
+      "teamwork and shared roles",
+      "they divided the work",
+      "they guarded different areas as a team"
+     ],
+     "hints": [
+      "What changed between the two rounds?",
+      "Notice where the players stood in the second round.",
+      "The plan worked because players ___ different roles.",
+      "They worked together and shared roles, covering more of the court."
+     ],
+     "verified": {
+      "solverAnswer": "They guarded different parts",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver too vague, omits teamwork",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch01-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch01-t01-s3",
+     "kind": "practice",
+     "demand": "transfer",
+     "genGrade": 4.5,
+     "prompt_en": "At the science fair, a student says, “Our bundle of ideas made the model stronger.” Here, does “bundle” mean a collection of ideas or a rope tying the model?",
+     "prompt_hi": "Science fair mein ek student kehta hai, “Our bundle of ideas made the model stronger.” Yahan “bundle” ka matlab ideas ka collection hai ya model ko baandhne wali rope?",
+     "answer": "a collection of ideas",
+     "acceptable": [
+      "collection of ideas",
+      "a group of ideas",
+      "many ideas together"
+     ],
+     "hints": [
+      "What is being described by the word “bundle”?",
+      "The sentence uses the word for thoughts, not an object.",
+      "Here, “bundle” means a ___ of ideas.",
+      "It means a collection of ideas; several ideas improved the model."
+     ],
+     "verified": {
+      "solverAnswer": "a collection of ideas",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch01-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch01-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Complete both gaps using “decorate” or “decorates”: “Our team can ___ the stage, but one student can't ___ it alone.” Which word goes in both gaps?",
+     "prompt_hi": "Dono blanks mein “decorate” ya “decorates” lagao: “Our team can ___ the stage, but one student can't ___ it alone.” Dono blanks mein kaunsa word aayega?",
+     "answer": "decorate",
+     "acceptable": [
+      "decorate in both gaps",
+      "decorate, decorate"
+     ],
+     "hints": [
+      "Look at the words just before both gaps.",
+      "After these helping words, use the plain action word.",
+      "Our team can ___; one student can't ___.",
+      "Decorate goes in both gaps; can and can't take the plain action word."
+     ],
+     "verified": {
+      "solverAnswer": "decorate",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch01-t01-i01": {
+     "ge": 1.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch02-t01",
+   "replacesOpeners": [
+    "c4-english-ch02-t01-i01",
+    "diag:c4-english-ch02-t01-m-past-ed-overgeneral",
+    "c4-english-ch02-t01-i11"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch02-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch02-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "At a village sports day, Ravi tied a bell to the finish-line rope. The wind blew, the bell rang, and the runners looked up. Which happened second: tying the bell, the wind blowing, or the runners looking up?",
+     "prompt_hi": "Gaon ke sports day par Ravi ne finish-line ki rassi par ghanti baandhi. Hawa chali, ghanti baji, aur runners ne upar dekha. Doosra kya hua: ghanti baandhna, hawa chalna, ya runners ka upar dekhna?",
+     "answer": "the wind blowing",
+     "acceptable": [
+      "wind blowing",
+      "the wind blew",
+      "hawa chalna",
+      "hawa chali"
+     ],
+     "hints": [
+      "What happened just before the bell rang?",
+      "Follow the events in the order given.",
+      "First Ravi tied the bell; next, ___ happened.",
+      "The wind blew; it made the bell ring."
+     ],
+     "verified": {
+      "solverAnswer": "the wind blowing",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch02-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch02-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Sana could not find her cricket bat. Her friends searched the school ground and found it beside the water tap. Where did they find the bat: beside the water tap or inside the classroom?",
+     "prompt_hi": "Sana ko apna cricket bat nahi mil raha tha. Uske friends ne school ground mein dhoondha aur bat paani ke nal ke paas mila. Bat kahan mila: paani ke nal ke paas ya classroom ke andar?",
+     "answer": "beside the water tap",
+     "acceptable": [
+      "near the water tap",
+      "by the tap",
+      "paani ke nal ke paas",
+      "nal ke paas"
+     ],
+     "hints": [
+      "Which place is named when the bat is found?",
+      "Look at the final part of the passage.",
+      "They found the bat beside the ___.",
+      "Beside the water tap; the passage names that spot."
+     ],
+     "verified": {
+      "solverAnswer": "beside the water tap",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.5,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch02-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch02-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "The children heard a faint tinkle beyond the grove. They walked past several trees to find the bell. In this passage, is a grove a group of trees or a single tree?",
+     "prompt_hi": "Bachchon ko grove ke paar se ghanti ki halki tinkle sunai di. Ghanti dhoondhne ke liye woh kai pedon ke paas se guzre. Is passage mein grove ka matlab pedon ka jhund hai ya ek ped?",
+     "answer": "a group of trees",
+     "acceptable": [
+      "group of trees",
+      "several trees together",
+      "pedon ka jhund",
+      "kai ped ek saath"
+     ],
+     "hints": [
+      "What did the children walk past?",
+      "A place-name clue comes from the number of trees mentioned.",
+      "Here, grove means ___ together.",
+      "A group of trees; the children passed several trees."
+     ],
+     "verified": {
+      "solverAnswer": "a group of trees",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch02-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch02-t01-s4",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Change both actions to the past: “We go to the fair and find our friends.” Begin with “Yesterday, we…”",
+     "prompt_hi": "Dono actions ko past tense mein badlo: “We go to the fair and find our friends.” Sentence “Yesterday, we…” se shuru karo.",
+     "answer": "Yesterday, we went to the fair and found our friends.",
+     "acceptable": [
+      "We went to the fair and found our friends.",
+      "Yesterday we went to the fair and found our friends"
+     ],
+     "hints": [
+      "Do both action words need to change?",
+      "These two verbs have special past forms.",
+      "Yesterday, we ___ to the fair and ___ our friends.",
+      "Yesterday, we went to the fair and found our friends; both actions are past."
+     ],
+     "verified": {
+      "solverAnswer": "Yesterday, we went to the fair and found our friends.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch02-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch02-t01-s5",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5,
+     "prompt_en": "A village boy hears a bell and helps his friends find a lost goat. Which response explains a favourite part: “I liked the bell part because it helped them find the goat” or “I liked the bell part because it was in the story”?",
+     "prompt_hi": "Gaon ka ek ladka ghanti sunkar apne friends ko khoyi hui bakri dhoondhne mein madad karta hai. Favourite part ko kaunsa response samjhata hai: “I liked the bell part because it helped them find the goat” ya “I liked the bell part because it was in the story”?",
+     "answer": "I liked the bell part because it helped them find the goat.",
+     "acceptable": [
+      "the first response",
+      "first option",
+      "it helped them find the goat",
+      "pehla response"
+     ],
+     "hints": [
+      "Which response gives a meaningful reason?",
+      "A good reason says why that event matters.",
+      "Choose the response that explains how the bell ___.",
+      "The first response; it connects the favourite part to finding the goat."
+     ],
+     "verified": {
+      "solverAnswer": "I liked the bell part because it helped them find the goat",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch02-t01-i01": {
+     "ge": 2,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch03-t01",
+   "replacesOpeners": [
+    "c4-english-ch03-t01-i02",
+    "diag:c4-english-ch03-t01-m-not-imperative",
+    "c4-english-ch03-t01-i01"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch03-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch03-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A notice near a metro station says: 'Cross only at the marked crossing. Wait until vehicles stop.' What is its main message: cross carefully at the marked place, or cross wherever there is space?",
+     "prompt_hi": "Metro station ke paas notice hai: 'Sirf marked crossing par road paar karo. Gaadiyon ke rukne ka wait karo.' Iska main message kya hai: marked jagah par dhyan se cross karo, ya jahan jagah mile wahan cross karo?",
+     "answer": "Cross carefully at the marked place",
+     "acceptable": [
+      "Cross at the marked place",
+      "Use the marked crossing"
+     ],
+     "hints": [
+      "What do both sentences ask people to do?",
+      "Find the message that includes the notice’s crossing rule.",
+      "The main message is to cross at the ____.",
+      "Cross carefully at the marked place; that sums up the notice."
+     ],
+     "verified": {
+      "solverAnswer": "cross carefully at the marked place",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch03-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch03-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "In a school announcement, 'Pedestrians should use the gate beside the cycle stand.' Does 'pedestrians' mean people walking or people cycling?",
+     "prompt_hi": "School announcement mein hai: 'Pedestrians ko cycle stand ke paas wala gate use karna chahiye.' Yahan 'pedestrians' ka matlab paidal chalne wale log hain ya cycle chalane wale log?",
+     "answer": "People walking",
+     "acceptable": [
+      "Walkers",
+      "People on foot",
+      "Paidal chalne wale log"
+     ],
+     "hints": [
+      "Who would need a gate separate from cyclists?",
+      "Think about how the two groups travel.",
+      "Pedestrians travel on ____.",
+      "People walking; a pedestrian travels on foot."
+     ],
+     "verified": {
+      "solverAnswer": "people walking",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch03-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch03-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Complete the school safety notice with the correct word: 'Cyclists, wear a helmet. Car passengers, fasten your ____.' Choose seat belt or traffic signal.",
+     "prompt_hi": "School safety notice poora karo: 'Cyclists, helmet pehno. Car passengers, apni ____ lagao.' Seat belt ya traffic signal mein se chuno.",
+     "answer": "Seat belt",
+     "acceptable": [
+      "A seat belt",
+      "Safety belt"
+     ],
+     "hints": [
+      "Which item can a passenger fasten?",
+      "Match the safety item to travelling inside a car.",
+      "Car passengers fasten their ____.",
+      "Seat belt; passengers fasten it while riding in a car."
+     ],
+     "verified": {
+      "solverAnswer": "seat belt",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch03-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch03-t01-s3",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "A school bus rule says, 'Not lean out of the window.' Which corrected instruction is right: 'Don't lean out of the window' or 'Don't leaning out of the window'?",
+     "prompt_hi": "School bus rule hai: 'Not lean out of the window.' Sahi instruction kaunsa hai: 'Don't lean out of the window' ya 'Don't leaning out of the window'?",
+     "answer": "Don't lean out of the window",
+     "acceptable": [
+      "Do not lean out of the window"
+     ],
+     "hints": [
+      "Which choice gives a clear instruction?",
+      "After 'don't', use the plain action word.",
+      "Don't ____ out of the window.",
+      "Don't lean out of the window; 'don't' takes the plain action word."
+     ],
+     "verified": {
+      "solverAnswer": "Don't lean out of the window",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch03-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch03-t01-s4",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5,
+     "prompt_en": "At a Bengaluru bus stop, a bus blocks Meera's view of the road. Why should she wait until it leaves before crossing?",
+     "prompt_hi": "Bengaluru ke bus stop par ek bus Meera ko road dekhne nahi de rahi. Road cross karne se pehle use bus ke jaane ka wait kyun karna chahiye?",
+     "answer": "So she can see approaching vehicles",
+     "acceptable": [
+      "The bus hides approaching vehicles",
+      "To see oncoming traffic",
+      "Taaki aati hui gaadiyan dikh sakein"
+     ],
+     "hints": [
+      "What can Meera not see from behind the bus?",
+      "Think about vehicles that may be moving past it.",
+      "Waiting helps her see ____.",
+      "She can see approaching vehicles; the bus may hide them."
+     ],
+     "verified": {
+      "solverAnswer": "Other vehicles may be hidden behind the bus.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "All convey bus hides oncoming traffic",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch03-t01-i02": {
+     "ge": 0.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch04-t01",
+   "replacesOpeners": [
+    "c4-english-ch04-t01-i01",
+    "diag:c4-english-ch04-t01-m-third-person-s",
+    "c4-english-ch04-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch04-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch04-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Read this line aloud: “Finish your drawing, then put paints away.” Where should you pause to show the two actions clearly: after “drawing” or after “paints”?",
+     "prompt_hi": "Yeh line zor se padho: “Finish your drawing, then put paints away.” Do kaam alag dikhane ke liye pause kahan loge: “drawing” ke baad ya “paints” ke baad?",
+     "answer": "after drawing",
+     "acceptable": [
+      "drawing ke baad",
+      "after “drawing”"
+     ],
+     "hints": [
+      "How many actions does the line describe?",
+      "Pause where the first action ends.",
+      "Finish your drawing [pause] ___",
+      "After “drawing”; the pause separates finishing from tidying."
+     ],
+     "verified": {
+      "solverAnswer": "after \"drawing\"",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch04-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch04-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "During cricket practice, Dev checks his phone between every ball. What fits the poem’s message better: put the phone away until practice ends, or check it more quickly?",
+     "prompt_hi": "Cricket practice mein Dev har ball ke beech phone dekhta hai. Poem ke message ke hisaab se kya behtar hai: practice khatam hone tak phone door rakhna, ya use jaldi-jaldi check karna?",
+     "answer": "put the phone away until practice ends",
+     "acceptable": [
+      "put the phone away",
+      "practice khatam hone tak phone door rakhna"
+     ],
+     "hints": [
+      "What keeps interrupting Dev’s practice?",
+      "Think about giving one activity your attention.",
+      "During practice, Dev should ___",
+      "Put the phone away; then he can focus on cricket."
+     ],
+     "verified": {
+      "solverAnswer": "put the phone away until practice ends",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch04-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch04-t01-s3",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Riya checks every name before submitting the school event list. Aman submits his list without checking it. Complete: “Riya is ___; Aman is ___.” Use words made from “care”.",
+     "prompt_hi": "Riya school event ki list dene se pehle har naam check karti hai. Aman bina check kiye list de deta hai. Complete karo: “Riya is ___; Aman is ___.” “Care” se bane words use karo.",
+     "answer": "careful; careless",
+     "acceptable": [
+      "careful and careless",
+      "Riya is careful; Aman is careless"
+     ],
+     "hints": [
+      "Who checks the work before submitting it?",
+      "The two endings show having care and lacking care.",
+      "Riya is care___; Aman is care___.",
+      "Careful; careless. Riya checks, while Aman does not."
+     ],
+     "verified": {
+      "solverAnswer": "careful; careless",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch04-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch04-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "For the school exhibition, Sana starts three posters but finishes none. Neha completes one poster neatly. Why does Neha’s work better show the poem’s message?",
+     "prompt_hi": "School exhibition ke liye Sana teen posters shuru karti hai, par ek bhi poora nahi karti. Neha ek poster saaf-suthre dhang se poora karti hai. Neha ka kaam poem ka message behtar kyun dikhata hai?",
+     "answer": "She focuses on one task and completes it with care.",
+     "acceptable": [
+      "She does one thing at a time and does it well",
+      "Ek kaam par dhyaan dekar use achchhe se poora karti hai"
+     ],
+     "hints": [
+      "Which student has a finished poster?",
+      "Compare how each student uses her attention.",
+      "Neha gives one task her ___ and completes it.",
+      "She focuses on one task and completes it with care."
+     ],
+     "verified": {
+      "solverAnswer": "Completing one task neatly shows focus, not starting many.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Focus on finishing one task well",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch04-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch04-t01-s4",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Complete this sentence about a regular habit: “When Arjun ___ (cook), he ___ (clean) the counter afterwards.” Say the full sentence.",
+     "prompt_hi": "Regular habit ke baare mein sentence complete karo: “When Arjun ___ (cook), he ___ (clean) the counter afterwards.” Poora English sentence bolo.",
+     "answer": "When Arjun cooks, he cleans the counter afterwards.",
+     "acceptable": [
+      "When Arjun cooks he cleans the counter afterwards",
+      "Arjun cooks; he cleans"
+     ],
+     "hints": [
+      "Who does both actions?",
+      "For a regular habit, check both verbs after Arjun and he.",
+      "When Arjun cook___, he clean___ the counter afterwards.",
+      "When Arjun cooks, he cleans the counter afterwards; both verbs take -s."
+     ],
+     "verified": {
+      "solverAnswer": "When Arjun cooks, he cleans the counter afterwards.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch04-t01-i01": {
+     "ge": 1.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch05-t01",
+   "replacesOpeners": [
+    "c4-english-ch05-t01-i01",
+    "diag:c4-english-ch05-t01-m-a-an",
+    "c4-english-ch05-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch05-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch05-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A thirsty crow could not reach water in a pot. It dropped pebbles in, and the water rose. Later, it led another thirsty crow to the pot. What happened just before the crow could drink?",
+     "prompt_hi": "Ek pyaasa crow pot ka paani nahi pee paa raha tha. Usne pebbles daale, toh paani upar aaya. Baad mein usne doosre crow ko pot tak pahunchaya. Pehla crow paani peene se just pehle kya hua?",
+     "answer": "The water rose.",
+     "acceptable": [
+      "Water rose",
+      "The water level rose",
+      "Paani upar aaya"
+     ],
+     "hints": [
+      "Which event made drinking possible?",
+      "Follow the events after the pebbles went in.",
+      "The pebbles went in, and then the water ____.",
+      "The water rose; the pebbles raised its level."
+     ],
+     "verified": {
+      "solverAnswer": "The water rose.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch05-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch05-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A deer noticed a tortoise struggling to cross a busy path. The deer waited and warned others to slow down. Which adjective fits the deer better: kind or careless?",
+     "prompt_hi": "Ek deer ne dekha ki tortoise busy path cross karne mein struggle kar raha hai. Deer ruka aur doosron ko dheere chalne ko kaha. Deer ke liye kaunsa adjective better hai: kind ya careless?",
+     "answer": "kind",
+     "acceptable": [
+      "Kind",
+      "dayalu"
+     ],
+     "hints": [
+      "Did the deer ignore the tortoise?",
+      "Choose the adjective that matches helping behaviour.",
+      "The deer helped, so it was ____.",
+      "Kind; it helped the tortoise cross safely."
+     ],
+     "verified": {
+      "solverAnswer": "kind",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch05-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch05-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "In a forest story, Meera writes, ‘The deer found a spring during the dry summer.’ Does spring mean a season or water coming from the ground? Which clue helps you decide?",
+     "prompt_hi": "Forest story mein Meera likhti hai, ‘The deer found a spring during the dry summer.’ Yahan spring ka matlab season hai ya zameen se nikalta paani? Kaunsa clue batata hai?",
+     "answer": "Water coming from the ground; ‘dry summer’ is the clue.",
+     "acceptable": [
+      "Water from the ground; dry summer",
+      "A source of water; during the dry summer",
+      "Zameen se nikalta paani; dry summer"
+     ],
+     "hints": [
+      "Could both seasons happen at the same time?",
+      "Look at the words describing when the deer found it.",
+      "The clue is ‘____’; here spring means ____.",
+      "Water coming from the ground; ‘dry summer’ rules out the season."
+     ],
+     "verified": {
+      "solverAnswer": "Water from the ground. Clue: dry summer.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both identify water source and dry summer clue",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch05-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch05-t01-s4",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "For a wildlife-club notice, complete both gaps: ‘We spotted ___ young stag near ___ old elephant.’ Say the two missing words in order.",
+     "prompt_hi": "Wildlife-club notice ke dono blanks bharo: ‘We spotted ___ young stag near ___ old elephant.’ Missing words order mein bolo.",
+     "answer": "a, an",
+     "acceptable": [
+      "a and an",
+      "a young stag, an old elephant",
+      "a; an"
+     ],
+     "hints": [
+      "What sound begins each word immediately after the gap?",
+      "Choose each article by sound, not by the animal’s name.",
+      "Before ‘young’ write ____; before ‘old’ write ____.",
+      "A, an; ‘young’ starts with a consonant sound, ‘old’ with a vowel sound."
+     ],
+     "verified": {
+      "solverAnswer": "a, an",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch05-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch05-t01-s5",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "During a school trek, Riya shared her water with an injured classmate. The next day, that classmate helped Riya carry her bag. What lesson does this show: kindness can lead to friendship, or only strong people should help?",
+     "prompt_hi": "School trek mein Riya ne injured classmate ko apna paani diya. Agle din us classmate ne Riya ka bag uthane mein help ki. Kya lesson milta hai: kindness se friendship badh sakti hai, ya sirf strong logon ko help karni chahiye?",
+     "answer": "Kindness can lead to friendship.",
+     "acceptable": [
+      "Kindness leads to friendship",
+      "Helping others builds friendship",
+      "Achchhai se dosti badhti hai"
+     ],
+     "hints": [
+      "How did each student treat the other?",
+      "Notice that help went both ways.",
+      "Their actions show that ____ can build friendship.",
+      "Kindness can lead to friendship; both students helped each other."
+     ],
+     "verified": {
+      "solverAnswer": "kindness can lead to friendship",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch05-t01-i01": {
+     "ge": 2.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch06-t01",
+   "replacesOpeners": [
+    "c4-english-ch06-t01-i01",
+    "diag:c4-english-ch06-t01-m-was-were",
+    "c4-english-ch06-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch06-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch06-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A museum card says: Louis Braille was born in 1809, injured his eye in 1812, joined a school in 1819, and developed a dot code in 1824. What happened after his injury but before he developed the code?",
+     "prompt_hi": "Museum card par likha hai: Louis Braille ka janam 1809 mein hua, 1812 mein aankh ko chot lagi, 1819 mein school gaye, aur 1824 mein dot code banaya. Chot aur code banane ke beech kya hua?",
+     "answer": "He joined a school.",
+     "acceptable": [
+      "joined a school",
+      "went to school",
+      "school mein gaye"
+     ],
+     "hints": [
+      "Which event falls between the two named events?",
+      "Read the dates in order.",
+      "The event in 1819 was: ____.",
+      "He joined a school; that happened in 1819."
+     ],
+     "verified": {
+      "solverAnswer": "He joined a school in 1819.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch06-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch06-t01-s2",
+     "kind": "practice",
+     "demand": "reason",
+     "genGrade": 4,
+     "prompt_en": "Meera noticed a classmate could not read the printed names on science jars. She spent her weekend making labels he could feel. Which quality does this show: kindness or impatience?",
+     "prompt_hi": "Meera ne dekha ki uska classmate science jars par chhape naam nahi padh pa raha tha. Usne weekend par aise labels banaye jinhein woh chhoo kar samajh sake. Isse kaunsi quality dikhti hai: kindness ya impatience?",
+     "answer": "kindness",
+     "acceptable": [
+      "kind",
+      "caring",
+      "dayalu"
+     ],
+     "hints": [
+      "Why did Meera make the labels?",
+      "Think about how she treated her classmate.",
+      "Helping someone this way shows ____.",
+      "Kindness; she used her time to help a classmate."
+     ],
+     "verified": {
+      "solverAnswer": "kindness",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch06-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch06-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "A student tried several ways to make a touch-readable bus timetable. Each failed, but she tested another design the next day. Why might you call her determined?",
+     "prompt_hi": "Ek student ne touch se padhne layak bus timetable banane ke kai tareeqe try kiye. Har tareeqa fail hua, phir bhi agle din usne naya design test kiya. Use determined kyun kahoge?",
+     "answer": "She kept trying after her designs failed.",
+     "acceptable": [
+      "she did not give up",
+      "she tried again after failing",
+      "fail hone par bhi koshish karti rahi"
+     ],
+     "hints": [
+      "What did she do after each failure?",
+      "Compare failing once with stopping altogether.",
+      "She was determined because she ____.",
+      "She kept trying after failures; she did not give up."
+     ],
+     "verified": {
+      "solverAnswer": "She kept trying despite failures.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Equivalent: kept trying after failure",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch06-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch06-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "A metro guide says, ‘The station names are printed as raised dots, so passengers can feel them with their fingertips.’ In this sentence, does raised mean ‘standing above the surface’ or ‘written in large letters’?",
+     "prompt_hi": "Metro guide mein likha hai, ‘Station names raised dots mein hain, jinhein passengers fingertips se mehsoos kar sakte hain.’ Yahan raised ka matlab ‘satah se upar ubhre hue’ hai ya ‘bade aksharon mein likhe hue’?",
+     "answer": "standing above the surface",
+     "acceptable": [
+      "above the surface",
+      "satah se upar ubhre hue",
+      "ubhre hue"
+     ],
+     "hints": [
+      "What can passengers feel with their fingers?",
+      "Use the clue about touch, not sight.",
+      "Here, raised describes dots that ____.",
+      "Standing above the surface; fingers can feel the dots."
+     ],
+     "verified": {
+      "solverAnswer": "standing above the surface",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch06-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch06-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Complete this school report with both correct words: ‘The tactile maps ___ ready on Monday. The art club had worked on them ___ two weeks.’",
+     "prompt_hi": "School report ke dono blanks sahi words se bharo: ‘The tactile maps ___ ready on Monday. The art club had worked on them ___ two weeks.’",
+     "answer": "were; for",
+     "acceptable": [
+      "were, for",
+      "were and for"
+     ],
+     "hints": [
+      "Is ‘maps’ singular or plural? What follows a length of time?",
+      "Match the verb to ‘maps’; use a duration word before ‘two weeks’.",
+      "The maps ____ ready; the club worked ____ two weeks.",
+      "Were; for. ‘Maps’ is plural, and ‘for’ introduces a duration."
+     ],
+     "verified": {
+      "solverAnswer": "were, for",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch06-t01-i01": {
+     "ge": 3,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch07-t01",
+   "replacesOpeners": [
+    "c4-english-ch07-t01-i01",
+    "diag:c4-english-ch07-t01-m-idiom-literal",
+    "c4-english-ch07-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch07-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch07-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Complete these lines for a school sports-day poem: “We practise together every day; / We help our teammates as we ___.” Choose: play, sleep, eat. Which word fits both the meaning and the rhyme?",
+     "prompt_hi": "School sports-day poem ki lines poori karo: “We practise together every day; / We help our teammates as we ___.” Play, sleep, ya eat? Kaunsa word meaning aur rhyme dono ke hisaab se fit hai?",
+     "answer": "play",
+     "acceptable": [
+      "we play"
+     ],
+     "hints": [
+      "What are the teammates doing together?",
+      "The word must suit sports and rhyme with “day”.",
+      "“We help our teammates as we ___.”",
+      "Play. Teammates play together, and “play” rhymes with “day”."
+     ],
+     "verified": {
+      "solverAnswer": "play",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch07-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch07-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "After the morning kabaddi match, Aditi still wants to run another lap. Her coach says, “You’re full of beans!” Does the coach mean Aditi is energetic or hungry?",
+     "prompt_hi": "Morning kabaddi match ke baad bhi Aditi ek aur lap daudna chahti hai. Coach kehte hain, “You’re full of beans!” Coach ka matlab energetic hai ya hungry?",
+     "answer": "energetic",
+     "acceptable": [
+      "full of energy",
+      "bahut energy hai"
+     ],
+     "hints": [
+      "What does Aditi still want to do?",
+      "Think about what the coach notices after the match.",
+      "The saying describes how much ___ Aditi has.",
+      "Energetic. She still has energy to run after the match."
+     ],
+     "verified": {
+      "solverAnswer": "energetic",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch07-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch07-t01-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "Rohan eats a bowl of beans at lunch but feels too tired to join cricket. His friend says, “Rohan is full of beans.” Is the saying used correctly? Answer yes or no, and say why.",
+     "prompt_hi": "Rohan lunch mein ek bowl beans khata hai, par cricket khelne ke liye bahut thaka hai. Uska dost kehta hai, “Rohan is full of beans.” Kya saying sahi use hui hai? Yes ya no, aur kyun?",
+     "answer": "No; he is tired, not full of energy.",
+     "acceptable": [
+      "No, because he has no energy",
+      "No, he is too tired",
+      "Nahi, woh energetic nahi hai"
+     ],
+     "hints": [
+      "Does eating beans decide whether this saying fits?",
+      "Compare the saying’s meaning with Rohan’s condition.",
+      "The saying does not fit because Rohan feels ___.",
+      "No. He feels tired, but the saying means full of energy."
+     ],
+     "verified": {
+      "solverAnswer": "No, because the saying means energetic, not literally full from eating beans.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both explain no, tired not energetic",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch07-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch07-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Before badminton, Meera reaches both arms overhead and lengthens her muscles. Complete her sentence with the best action word: “I ___ before I play.” Choose stretch, skip, or jump.",
+     "prompt_hi": "Badminton se pehle Meera dono haath upar karke muscles ko lamba karti hai. Sentence poora karo: “I ___ before I play.” Stretch, skip, ya jump?",
+     "answer": "stretch",
+     "acceptable": [
+      "I stretch",
+      "stretch karti hoon"
+     ],
+     "hints": [
+      "What happens to Meera’s muscles?",
+      "Choose the action that lengthens muscles before a game.",
+      "“I ___ before I play.”",
+      "Stretch. Reaching overhead lengthens her muscles."
+     ],
+     "verified": {
+      "solverAnswer": "stretch",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch07-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch07-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Nisha plays kho-kho every morning at 7 o’clock. She writes, “I am playing kho-kho every morning at 7 o’clock.” Say the sentence correctly for a daily routine.",
+     "prompt_hi": "Nisha roz subah 7 baje kho-kho khelti hai. Woh likhti hai, “I am playing kho-kho every morning at 7 o’clock.” Daily routine batane ke liye sentence sahi karke bolo.",
+     "answer": "I play kho-kho every morning at 7 o’clock.",
+     "acceptable": [
+      "I play kho-kho at 7 o’clock every morning",
+      "I play kho-kho every morning at seven o’clock"
+     ],
+     "hints": [
+      "Is Nisha describing one moment or a regular habit?",
+      "Use the simple present for a daily routine.",
+      "“I ___ kho-kho every morning at 7 o’clock.”",
+      "I play kho-kho every morning at 7 o’clock. Simple present describes habits."
+     ],
+     "verified": {
+      "solverAnswer": "I play kho-kho every morning at 7 o'clock.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch07-t01-i01": {
+     "ge": 1.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch08-t01",
+   "replacesOpeners": [
+    "c4-english-ch08-t01-i01",
+    "diag:c4-english-ch08-t01-m-reads-directions",
+    "c4-english-ch08-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch08-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch08-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "In a school play, the script says, 'MEERA: (whispers) The quiz starts now.' Which words should Meera say aloud?",
+     "prompt_hi": "School play ki script mein likha hai, 'MEERA: (whispers) The quiz starts now.' Meera ko kaun-se words bolne chahiye?",
+     "answer": "The quiz starts now.",
+     "acceptable": [
+      "The quiz starts now",
+      "The quiz starts now!"
+     ],
+     "hints": [
+      "Which part tells the actor how to speak?",
+      "Words in brackets guide the actor; they are not spoken.",
+      "Meera says: 'The quiz starts ___.'",
+      "The quiz starts now. The bracketed word tells her to whisper."
+     ],
+     "verified": {
+      "solverAnswer": "The quiz starts now.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch08-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A metro safety skit says, 'ARJUN: Hold the rail. (He points to a sign.)' Does Arjun say 'Hold the rail' or 'He points to a sign'?",
+     "prompt_hi": "Metro safety skit mein likha hai, 'ARJUN: Hold the rail. (He points to a sign.)' Arjun kya bolta hai: 'Hold the rail' ya 'He points to a sign'?",
+     "answer": "Hold the rail.",
+     "acceptable": [
+      "Hold the rail",
+      "He says Hold the rail"
+     ],
+     "hints": [
+      "Which option appears outside the brackets?",
+      "The bracketed part describes an action.",
+      "Arjun says: 'Hold the ___.'",
+      "Hold the rail. The other option is a stage direction."
+     ],
+     "verified": {
+      "solverAnswer": "Hold the rail.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch08-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "In a play about a cricket match, Riya reads, 'We won?' and then, 'We won!' Which line should sound excited: the first or the second?",
+     "prompt_hi": "Cricket match ke play mein Riya padhti hai, 'We won?' aur phir 'We won!' Kaunsi line excited lagegi: pehli ya doosri?",
+     "answer": "The second line",
+     "acceptable": [
+      "second",
+      "doosri",
+      "We won!"
+     ],
+     "hints": [
+      "How do the marks at the ends differ?",
+      "One mark shows a question; the other shows strong feeling.",
+      "The excited line is the ___ one.",
+      "The second line sounds excited because it ends with an exclamation mark."
+     ],
+     "verified": {
+      "solverAnswer": "the second",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "During a school game, the cones fall. A player puts them back in their places. Which word best describes this action: aim, rebuild, or oppose?",
+     "prompt_hi": "School game mein cones gir jaate hain. Ek player unhein wapas apni jagah rakhta hai. Is action ke liye kaunsa word sahi hai: aim, rebuild, ya oppose?",
+     "answer": "rebuild",
+     "acceptable": [
+      "rebuilding"
+     ],
+     "hints": [
+      "What happened before the player moved the cones?",
+      "Look for the word meaning ‘put back together’.",
+      "The player helps ___ what fell.",
+      "Rebuild means to put something back together after it falls."
+     ],
+     "verified": {
+      "solverAnswer": "rebuild",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s5",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5,
+     "prompt_en": "In lagori, Sana watched for opponents, Dev collected stones, and Isha stacked them. They finished before the opponents arrived. Why did their team succeed?",
+     "prompt_hi": "Lagori mein Sana ne opponents par nazar rakhi, Dev ne stones uthaye, aur Isha ne unhein stack kiya. Opponents ke aane se pehle kaam ho gaya. Team kyun jeeti?",
+     "answer": "They worked together, with each player doing a different job.",
+     "acceptable": [
+      "They worked as a team",
+      "Each player had a job",
+      "They shared the work",
+      "Sabne milkar alag-alag kaam kiye"
+     ],
+     "hints": [
+      "Did all three players do the same task?",
+      "Notice how their different tasks helped one goal.",
+      "They succeeded because each player ___ .",
+      "They worked together, with each player doing a different job."
+     ],
+     "verified": {
+      "solverAnswer": "They knew their roles and worked together with speed.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "All mean teamwork via roles",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-h4",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "During lagori, Aarav throws the ball towards the stone pile, but it lands far to the left. His teammate says, “Adjust your aim.” What should Aarav change: where he throws or how fast he runs?",
+     "prompt_hi": "Lagori mein Aarav ball stone pile ki taraf phenakta hai, par ball kaafi left mein girti hai. Teammate kehta hai, “Adjust your aim.” Aarav ko kya badalna chahiye: ball kahan phenke ya kitni tez daude?",
+     "answer": "Where he throws",
+     "acceptable": [
+      "Where he throws the ball",
+      "The direction of his throw",
+      "Ball phenke ki direction"
+     ],
+     "hints": [
+      "Where did the ball land compared with the pile?",
+      "Think about what aim controls during a throw.",
+      "He needs to change the ___ of his throw.",
+      "Where he throws; aim is about directing the ball."
+     ],
+     "verified": {
+      "solverAnswer": "Where he throws",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 2.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-h5",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "The stones have fallen, and your team needs someone to stack them. Turn “Rohan will rebuild the pile” into a question beginning with “Who will”.",
+     "prompt_hi": "Stones gir gaye hain aur team ko unhe stack karne ke liye kisi ki zaroorat hai. “Rohan will rebuild the pile” ko “Who will” se shuru hone wale question mein badlo.",
+     "answer": "Who will rebuild the pile?",
+     "acceptable": [
+      "Who will rebuild the pile",
+      "Who will rebuild it?"
+     ],
+     "hints": [
+      "Which part names the person you are asking about?",
+      "Keep the action after “will”; replace the person’s name.",
+      "Who will ___ the pile?",
+      "Who will rebuild the pile? “Who” asks which person will do it."
+     ],
+     "verified": {
+      "solverAnswer": "Who will rebuild the pile?",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch08-t01-rl-h6",
+     "role": "harder",
+     "skillId": "c4-english-ch08-t01-s5",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "In a lagori match, Neha watches the opponents while Imran gathers stones. When an opponent gets close, Neha warns him, and Imran finishes the pile. Why did giving them different jobs help the team?",
+     "prompt_hi": "Lagori match mein Neha opponents par nazar rakhti hai aur Imran stones ikattha karta hai. Opponent paas aata hai toh Neha warning deti hai, aur Imran pile poori kar leta hai. Alag-alag jobs dene se team ko kya fayda hua?",
+     "answer": "They could watch for opponents and rebuild the pile at the same time.",
+     "acceptable": [
+      "Both jobs happened at the same time",
+      "Neha could warn Imran while he rebuilt the pile",
+      "Ek opponent ko dekh sakta tha aur doosra pile bana sakta tha"
+     ],
+     "hints": [
+      "What was each player doing just before the warning?",
+      "Notice whether one person had to stop stacking to watch.",
+      "One player watched while the other ___.",
+      "They watched and rebuilt at the same time, so Imran could keep working."
+     ],
+     "verified": {
+      "solverAnswer": "They could focus on their own tasks without distraction.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver misses simultaneity of tasks",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch08-t01-i01": {
+     "ge": 2.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch09-t01",
+   "replacesOpeners": [
+    "c4-english-ch09-t01-i01",
+    "diag:c4-english-ch09-t01-m-must-to",
+    "c4-english-ch09-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch09-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch09-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "At sports day, Riya explained an old kabaddi game. Then the class made two teams. Next, a player crossed the line and tagged someone. What happened just before the tag?",
+     "prompt_hi": "Sports day par Riya ne kabaddi ka ek purana khel samjhaya. Phir class ne do teams banayi. Uske baad ek player ne line paar karke kisi ko tag kiya. Tag se bilkul pehle kya hua?",
+     "answer": "The player crossed the line.",
+     "acceptable": [
+      "Crossed the line",
+      "A player crossed the line",
+      "Line paar ki"
+     ],
+     "hints": [
+      "Which action comes immediately before the tag?",
+      "Follow the sequence words in the story.",
+      "The player first ___ and then tagged someone.",
+      "The player crossed the line; the passage places it before the tag."
+     ],
+     "verified": {
+      "solverAnswer": "The class made two teams.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver gave earlier event",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 2,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch09-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch09-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "At a school fair, the Blue team stands inside a chalk circle. The Red team tries to pull Blue players across its edge. A Blue player steps outside. Is that player still in or out?",
+     "prompt_hi": "School fair mein Blue team chalk ke circle ke andar khadi hai. Red team Blue players ko uski boundary ke paar kheenchti hai. Ek Blue player bahar kadam rakhta hai. Woh player in hai ya out?",
+     "answer": "Out",
+     "acceptable": [
+      "The player is out",
+      "Bahar",
+      "Out hai"
+     ],
+     "hints": [
+      "Where must Blue players stay?",
+      "The circle’s edge decides their status.",
+      "After stepping across the edge, the player is ___.",
+      "Out; the Blue player has stepped outside the circle."
+     ],
+     "verified": {
+      "solverAnswer": "Out.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both say out",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch09-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch09-t01-s3",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "During a kho-kho match, Kabir held the rope firmly so it would not slip from his hands. In this sentence, does “firmly” mean securely or quickly?",
+     "prompt_hi": "Kho-kho match ke dauraan Kabir ne rope firmly pakdi, taaki woh haathon se na phisle. Is sentence mein “firmly” ka matlab securely hai ya quickly?",
+     "answer": "Securely",
+     "acceptable": [
+      "With a strong grip",
+      "Mazbooti se",
+      "Kas ke"
+     ],
+     "hints": [
+      "What would stop the rope from slipping?",
+      "Use the reason after “so” to work out the meaning.",
+      "He held it ___, not loosely.",
+      "Securely; his grip kept the rope from slipping."
+     ],
+     "verified": {
+      "solverAnswer": "Securely.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch09-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch09-t01-s4",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "For a school game, choose the correct rule: “Three players must to stand behind the line” or “Three players must stand behind the line.”",
+     "prompt_hi": "School game ke liye sahi rule chuno: “Three players must to stand behind the line” ya “Three players must stand behind the line”?",
+     "answer": "Three players must stand behind the line.",
+     "acceptable": [
+      "The second rule",
+      "Second one",
+      "Must stand wala sentence"
+     ],
+     "hints": [
+      "Which sentence sounds right after “must”?",
+      "A rule uses the plain action word after “must”.",
+      "Three players must ___ behind the line.",
+      "“Three players must stand” is correct; “must” takes the plain verb."
+     ],
+     "verified": {
+      "solverAnswer": "Three players must stand behind the line.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch09-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch09-t01-s5",
+     "kind": "far_transfer",
+     "demand": "transfer",
+     "genGrade": 5,
+     "prompt_en": "Your friend in Nagaland has never played lagori. Which explanation helps them start: A) “It is great fun!” or B) “Make two teams, stack seven stones, and knock the stack down with a ball”?",
+     "prompt_hi": "Nagaland mein tumhare friend ne kabhi lagori nahi kheli. Kaunsi explanation unhe shuru karne mein help karegi: A) “It is great fun!” ya B) “Make two teams, stack seven stones, and knock the stack down with a ball”?",
+     "answer": "B",
+     "acceptable": [
+      "Option B",
+      "The second explanation",
+      "Make two teams, stack seven stones, and knock the stack down with a ball"
+     ],
+     "hints": [
+      "What does a new player need to know first?",
+      "Useful instructions name the setup and an action.",
+      "Choose the option that explains what to ___ and do.",
+      "B; it gives teams, equipment and an action to begin."
+     ],
+     "verified": {
+      "solverAnswer": "B",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch09-t01-i01": {
+     "ge": 3,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch10-t01",
+   "replacesOpeners": [
+    "c4-english-ch10-t01-i01",
+    "diag:c4-english-ch10-t01-m-than-from",
+    "c4-english-ch10-t01-i13"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch10-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch10-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Complete the two lines with a word that makes sense and rhymes: 'At the school fair, I swing above the ground; / I hear the drum's deep ___.' Choose 'sound' or 'beat'.",
+     "prompt_hi": "School fair ki lines complete karo. Word ka meaning bhi fit hona chahiye aur rhyme bhi: 'At the school fair, I swing above the ground; / I hear the drum's deep ___.' 'sound' ya 'beat'?",
+     "answer": "sound",
+     "acceptable": [
+      "the drum's deep sound"
+     ],
+     "hints": [
+      "What can you hear from a drum?",
+      "Check both meaning and the ending of the first line.",
+      "Match the last sound in 'ground' with ___.",
+      "Sound. A drum makes sound, and 'ground' rhymes with 'sound'."
+     ],
+     "verified": {
+      "solverAnswer": "Beat.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver chose wrong rhyme",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 1.5,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch10-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch10-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "At a Jaipur playground, Ayan swings and calls, 'I'm above the tallest building in the city!' His feet never leave the playground. Is his claim a real measurement or a playful exaggeration?",
+     "prompt_hi": "Jaipur ke playground mein swing karte hue Ayan kehta hai, 'I'm above the tallest building in the city!' Woh playground se bahar nahi gaya. Uski baat real measurement hai ya playful exaggeration?",
+     "answer": "playful exaggeration",
+     "acceptable": [
+      "exaggeration",
+      "an exaggeration",
+      "playful exaggeration"
+     ],
+     "hints": [
+      "Could Ayan check that height from his swing?",
+      "Think about how excited speakers sometimes describe a feeling.",
+      "His claim makes the height seem much ___ than it is.",
+      "Playful exaggeration. Ayan makes the swing's height sound impossible."
+     ],
+     "verified": {
+      "solverAnswer": "A playful exaggeration.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch10-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch10-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "From a swing, Tara says, 'I can touch the clouds!' She cannot actually reach them. Why might she say this: to show excitement or to give an exact height?",
+     "prompt_hi": "Swing par Tara kehti hai, 'I can touch the clouds!' Woh sach mein clouds tak nahi pahunch sakti. Aisa kehne ka reason kya hai: excitement dikhana ya exact height batana?",
+     "answer": "to show excitement",
+     "acceptable": [
+      "show excitement",
+      "to show how excited she feels",
+      "to express her excitement"
+     ],
+     "hints": [
+      "Does Tara expect anyone to measure this claim?",
+      "An impossible image can express a strong feeling.",
+      "The image tells us how ___ she feels.",
+      "To show excitement. Reaching clouds is an excited, imaginary description."
+     ],
+     "verified": {
+      "solverAnswer": "To show excitement.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch10-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch10-t01-s3",
+     "kind": "near_transfer",
+     "demand": "transfer",
+     "genGrade": 4.5,
+     "prompt_en": "A banner beside the school swing moves gently back and forth in the breeze. Which sentence fits: 'The banner swayed' or 'The banner raced'?",
+     "prompt_hi": "School swing ke paas ek banner hawa mein dheere se back and forth hilta hai. Kaunsa sentence fit hai: 'The banner swayed' ya 'The banner raced'?",
+     "answer": "The banner swayed",
+     "acceptable": [
+      "swayed",
+      "the banner swayed"
+     ],
+     "hints": [
+      "Is the banner moving gently or travelling to a new place?",
+      "Choose the verb for gentle back-and-forth movement.",
+      "The banner ___ in the breeze.",
+      "The banner swayed. It moved gently back and forth."
+     ],
+     "verified": {
+      "solverAnswer": "The banner swayed.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch10-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch10-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Combine these into one comparison using 'than': 'The red swing is fast. The blue swing is faster.' Start with 'The blue swing'.",
+     "prompt_hi": "In dono sentences ko 'than' use karke ek comparison mein badlo: 'The red swing is fast. The blue swing is faster.' 'The blue swing' se shuru karo.",
+     "answer": "The blue swing is faster than the red swing.",
+     "acceptable": [
+      "The blue swing is faster than the red one.",
+      "Blue swing is faster than red swing."
+     ],
+     "hints": [
+      "Which swing has more speed?",
+      "Use the comparative word already given, then name what you compare it with.",
+      "The blue swing is ___ than the red swing.",
+      "The blue swing is faster than the red swing. 'Than' joins the comparison."
+     ],
+     "verified": {
+      "solverAnswer": "The blue swing is faster than the red swing.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch10-t01-i01": {
+     "ge": 1.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch11-t01",
+   "replacesOpeners": [
+    "c4-english-ch11-t01-i01",
+    "diag:c4-english-ch11-t01-m-simile-literal",
+    "c4-english-ch11-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch11-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch11-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "Meera packed her bag, travelled by train to Shimla, and checked into a hotel. Which happened then: packing her bag, travelling by train, or checking into the hotel?",
+     "prompt_hi": "Meera ne bag pack kiya, train se Shimla gayi, aur hotel mein check-in kiya. 'Then' kya hua: bag pack karna, train se jaana, ya hotel mein check-in karna?",
+     "answer": "Travelling by train",
+     "acceptable": [
+      "travelled by train",
+      "train se jaana",
+      "the train journey"
+     ],
+     "hints": [
+      "Which event comes between the other two?",
+      "Use the order of events to find what happened then.",
+      "First she packed; then she ___; at last she checked in.",
+      "She travelled by train; it happened after packing and before check-in."
+     ],
+     "verified": {
+      "solverAnswer": "checking into the hotel",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver picked last event",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch11-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch11-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "On a trek, Arjun walked through a low area between two mountains. Was he in a valley or on a peak?",
+     "prompt_hi": "Trek par Arjun do pahadon ke beech ki neechi jagah se guzra. Kya woh valley mein tha ya peak par?",
+     "answer": "Valley",
+     "acceptable": [
+      "a valley",
+      "valley mein"
+     ],
+     "hints": [
+      "Is Arjun high up or between mountains?",
+      "Think about which word names low land.",
+      "The low area between mountains is a ___.",
+      "Valley is correct; it is low land between mountains."
+     ],
+     "verified": {
+      "solverAnswer": "in a valley",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch11-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch11-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "Riya wrote, 'The snow-covered peaks shone like silver in the sunlight.' Does this mean the peaks were made of silver or looked bright like silver? Why?",
+     "prompt_hi": "Riya ne likha, 'The snow-covered peaks shone like silver in the sunlight.' Kya peaks chandi ki bani thi ya chandi jaisi chamak rahi thi? Kyun?",
+     "answer": "They looked bright like silver; 'like' makes a comparison.",
+     "acceptable": [
+      "looked bright like silver",
+      "they shone like silver, not made of it",
+      "chandi jaisi chamak rahi thi; 'like' comparison hai"
+     ],
+     "hints": [
+      "What does the word 'like' tell you?",
+      "A comparison describes appearance, not what something is made from.",
+      "The peaks looked ___; they were not made from it.",
+      "They looked bright like silver; 'like' compares their shine."
+     ],
+     "verified": {
+      "solverAnswer": "looked bright like silver. It is a simile comparing the shine, not the material.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch11-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch11-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "Choose the correct sentence for a trip diary: A) 'We reached to Manali with two luggages.' B) 'We reached Manali with two bags of luggage.'",
+     "prompt_hi": "Trip diary ke liye sahi sentence chuno: A) 'We reached to Manali with two luggages.' B) 'We reached Manali with two bags of luggage.'",
+     "answer": "B",
+     "acceptable": [
+      "option B",
+      "We reached Manali with two bags of luggage."
+     ],
+     "hints": [
+      "Which sentence sounds right after 'reached'?",
+      "Check the word after 'reached' and how luggage is counted.",
+      "Write 'reached ___' and 'two bags of ___'.",
+      "B is correct: say 'reached Manali' and 'bags of luggage'."
+     ],
+     "verified": {
+      "solverAnswer": "B) 'We reached Manali with two bags of luggage.'",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch11-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch11-t01-s5",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "For a description of Dal Lake, choose the sentence with a describing word and a 'like' comparison: A) 'I visited Dal Lake yesterday.' B) 'The calm lake shone like a mirror.'",
+     "prompt_hi": "Dal Lake ki description ke liye describing word aur 'like' comparison wala sentence chuno: A) 'I visited Dal Lake yesterday.' B) 'The calm lake shone like a mirror.'",
+     "answer": "B",
+     "acceptable": [
+      "option B",
+      "The calm lake shone like a mirror."
+     ],
+     "hints": [
+      "Which sentence helps you picture the place?",
+      "Look for both a describing word and a comparison.",
+      "The describing word is ___; the comparison begins with 'like'.",
+      "B is correct: 'calm' describes the lake, and 'like a mirror' compares it."
+     ],
+     "verified": {
+      "solverAnswer": "B) 'The calm lake shone like a mirror.'",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.75,
+     "geRaters": {
+      "gpt6": 3.5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch11-t01-i01": {
+     "ge": 3,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c4-english-ch12-t01",
+   "replacesOpeners": [
+    "c4-english-ch12-t01-i06",
+    "diag:c4-english-ch12-t01-m-wh-word-mix",
+    "c4-english-ch12-t01-i01"
+   ],
+   "openers": [
+    {
+     "id": "c4-english-ch12-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c4-english-ch12-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "In a play about a school heritage walk, a student says, “We found the old gateway!” Should you read the line with an excited voice or a questioning voice?",
+     "prompt_hi": "School heritage walk wale play mein student bolta hai, “We found the old gateway!” Is line ko excited voice mein padhoge ya questioning voice mein?",
+     "answer": "an excited voice",
+     "acceptable": [
+      "excited voice",
+      "excited",
+      "utsah se"
+     ],
+     "hints": [
+      "How does the speaker feel about finding it?",
+      "Notice the mark at the end of the line.",
+      "Read it with an ___ voice.",
+      "Use an excited voice; the speaker is thrilled by the discovery."
+     ],
+     "verified": {
+      "solverAnswer": "with an excited voice",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 1.75,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c4-english-ch12-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c4-english-ch12-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4,
+     "prompt_en": "A play’s guide says, “The old fort stands beside the river. Inside it, visitors can see the queen’s meeting hall.” What can visitors see inside the fort?",
+     "prompt_hi": "Ek play mein guide kehta hai, “The old fort stands beside the river. Inside it, visitors can see the queen’s meeting hall.” Visitors fort ke andar kya dekh sakte hain?",
+     "answer": "the queen’s meeting hall",
+     "acceptable": [
+      "queen’s meeting hall",
+      "the meeting hall",
+      "rani ka meeting hall"
+     ],
+     "hints": [
+      "Which part of the guide’s line tells you about inside?",
+      "Look for the place visitors can see, not where the fort stands.",
+      "Inside the fort, visitors can see the ___.",
+      "The queen’s meeting hall is inside the fort, says the guide."
+     ],
+     "verified": {
+      "solverAnswer": "the queen’s meeting hall",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.25,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 2.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c4-english-ch12-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c4-english-ch12-t01-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 4.5,
+     "prompt_en": "A guide says, “Meet the weaver near the loom.” Which is the person, weaver or loom? What does the other word name?",
+     "prompt_hi": "Guide kehta hai, “Meet the weaver near the loom.” Weaver aur loom mein person kaun hai? Doosra word kis cheez ka naam hai?",
+     "answer": "The weaver is the person; the loom is a machine for weaving.",
+     "acceptable": [
+      "weaver; weaving machine",
+      "weaver is a person; loom is a weaving machine"
+     ],
+     "hints": [
+      "Which one could you meet and speak to?",
+      "One word names a worker; the other names equipment.",
+      "The ___ is a person; the ___ is a machine.",
+      "The weaver is the person; the loom is the weaving machine."
+     ],
+     "verified": {
+      "solverAnswer": "weaver is the person; loom names the machine they use.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "All convey weaver=person, loom=machine",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch12-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c4-english-ch12-t01-s4",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 4.5,
+     "prompt_en": "A guide answers, “The weavers make cloth on looms.” You want to ask about the place where they make cloth. Complete the question: “Where ___ the weavers ___ cloth?”",
+     "prompt_hi": "Guide jawab deta hai, “The weavers make cloth on looms.” Tum poochna chahte ho ki woh cloth kahaan banate hain. Question complete karo: “Where ___ the weavers ___ cloth?”",
+     "answer": "Where do the weavers make cloth?",
+     "acceptable": [
+      "do; make",
+      "Where do the weavers make cloth"
+     ],
+     "hints": [
+      "Which question word asks about a place?",
+      "For this present-tense question, add a helping word before the subject.",
+      "Where ___ the weavers ___ cloth?",
+      "Where do the weavers make cloth? Use ‘do’ before the subject."
+     ],
+     "verified": {
+      "solverAnswer": "Where do the weavers make cloth?",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c4-english-ch12-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c4-english-ch12-t01-s5",
+     "kind": "contrast",
+     "demand": "transfer",
+     "genGrade": 4.5,
+     "prompt_en": "A visitor asks what makes your town’s old clock tower worth seeing. Which reply helps more? A: “It is nice.” B: “Its bell still rings each hour, and you can see the market from its steps.”",
+     "prompt_hi": "Visitor poochta hai ki tumhare town ka old clock tower dekhne layak kyun hai. Kaunsa jawab zyada helpful hai? A: “It is nice.” B: “Its bell still rings each hour, and you can see the market from its steps.”",
+     "answer": "B",
+     "acceptable": [
+      "option B",
+      "the second reply"
+     ],
+     "hints": [
+      "Which reply helps a visitor picture the place?",
+      "Useful descriptions give specific details.",
+      "Choose ___ because it tells what visitors can hear and see.",
+      "B; it gives the visitor two specific details."
+     ],
+     "verified": {
+      "solverAnswer": "B: “Its bell still rings each hour, and you can see the market from its steps.”",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Solver selects B with full text",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c4-english-ch12-t01-i06": {
+     "ge": 3.25,
+     "tooEasy": false
+    }
+   }
+  }
+ ]
+}

@@ -1,0 +1,50 @@
+--- a/server/voice/expressive/compile/dhd.js	2026-10-05 01:06:19.312483158 +0000
++++ b/server/voice/expressive/compile/dhd.js	2026-10-05 01:06:49.875100001 +0000
+@@ -10,6 +10,8 @@
+ //   - NEVER a paralinguistic tag (they are spoken on en-IN: 12/12) — lint.js asserts it on every document.
+ import { speakable } from "../../spoken.js";
+ import { dhdMarker } from "../caps.js";
++import { toDevanagari } from "../../translit/index.js";
++import { compileMai } from "./mai.js";
+ 
+ export const PACE_DELTA = Object.freeze({ slow: -10, normal: 0, brisk: 8 });
+ const XMLNS = 'version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts"';
+@@ -21,9 +23,14 @@
+ }
+ const rateAttr = (n) => `${n >= 0 ? "+" : ""}${Math.round(n)}%`;
+ const speak = (voice, body) => `<speak ${XMLNS} xml:lang="en-IN"><voice name="${escapeXml(voice)}">${body}</voice></speak>`;
+-/** A spoken run: speakable text, escaped, Devanagari wrapped. Empty when nothing speakable is left. */
+-export function spokenRun(text, spoken) {
+-  const s = speakable(text, spoken ?? {}).trim();
++/**
++ * A spoken run: speakable text, then (when the spoken cell says `devanagari`, set by server/voice/voice-switch.js spokenFor
++ * behind TAXILA_VOICE_DEVANAGARI) Roman Hindi → Devanagari (server/voice/translit; never on safety text: the predicate runs
++ * on the WRITTEN text and the register), escaped, Devanagari wrapped. Empty when nothing speakable is left.
++ */
++export function spokenRun(text, spoken, register) {
++  let s = speakable(text, spoken ?? {}).trim();
++  if (s && spoken?.devanagari) s = toDevanagari(s, { force: true, mode: spoken.mode ?? "hinglish", written: text, register });
+   return s ? langRuns(escapeXml(s)) : "";
+ }
+ 
+@@ -34,6 +41,8 @@
+  * @param {object} [spoken] spokenOptsForChild cell
+  */
+ export function plainSsml(written, v, spoken) {
++  // MAI-Voice (voice-switch priya): its own document (express-as only, no prosody: compile/mai.js)
++  if (v?.compiler === "mai") return compileMai([{ text: written, emotion: "warm", pauseBeforeMs: 0 }], v, { spoken });
+   const run = spokenRun(written, spoken);
+   return speak(v.voice, `<prosody rate="${rateAttr(v.baseRate)}">${run}</prosody>`);
+ }
+@@ -45,9 +54,10 @@
+  * @param {{ register?: "normal"|"safety", pitch?: number, spoken?: object, env?: NodeJS.ProcessEnv }} [o]
+  */
+ export function compileDhd(clauses, v, { register = "normal", pitch = 0, spoken, env } = {}) {
++  if (v?.compiler === "mai") return compileMai(clauses, v, { register, spoken: register === "safety" && spoken ? { ...spoken, devanagari: false } : spoken });
+   const parts = [];
+   clauses.forEach((c, j) => {
+-    const run = spokenRun(c.text, spoken);
++    const run = spokenRun(c.text, spoken, register);
+     if (!run) return;
+     if (j > 0 && c.pauseBeforeMs > 0) parts.push(`<break time="${Math.round(c.pauseBeforeMs)}ms"/>`);
+     const emotion = register === "safety" ? "calm" : c.emotion;

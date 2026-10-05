@@ -13,6 +13,7 @@ import { planInfo } from "./seam.js";
 import { compileDhd, plainSsml } from "./compile/dhd.js";
 import { compileOai } from "./compile/oai-tts.js";
 import { lintSsml } from "./lint.js";
+import { withEcho } from "./align.js";
 import { count, logPlan } from "./telemetry.js";
 import { expressiveOn } from "../voices.js";
 
@@ -42,29 +43,40 @@ export function plainParts(text, style) {
     : { written: p }));
 }
 
-/**
- * @param {{ lessonId: string, seq?: number, text: string, style: any, delivery?: any, gov?: { apply: Function }, log?: boolean }} x
- * @returns {{ parts: Part[], prelude: Part | null, plan: any | null }}
- */
-export function renderParts({ lessonId, seq, text, style, delivery, gov = defaultGovernor, log = true }) {
-  const engine = style?.engine === "dhd" ? "dhd" : "oai";
-  if (!delivery?.clauses?.length || !expressiveOn(engine)) return { parts: plainParts(text, style), prelude: null, plan: null };
-  const plan = gov.apply(lessonId, delivery, planInfo(delivery) ?? {});
-  if (log) logPlan({ lessonId, seq, engine, plan });
+/** Group a governed plan's clauses by TTS part and compile each part for the voice's engine. */
+function compileParts(plan, style, engine) {
   const groups = [];
   plan.clauses.forEach((c, i) => {
     const g = groups[c.part] ?? (groups[c.part] = { clauses: [], first: i });
     g.clauses.push(c);
   });
-  const parts = groups.filter(Boolean).map((g, gi) => {
+  return groups.filter(Boolean).map((g, gi) => {
     const written = g.clauses.map((c) => c.text).join(" ");
     /** @type {Render} */
     const render = engine === "dhd" ? { engine, ssml: dhdDoc(g.clauses, written, style, plan) }
       : { engine, ...compileOai(g.clauses, style.instructions, { register: plan.register }) };
     return { written, render, pauseBeforeMs: gi === 0 ? 0 : g.clauses[0].pauseBeforeMs || 0, clause: g.first };
   });
-  const prelude = plan.prelude?.text ? { written: plan.prelude.text, render: preludeRender(plan.prelude.text, style) } : null;
-  return { parts, prelude, plan };
+}
+
+/**
+ * @param {{ lessonId: string, seq?: number, text: string, style: any, delivery?: any, gov?: { apply: Function }, log?: boolean, prelude?: boolean }} x
+ *   prelude: false = this path never plays the uptake prelude (tts-stream without a prewarm): the echo stays in the reply
+ * @returns {{ parts: Part[], prelude: Part | null, plan: any | null, full0: Part | null }}
+ *   full0: part 0 WITH the uptake echo, for streamParts to speak when the prelude wrote no audio (fixer 2026-10-05,
+ *   w2g-echo-only-when-prelude-plays: the echo is stripped only when the prelude is guaranteed to have played)
+ */
+export function renderParts({ lessonId, seq, text, style, delivery, gov = defaultGovernor, log = true, prelude: withPrelude = true }) {
+  const engine = style?.engine === "dhd" ? "dhd" : "oai";
+  if (!delivery?.clauses?.length || !expressiveOn(engine)) return { parts: plainParts(text, style), prelude: null, plan: null, full0: null };
+  const plan = gov.apply(lessonId, delivery, planInfo(delivery) ?? {});
+  if (log) logPlan({ lessonId, seq, engine, plan });
+  const preludeR = withPrelude && plan.prelude?.text ? preludeRender(plan.prelude.text, style) : null;
+  const stripped = !!plan.clauses[0]?.stripped;
+  if (!preludeR) return { parts: compileParts(withEcho(plan), style, engine), prelude: null, plan, full0: null };
+  const parts = compileParts(plan, style, engine);
+  const full0 = stripped ? compileParts(withEcho(plan), style, engine)[0] ?? null : null;
+  return { parts, prelude: { written: plan.prelude.text, render: preludeR }, plan, full0 };
 }
 
 /**

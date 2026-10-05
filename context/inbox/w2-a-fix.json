@@ -1,0 +1,99 @@
+{
+  "nodes": [
+    {
+      "id": "w2a-safety-hold-refuses-start",
+      "kind": "decision",
+      "title": "A Conductor safety_hold refuses EVERY lesson start (lesson, Practice, Ask) on the server: lesson.js startRefusal returns 409 {state: safety_hold, control: safety}; the client's Refused screen shows the hold card (calm copy, Childline 1098 and Tele-MANAS 14416 printed, Back home only, no grown-up 'open now'); /c/:cid/lesson/*, /practice and /ask redirect home when this device's last plan read saw the hold",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-hold-copy-trusted-adult",
+      "kind": "decision",
+      "title": "The safety_hold home says 'Talk to a grown-up you trust.', never 'at home': a hold follows a safeguarding incident, which can be at home; the child-safety floor (a trusted adult the child chooses, not an assumed parent) outranks STUDENT-FLOW §4.2's row, which is corrected",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-reset-link-no-fallback",
+      "kind": "decision",
+      "title": "A password-reset link is built only from TAXILA_URL (else PUBLIC_BASE_URL); with neither set NO email is sent (logged, still 200). The old silent fallback to https://taxila.app would have mailed live reset tokens inside links to a domain the owner may not control (account takeover)",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-reset-timing-and-token-spend",
+      "kind": "decision",
+      "title": "Forgot password runs the existing account's DB work (rate count, token insert, audit, mail) AFTER the 200 is sent, so a real email does not answer slower than an unknown one (the operator-keyed @taxila.test path still awaits, for its testToken); a successful reset spends every other outstanding reset token of the account in the same transaction",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-hear-listen-speakable",
+      "kind": "decision",
+      "title": "'Hear {T}' (child skill line) and the parent's Listen (consent, home, lesson, report scripts) go through speakable() before tts (skillLineSaid / speechSaid), per w2g-speakable and voice-clips-off-and-numbers-normalised: no digit reaches a voice",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-skill-line-address",
+      "kind": "decision",
+      "title": "Her Garden/Sky skill line uses the same address form as the lessons (resolveAddress: the parent's child_controls.address, else aap from class 5): aap variants of every Hinglish and Hindi line; English has none. The 'secure' line says 'on a later day' / 'ek aur din' (the delayed check is 20 h, not days)",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-card-ticks-from-engine",
+      "kind": "decision",
+      "title": "The parent lesson card has ONE count (summary.counts from kt_evidence): did.tried and the did-based 'No answers were checked' line are gone; each DidCard is a quote of the child's answer whose tick and 'with a hint' come from the engine row of the same turn (engineTick, matched on the event id's turn seq; no engine row = no tick; C1 second try = with a hint); per-skill attempts count item rows only and probes are a separate 'Explained it: k'",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-next-topic-for-plan",
+      "kind": "decision",
+      "title": "One next-topic answer, test window included (reports/truth.js nextTopicForPlan / nextTopicOf): inside an active school test window it is scoped to the test's subject, else the plain sequence; used by the child home topic and 'Next time', the map's 'here', the parent home, Progress next/here, a lesson start with no topic and the lesson-end / summary-read 'Next time' (read after the lesson, never the sequence-next pinned in ctx at the start)",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-checker-explained-line",
+      "kind": "decision",
+      "title": "The independent claim checker re-derives the 'Explained the idea in {name}'s own words' line with its own label table (probe.why full, probe.teachback high, never via game) and fails a summary that over-counts it or omits it",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "w2a-ask-routing-margin",
+      "kind": "decision",
+      "title": "Ask routing (purpose.js matchTopic): light English stemming (plural, -ing, final e), Hinglish verb stems (jod*, ghata*, guna*, bhaag*, baant*, …), a Devanagari synonym table, notation-read concepts (1/2, 0.5) and 'plants + food' weighted x2; the winner must beat the best topic from ANOTHER chapter by 1.5 (siblings in its own chapter are the same idea), and each class below weighs 1.5 less; a near tie returns null (the plan's topic stays)",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "m-w2a-ask-routing-2026-10-04",
+      "kind": "measurement",
+      "title": "Routed Ask, tests/fixtures/ask-routing.mjs (n=30 questions, classes 4-7, Hinglish/Hindi/English, 2 with no valid topic): before 18/30 right, 6 WRONG topics, 6 null misses; after 30/30, 0 wrong. The margin (1.5) and class step (1.5) were chosen on these same 30 (sweep margin 1/1.5/2 x step 0.5/1/1.5), so this is a fit, not a validation; on 10 held-out questions written afterwards: 9/10 right, 0 wrong, 1 null ('ghadi mein samay kaise padhte hain')",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "m-w2a-fix-acceptance-2026-10-04",
+      "kind": "measurement",
+      "title": "W2-A fixer acceptance, LOCAL serve.mjs (port 8793) on the Neon test branch, 2026-10-04: w2a-home-states 47/47 (all states at 360 AND 1280; safety_hold refuses lesson/practice/Ask with 409 safety; typed /lesson/new and /practice go home; hold copy 'you trust'; Made for you shelf renders and fits at 360 and 1280 from a 017-shape fixture row, parent card lists it); w2a-parent-truth 59/59 (test-window next topic identical on 6 surfaces incl. a no-topic start and the lesson-end summary; card ticks <= engine first-try; 20/20 summaries passed the checker; practice of 5, no greeting; a reset kills the other outstanding link); no leftover test accounts",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "rj-madefor-child-id-column",
+      "kind": "rejection",
+      "title": "madeFor.js first read studio_mount.child_id and a text outcome (LIVE-STUDIO §10's sketch); 017_studio.sql has no child_id (016's rule: keyed by lesson_id, erasure cascades) and outcome is jsonb, so the query failed 42703 and the reader's defensive catch returned [] forever: the Made for you shelf and the parent card could never show anything. Fixed to join lesson.child_id, read jsonb outcome.result only, skip whiteboard/hidden pieces, and name a build-less piece by its image alt or topic",
+      "at": "2026-10-04"
+    },
+    {
+      "id": "rj-ask-route-tie-only",
+      "kind": "rejection",
+      "title": "Ask routing that refused only an exact tie between two subjects (score >= 3 otherwise wins) routed 6 of 30 fixture questions to a WRONG topic ('ped khana kaise banate hain' class 6 → 'Why food spoils: microbes'; 'integers ko kaise jodte hain' → 'Multiplying integers'; 'rectangle ka kshetrafal' → 'Area of a triangle', the last from a plural-stripping bug: 'rectangles' → 'rectangl'); a wrong topic is worse than null, which keeps the plan's topic",
+      "at": "2026-10-04"
+    }
+  ],
+  "edges": [
+    { "src": "w2a-safety-hold-refuses-start", "rel": "part_of", "dst": "w2a-home-states-sf1" },
+    { "src": "w2a-hold-copy-trusted-adult", "rel": "part_of", "dst": "w2a-home-states-sf1" },
+    { "src": "w2a-card-ticks-from-engine", "rel": "part_of", "dst": "w2a-one-claim-source" },
+    { "src": "w2a-next-topic-for-plan", "rel": "part_of", "dst": "w2a-one-claim-source" },
+    { "src": "w2a-checker-explained-line", "rel": "part_of", "dst": "w2a-summary-from-facts-checked" },
+    { "src": "w2a-ask-routing-margin", "rel": "measured_by", "dst": "m-w2a-ask-routing-2026-10-04" },
+    { "src": "w2a-ask-routing-margin", "rel": "supersedes", "dst": "rj-ask-route-tie-only" },
+    { "src": "w2a-safety-hold-refuses-start", "rel": "measured_by", "dst": "m-w2a-fix-acceptance-2026-10-04" },
+    { "src": "w2a-next-topic-for-plan", "rel": "measured_by", "dst": "m-w2a-fix-acceptance-2026-10-04" }
+  ]
+}

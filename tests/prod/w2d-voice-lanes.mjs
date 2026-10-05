@@ -1,15 +1,18 @@
 // W2-D acceptance (BUILD-PLAN §4 W2-D): the voice lanes, on the wire.
-//   1. The live-call token is minted the W2-D way: truncation retention_ratio, server VAD silence inside 600-1200 ms,
+//   1. The live-call token is minted the W2-D way: truncation retention_ratio, server VAD silence inside 900-1200 ms
+//      (never below the measured 900 ms base: decision voice-turn-config),
 //      the transcription logprobs kept, no instructions in the client's copy (or a 503 with {fallback: "cascade"} when
 //      the realtime lane is full: the start-time fallback).
 //   2. "A forced rate limit switches to cascade with the lesson continuing": a realtime lesson takes a voice-lane turn,
 //      then POST /api/lesson/lane (what the browser sends on inference_rate_limit_exceeded), then the SAME lesson answers
-//      on the cascade lane: the repair turn has a Director-written reply, that stored turn streams as speech
-//      (/api/voice/tts-stream), and an ordinary next turn is answered too. The switch is idempotent and one-way.
+//      on the cascade lane: the resume turn (laneResume, carrying the realtime turn last heard, cut off) re-voices the
+//      move planned for the child's last answer, Director-written, stores the heard turn and NO child row; that stored
+//      turn streams as speech (/api/voice/tts-stream), and an ordinary next turn is answered too. The switch is
+//      idempotent and one-way.
 //   3. Refusals: a text lesson cannot "switch", an ended lesson cannot, a bad lane is a 400.
 // The 4-parallel 20-minute realtime soak and the face checks (lip-bench, gaze, AT-U12) are evals/unit tests, not this
 // file (evals/realtime-soak.mjs, evals/avatar/lip-bench.mjs, tests/w2d-voice-lanes.test.mjs). Deletes its account.
-import { withTestAccount, ok, warn, done, BASE } from "./lib.mjs";
+import { withTestAccount, ok, warn, done, BASE, dbq, targetDbUrl } from "./lib.mjs";
 
 await withTestAccount(async ({ api, child }) => {
   // ── 1. the token ──
@@ -20,7 +23,7 @@ await withTestAccount(async ({ api, child }) => {
     const s = tok.session ?? {};
     ok(s.truncation?.type === "retention_ratio" && s.truncation.retention_ratio > 0 && s.truncation.retention_ratio < 1, `the live call is minted with truncation ${JSON.stringify(s.truncation)}`);
     const td = s.audio?.input?.turn_detection ?? {};
-    ok(td.type !== "server_vad" || (td.silence_duration_ms >= 600 && td.silence_duration_ms <= 1200), `server VAD silence ${td.silence_duration_ms} ms is inside 600-1200`);
+    ok(td.type !== "server_vad" || (td.silence_duration_ms >= 900 && td.silence_duration_ms <= 1200), `server VAD silence ${td.silence_duration_ms} ms is inside 900-1200 (never below the measured base)`);
     ok(Array.isArray(s.include) && s.include.includes("item.input_audio_transcription.logprobs"), "the transcription logprobs are kept (classify's low-ASR gate)");
     ok(s.instructions === undefined, "the client's copy of the session carries no instructions");
   } else if (tok.status === 503) {
@@ -38,9 +41,19 @@ await withTestAccount(async ({ api, child }) => {
   ok(again.status === 200 && again.switched === false, "a second switch is a no-op (idempotent)");
   const back = await api("POST", "/api/lesson/lane", { lessonId: live.lessonId, to: "voice" }, [400]);
   ok(back.status === 400, "the switch is one-way within a sitting");
-  // The browser's repair turn after the switch: an empty spoken turn, ASR confidence 0.
-  const rep = await api("POST", "/api/lesson/turn", { lessonId: live.lessonId, childText: "", asrConfidence: 0, turnSeq: 2 });
+  // The browser's resume turn after the switch: no child words, the realtime turn it last heard (cut off by the refusal).
+  const heard = "Bahut badhiya! Ab socho, ek roti ke";
+  const rep = await api("POST", "/api/lesson/turn", { lessonId: live.lessonId, childText: "", laneResume: true, teacherText: heard, teacherInterrupted: true, turnSeq: 2 });
   ok(typeof rep.teacherReply === "string" && rep.teacherReply.length > 0 && Number.isInteger(rep.teacherReplySeq), `after the switch she speaks again, Director-written (${rep.move?.kind}): "${String(rep.teacherReply).slice(0, 80)}"`);
+  ok(rep.move?.kind === v1.move?.kind, `she voices the move planned for the child's last answer (${v1.move?.kind} → ${rep.move?.kind}), not a fresh unrelated one`);
+  if (targetDbUrl()) {
+    const rows = await dbq("select speaker, text, meta from turn where lesson_id = $1 order by seq", [live.lessonId]);
+    ok(!rows.some((r) => r.speaker === "child" && r.text === "[no speech]"), "the resume turn stores no fake child row");
+    ok(rows.some((r) => r.speaker === "teacher" && r.text === heard && r.meta?.interrupted === true), "the realtime turn last heard is stored (and checked) although the lesson is now cascade");
+    ok(rows.some((r) => r.speaker === "system" && r.meta?.laneResume === true), "the switch is marked in the transcript as a system row");
+  } else {
+    warn("no database URL here: the stored rows of the resume turn are not checked");
+  }
   ok(rep.instructions === undefined, "the cascade lane's response carries no instructions (the answer key stays on the server)");
   // That stored turn streams as speech: the lesson really continues on the cascade voice.
   const t0 = performance.now();

@@ -9,8 +9,11 @@ export interface StageMoment {
   interactive: boolean;
   /** Bumped by "Show me again": renderers restart their animation or reset their game when it changes. */
   epoch: number;
-  /** The host's grade (null = no verdict came back: the renderer just waits, never shows an error). */
-  answer: (value: unknown) => Promise<StudioAnswerResponse | null>;
+  /**
+   * The host's grade (null = no verdict came back: the renderer just waits, never shows an error). `itemId` names the
+   * item the renderer shows (the host grades by item, so a remounted activity is never graded against a later item).
+   */
+  answer: (value: unknown, opts?: { itemId?: string }) => Promise<StudioAnswerResponse | null>;
 }
 
 export const StageMomentContext = createContext<StageMoment>({ interactive: false, epoch: 0, answer: async () => null });

@@ -10,8 +10,11 @@
 //   1. truncation: the live-call session gets `truncation: { type: "retention_ratio", retention_ratio }` so a long
 //      lesson drops its oldest turns in one cut instead of re-reading (and re-billing against the 100k TPM quota) the
 //      whole conversation on every response (smooth-reliability G7).
-//   2. pace: the Director's vibe knob `endpointSilenceMs` sets server VAD `silence_duration_ms`, clamped to 600-1200 ms
-//      (BUILD-PLAN W2-D #2); the client re-applies the same clamp when TurnResponse.pace moves mid-lesson.
+//   2. pace: the Director's vibe knob `endpointSilenceMs` can only ADD end-of-turn silence on top of the measured base:
+//      server VAD `silence_duration_ms` = max(minted base (900 ms), knob), clamped to 900-1200 ms. The knob defaults to
+//      700 ms (server/persona/adapter.js), and decision `voice-turn-config` measured that 600 ms cut a child's mid-thought
+//      pause where 900 ms did not, so a knob below the base never shortens it (fixer W2-D, 2026-10-05). The client
+//      re-applies the same rule when TurnResponse.pace moves mid-lesson.
 //   3. the premium-lane model is config: TAXILA_REALTIME_TIER=mini mints on DEPLOY_REALTIME_MINI (gpt-realtime-2.1-mini,
 //      30/30 quota) instead of DEPLOY_REALTIME, the fallback BUILD-PLAN W2-D #1 names if the 4-wide soak fails. The
 //      voice stays whatever the teacher config says (voice choice is config-driven, never chosen here).
@@ -26,13 +29,16 @@ import { bad, need, notFound, HttpError } from "../http.js";
 
 /** @typedef {{ kind: "lesson" | "stt", lessonId?: string, pace?: { waitNudgeSec: number, endpointSilenceMs: number } }} RealtimeCtx */
 
-/** Server VAD end-of-turn silence bounds for the pace knob (BUILD-PLAN W2-D #2). */
-export const ENDPOINT_MIN_MS = 600;
+/**
+ * Server VAD end-of-turn silence bounds for the pace knob (BUILD-PLAN W2-D #2). The floor is the measured base
+ * (decision voice-turn-config: 600 ms cut children off mid-thought, 900 ms did not): the knob only ever adds time.
+ */
+export const ENDPOINT_MIN_MS = 900;
 export const ENDPOINT_MAX_MS = 1200;
 /** The share of the conversation kept when the context is truncated (the oldest turns go first). */
 export const RETENTION_RATIO = 0.8;
 
-/** The pace knob → server VAD silence (ms), clamped; null when the knob is missing or not a number. */
+/** The pace knob → server VAD silence (ms), clamped to 900-1200; null when the knob is missing or not a number. */
 export function endpointSilenceOf(pace) {
   const ms = Number(pace?.endpointSilenceMs);
   if (!Number.isFinite(ms) || ms <= 0) return null;
@@ -67,9 +73,12 @@ export const realtimeSeam = {
     const out = { ...session, truncation: { type: "retention_ratio", retention_ratio: RETENTION_RATIO } };
     const model = realtimeDeployment();
     if (model) out.model = model;
-    const silence = endpointSilenceOf(ctx.pace);
     const td = session.audio?.input?.turn_detection;
-    if (silence !== null && td && typeof td === "object" && td.type === "server_vad") {
+    const knob = endpointSilenceOf(ctx.pace);
+    // the knob adds time on top of the minted base, never takes it away
+    const base = Number(td?.silence_duration_ms) > 0 ? Number(td.silence_duration_ms) : ENDPOINT_MIN_MS;
+    const silence = knob === null ? null : Math.max(base, knob);
+    if (silence !== null && silence !== td?.silence_duration_ms && td && typeof td === "object" && td.type === "server_vad") {
       out.audio = { ...session.audio, input: { ...session.audio.input, turn_detection: { ...td, silence_duration_ms: silence } } };
     }
     return out;

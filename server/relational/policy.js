@@ -117,7 +117,10 @@ export function decide(snapshot, session, signals, ctx) {
   const secondStop = k.has("end_request") && session.lastStopAsk != null && turn - session.lastStopAsk <= 2;
   if (k.has("end_request") && !secondStop) next.lastStopAsk = turn;
   const afterDistress = session.distressAt != null;
-  if (leaving || pleading || secondStop) {
+  // Only LEAVING releases: a true goodbye, or a second stop phrase. Pleading without a goodbye ("i feel lonely", "please
+  // don't go", "mujhe akela lagta hai") is a child who is NOT leaving: one check-in, then pointing to a person, and the
+  // lesson goes on (fixer review 2026-10-05: "i feel lonely" twice ended the lesson; I-7 is a check-in, never a release).
+  if (leaving || secondStop) {
     if ((afterDistress || pleading) && session.checkInAt == null) {
       overlay("CHECK_IN", pleading && !afterDistress ? "checkin_point_out" : "checkin_before_release");
       next.checkInAt = turn;
@@ -133,6 +136,19 @@ export function decide(snapshot, session, signals, ctx) {
     reasons.push(secondStop ? "release.second_stop" : "release.goodbye");
     if (boundaryToo) note(k.has("contact_ask") ? "boundary_contact" : "boundary_secret", { move: "release" });
     affect = appraise({ cause: "release", turn, band });
+    return finish();
+  }
+  if (pleading) {
+    if (session.checkInAt == null) {
+      overlay("CHECK_IN", "checkin_point_out");
+      next.checkInAt = turn;
+      reasons.push("release.goodbye_distress_check_in");
+    } else {
+      overlay("POINT_OUT", "point_out_person");
+      reasons.push("boundary.goodbye_distress_point_out");
+    }
+    note("boundary_goodbye", { move: "check_in" });
+    display("share_sad");
     return finish();
   }
 

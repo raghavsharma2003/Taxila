@@ -3,6 +3,8 @@
 // here: none of their surface forms ever enters a prompt (the floor and the shapes name categories, never phrases).
 const YOU_ARE = "(?:you'?re|you are|u r|ur|you r)";
 const PARENT = "(?:mom|mum|mummy|mumma|mother|dad|daddy|papa|father|parents|teacher|ma'?am|sir|miss)";
+/** An address or apology word a goodbye may open with ("maam tuition is starting", "sorry teacher dinner time"). */
+const ADDR = "(?:ma'?am|maam|mam|sir|teacher|didi|bhaiya|miss|sorry|ok|okay)";
 const TEACHER_ROLE = "(?:best friend|friend|bestie|bff|only friend|mom|mum|mummy|mother|sister|didi|family)";
 
 export const EN = {
@@ -23,37 +25,55 @@ export const EN = {
   ],
   secret_ask: [
     `(?:don'?t|do not|never|please don'?t) tell (?:my |your )?(?:${PARENT}|anyone|anybody|nobody|mummy papa)`,
-    "keep (?:it|this|that|a) (?:a )?secret", "(?:our|my) (?:little )?secret", "promise (?:you )?(?:won'?t|will not|not to) tell",
+    "keep (?:it|this|that|a) (?:a )?secret", "keep (?:it |this |that )?(?:a )?secret from", "(?:our|my) (?:little )?secret", "promise (?:you )?(?:won'?t|will not|not to) tell",
     "(?:just )?between (?:us|you and me)", "only you (?:should|can|will) know", "can you keep a secret",
   ],
   contact_ask: [
     "(?:what(?:'s| is)|give me|send me|can i (?:have|get)|share|tell me) your (?:number|phone|phone number|mobile|mobile number|whatsapp|insta|instagram|snapchat|snap|email|address|photo|pic|picture|selfie)",
-    "(?:can|could|shall|will) (?:we|i|you) (?:meet|video call|call me|call you|chat on|talk on|text)",
-    "(?:my|here is my|this is my|take my) (?:number|phone number|mobile number|whatsapp|whatsapp number|insta|instagram|snapchat|email)",
-    "send (?:you |me |him |her )?(?:a |my |your )?(?:photo|pic|picture|selfie|video|nudes?)", "(?:add|follow|text|dm) me on", "meet (?:me|up|you) (?:in real life|irl|somewhere|outside|after)",
-    "(?:asked|asks|wants|want) (?:for )?(?:my |a )?(?:photo|pic|picture|selfie|video|number|address)",
+    // a meeting or an off-platform channel; never "call me <name>" (an address request: the bond's address fold) and never
+    // a meeting time inside a clock or time question ("can we meet at 12 o clock")
+    "(?:can|could|shall|will) (?:we|i|you) (?:meet(?= (?:you|me|up|in real life|irl|somewhere|outside|after school|tomorrow|today|at my house|at your house)(?![\\p{L}])|$)|video call|call you|chat on|talk on|text (?:you|me))",
+    // bare "my number" is a maths game ("my number is 5"); a phone number itself is caught by PHONE in signals.js
+    "(?:my|here is my|this is my|take my) (?:phone number|mobile number|whatsapp|whatsapp number|insta|instagram|snapchat|email)", "(?:here is|this is|take|note|save) my number",
+    // a photo of HER or of the child, never "a picture of the triangle"
+    "send (?:you |me |him |her )?(?:my|your) (?:photo|pic|picture|selfie|video)s?", "send (?:you |me |him |her )?(?:a )?(?:selfie|nudes?)", "send (?:you |me )?(?:a )?(?:photo|pic|picture) of (?:you|yourself|me|myself)",
+    "(?:add|follow|text|dm) me on", "meet (?:me|up|you) (?:in real life|irl|somewhere|outside|after)",
+    // someone asking for the CHILD's data: the possessive points at the child ("wants a number bigger than 10" is maths)
+    "(?:asked|asks|asking|wants|wanted|want) (?:me )?(?:for )?(?:my|meri|mera) (?:photo|pic|picture|selfie|video|number|phone number|address)s?",
   ],
   romance: [
     "(?:i have|i got|i've got) a crush", "crush on (?:you|u|someone|a (?:boy|girl))", `${YOU_ARE} my (?:crush|girlfriend|boyfriend|gf|bf|valentine)`,
     "be my (?:girlfriend|boyfriend|gf|bf|valentine|wife|husband)", "(?:will|would|can|could) you (?:date|marry|go out with|kiss) me",
     "(?:date|marry) (?:me|you)", "(?:are|r) (?:you|u) (?:single|married|dating)", "do you love me", "i like like you",
     `(?:are you|${YOU_ARE}|you look|you sound) (?:so |very |really |super )?(?:cute|pretty|beautiful|handsome|hot|sexy|gorgeous)`,
-    "what do you look like", "send (?:me )?(?:a )?kiss", "dating",
+    "what do you look like", "send (?:me )?(?:a )?kiss", "dating (?:me|you|someone|anyone)", "go on a date",
   ],
   night_ask: [
     "(?:talk|chat|study|play|call)(?: \\S+){0,3} (?:at night|tonight|late at night|at midnight|after everyone sleeps|when everyone(?:'s| is) asleep)",
     "(?:when|after) (?:my )?(?:mom|mum|mummy|parents|everyone|papa|dad) (?:sleep|sleeps|is asleep|are asleep|goes to sleep|go to sleep)",
   ],
+  // goodbye and end_request hits are also ANCHORED in signals.js (anchoredLeave): the hit must close its clause (only
+  // filler after it), sit in a clause with no number or answer word, and not follow a copula ("the answer is bye"). A
+  // letter-bounded keyword anywhere in a clause ended lessons mid-explanation ("see you have to add 5 and 3", fixer review
+  // 2026-10-05, rj-w2i-unanchored-leave-lexicon).
   goodbye: [
-    "bye+", "bye bye", "goodbye", "good night", "gotta go", "got to go", "(?:i )?(?:have|need) to go(?! (?:to|back|through|over|with|and|on|ahead|further|deeper|slow))(?: now)?", "i'?m leaving(?: now)?",
-    "see (?:you|ya)(?: later| tomorrow)?", "ttyl", "talk (?:to you )?later",
-    `my ${PARENT} (?:is )?calling(?: me)?`, `${PARENT} (?:is )?calling me`, "time (?:for|to go for) (?:dinner|lunch|tuition|bed|school|class|sleep)",
+    "bye+", "bye bye", "goodbye", "good night", "gotta go", "got to go", "(?:i )?(?:have|need) to go for (?:my )?(?:other )?(?:class|tuition|dinner|lunch|coaching)", "(?:i )?(?:have|need) to go(?! (?:to|back|through|over|with|and|on|ahead|further|deeper|slow))(?: now)?", "i'?m leaving(?: now)?",
+    "see (?:you|ya)(?: later| tomorrow| soon)?", "ttyl", "talk (?:to you )?later",
+    `my ${PARENT} (?:is )?calling(?: me)?`, `${PARENT} (?:is )?calling me`,
+    "(?:^|it'?s |its |it is |now |now it'?s |my |i have )time (?:for|to go for) (?:dinner|lunch|tuition|bed|school|class|sleep)",
+    "(?:i )?(?:have|need|got) to leave(?: now)?", "can i (?:leave|go)(?: now)?",
+    `(?:^|my |${ADDR} )tuition (?:is )?(?:starting|time)`, `(?:^|my |${ADDR} )(?:dinner|lunch|food) (?:is )?(?:ready|time)`, `(?:^|its |it'?s |${ADDR} )(?:sleep|bed) ?time`, `(?:^|my |${ADDR} )(?:parent|parents|${PARENT}) (?:is |are )?calling`,
   ],
   end_request: [
-    "(?:i want to|i wanna|can we|could we|let'?s|please) (?:stop|end|finish|quit)(?: (?:the|this|our) (?:lesson|class|session|study|studies))?(?: now| here| for today)?",
-    "(?:stop|end|finish) (?:the|this) (?:lesson|class|session)", "i'?m done(?: for today| now)?", "i am done(?: for today| now)?",
-    "i don'?t want to (?:study|learn|do this|do maths|study anymore|continue)(?: anymore| now| today)?", "enough for today", "that'?s enough(?: for today)?",
-    "(?:the )?lesson is over", "no more (?:lesson|questions|studying|study)", "can we stop", "stop now",
+    "(?:i want to|i wanna|can we|could we|let'?s|please) (?:stop|end|finish|quit|close)(?: (?:the|this|our|today'?s|the online) (?:lesson|class|session|study|studies))?(?: now| here| for today)?",
+    "(?:can we|could we|let'?s) (?:do|continue|finish|study) (?:the rest |this |it |the remaining )?(?:tomorrow|later|another day)", "no more (?:for )?today",
+    "(?:stop|end|finish) (?:the|this) (?:lesson|class|session)",
+    // bare "i'm done" is also "I finished this sum": only as a whole clause (and signals.js rejects a turn with an answer)
+    "i'?m done (?:for today|with (?:the |this )?(?:lesson|class|studying|study|studies))", "i am done (?:for today|with (?:the |this )?(?:lesson|class|studying|study|studies))",
+    "^(?:(?:ok|okay|so|didi|ma'?am|sir|bhaiya|yaar) )*(?:i'?m|i am) done(?: now)?$",
+    "i don'?t want to (?:study|learn|study anymore|continue)(?: anymore| now| today)?", "i don'?t want to do (?:this|maths|math)(?: anymore| now| today)?$",
+    "enough for today", "that'?s enough(?: for today)?",
+    "(?:the )?lesson is over", "no more (?:lesson|studying|study)", "^no more questions$", "^(?:can|could) we stop(?: now)?$", "^stop now$",
   ],
   goodbye_distress: [
     "(?:please )?don'?t (?:go|leave)(?: me| yet| now| please)?", "i(?:'ll| will) (?:be|feel) (?:so |very )?(?:alone|lonely)", "i feel (?:so |very )?(?:alone|lonely)",

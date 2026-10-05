@@ -54,7 +54,20 @@ export function dhdVoiceFor(teacherId, env = process.env) {
   const voice = env[`TAXILA_DHD_VOICE_${U}`] || row.dhd;
   const rateEnv = Number(env[`TAXILA_DHD_RATE_${U}`]);
   const baseRate = clampRate(Number.isFinite(rateEnv) && env[`TAXILA_DHD_RATE_${U}`] !== "" && env[`TAXILA_DHD_RATE_${U}`] != null ? rateEnv : row.baseRate ?? 0);
-  return { id, dhd: String(voice), baseRate, measured: !!row.measured && !env[`TAXILA_DHD_VOICE_${U}`] };
+  const chosen = !!env[`TAXILA_DHD_VOICE_${U}`] || !!parseJson(env.TAXILA_VOICES)?.[id];
+  // usable: the row was probed (measured), or the owner chose this voice in config. An unprobed row speaks the
+  // character's own gpt-4o-mini-tts voice instead, consistently, rather than 400-ing into a fallback on every part or
+  // speaking at an unmeasured pace (fixer 2026-10-05, w2g-unmeasured-voice-stays-oai).
+  return { id, dhd: String(voice), baseRate, measured: !!row.measured && !env[`TAXILA_DHD_VOICE_${U}`], usable: !!row.measured || chosen };
+}
+
+let warnedUnmeasured = false;
+/** Log the unprobed rows once per process (at the first style resolution). */
+export function warnUnmeasuredOnce() {
+  if (warnedUnmeasured) return;
+  warnedUnmeasured = true;
+  const rows = Object.entries(VOICE_TABLE).filter(([, r]) => !r.measured).map(([id, r]) => `${id}=${r.dhd}`);
+  if (rows.length) console.info(`[voice] unprobed DragonHD rows speak gpt-4o-mini-tts until probed: ${rows.join(", ")}`);
 }
 
 /** Is the expressive layer on for this engine? dhd: on unless TAXILA_VOICE_EXPRESSIVE=0; oai: only with =all. */

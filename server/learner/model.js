@@ -73,6 +73,28 @@ export async function loadRecentOutcomes(childId, skillIds) {
   return out;
 }
 
+/** How many recent lessons' stuck counts the guidance ladder reads (state.js noteStuck), and how far back. */
+export const STUCK_LESSONS = 5;
+/**
+ * Per skill: items the child got stuck on (the assertion reached, or left after don't-knows) in their last few lessons,
+ * from the lesson state the Director keeps (state.stuck). A ROUTING signal for the guidance ladder and the equity
+ * profile only (fading.js); it never reaches KT, beliefs or a report. Errors read as no record.
+ * @returns {Promise<Record<string, number>>}
+ */
+export async function loadRecentStuck(childId, skillIds) {
+  if (!skillIds.length) return {};
+  let rows = [];
+  try {
+    rows = await q(
+      `select state->'stuck' as stuck from lesson
+        where child_id = $1 and state ? 'stuck' and started_at > now() - interval '14 days'
+        order by started_at desc limit ${STUCK_LESSONS}`, [childId]);
+  } catch { rows = []; }
+  const want = new Set(skillIds), out = {};
+  for (const r of Array.isArray(rows) ? rows : []) for (const [k, n] of Object.entries(r.stuck ?? {})) if (want.has(k) && Number(n) > 0) out[k] = (out[k] ?? 0) + Number(n);
+  return out;
+}
+
 /** Classes 1-4 → "6-9", classes 5-9 → "10-15" (the two design bands of learning-science §3.8). */
 export const ageBandFor = (classLevel) => (classLevel <= 4 ? "6-9" : "10-15");
 

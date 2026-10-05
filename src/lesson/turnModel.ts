@@ -156,7 +156,20 @@ export class FragmentMerger {
   get holding(): boolean {
     return this.held !== null;
   }
+
+  /**
+   * The link is closing (or the resume ceiling fired): whatever is held goes NOW, resumed or not. A held fragment is never
+   * dropped: it can be a disclosure (W2-E fixer).
+   */
+  drain(): TurnFinal | null {
+    return this.flush(true);
+  }
 }
+
+/** Extra wait after the child resumed over a held fragment before it is force-sent (no further final ever arrived). */
+export const RESUME_CEILING_EXTRA_MS = 2000;
+/** The ceiling for a resumed hold: the context's hold window plus RESUME_CEILING_EXTRA_MS. */
+export const resumeCeilingMs = (ctx: TurnContext): number => holdMsFor(ctx) + RESUME_CEILING_EXTRA_MS;
 
 /** Two fragments of one turn as one: the words joined, the first onset, the weaker ASR confidence. */
 export function mergeFinals(a: TurnFinal, b: TurnFinal): TurnFinal {

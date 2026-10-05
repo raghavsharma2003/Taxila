@@ -111,6 +111,9 @@ export function LessonCard() {
           {data.lesson.endedAt && (
             <Speaker key={data.lesson.id} src={speakUrl({ what: "lesson", childId: cid, lessonId: data.lesson.id })} label="Listen to this lesson's summary" className="speaker pa-listen"><span>Listen</span></Speaker>
           )}
+          {/* the child's own answers as quotes; ticks from the engine row of the same turn. No second count here: the
+              summary below is the one count (it says so when nothing was checked) */}
+          {(data.did?.cards.length || !data.lesson.endedAt) ? (
           <section className="pa-card" aria-labelledby="pa-did-h">
             <h2 id="pa-did-h" className="pa-card-title">What {name} did</h2>
             {data.did && data.did.cards.length > 0 ? (
@@ -126,9 +129,9 @@ export function LessonCard() {
                   </li>
                 ))}
               </ul>
-            ) : <p className="pa-muted">{data.lesson.endedAt ? "No answers were checked in this lesson." : "This lesson didn't finish."}</p>}
-            {data.did?.tried ? <p className="pa-meta">{name} tried {data.did.tried} questions.</p> : null}
+            ) : <p className="pa-muted">This lesson didn't finish.</p>}
           </section>
+          ) : null}
           {/* the summary built from the engine's checks, claim-checked on the server (W2-A; never model prose) */}
           {data.summary && data.summary.lines.length > 0 && (
             <section className="pa-card" aria-labelledby="pa-sum-h" data-testid="lesson-summary">
@@ -149,7 +152,7 @@ export function LessonCard() {
                 {data.skills.map((s) => (
                   <li key={s.skillId}>
                     <button type="button" className="pa-skill pa-skill-row" onClick={() => setSkill(s.skillId)}>
-                      <span className="pa-skill-main"><span>{labelTitle(s.label)}</span><span className="pa-meta">{s.unaided} of {s.attempts} right on their own</span></span>
+                      <span className="pa-skill-main"><span>{labelTitle(s.label)}</span><span className="pa-meta">{s.attempts > 0 ? `${s.unaided} of ${s.attempts} right on their own` : ""}{s.attempts > 0 && s.explained ? " · " : ""}{s.explained ? `Explained it: ${s.explained}` : ""}</span></span>
                       <StateChip state={s} lang="en" />
                       <span className="pa-how">How do we know?</span>
                     </button>

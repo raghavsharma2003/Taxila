@@ -1,0 +1,171 @@
+{
+ "nodes": [
+  {
+   "id": "w2hfix-grade-by-item",
+   "kind": "decision",
+   "title": "The Studio host grades BY ITEM, never by a pointer (server/studio/grade.js): an answer is graded against the item it names (skeletons send itemId), else the first open item, else a closed item it fits (alreadyClosed: right, no second row); the verdict is still qa/graders.js graderFor run on that one item. The stage sends a mount key per StudioStage mount + 'Show me again' epoch; a new key restarts open/closed bookkeeping but items that wrote evidence stay remembered. Answers past 12 per item are graded, never counted. Reverse if: builds carry item ids through studio-kit (then the no-id fallback can go).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-facts-row-from-slot",
+   "kind": "decision",
+   "title": "Studio's facts row for the reply is built in turn() AFTER the kernel and slotFor, from the slot the turn actually shows (studioSeam.factsRowForSlot), and instructions are recompiled only when the row changed; no row for a refused/held reveal, a piece hidden by the Director's tray, or a whiteboard. The row carries the piece's values, 'state just shown' on the reveal turn, and the host's 'last answer / wrong tries / finished' after. Reverse if: W2-E's kernel produces screen facts itself (then factsRowForSlot feeds it instead).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-studio-answers-reach-lesson",
+   "kind": "decision",
+   "title": "Studio answers reach the conversation through the module-event path (WorkTray studioToLesson): the finished piece is goal_met (Director celebrates the method), every 2nd wrong try on an item is stuck (Director's 'one small nudge on the activity'), single wrong/right tries ride along as interaction; no client 'correct' is sent. StudioTurnView gains outcome {lastVerdict, wrongCount, complete} and suggest reteach/advance (advisory until W2-E BR2b reads it). Reverse if: the Director gains a Studio-aware reteach move (then suggest drives it).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-retire-incorrect-evidence",
+   "kind": "decision",
+   "title": "When a revealed piece leaves the tray (beat exit, replaced, Not this one, the child's next lesson start, LRU eviction; never a safety retire) each item answered wrong and never right writes ONE incorrect event (same deterministic id as a correct close, episodeEnded → C4). Contrast pieces: a right answer carries discriminates=misconceptionId, a wrong answer matching the belief's signature (the diagnostic option tagged with the misconception) carries misconceptionId (a hit). Reverse if: the ×0.75 studio weight proves miscalibrated for incorrect closes in the W3-A fairness study.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-contrast-params-from-misconception",
+   "kind": "decision",
+   "title": "Prefetch personalisation, stated honestly: the SELECTION is the child's (their own misconceptions and re-teach rows first, filtered to THIS kit; else one kit diagnostic misconception the kit can prove, after the explanation piece); the PARAMS are personal only for contrast pieces whose kit diagnostic states fractions (seam.misconceptionTruth: right option, then the belief's option, then the prompt), passed to plan.js chooseArchetype as truth. Every other piece uses generic paramsFromKit params. Reverse if: W3-B truth packs give per-misconception params for non-fraction topics.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-one-task-at-a-time",
+   "kind": "decision",
+   "title": "slotFor holds a NEW reveal while the Director's move poses its own kit item (probe/practice/retrieval/teachback with an itemId: the turn passes hint.asking); a piece already on screen stays. Reverse if: practice pieces are rebuilt to BE the Director's item (W3-E per-step pieces).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-two-row-bars",
+   "kind": "decision",
+   "title": "The fraction bar skeleton lays out d>6 as two rows across 336 units (a 10-part bar = 5+5 parts of 67 units; d=12 = 56 units); dense number lines label every other tick; the marker moves only by 54-unit arrow buttons. Reverse if: AT-12 shows two-row bars confuse the part-whole picture in the child tests.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-spend-row-at-race",
+   "kind": "decision",
+   "title": "A live build's spend is written to studio_mount (source 'live', revealed_at null) the moment the race returns, whatever the outcome; a reveal completes the same row and keeps source 'live' (facts.shownAs records a skeleton fallback). No schema change. Reverse if: spend moves to a dedicated ledger table.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-frame-incidents-two-lessons",
+   "kind": "decision",
+   "title": "frame-error carries a reason; only csp / runtime / navigated count against a build (library.noteIncident, one per lesson in record.incidentLessons). At 2 distinct lessons an unreviewed build is retired and a promoted one is demoted to transfer_passed (review queue); not_ready (slow phone), unavailable and bytes swap to the skeleton for that child only. Reverse if: incident telemetry shows single-lesson incidents are always real build defects.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-minor-hardening",
+   "kind": "decision",
+   "title": "onReveal never reveals after a safety event; the frame runtime takes the init port in the capture phase and stops propagation (a build cannot answer through the port); parent_off / safety_mode at prefetch makes no piece at all; a missing bond snapshot fails safe to 'meeting'; module-only turns do not move the retire/gap clocks; the lesson registry is LRU; a 409 on answer drops the piece to the calm ground; the More menu is placed inside the clipping stage; the veil paints shapes only (no unchecked model text). Reverse if: never for the safety items.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod/w2h-studio.mjs vs node server/serve.mjs (Neon test branch, 2026-10-05): text x2 and cascade x2 runs: 4/4 reveals on cue, AT-7 digit-values lint 4/4 (reveal line + next line), 0/4 reveal turns with a competing Director question, 4/4 'two wrong tries → hint nudge' module-only turns with the piece still on screen, remount re-answer right + alreadyClosed with exactly 1 kt_evidence row, leftover test guardians 4 → 4. In 1/4 nudges the hint pointed at the Director's fill-in item, not the piece. One earlier text+cascade batch lost its server mid-run (process gone, no stack); its leaked account was deleted by hand (4 → 4).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2hfix-stage-browser-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/studio-stage-states.test.mjs (Chromium, real Desk, mocked API, 2026-10-05): real class 7 params (c7-maths-ch03-t01/t02, ch12-t01: 10-part bars, a tenths line) + schema max d=12 at 360x800, 768x1024, 1366x768: every target ≥ 44 px inside the box, no label overlap; open More menu inside the stage at all 3; before the fix a 10-part bar part was 30 units ≈ 26 px at 360x800. tests/studio-contracts.test.mjs 33/33.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2hfix-pointer-grader",
+   "kind": "rejection",
+   "title": "A pointer grader per piece (itemsGrader/keyGrader state on the host): the stage remounts when the Director takes the tray, on reload and reconnect, and restarts at item 1; reproduced: after i1 right, the same right value {n:3,d:4} graded correct:false as i2, and a single-key piece graded a right re-answer wrong.",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2hfix-facts-row-before-arbitration",
+   "kind": "rejection",
+   "title": "Building Studio's facts row inside planTurn from statusFacts with revealAccepted:true: it ran before the kernel and slotFor, so the reply prompt said a piece was on screen when the kernel refused the reveal, slotFor held it, or the Director's tray hid it (breaks AT-7).",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2hfix-answer-event-milestone",
+   "kind": "rejection",
+   "title": "Sending a wrong Studio answer to the lesson as a module 'answer' event: director/state.js moduleReaction reacts only to goal_met / stuck, so the turn held and no reply came (local acceptance 2026-10-05: 1/22 FAIL). Replaced by stuck on every second wrong try.",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2hfix-grade-by-item",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-retire-incorrect-evidence",
+   "rel": "supersedes",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "rj-w2hfix-pointer-grader",
+   "rel": "caused_by",
+   "dst": "w2h-studio-evidence-one-event-per-item"
+  },
+  {
+   "src": "w2hfix-facts-row-from-slot",
+   "rel": "supersedes",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "rj-w2hfix-facts-row-before-arbitration",
+   "rel": "caused_by",
+   "dst": "w2h-seam-patches-turn-say"
+  },
+  {
+   "src": "w2hfix-studio-answers-reach-lesson",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "rj-w2hfix-answer-event-milestone",
+   "rel": "caused_by",
+   "dst": "w2hfix-studio-answers-reach-lesson"
+  },
+  {
+   "src": "w2hfix-one-task-at-a-time",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-contrast-params-from-misconception",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2hfix-two-row-bars",
+   "rel": "part_of",
+   "dst": "w2h-skeleton-as-activity-first-rung"
+  },
+  {
+   "src": "w2hfix-spend-row-at-race",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-frame-incidents-two-lessons",
+   "rel": "part_of",
+   "dst": "w2h-library-identity-gate-cache"
+  },
+  {
+   "src": "w2hfix-local-acceptance-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2hfix-stage-browser-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2hfix-minor-hardening",
+   "rel": "part_of",
+   "dst": "w2h-host-assembles-frame"
+  }
+ ]
+}

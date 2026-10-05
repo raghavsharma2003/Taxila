@@ -1,0 +1,4168 @@
+{
+ "class": 5,
+ "subject": "evs",
+ "version": 1,
+ "generator": "taxila-gpt6",
+ "date": "2026-10-04",
+ "topics": [
+  {
+   "topicId": "c5-evs-ch01-t01",
+   "replacesOpeners": [
+    "c5-evs-ch01-t01-i01",
+    "diag:c5-evs-ch01-t01-m1",
+    "c5-evs-ch01-t01-i08"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch01-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch01-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A wet cricket jersey dries on a line. The water has gone into the air but cannot be seen. What form is the water in now?",
+     "prompt_hi": "Geeli cricket jersey taar par sookh gayi. Uska paani hawa mein chala gaya, par dikh nahi raha. Ab paani kis roop mein hai?",
+     "answer": "Invisible water vapour",
+     "acceptable": [
+      "water vapour",
+      "vapour",
+      "gas",
+      "jal vaashp",
+      "paani ki bhaap"
+     ],
+     "hints": [
+      "Did the water disappear, or change form?",
+      "Water can be present in air even when you cannot see it.",
+      "In the air, the water is now a ____.",
+      "It is invisible water vapour: the water changed into a gas."
+     ],
+     "verified": {
+      "solverAnswer": "Water vapour",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch01-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch01-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school chart labels the Bay of Bengal and a freshwater lake. Which holds salty water: the Bay of Bengal or the lake?",
+     "prompt_hi": "School chart par Bay of Bengal aur ek freshwater lake dikhayi gayi hai. Namkeen paani kismein hai: Bay of Bengal mein ya lake mein?",
+     "answer": "Bay of Bengal",
+     "acceptable": [
+      "the bay",
+      "sea",
+      "samundar",
+      "Bay of Bengal mein"
+     ],
+     "hints": [
+      "Which of the two is connected to an ocean?",
+      "Sea water contains dissolved salts; the lake is labelled freshwater.",
+      "The salty water is in the ____.",
+      "The Bay of Bengal holds salty water because it is part of the sea."
+     ],
+     "verified": {
+      "solverAnswer": "The Bay of Bengal",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch01-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t01-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "On a misty morning in Shimla, you can see tiny drops floating near you. Are those visible drops liquid water or invisible water vapour?",
+     "prompt_hi": "Shimla ki dhundhli subah mein tumhe hawa mein chhoti-chhoti boondein dikh rahi hain. Ye dikhne wali boondein liquid water hain ya invisible water vapour?",
+     "answer": "Liquid water",
+     "acceptable": [
+      "liquid",
+      "water droplets",
+      "paani ki boondein",
+      "taral paani"
+     ],
+     "hints": [
+      "Can water vapour itself be seen?",
+      "Mist looks visible because it contains tiny droplets.",
+      "The visible drops are ____ water.",
+      "They are liquid water; invisible water vapour cannot be seen."
+     ],
+     "verified": {
+      "solverAnswer": "Liquid water",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch01-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "Imagine Earth's water fills 1,000 bottles. If 970 bottles represent salty sea water, how many bottles represent all the fresh water, including ice?",
+     "prompt_hi": "Socho Dharti ka saara paani 1,000 bottles mein hai. Agar 970 bottles namkeen samundari paani ki hain, to barf samet saara freshwater kitni bottles mein hoga?",
+     "answer": "30 bottles",
+     "acceptable": [
+      "30",
+      "thirty bottles",
+      "tees bottles"
+     ],
+     "hints": [
+      "How many bottles remain after setting aside the salty ones?",
+      "Subtract the salty-water bottles from the total.",
+      "Fresh-water bottles = 1,000 − 970 = ____.",
+      "30 bottles; even this fresh-water share includes ice."
+     ],
+     "verified": {
+      "solverAnswer": "30 bottles",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch01-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "At a school event, droplets appear outside a closed bottle of chilled water. The cap is tight and the bottle does not leak. Where did the droplets come from?",
+     "prompt_hi": "School event mein thande paani ki band bottle ke bahar boondein dikhne lagi hain. Dhakkan tight hai aur bottle leak nahi karti. Ye boondein kahaan se aayi hain?",
+     "answer": "Water vapour in the air condensed on the cold bottle.",
+     "acceptable": [
+      "from water vapour in the air",
+      "air ki water vapour se",
+      "hawa ki nami thandi bottle par boondein ban gayi",
+      "condensation"
+     ],
+     "hints": [
+      "If the bottle does not leak, look around it.",
+      "Air contains invisible water that can change on a cold surface.",
+      "Water from the ____ formed droplets on the bottle.",
+      "Air's water vapour condensed on the cold bottle."
+     ],
+     "verified": {
+      "solverAnswer": "Water vapour in the air condensed on the cold bottle",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch01-t01-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch01-t02",
+   "replacesOpeners": [
+    "c5-evs-ch01-t02-i01",
+    "diag:c5-evs-ch01-t02-m1",
+    "c5-evs-ch01-t02-i03"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch01-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch01-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school gardener waters the soil around a young neem tree. Which path does that water take to reach its leaves: roots → stem → leaves, or stem → roots → leaves?",
+     "prompt_hi": "School gardener neem ke chhote ped ke aas-paas ki mitti mein paani deta hai. Pattiyon tak paani kaunsa raasta leta hai: jadein → tana → pattiyaan, ya tana → jadein → pattiyaan?",
+     "answer": "roots → stem → leaves",
+     "acceptable": [
+      "roots to stem to leaves",
+      "jadein se tane se pattiyon tak"
+     ],
+     "hints": [
+      "Which plant part touches the wet soil?",
+      "Trace the water from where it enters to the leaves.",
+      "From soil, water travels through ___ before reaching leaves.",
+      "Roots → stem → leaves: roots absorb water, and the stem carries it upward."
+     ],
+     "verified": {
+      "solverAnswer": "roots → stem → leaves",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch01-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch01-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After a football match, Meera eats a juicy orange. Besides drinking, is she gaining water from food or losing water through food?",
+     "prompt_hi": "Football match ke baad Meera ek rasila santra khaati hai. Peene ke alawa, kya use khaane se paani mil raha hai ya khaane se paani nikal raha hai?",
+     "answer": "Gaining water from food",
+     "acceptable": [
+      "getting water from food",
+      "food se paani mil raha hai"
+     ],
+     "hints": [
+      "What makes the orange juicy?",
+      "Some foods contain water that enters our body when eaten.",
+      "Eating this fruit adds water through ___.",
+      "Gaining water from food: the orange’s juice contains water."
+     ],
+     "verified": {
+      "solverAnswer": "Gaining water from food",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch01-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t02-s1",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two identical bean plants have wet soil. Plant A has an intact stem; Plant B’s stem is crushed near the soil. Which plant’s upper leaves are more likely to wilt, A or B, and why?",
+     "prompt_hi": "Do ek jaise bean ke paudhon ki mitti geeli hai. A ka tana theek hai; B ka tana mitti ke paas dabkar kharab ho gaya hai. Kis paudhe ki upar ki pattiyaan zyaada murjhaayengi, A ya B, aur kyun?",
+     "answer": "B, because its crushed stem cannot carry enough water to the upper leaves.",
+     "acceptable": [
+      "B; water cannot move up its damaged stem",
+      "B, kyunki kharab tane se paani upar nahi pahunch paata"
+     ],
+     "hints": [
+      "Is wet soil enough if water cannot reach upper leaves?",
+      "Think about the stem’s role between roots and leaves.",
+      "Plant ___ wilts because its stem cannot carry water upward.",
+      "B: its crushed stem blocks water moving toward the upper leaves."
+     ],
+     "verified": {
+      "solverAnswer": "B, because crushed stem cannot carry water to leaves",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Matching meaning and reason",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch01-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t02-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "During a hot kabaddi match, Arjun drinks water and sweats heavily. Which action adds water to his body, and which removes it?",
+     "prompt_hi": "Garmi mein kabaddi khelte hue Arjun paani peeta hai aur use kaafi paseena aata hai. Kaunsa kaam uske shareer mein paani jodta hai, aur kaunsa nikaalta hai?",
+     "answer": "Drinking adds water; sweating removes water.",
+     "acceptable": [
+      "drinking in, sweating out",
+      "peene se paani milta hai, paseene se nikalta hai"
+     ],
+     "hints": [
+      "Which action brings water into the body?",
+      "Track water entering the body and leaving through skin.",
+      "Drinking adds water; ___ removes it.",
+      "Drinking adds water; sweating removes it through the skin."
+     ],
+     "verified": {
+      "solverAnswer": "Drinking adds water; sweating removes it",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Identical key idea",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch01-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch01-t02-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A desert cactus has a thick stem that stores water and spines instead of broad leaves. Why do these features help it survive where rain is rare?",
+     "prompt_hi": "Registan ke cactus ka mota tana paani jama karta hai aur chaudi pattiyon ki jagah kaante hote hain. Jahaan baarish kam hoti hai, ye dono baatein use jeene mein kaise madad karti hain?",
+     "answer": "The stem stores water, and the spines reduce water loss.",
+     "acceptable": [
+      "stores water and loses less water",
+      "tane mein paani jama hota hai aur kaanton se paani kam nikalta hai"
+     ],
+     "hints": [
+      "What challenge does a plant face when rain is rare?",
+      "Consider both keeping a supply and limiting loss.",
+      "The stem stores ___; spines help reduce its loss.",
+      "The stem stores water, while spines reduce water loss."
+     ],
+     "verified": {
+      "solverAnswer": "Thick stem stores water; spines reduce water loss",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Equivalent features and benefits",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch01-t02-i01": {
+     "ge": 3,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch02-t01",
+   "replacesOpeners": [
+    "c5-evs-ch02-t01-i01",
+    "diag:c5-evs-ch02-t01-m1",
+    "c5-evs-ch02-t01-i09"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch02-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch02-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A stream begins where ice melts high in the Himalayas. Is its source a glacier or the sea?",
+     "prompt_hi": "Himalaya mein upar baraf pighalne se ek dhaara shuru hoti hai. Uska source glacier hai ya samundar?",
+     "answer": "Glacier",
+     "acceptable": [
+      "a glacier",
+      "himnad"
+     ],
+     "hints": [
+      "At which place does the stream first form?",
+      "Its source is where its water first comes from.",
+      "The melting ice is part of a ___.",
+      "Glacier: the stream begins as its ice melts."
+     ],
+     "verified": {
+      "solverAnswer": "glacier",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch02-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "On a school trek, a stream passes Point A at 900 metres and Point B at 600 metres. Which point does its water pass first: A or B?",
+     "prompt_hi": "School trek par ek dhaara Point A par 900 metre aur Point B par 600 metre ki oonchai par hai. Paani pehle kis point se guzrega: A ya B?",
+     "answer": "A",
+     "acceptable": [
+      "Point A",
+      "point a"
+     ],
+     "hints": [
+      "Which point is higher?",
+      "Streams flow from higher land towards lower land.",
+      "The water passes the point at ___ metres first.",
+      "A: it is higher, so the stream passes it first."
+     ],
+     "verified": {
+      "solverAnswer": "B",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "solver chose wrong point",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch02-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A river begins at a spring, passes through a town, and joins the Yamuna. Does this river end at the town, the Yamuna, or only at the sea?",
+     "prompt_hi": "Ek nadi spring se shuru hoti hai, shehar se guzarti hai aur Yamuna mein milti hai. Yeh nadi shehar par, Yamuna mein, ya sirf samundar mein khatam hoti hai?",
+     "answer": "The Yamuna",
+     "acceptable": [
+      "Yamuna",
+      "in the Yamuna"
+     ],
+     "hints": [
+      "Where does this river join another watercourse?",
+      "A river can end when it joins a bigger river.",
+      "It ends where it joins the ___.",
+      "The Yamuna: this river ends when it joins that bigger river."
+     ],
+     "verified": {
+      "solverAnswer": "the Yamuna",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A small stream joins a larger river at a valley. The stream starts at 1,200 metres; the valley is at 400 metres. Why can the stream reach the river without a pump?",
+     "prompt_hi": "Ek chhoti dhaara ghaati mein badi nadi se milti hai. Dhaara 1,200 metre par shuru hoti hai; ghaati 400 metre par hai. Bina pump ke dhaara nadi tak kaise pahunchti hai?",
+     "answer": "It flows downhill from higher land to lower land.",
+     "acceptable": [
+      "It flows downhill",
+      "The valley is lower",
+      "Oonchai se neeche paani behta hai"
+     ],
+     "hints": [
+      "How do the two heights compare?",
+      "Water flows along a downward slope.",
+      "The stream reaches the valley by flowing ___.",
+      "It flows downhill: the valley is lower than its starting point."
+     ],
+     "verified": {
+      "solverAnswer": "Water flows downhill due to gravity.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both convey downhill flow",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "After a river leaves steep hills, it slows across a plain. Farmers notice a fresh layer of fine soil beside it. Why might crops grow well there?",
+     "prompt_hi": "Tez dhaal wali pahaadiyon se nikalne ke baad nadi maidaan mein dheemi ho jaati hai. Kisaan uske paas baarik mitti ki nayi parat dekhte hain. Wahaan fasal achchhi kyun ug sakti hai?",
+     "answer": "The slower river deposits fertile silt.",
+     "acceptable": [
+      "Fertile silt is deposited",
+      "The river leaves fertile soil",
+      "Nadi upjaau gaad jama karti hai"
+     ],
+     "hints": [
+      "What happens to the fine soil carried by slower water?",
+      "A slower river can leave carried material on the land.",
+      "The river leaves ___ that helps crops grow.",
+      "It deposits fertile silt, which helps crops grow."
+     ],
+     "verified": {
+      "solverAnswer": "The soil is fertile silt left by floods.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both describe fertile silt deposit",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch02-t01-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch02-t02",
+   "replacesOpeners": [
+    "c5-evs-ch02-t02-i01",
+    "diag:c5-evs-ch02-t02-m1",
+    "c5-evs-ch02-t02-i07"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch02-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch02-t02-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After a downpour, water collects outside a school although the nearby stream is still within its banks. The street drains are packed with leaves. What is the likely cause of the waterlogging?",
+     "prompt_hi": "Tez baarish ke baad school ke bahar paani bhar gaya, lekin paas ki stream apne kinare ke andar hai. Sadak ki naaliyan patton se bhari hain. Paani bharne ki sambhavit wajah kya hai?",
+     "answer": "Blocked drains",
+     "acceptable": [
+      "drains blocked by leaves",
+      "clogged drains",
+      "band naaliyan",
+      "patton se band naaliyan"
+     ],
+     "hints": [
+      "Which detail explains why rainwater cannot leave the street?",
+      "Think about the route water normally takes away from a road.",
+      "Rainwater stayed on the street because its exit was ___.",
+      "Blocked drains: leaves stop rainwater from flowing away."
+     ],
+     "verified": {
+      "solverAnswer": "Blocked drains",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch02-t02-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school can cover its courtyard with either grass or concrete tiles. During monsoon rain, which surface will let more water soak into the ground: grass or concrete tiles?",
+     "prompt_hi": "School apne courtyard mein ya toh ghaas laga sakta hai ya concrete tiles. Monsoon ki baarish mein kis surface se zyada paani zameen mein samaayega: ghaas ya concrete tiles?",
+     "answer": "Grass",
+     "acceptable": [
+      "grassy ground",
+      "ghaas",
+      "ghaas wali zameen"
+     ],
+     "hints": [
+      "Which surface leaves spaces for water to enter the soil?",
+      "Compare what happens to rain on living ground and a hard covering.",
+      "More rain can soak through ___ because soil is underneath.",
+      "Grass: rain can pass through it into the soil."
+     ],
+     "verified": {
+      "solverAnswer": "grass",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch02-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t02-s1",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two Pune neighbourhoods get the same heavy rain. One is on higher ground; the other has houses on low land beside a river that is rising. Which neighbourhood is more likely to flood?",
+     "prompt_hi": "Pune ke do ilaakon mein ek jaisi tez baarish hui. Ek oonchi jagah par hai; doosre ke ghar nadi ke paas neeche ki zameen par hain, aur nadi ka paani badh raha hai. Kahan baadh ka khatra zyada hai?",
+     "answer": "The low-lying neighbourhood beside the river",
+     "acceptable": [
+      "low land beside the river",
+      "the neighbourhood near the river",
+      "nadi ke paas neeche wala ilaaka"
+     ],
+     "hints": [
+      "Where could rising river water spread first?",
+      "Compare each neighbourhood’s height and distance from the water.",
+      "The greater risk is for houses on ___ land.",
+      "The low-lying neighbourhood beside the river: rising water can spill onto it."
+     ],
+     "verified": {
+      "solverAnswer": "The low land beside the river",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t02-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "On a hillside above a town, trees and grass are removed to make a parking area. Why might rain send more muddy water rushing towards the town?",
+     "prompt_hi": "Shehar ke upar pahaadi dhalan par parking banane ke liye ped aur ghaas hata diye gaye. Ab baarish mein zyada keechad wala paani shehar ki taraf tez kyun aa sakta hai?",
+     "answer": "Without plants, less rain soaks in and more soil washes downhill.",
+     "acceptable": [
+      "less water soaks in and more soil is washed away",
+      "plants no longer hold the soil or slow the water",
+      "bina paudhon ke paani kam samaata hai aur mitti beh jaati hai"
+     ],
+     "hints": [
+      "What changes when the slope loses its plant cover?",
+      "Think about both rain entering the ground and soil staying in place.",
+      "With plant cover gone, rain soaks in ___ and soil moves ___.",
+      "Without plants, less rain soaks in and more soil washes downhill."
+     ],
+     "verified": {
+      "solverAnswer": "No roots and cover to hold soil and absorb water.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both explain reduced absorption and erosion",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch02-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch02-t02-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "At a lakeside school fair, food stalls produce oily wastewater. Should it go into a drain that opens into the lake, or be collected for proper disposal?",
+     "prompt_hi": "Jheel ke paas school fair mein food stalls se tel mila ganda paani nikla. Kya ise jheel mein khulne wali naali mein daalna chahiye, ya alag jama karke sahi tarah dispose karna chahiye?",
+     "answer": "Collect it for proper disposal",
+     "acceptable": [
+      "collect the wastewater",
+      "proper disposal",
+      "alag jama karke sahi tarah dispose karein",
+      "jheel mein na jaane dein"
+     ],
+     "hints": [
+      "Where does that drain end?",
+      "Consider what the wastewater would add to the lake.",
+      "To keep the lake clean, the wastewater should be ___.",
+      "Collect it for proper disposal: the drain would carry pollution into the lake."
+     ],
+     "verified": {
+      "solverAnswer": "Collected for proper disposal",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch02-t02-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch03-t01",
+   "replacesOpeners": [
+    "c5-evs-ch03-t01-i01",
+    "diag:c5-evs-ch03-t01-m1",
+    "c5-evs-ch03-t01-i02"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch03-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch03-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A student washes her hands before making sandwiches. Her hands looked clean. What tiny living things might still have been on them?",
+     "prompt_hi": "Ek student sandwiches banane se pehle haath dhoti hai. Haath saaf dikh rahe the. Phir bhi unpar kaun-se bahut chhote jeev ho sakte the?",
+     "answer": "Microbes",
+     "acceptable": [
+      "microorganisms",
+      "micro-organisms",
+      "germs",
+      "sukshma jeev"
+     ],
+     "hints": [
+      "Can clean-looking hands still carry living things?",
+      "Some living things are too small to see unaided.",
+      "Such tiny living things are called ___.",
+      "Microbes: they can be present even on clean-looking hands."
+     ],
+     "verified": {
+      "solverAnswer": "Germs or microbes",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch03-t01-s2",
+     "kind": "predict",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "Two bowls of cooked poha are left for a day. One stays warm and moist; the other is cooled and kept dry. In which bowl will food-spoiling microbes multiply faster: warm and moist, or cool and dry?",
+     "prompt_hi": "Pake hue pohe ke do bowls ek din ke liye rakhe hain. Ek garam aur geela rehta hai; doosra thanda aur sookha. Food kharab karne wale microbes kis mein jaldi badhenge: garam-geele mein ya thande-sookhe mein?",
+     "answer": "Warm and moist bowl",
+     "acceptable": [
+      "warm and moist",
+      "garam aur geela bowl",
+      "pehla bowl",
+      "first bowl"
+     ],
+     "hints": [
+      "Which bowl offers more favourable conditions for growth?",
+      "Think about how warmth and moisture affect microbes.",
+      "They multiply faster in the ___ bowl.",
+      "Warm and moist bowl: those conditions help microbes multiply."
+     ],
+     "verified": {
+      "solverAnswer": "warm and moist",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch03-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t01-s1",
+     "kind": "practice",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A school tests clear drinking water with a microscope and finds microbes. Why couldn't students tell the water contained microbes just by looking at it?",
+     "prompt_hi": "School ne saaf dikhne wale peene ke paani ko microscope se check kiya aur microbes mile. Students sirf paani ko dekhkar unka pata kyun nahi laga sake?",
+     "answer": "Microbes are too small to see without a microscope.",
+     "acceptable": [
+      "They are microscopic",
+      "They cannot be seen with the naked eye",
+      "Microbes ko bina microscope ke nahi dekh sakte"
+     ],
+     "hints": [
+      "Does clear-looking water show everything inside it?",
+      "Think about what the microscope reveals.",
+      "Students couldn't see them because they are too ___ to see unaided.",
+      "Microbes are too small to see without a microscope."
+     ],
+     "verified": {
+      "solverAnswer": "Microbes are too tiny to see with naked eyes.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Same explanation",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t01-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two portions of cooked noodles sit for six hours: A is warm and wet; B is chilled and covered. Which portion is more likely to spoil first, and why?",
+     "prompt_hi": "Pake hue noodles ke do portions chhe ghante rakhe hain: A garam aur geela hai; B fridge mein thanda aur dhaka hua hai. Kaunsa pehle kharab ho sakta hai, aur kyun?",
+     "answer": "A, because microbes multiply faster in warm, moist food.",
+     "acceptable": [
+      "A; warmth and moisture help microbes grow",
+      "Portion A because microbes grow faster there",
+      "A, kyunki garam aur geele khane mein microbes jaldi badhte hain"
+     ],
+     "hints": [
+      "Compare the conditions around the two portions.",
+      "Focus on conditions that speed up microbial growth.",
+      "Portion ___ may spoil first because microbes multiply faster there.",
+      "A: microbes multiply faster in warm, moist food."
+     ],
+     "verified": {
+      "solverAnswer": "A, because warmth and moisture help microbes grow faster.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Nearly identical wording",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t01-s3",
+     "kind": "contrast",
+     "demand": "transfer",
+     "genGrade": 6,
+     "prompt_en": "At a school fair, microbes turn milk into curd, but microbes also make an uncovered fruit salad smell bad. Are microbes always harmful, always helpful, or both helpful and harmful?",
+     "prompt_hi": "School fair mein microbes doodh ko dahi banate hain, lekin uncovered fruit salad mein badbu bhi laate hain. Kya microbes hamesha harmful, hamesha helpful, ya helpful aur harmful dono hote hain?",
+     "answer": "Both helpful and harmful",
+     "acceptable": [
+      "both",
+      "helpful and harmful",
+      "faaydemand aur nuksaan-deh dono",
+      "achhe aur bure dono"
+     ],
+     "hints": [
+      "Do the two examples have the same result?",
+      "Compare what happens to the milk and the salad.",
+      "The examples show microbes can be ___ and ___.",
+      "Both helpful and harmful: they make curd but can spoil food."
+     ],
+     "verified": {
+      "solverAnswer": "both helpful and harmful",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch03-t01-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch03-t02",
+   "replacesOpeners": [
+    "c5-evs-ch03-t02-i01",
+    "diag:c5-evs-ch03-t02-m1",
+    "c5-evs-ch03-t02-i14"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch03-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch03-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A shopkeeper wants to store fresh chillies for several months without a fridge. Which traditional method fits: sun-drying or keeping them in an open basket?",
+     "prompt_hi": "Dukaandaar taazi mirchiyan bina fridge ke kai mahine rakhna chahta hai. Kaunsa paramparik tareeka theek hai: dhoop mein sukhana ya khuli tokri mein rakhna?",
+     "answer": "sun-drying",
+     "acceptable": [
+      "drying",
+      "dhoop mein sukhana",
+      "sukhaana"
+     ],
+     "hints": [
+      "Which option changes the chillies before storage?",
+      "Think about what happens to their moisture.",
+      "The better method is ___.",
+      "Sun-drying removes moisture, helping chillies last longer."
+     ],
+     "verified": {
+      "solverAnswer": "sun-drying",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch03-t02-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A canteen stores cooked rajma in a fridge overnight. What does the cold do to the microbes: slow their growth or kill them all?",
+     "prompt_hi": "Canteen mein paka hua rajma raat bhar fridge mein rakha hai. Thand microbes ke saath kya karti hai: unki badhotri dheemi karti hai ya sabko maar deti hai?",
+     "answer": "slows their growth",
+     "acceptable": [
+      "slows microbes",
+      "growth becomes slower",
+      "badhotri dheemi karti hai"
+     ],
+     "hints": [
+      "Does refrigeration stop spoilage forever?",
+      "Cold affects how quickly microbes multiply.",
+      "The cold makes their growth ___.",
+      "It slows their growth; refrigeration does not kill all microbes."
+     ],
+     "verified": {
+      "solverAnswer": "slow their growth",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both equivalent",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch03-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t02-s1",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "At a school fair, Meera sees dried amla pieces and sealed cans of fruit. Which uses a modern preservation method: the dried amla or the sealed cans?",
+     "prompt_hi": "School fair mein Meera sukhe amla ke tukde aur seal kiye hue fruit cans dekhti hai. Modern preservation tareeka kis mein hai: sukhe amla mein ya sealed cans mein?",
+     "answer": "sealed cans",
+     "acceptable": [
+      "cans",
+      "sealed fruit cans",
+      "seal kiye hue cans"
+     ],
+     "hints": [
+      "Which item uses manufactured packaging?",
+      "Compare drying with packing food in a sealed container.",
+      "The modern method is used for the ___.",
+      "Sealed cans use a modern packaging method."
+     ],
+     "verified": {
+      "solverAnswer": "the sealed cans",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t02-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two jars of homemade jam have equal amounts of fruit, but one has much more sugar. Why might the sweeter jam last longer?",
+     "prompt_hi": "Ghar ke bane jam ke do jars mein fruit barabar hai, lekin ek mein cheeni kaafi zyada hai. Zyada meetha jam zyada din kyun tik sakta hai?",
+     "answer": "High sugar makes it difficult for microbes to grow.",
+     "acceptable": [
+      "Sugar slows microbial growth",
+      "Zyada cheeni mein microbes aasani se nahi badhte"
+     ],
+     "hints": [
+      "What differs between the two jars?",
+      "Think about whether microbes grow easily in very sweet food.",
+      "More sugar makes it harder for ___ to grow.",
+      "High sugar makes it difficult for microbes to grow."
+     ],
+     "verified": {
+      "solverAnswer": "Sugar reduces water available for microbes to grow.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "solver explains mechanism, key is direct",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch03-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch03-t02-s3",
+     "kind": "predict",
+     "demand": "transfer",
+     "genGrade": 6,
+     "prompt_en": "A sealed packet of paneer is within its printed date, but it is swollen and smells sour when opened. Should Arjun eat it or discard it?",
+     "prompt_hi": "Paneer ka sealed packet printed date ke andar hai, par packet phoola hua hai aur kholne par khatti smell aati hai. Arjun use khaye ya phenk de?",
+     "answer": "discard it",
+     "acceptable": [
+      "throw it away",
+      "do not eat it",
+      "phenk de",
+      "mat khaye"
+     ],
+     "hints": [
+      "Which clues show the paneer’s present condition?",
+      "Check the food itself, not just its printed date.",
+      "Because of those warning signs, Arjun should ___.",
+      "Discard it; swelling and a sour smell suggest spoilage."
+     ],
+     "verified": {
+      "solverAnswer": "discard it",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch03-t02-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch04-t01",
+   "replacesOpeners": [
+    "c5-evs-ch04-t01-i02",
+    "diag:c5-evs-ch04-t01-m1",
+    "c5-evs-ch04-t01-i07"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch04-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch04-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After the school exhibition, paper scraps cover a corridor and display boards block an exit. Which plan keeps the school clean and safe: A) students clear scraps and move boards with a teacher, or B) everyone waits for the cleaning staff?",
+     "prompt_hi": "School exhibition ke baad corridor mein kagaz ke tukde hain aur display boards exit rok rahe hain. Kaunsa plan school ko saaf aur surakshit rakhega: A) students kagaz uthayein aur teacher ke saath boards hatayein, ya B) sab cleaning staff ka wait karein?",
+     "answer": "A",
+     "acceptable": [
+      "Option A",
+      "students clear scraps and move boards with a teacher"
+     ],
+     "hints": [
+      "Which plan deals with both problems?",
+      "Think about shared responsibility and a clear exit.",
+      "Students can handle scraps; boards should be moved with a ___.",
+      "A: students help clean, while a teacher helps clear the exit."
+     ],
+     "verified": {
+      "solverAnswer": "A",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch04-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch04-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "For the school compost pit, Meera has fallen flowers and a plastic juice straw. Which should she put in the pit: the flowers or the straw?",
+     "prompt_hi": "School ke compost pit ke liye Meera ke paas gire hue phool aur plastic juice straw hai. Pit mein kya daalna chahiye: phool ya straw?",
+     "answer": "Fallen flowers",
+     "acceptable": [
+      "flowers",
+      "phool",
+      "gire hue phool"
+     ],
+     "hints": [
+      "Which item can break down naturally?",
+      "A compost pit needs material that can rot.",
+      "Put the rotting material, ___, in the pit.",
+      "Flowers: they rot and can become compost."
+     ],
+     "verified": {
+      "solverAnswer": "the flowers",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch04-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t01-s1",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "During a school fair, visitors and students leave cups near the drinking-water point. Why should students use the bins and ask visitors to do the same, even though cleaning staff are on duty?",
+     "prompt_hi": "School fair mein visitors aur students drinking-water point ke paas cups chhod rahe hain. Cleaning staff duty par hain, phir bhi students ko bins use karke visitors se bhi aisa karne ko kyun kehna chahiye?",
+     "answer": "Keeping school clean is everyone's responsibility; stopping litter where it happens helps keep the water point clean.",
+     "acceptable": [
+      "Everyone must help prevent litter",
+      "Safai sabki zimmedari hai; wahin kachra rokna chahiye"
+     ],
+     "hints": [
+      "Who is creating the litter?",
+      "Think about preventing a mess, not only cleaning it later.",
+      "Keeping this area clean is the responsibility of ___.",
+      "Everyone shares responsibility; using bins stops litter near the water point."
+     ],
+     "verified": {
+      "solverAnswer": "To keep the school clean and prevent litter from spreading.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both stress shared responsibility to prevent litter",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch04-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A school compost pit contains vegetable peels and dry leaves. Someone adds a foil lunch wrapper. Why should the wrapper be removed before the compost is used in the garden?",
+     "prompt_hi": "School ke compost pit mein sabzi ke chhilke aur sookhe patte hain. Koi foil lunch wrapper bhi daal deta hai. Garden mein compost use karne se pehle wrapper kyun nikalna chahiye?",
+     "answer": "Foil does not rot into compost.",
+     "acceptable": [
+      "Foil does not decompose like peels and leaves",
+      "Foil gal kar khaad nahi banta"
+     ],
+     "hints": [
+      "Will every material in the pit break down?",
+      "Compare what happens to food scraps and packaging.",
+      "Remove materials that cannot turn into ___.",
+      "Foil does not rot into compost, so remove it."
+     ],
+     "verified": {
+      "solverAnswer": "Foil does not rot; it harms the soil.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both explain foil does not decompose",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch04-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "A school has a large roof, a leaking tap and too little water for its garden. Which two-part plan helps most: A) connect the roof drainpipe to a storage tank and repair the tap, or B) add more taps and water the garden at noon?",
+     "prompt_hi": "Ek school ki badi chhat hai, ek tap leak karta hai aur garden ke liye paani kam padta hai. Kaunsa two-part plan zyada madad karega: A) chhat ka drainpipe storage tank se jodo aur tap repair karo, ya B) aur taps lagao aur dopahar mein garden ko paani do?",
+     "answer": "A",
+     "acceptable": [
+      "Option A",
+      "store roof rainwater and repair the leaking tap"
+     ],
+     "hints": [
+      "Which plan both collects water and prevents its loss?",
+      "The roof can supply rainwater; a leak wastes water.",
+      "Collect water from the roof and fix the ___.",
+      "A: the tank stores rainwater, and repairing the tap stops waste."
+     ],
+     "verified": {
+      "solverAnswer": "A",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch04-t01-i02": {
+     "ge": 3,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch04-t02",
+   "replacesOpeners": [
+    "c5-evs-ch04-t02-i01",
+    "diag:c5-evs-ch04-t02-m1",
+    "c5-evs-ch04-t02-i02"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch04-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch04-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "At the metro exit, the pedestrian signal shows a red standing figure, though vehicles have stopped. Should Meera cross now or wait for the walking figure?",
+     "prompt_hi": "Metro exit par pedestrian signal mein laal khadi hui figure dikh rahi hai, lekin gaadiyan ruki hain. Meera ab cross kare ya walking figure ka wait kare?",
+     "answer": "Wait for the walking figure",
+     "acceptable": [
+      "wait",
+      "walking figure ka wait kare",
+      "paidal chalne wali figure ka intezaar kare"
+     ],
+     "hints": [
+      "Which signal is meant for people crossing?",
+      "Stopped vehicles do not replace the pedestrian signal.",
+      "Meera should wait for the ___ figure.",
+      "Wait for the walking figure; it signals when pedestrians may cross."
+     ],
+     "verified": {
+      "solverAnswer": "wait for the walking figure",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch04-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch04-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "On her way to cricket practice, Sana reaches a road with a foot overbridge nearby. Should she cross between moving vehicles or use the foot overbridge?",
+     "prompt_hi": "Cricket practice jaate hue Sana ko road ke paas foot overbridge dikhta hai. Use chalti gaadiyon ke beech se cross karna chahiye ya foot overbridge use karna chahiye?",
+     "answer": "Use the foot overbridge",
+     "acceptable": [
+      "foot overbridge",
+      "overbridge use kare",
+      "pedestrian bridge"
+     ],
+     "hints": [
+      "Which option keeps Sana away from moving vehicles?",
+      "A separate route for pedestrians avoids crossing the traffic lane.",
+      "Sana should use the ___.",
+      "Use the foot overbridge; it keeps pedestrians away from moving traffic."
+     ],
+     "verified": {
+      "solverAnswer": "use the foot overbridge",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch04-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t02-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "At a junction near the library, the vehicles’ light is red, but the pedestrian walking figure is not showing. Which should Arjun follow before crossing: the vehicles’ red light or the pedestrian signal?",
+     "prompt_hi": "Library ke paas junction par gaadiyon ki light laal hai, par pedestrian walking figure nahi dikh rahi. Cross karne se pehle Arjun kise follow kare: gaadiyon ki laal light ya pedestrian signal?",
+     "answer": "The pedestrian signal",
+     "acceptable": [
+      "pedestrian signal",
+      "paidal chalne walon ka signal"
+     ],
+     "hints": [
+      "Which of these signals gives instructions to walkers?",
+      "A vehicle signal tells drivers what to do.",
+      "Arjun should follow the ___ signal.",
+      "The pedestrian signal; a red vehicle light alone is not a crossing instruction."
+     ],
+     "verified": {
+      "solverAnswer": "the pedestrian signal",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch04-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "At a zebra crossing outside a sports ground, traffic has stopped. Kavya is at the road’s edge. Before walking straight across, what should she do: look right–left–right and listen, or start running?",
+     "prompt_hi": "Sports ground ke bahar zebra crossing par traffic ruka hai. Kavya road ke kinare khadi hai. Seedha paar chalne se pehle kya kare: right–left–right dekhe aur sune, ya daudna shuru kare?",
+     "answer": "Look right–left–right and listen",
+     "acceptable": [
+      "look right left right and listen",
+      "right left right dekhe aur sune",
+      "daayein baayein daayein dekhe aur sune"
+     ],
+     "hints": [
+      "Can stopped traffic start moving again?",
+      "Check both directions and use your ears before stepping out.",
+      "Kavya should look ___ and listen.",
+      "Look right–left–right and listen; check for approaching traffic before walking."
+     ],
+     "verified": {
+      "solverAnswer": "look right–left–right and listen",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch04-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch04-t02-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "At dusk, a school van is parked beside a busy road. Rohan wants to cross directly in front of it. Why should he move to a place where he can see the road clearly first?",
+     "prompt_hi": "Shaam ko busy road ke paas school van khadi hai. Rohan uske bilkul aage se road cross karna chahta hai. Pehle aisi jagah kyun jaana chahiye jahan se road saaf dikhe?",
+     "answer": "The van blocks his view of approaching vehicles and drivers’ view of him",
+     "acceptable": [
+      "van blocks the view",
+      "he and drivers cannot see each other",
+      "van ki wajah se aati gaadiyan aur drivers use nahi dekh paayenge"
+     ],
+     "hints": [
+      "What might the parked van hide?",
+      "Think about what Rohan and approaching drivers can see.",
+      "The van blocks ___ between Rohan and traffic.",
+      "The van blocks their view of each other, so crossing there is dangerous."
+     ],
+     "verified": {
+      "solverAnswer": "The van blocks his view of oncoming traffic.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both cite van blocking view of traffic",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch04-t02-i01": {
+     "ge": 3.5,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch05-t01",
+   "replacesOpeners": [
+    "c5-evs-ch05-t01-i01",
+    "diag:c5-evs-ch05-t01-m1",
+    "c5-evs-ch05-t01-i04"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch05-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch05-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "At a school event, Aditi speaks Marathi at home and Sara speaks Malayalam at home. Must they use the same home language because both are Indian? Answer yes or no.",
+     "prompt_hi": "School event mein Aditi ghar par Marathi aur Sara ghar par Malayalam bolti hai. Kya dono Indian hain, isliye unki ghar ki bhaasha ek hi honi zaroori hai? Haan ya nahin?",
+     "answer": "No",
+     "acceptable": [
+      "Nahin",
+      "Nahi",
+      "No, they can speak different home languages"
+     ],
+     "hints": [
+      "What does the question tell you about each home?",
+      "Being from one country does not mean every family speaks alike.",
+      "Their home languages are different, so the answer is ___.",
+      "No; Indian families can speak different languages at home."
+     ],
+     "verified": {
+      "solverAnswer": "no",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch05-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch05-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "For a school dance show, the Assam group wants to perform a dance from its region. Should it choose Bihu or Garba?",
+     "prompt_hi": "School dance show mein Assam ka group apne region ka dance karna chahta hai. Use Bihu chunna chahiye ya Garba?",
+     "answer": "Bihu",
+     "acceptable": [
+      "Bihu dance"
+     ],
+     "hints": [
+      "Which region is the group representing?",
+      "Connect the dance tradition to its home region.",
+      "The dance associated with Assam is ___.",
+      "Bihu; it is a dance tradition of Assam."
+     ],
+     "verified": {
+      "solverAnswer": "Bihu",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch05-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t01-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two cousins live in Bengaluru. One speaks Kannada at home; the other speaks Telugu at home. Is a person's home language decided only by the city they live in? Answer yes or no.",
+     "prompt_hi": "Do cousins Bengaluru mein rehte hain. Ek ghar par Kannada bolta hai, doosra Telugu. Kya kisi ki ghar ki bhaasha sirf us shehar se tay hoti hai jahan woh rehta hai? Haan ya nahin?",
+     "answer": "No",
+     "acceptable": [
+      "Nahin",
+      "Nahi",
+      "No, families in one city can speak different languages"
+     ],
+     "hints": [
+      "What is shared by the cousins, and what differs?",
+      "Families living in one city may keep different home languages.",
+      "City alone does not decide home language, so ___.",
+      "No; families in the same city can speak different languages."
+     ],
+     "verified": {
+      "solverAnswer": "no",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch05-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A cultural programme needs one dance from Gujarat and one from Punjab. Choose the correct pair: Garba and Bhangra, or Bihu and Bharatanatyam?",
+     "prompt_hi": "Cultural programme ke liye Gujarat se ek aur Punjab se ek dance chahiye. Sahi jodi kaunsi hai: Garba aur Bhangra, ya Bihu aur Bharatanatyam?",
+     "answer": "Garba and Bhangra",
+     "acceptable": [
+      "Garba aur Bhangra",
+      "Garba, Bhangra"
+     ],
+     "hints": [
+      "Match each state to a dance tradition.",
+      "Check both states before choosing a pair.",
+      "Gujarat's dance is ___; Punjab's is ___.",
+      "Garba and Bhangra; they are associated with Gujarat and Punjab respectively."
+     ],
+     "verified": {
+      "solverAnswer": "Garba and Bhangra",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch05-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "At a school festival, families teach one another songs in their home languages. Why can this make the festival richer? Answer in a short phrase.",
+     "prompt_hi": "School festival mein families ek-doosre ko apni ghar ki bhaasha ke gaane sikhati hain. Isse festival aur samriddh kaise ho sakta hai? Chhote phrase mein batao.",
+     "answer": "People learn and enjoy songs from different cultures.",
+     "acceptable": [
+      "They share and learn different cultures",
+      "Everyone gets to experience new songs and languages",
+      "Alag-alag cultures ke gaane seekhne aur enjoy karne ko milte hain"
+     ],
+     "hints": [
+      "What does each family bring to the festival?",
+      "Think about what others gain when traditions are shared.",
+      "By sharing songs, people learn about ___.",
+      "People learn and enjoy different cultures through one another's songs."
+     ],
+     "verified": {
+      "solverAnswer": "sharing diverse traditions and languages",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both about sharing cultures",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch05-t01-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch05-t02",
+   "replacesOpeners": [
+    "c5-evs-ch05-t02-i01",
+    "diag:c5-evs-ch05-t02-m1",
+    "c5-evs-ch05-t02-i03"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch05-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch05-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "At a school assembly, students sing ‘Jana Gana Mana’. Is it India’s national anthem or national song?",
+     "prompt_hi": "School assembly mein students ‘Jana Gana Mana’ gaate hain. Yeh Bharat ka rashtriya gaan hai ya rashtriya geet?",
+     "answer": "National anthem",
+     "acceptable": [
+      "anthem",
+      "rashtriya gaan"
+     ],
+     "hints": [
+      "Which official national symbol is sung at school assemblies?",
+      "The anthem and the song have different names.",
+      "‘Jana Gana Mana’ is the national ___.",
+      "National anthem; ‘Jana Gana Mana’ has that official status."
+     ],
+     "verified": {
+      "solverAnswer": "national anthem",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch05-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch05-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "For a school exhibition, Meera labels the green band of India’s flag. Should she write ‘growth’ or ‘bravery’?",
+     "prompt_hi": "School exhibition ke liye Meera Bharat ke jhande ki hari patti par label laga rahi hai. Use ‘vikas’ likhna chahiye ya ‘bahaduri’?",
+     "answer": "Growth",
+     "acceptable": [
+      "vikas",
+      "growth and prosperity",
+      "samriddhi"
+     ],
+     "hints": [
+      "What does the green band make you think of?",
+      "Connect this colour with plants and the country flourishing.",
+      "The green band stands for ___.",
+      "Growth; green represents a flourishing country."
+     ],
+     "verified": {
+      "solverAnswer": "growth",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch05-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t02-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A quiz team must pair India’s national tree with its national aquatic animal. Which pair is correct: banyan and Ganga river dolphin, or neem and crocodile?",
+     "prompt_hi": "Quiz team ko Bharat ke rashtriya vriksh aur rashtriya jaliya jeev ki jodi chunni hai. Kaunsi sahi hai: bargad aur Ganga dolphin, ya neem aur magarmachh?",
+     "answer": "Banyan and Ganga river dolphin",
+     "acceptable": [
+      "banyan and dolphin",
+      "bargad aur Ganga dolphin",
+      "first pair"
+     ],
+     "hints": [
+      "Can you identify either symbol first?",
+      "Check both categories; one correct animal alone is not enough.",
+      "The correct tree-and-animal pair is ___ and ___.",
+      "Banyan and Ganga river dolphin are India’s national symbols."
+     ],
+     "verified": {
+      "solverAnswer": "banyan and Ganga river dolphin",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch05-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t02-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A poster shows the Ashoka Chakra as a wheel in motion. Why is a moving wheel a fitting symbol: because it suggests continuing progress, or because it suggests standing still?",
+     "prompt_hi": "Ek poster mein Ashoka Chakra ko ghoomte hue pahiye jaisa dikhaya hai. Yeh sahi prateek kyun hai: kyunki yeh lagataar pragati dikhata hai, ya kyunki yeh ruke rehna dikhata hai?",
+     "answer": "It suggests continuing progress",
+     "acceptable": [
+      "continuing progress",
+      "lagataar pragati",
+      "moving forward",
+      "first option"
+     ],
+     "hints": [
+      "What happens when a wheel keeps turning?",
+      "Think about whether the symbol points towards action or stillness.",
+      "A moving wheel suggests continuing ___.",
+      "Continuing progress; the Chakra reminds us to keep moving forward."
+     ],
+     "verified": {
+      "solverAnswer": "because it suggests continuing progress",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch05-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch05-t02-s3",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "On 26 January 1950, India’s Constitution came into effect. A classmate says Republic Day celebrates getting a hereditary king. Correct them: in a republic, how do leaders gain their position?",
+     "prompt_hi": "26 January 1950 ko Bharat ka Samvidhan lagu hua. Ek classmate kehta hai Republic Day vansh se milne wale raja ka utsav hai. Use sudharo: republic mein neta apna pad kaise paate hain?",
+     "answer": "People choose their leaders through elections",
+     "acceptable": [
+      "by elections",
+      "people elect them",
+      "log chunav mein neta chunte hain"
+     ],
+     "hints": [
+      "Who has a say in choosing leaders in a republic?",
+      "Contrast an elected position with one inherited from family.",
+      "In a republic, people choose leaders through ___.",
+      "Through elections; leadership is chosen by people, not inherited."
+     ],
+     "verified": {
+      "solverAnswer": "by election",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch05-t02-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch06-t01",
+   "replacesOpeners": [
+    "c5-evs-ch06-t01-i01",
+    "diag:c5-evs-ch06-t01-m1",
+    "c5-evs-ch06-t01-i03"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch06-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch06-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "On a school trip to the Andaman Islands, Meera sees trees growing in muddy seawater along the shore. Is she looking at a mangrove forest or a coral reef?",
+     "prompt_hi": "Andaman Islands ki school trip par Meera ko kinare par keechad wale samundari paani mein ped ugte dikhe. Yeh mangrove forest hai ya coral reef?",
+     "answer": "Mangrove forest",
+     "acceptable": [
+      "mangroves",
+      "mangrove",
+      "mangrove van"
+     ],
+     "hints": [
+      "Are these trees, or something growing underwater?",
+      "Think about which habitat has trees along a muddy shore.",
+      "Trees growing along this shore form a ___ forest.",
+      "Mangrove forest: mangrove trees grow along muddy sea shores."
+     ],
+     "verified": {
+      "solverAnswer": "mangrove forest",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch06-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "During the monsoon, clouds blow from the Arabian Sea towards the Western Ghats. Which slope usually gets more rain: the sea-facing slope or the inland slope?",
+     "prompt_hi": "Monsoon mein badal Arabian Sea se Western Ghats ki taraf aate hain. Aam taur par kis dhalan par zyada baarish hoti hai: samundar ki taraf wali ya andar ki taraf wali?",
+     "answer": "Sea-facing slope",
+     "acceptable": [
+      "sea-facing side",
+      "Arabian Sea-facing slope",
+      "samundar ki taraf wali dhalan"
+     ],
+     "hints": [
+      "Which slope do the incoming clouds reach first?",
+      "The hills force moist air upwards as it arrives.",
+      "The wetter slope faces the ___.",
+      "Sea-facing slope: incoming moist air rises there and brings rain."
+     ],
+     "verified": {
+      "solverAnswer": "the sea-facing slope",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch06-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t01-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A Lakshadweep team studies a shallow underwater home for many fish, built by tiny living animals. Should they record it as a coral reef or a mangrove forest?",
+     "prompt_hi": "Lakshadweep mein ek team paani ke neeche machhliyon ka ghar dekhti hai, jo chhote jeevon ne banaya hai. Use coral reef likhen ya mangrove forest?",
+     "answer": "Coral reef",
+     "acceptable": [
+      "reef",
+      "coral reefs",
+      "praval bhitti"
+     ],
+     "hints": [
+      "Is this habitat made by trees or tiny animals?",
+      "One of these habitats is built underwater by living animals.",
+      "The underwater habitat is a ___.",
+      "Coral reef: tiny coral animals build this underwater habitat."
+     ],
+     "verified": {
+      "solverAnswer": "a coral reef",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A wildlife club wants to spot lion-tailed macaques in a rainy hill forest. Should it plan a trip to the Western Ghats or Lakshadweep?",
+     "prompt_hi": "Wildlife club ko baarish wale pahaadi jungle mein lion-tailed macaques dekhne hain. Trip Western Ghats ki plan kare ya Lakshadweep ki?",
+     "answer": "Western Ghats",
+     "acceptable": [
+      "the Western Ghats",
+      "Pashchimi Ghat"
+     ],
+     "hints": [
+      "Which option is a mountain region with rainy forests?",
+      "Think of the forest habitat of this special animal.",
+      "The club should visit the ___.",
+      "Western Ghats: their rainy forests are home to lion-tailed macaques."
+     ],
+     "verified": {
+      "solverAnswer": "Western Ghats",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "Moist winds from the Arabian Sea hit the Western Ghats and rise up the slopes. Why do these slopes receive heavy rain?",
+     "prompt_hi": "Arabian Sea se aayi nami wali hawa Western Ghats ki dhalanon se takrakar upar uthti hai. In dhalanon par tez baarish kyun hoti hai?",
+     "answer": "The rising moist air cools, causing water vapour to form rain.",
+     "acceptable": [
+      "Moist air cools as it rises and brings rain.",
+      "Upar uthti nami wali hawa thandi hokar baarish laati hai."
+     ],
+     "hints": [
+      "What happens to the moist air as it climbs?",
+      "Rising air cools; think about its water vapour.",
+      "The air rises, ___, and its vapour forms rain.",
+      "Rising moist air cools, so its water vapour forms rain."
+     ],
+     "verified": {
+      "solverAnswer": "Rising air cools, condenses, and forms clouds.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both describe cooling and condensation",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch06-t01-i01": {
+     "ge": 3,
+     "tooEasy": true
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch06-t02",
+   "replacesOpeners": [
+    "c5-evs-ch06-t02-i01",
+    "diag:c5-evs-ch06-t02-m1",
+    "c5-evs-ch06-t02-i04"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch06-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch06-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "At an old stepwell in Gujarat, visitors scratch their names into the stone carvings. What is being harmed: the stepwell's history or its water supply?",
+     "prompt_hi": "Gujarat ki ek purani baoli mein visitors patthar ki nakkashi par apne naam khurach rahe hain. Isse kya nuksaan hota hai: baoli ke itihaas ko ya paani ki supply ko?",
+     "answer": "The stepwell's history",
+     "acceptable": [
+      "history",
+      "itihaas",
+      "historical carvings",
+      "nakkashi"
+     ],
+     "hints": [
+      "Where are the names being scratched?",
+      "Think about what the old carvings tell us.",
+      "Scratching changes the old carvings, so it harms the stepwell's ___.",
+      "Its history: scratching permanently damages the old carvings."
+     ],
+     "verified": {
+      "solverAnswer": "its history",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch06-t02-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "Your class visits a mangrove boardwalk near Mumbai. A water bottle rolls off it onto the muddy ground. Should you step onto the mangrove roots to get it, or tell the guide so it can be collected safely?",
+     "prompt_hi": "Tumhari class Mumbai ke paas mangrove boardwalk par hai. Paani ki bottle neeche kichad mein gir jaati hai. Kya tum roots par pair rakhkar use uthaoge, ya guide ko bataoge taaki woh safely uthai ja sake?",
+     "answer": "Tell the guide so it can be collected safely",
+     "acceptable": [
+      "tell the guide",
+      "guide ko batao",
+      "ask the guide to collect it safely"
+     ],
+     "hints": [
+      "What might your feet press down on?",
+      "The bottle must go, but the roots need protection too.",
+      "To protect both, ask the ___ for help.",
+      "Tell the guide: the bottle can be removed without trampling roots."
+     ],
+     "verified": {
+      "solverAnswer": "tell the guide so it can be collected safely",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch06-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t02-s1",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Bats rest inside a cave that tourists can visit. A group plays loud music there every afternoon. Why could this harm the bats?",
+     "prompt_hi": "Ek tourist cave mein bats aaraam karte hain. Ek group wahan har dopahar loud music bajata hai. Isse bats ko nuksaan kyun ho sakta hai?",
+     "answer": "The noise repeatedly disturbs the resting bats",
+     "acceptable": [
+      "noise disturbs the bats",
+      "shor se bats ko aaraam nahi milta",
+      "loud music disturbs their rest"
+     ],
+     "hints": [
+      "What are the bats doing during the afternoon?",
+      "Consider how repeated noise affects resting wildlife.",
+      "The music repeatedly ___ the bats.",
+      "The noise disturbs their rest every day."
+     ],
+     "verified": {
+      "solverAnswer": "Loud noise disturbs their resting and breeding.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both state noise disturbs bats",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t02-s2",
+     "kind": "contrast",
+     "demand": "transfer",
+     "genGrade": 5.5,
+     "prompt_en": "At a protected lake, a snack seller can offer disposable plastic cups or washable steel cups with a return deposit. Which choice better protects the lake when many tourists visit?",
+     "prompt_hi": "Ek protected lake par snack seller disposable plastic cups ya deposit lekar wapas kiye jaane wale steel cups de sakta hai. Bahut tourists aate hon toh lake ke liye kaunsa choice behtar hai?",
+     "answer": "Washable steel cups with a return deposit",
+     "acceptable": [
+      "steel cups",
+      "returnable steel cups",
+      "deposit wale steel cups"
+     ],
+     "hints": [
+      "Which cups can be used again?",
+      "A deposit encourages customers to return cups.",
+      "Choose the cups that can be ___ after each use.",
+      "Washable steel cups: reusing them reduces discarded cups near the lake."
+     ],
+     "verified": {
+      "solverAnswer": "washable steel cups with a return deposit",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch06-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch06-t02-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "At a desert bird sanctuary, 80 visitors come each day for 6 days. If each visitor leaves one snack wrapper, how many wrappers build up in those 6 days?",
+     "prompt_hi": "Ek desert bird sanctuary mein 6 din tak roz 80 visitors aate hain. Agar har visitor ek snack wrapper chhod de, toh 6 din mein kitne wrappers jama honge?",
+     "answer": "480 wrappers",
+     "acceptable": [
+      "480",
+      "four hundred eighty wrappers",
+      "char sau assi wrappers"
+     ],
+     "hints": [
+      "How many wrappers are left in one day?",
+      "The same daily amount builds up across several days.",
+      "Total wrappers = wrappers per day × ___ days.",
+      "480 wrappers: 80 left each day for 6 days add up."
+     ],
+     "verified": {
+      "solverAnswer": "480 wrappers",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch06-t02-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch07-t01",
+   "replacesOpeners": [
+    "c5-evs-ch07-t01-i02",
+    "diag:c5-evs-ch07-t01-m1",
+    "c5-evs-ch07-t01-i05"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch07-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch07-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A phone on silent mode vibrates when a message arrives. Can you see the energy making it work, or only its effect? Name the effect.",
+     "prompt_hi": "Silent mode par message aate hi phone vibrate karta hai. Kya tum use chalane wali energy dekh sakte ho, ya sirf uska asar? Asar ka naam batao.",
+     "answer": "Only its effect: vibration.",
+     "acceptable": [
+      "vibration",
+      "the phone vibrating",
+      "sirf vibration",
+      "kampan"
+     ],
+     "hints": [
+      "What can you notice when the message arrives?",
+      "Think about the difference between energy and what it does.",
+      "You notice the phone’s ___, not energy itself.",
+      "You see only its effect—vibration—not energy itself."
+     ],
+     "verified": {
+      "solverAnswer": "Vibration",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch07-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch07-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school’s solar panel runs a water pump on a sunny day. Which energy source starts this work: sunlight or flowing water?",
+     "prompt_hi": "Dhoop wale din school ka solar panel water pump chalata hai. Is kaam ki shuruaat kis energy source se hoti hai: dhoop ya behta paani?",
+     "answer": "Sunlight.",
+     "acceptable": [
+      "sun",
+      "solar energy",
+      "dhoop",
+      "suraj ki roshni"
+     ],
+     "hints": [
+      "What reaches the panel before the pump starts?",
+      "Look at what the panel receives, not what the pump moves.",
+      "The starting source is ___.",
+      "Sunlight starts the work because the solar panel receives it."
+     ],
+     "verified": {
+      "solverAnswer": "Sunlight",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch07-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t01-s1",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "When the school bell rings, Riya says she can see its energy because the bell moves. Is she seeing energy itself or an effect of energy? Why?",
+     "prompt_hi": "School bell bajti hai toh Riya kehti hai ki bell hilne se use energy dikh rahi hai. Kya use energy khud dikh rahi hai ya uska asar? Kyun?",
+     "answer": "An effect of energy: the bell’s movement; energy itself cannot be seen.",
+     "acceptable": [
+      "the effect, because movement is visible but energy itself is not",
+      "energy ka asar; bell ka hilna dikhta hai, energy nahi"
+     ],
+     "hints": [
+      "What exactly can Riya see?",
+      "Separate the cause from the change it produces.",
+      "She sees the bell’s ___, which is energy’s effect.",
+      "She sees an effect: movement; energy itself is not visible."
+     ],
+     "verified": {
+      "solverAnswer": "An effect of energy, because energy itself is invisible.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "both identify visible effect not energy",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch07-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t01-s2",
+     "kind": "contrast",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "Biogas from kitchen waste heats dal on one stove. Rooftop solar panels power an induction cooker heating rice. Which setup uses a fuel directly: the biogas stove or the induction cooker?",
+     "prompt_hi": "Kitchen waste se bani biogas ek stove par dal garam karti hai. Rooftop solar panels se induction cooker par chawal pakte hain. Kaunsa setup fuel seedha use karta hai: biogas stove ya induction cooker?",
+     "answer": "The biogas stove.",
+     "acceptable": [
+      "biogas stove",
+      "biogas wala stove"
+     ],
+     "hints": [
+      "Which setup burns something to produce heat?",
+      "A fuel is used directly when it burns at the stove.",
+      "The setup using fuel directly is the ___ stove.",
+      "The biogas stove uses fuel directly because biogas burns there."
+     ],
+     "verified": {
+      "solverAnswer": "The biogas stove",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch07-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t01-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "Coastal wind turns a turbine that powers an electric train. Complete the energy chain: wind → turbine → ___ → train’s movement.",
+     "prompt_hi": "Samundar ke paas ki hawa turbine ghumati hai, jo electric train chalane mein madad karti hai. Energy chain poori karo: hawa → turbine → ___ → train ka chalna.",
+     "answer": "Electricity.",
+     "acceptable": [
+      "electric energy",
+      "bijli",
+      "vidyut"
+     ],
+     "hints": [
+      "What does the turbine provide for the train?",
+      "Think of the form of energy an electric train uses.",
+      "Wind → turbine → ___ → train’s movement.",
+      "Electricity completes the chain; the turbine generates it for the train."
+     ],
+     "verified": {
+      "solverAnswer": "electricity",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.75,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch07-t01-i02": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch07-t02",
+   "replacesOpeners": [
+    "c5-evs-ch07-t02-i01",
+    "diag:c5-evs-ch07-t02-m1",
+    "c5-evs-ch07-t02-i09"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch07-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch07-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After a school computer class, the computers are shut down, but their monitors are still on. What should the class monitor do to save electricity?",
+     "prompt_hi": "School computer class ke baad computers shut down hain, lekin unke monitors abhi bhi on hain. Bijli bachane ke liye class monitor ko kya karna chahiye?",
+     "answer": "Switch off the monitors.",
+     "acceptable": [
+      "turn off the monitors",
+      "monitor band karo",
+      "monitors ka switch off karo"
+     ],
+     "hints": [
+      "Which equipment is still using electricity?",
+      "Think about what remains on after the computers shut down.",
+      "The class monitor should switch off the ___.",
+      "Switch off the monitors; they use electricity while left on."
+     ],
+     "verified": {
+      "solverAnswer": "Switch off the monitors",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch07-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch07-t02-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A family stops its petrol car at a railway crossing. The gate will stay closed for ten minutes. Which saves fuel: keeping the engine running or switching it off?",
+     "prompt_hi": "Ek family ki petrol car railway crossing par ruki hai. Gate das minute tak band rahega. Fuel kis se bachega: engine chalu rakhne se ya use band karne se?",
+     "answer": "Switching the engine off.",
+     "acceptable": [
+      "turning off the engine",
+      "engine band karna",
+      "switch it off"
+     ],
+     "hints": [
+      "Does a waiting car need its engine running?",
+      "An idling engine keeps using petrol.",
+      "For a long wait, choose ___ instead of idling.",
+      "Switch the engine off; idling burns petrol without moving the car."
+     ],
+     "verified": {
+      "solverAnswer": "Switching it off",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Answers match key",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch07-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "For a class trip, 30 students can travel in one bus or in ten petrol cars carrying three students each. Which choice saves more fuel overall?",
+     "prompt_hi": "Class trip ke liye 30 students ek bus mein ya teen-teen students wali das petrol cars mein ja sakte hain. Kul milakar kis choice se zyada fuel bachega?",
+     "answer": "One bus.",
+     "acceptable": [
+      "bus",
+      "ek bus",
+      "travelling together by bus"
+     ],
+     "hints": [
+      "How many vehicles move in each choice?",
+      "Sharing one vehicle can reduce fuel used per student.",
+      "The fuel-saving choice is the ___.",
+      "One bus; it carries everyone instead of using ten cars."
+     ],
+     "verified": {
+      "solverAnswer": "One bus",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch07-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t02-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A town wants to run its new water pump using either diesel or sunlight. Why is sunlight the better long-term energy source? Give one reason about whether the source will run out.",
+     "prompt_hi": "Ek town apna naya water pump diesel ya sunlight se chalana chahta hai. Lambe samay ke liye sunlight behtar energy source kyun hai? Source ke khatam hone ke baare mein ek wajah batao.",
+     "answer": "Sunlight will not run out, but diesel can.",
+     "acceptable": [
+      "sunlight is renewable but diesel is limited",
+      "dhoop khatam nahi hogi, diesel ho sakta hai",
+      "diesel can run out but sunlight will not"
+     ],
+     "hints": [
+      "Can both sources be replaced naturally as we use them?",
+      "Compare a fuel taken from the ground with daily sunshine.",
+      "The better long-term source is ___ because ___.",
+      "Sunlight will not run out; diesel comes from a limited fuel supply."
+     ],
+     "verified": {
+      "solverAnswer": "Sunlight will not run out.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both convey non-renewable diesel",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch07-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch07-t02-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 6,
+     "prompt_en": "Two classroom lights give similar brightness. Light A uses 20 watts for 5 hours; Light B uses 12 watts for 5 hours. How many watt-hours does B save in one day?",
+     "prompt_hi": "Do classroom lights lagbhag barabar roshni deti hain. Light A 5 ghante tak 20 watt leti hai; Light B 5 ghante tak 12 watt leti hai. Ek din mein B kitne watt-hours bachati hai?",
+     "answer": "40 watt-hours",
+     "acceptable": [
+      "40 Wh",
+      "40",
+      "chaalis watt-hours"
+     ],
+     "hints": [
+      "What is the difference in their power use?",
+      "Multiply the watt difference by the hours used.",
+      "Energy saved = (___ watts) × 5 hours.",
+      "40 watt-hours; B uses 8 fewer watts for 5 hours."
+     ],
+     "verified": {
+      "solverAnswer": "40 watt-hours",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 6,
+      "deepseek": 6,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch07-t02-i01": {
+     "ge": 4.25,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch08-t01",
+   "replacesOpeners": [
+    "c5-evs-ch08-t01-i01",
+    "diag:c5-evs-ch08-t01-m1",
+    "c5-evs-ch08-t01-i09"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch08-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch08-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school wants a plant-fibre rope for its sports day. Should it choose jute fibre from a plant stem or wool fibre from a sheep?",
+     "prompt_hi": "School ko sports day ke liye paudhe ke reshe ki rassi chahiye. Paudhe ke tane se milne wala jute chunenge ya bhed se milne wala wool?",
+     "answer": "Jute fibre",
+     "acceptable": [
+      "jute",
+      "patsan"
+     ],
+     "hints": [
+      "Which option comes from a plant?",
+      "Trace each fibre back to its source.",
+      "The fibre from the plant stem is ___.",
+      "Jute fibre comes from a plant stem, so it fits."
+     ],
+     "verified": {
+      "solverAnswer": "Jute fibre from a plant stem",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch08-t01-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "Meera has loose cotton fibres and wants to make thread for a school craft project. Should she spin the fibres or weave them first?",
+     "prompt_hi": "Meera ke paas cotton ke dheele reshe hain. School craft ke liye dhaaga banane ko woh pehle reshon ko spin kare ya weave kare?",
+     "answer": "Spin the fibres",
+     "acceptable": [
+      "spin",
+      "spinning",
+      "reshon ko kaatna",
+      "katayi"
+     ],
+     "hints": [
+      "What must happen before loose fibres can become cloth?",
+      "Think about the step that twists fibres together.",
+      "First, she should ___ the fibres.",
+      "Spin the fibres: twisting them makes thread."
+     ],
+     "verified": {
+      "solverAnswer": "Spin the fibres first",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch08-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t01-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "At a textile stall, one scarf is labelled ‘fibre from silkworm cocoons’ and another ‘fibre from cotton bolls’. Which scarf uses an animal fibre, and what animal provides it?",
+     "prompt_hi": "Textile stall par ek scarf ka resha silkworm cocoon se aur doosre ka cotton boll se hai. Animal fibre kis scarf mein hai, aur woh kis jaanwar se milta hai?",
+     "answer": "The cocoon-fibre scarf; silkworm",
+     "acceptable": [
+      "cocoon scarf, silkworm",
+      "silk scarf, silkworm",
+      "resham wala scarf, resham ka keeda"
+     ],
+     "hints": [
+      "Which source is a living animal rather than a plant part?",
+      "Match each label to the source of its fibre.",
+      "The animal-fibre scarf is the ___ scarf; its source is ___.",
+      "The cocoon-fibre scarf uses silk from a silkworm."
+     ],
+     "verified": {
+      "solverAnswer": "Silkworm cocoon scarf; silkworm provides the animal fibre.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t01-s2",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A craft club has spun cotton into thread but has no cloth yet. Why must members weave or knit the thread before they can cut pieces for tote bags?",
+     "prompt_hi": "Craft club ne cotton se dhaaga spin kar liya hai, par kapda abhi nahi bana. Tote bags ke tukde kaatne se pehle dhaage ko weave ya knit kyun karna hoga?",
+     "answer": "Weaving or knitting joins threads to make cloth",
+     "acceptable": [
+      "to turn thread into cloth",
+      "dhaagon ko jodkar kapda banane ke liye"
+     ],
+     "hints": [
+      "Can separate threads be cut like a sheet of cloth?",
+      "Think about what joins many threads into a usable sheet.",
+      "They must join the threads to make ___.",
+      "Weaving or knitting joins threads into cloth that can be cut."
+     ],
+     "verified": {
+      "solverAnswer": "Thread alone lacks strength and structure to hold a shape.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver gives why, not process",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t01-s3",
+     "kind": "near_transfer",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "A shop offers a Banarasi silk stole woven by a craftsperson on a handloom and an identical-looking factory-made stole. Which one represents a handloom tradition: the craftsperson’s or the factory’s?",
+     "prompt_hi": "Dukaan mein ek Banarasi silk stole karigar ne handloom par buna hai; doosra waisa hi dikhne wala factory mein bana hai. Handloom parampara kis stole mein hai—karigar ke ya factory ke?",
+     "answer": "The craftsperson’s stole",
+     "acceptable": [
+      "craftsperson's",
+      "handloom-woven stole",
+      "karigar wala stole"
+     ],
+     "hints": [
+      "Does appearance alone tell you how a stole was made?",
+      "Look for the method and maker named in the question.",
+      "The handloom tradition is shown by the ___ stole.",
+      "The craftsperson’s stole was woven on a handloom."
+     ],
+     "verified": {
+      "solverAnswer": "The craftsperson’s",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch08-t01-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch08-t02",
+   "replacesOpeners": [
+    "c5-evs-ch08-t02-i01",
+    "diag:c5-evs-ch08-t02-m1",
+    "c5-evs-ch08-t02-i05"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch08-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch08-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "An adult has punched holes in a card for your school badge. You want a dashed line of stitches for decoration. Which should you use with a blunt plastic needle: running stitch or back stitch?",
+     "prompt_hi": "School badge ke card mein adult ne holes banaye hain. Decoration ke liye dashed silaai chahiye. Blunt plastic needle se running stitch karoge ya back stitch?",
+     "answer": "running stitch",
+     "acceptable": [
+      "running",
+      "kachchi silaai"
+     ],
+     "hints": [
+      "Which stitch makes a line with spaces?",
+      "Think about how the thread moves through successive holes.",
+      "A dashed line needs a ___ stitch.",
+      "Running stitch makes a dashed line with spaces between stitches."
+     ],
+     "verified": {
+      "solverAnswer": "Running stitch",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch08-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After washing your cricket jersey, you find it is still damp. Should you fold it into your cupboard now or let it dry completely first?",
+     "prompt_hi": "Cricket jersey dhone ke baad abhi geeli hai. Use abhi fold karke cupboard mein rakhoge ya pehle poori tarah sukhne doge?",
+     "answer": "let it dry completely first",
+     "acceptable": [
+      "dry it first",
+      "sukhne do",
+      "pehle poori tarah sukhao"
+     ],
+     "hints": [
+      "How might damp fabric change inside a closed cupboard?",
+      "Think about moisture trapped between folded layers.",
+      "Before storing it, let the jersey ___.",
+      "Let it dry completely first; storing damp clothes can cause a musty smell."
+     ],
+     "verified": {
+      "solverAnswer": "Let it dry completely first",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch08-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t02-s1",
+     "kind": "predict",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Two lacing-card strips are joined with a blunt plastic needle. One uses running stitch; the other uses back stitch. If both are pulled gently, which join is less likely to open at the gaps, and why?",
+     "prompt_hi": "Do lacing-card strips blunt plastic needle se jodi gayi hain: ek running stitch se, doosri back stitch se. Dono ko halka kheencho toh kaunsi jod gaps par kam khulegi, aur kyun?",
+     "answer": "Back stitch, because it goes back to fill the gaps.",
+     "acceptable": [
+      "back stitch because it fills gaps",
+      "back stitch; it makes a more continuous line"
+     ],
+     "hints": [
+      "Where could a join start to open?",
+      "Compare how each stitch covers the spaces between holes.",
+      "The ___ join holds better because its stitches ___.",
+      "Back stitch holds better because it goes back to fill gaps."
+     ],
+     "verified": {
+      "solverAnswer": "Back stitch, because its stitches overlap and leave no gaps.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both explain gap-filling",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.75,
+     "geRaters": {
+      "gpt6": 5.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t02-s2",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "Meera washes a dark sports T-shirt. The label says ‘dry in shade’. Her choices are direct midday sun or an airy shaded balcony. Which should she choose, and why?",
+     "prompt_hi": "Meera ne dark sports T-shirt dhoyi. Label par ‘shade mein sukhao’ likha hai. Direct dopahar ki dhoop ya hawa wali shaded balcony—kya chune, aur kyun?",
+     "answer": "The airy shaded balcony, to follow the care label and help prevent fading.",
+     "acceptable": [
+      "shaded balcony to prevent fading",
+      "shade, as the label says"
+     ],
+     "hints": [
+      "Which choice matches the label?",
+      "Consider what strong sunlight may do to dark fabric.",
+      "Choose ___ because it follows the label and reduces ___.",
+      "Choose the airy shaded balcony; shade helps prevent fading."
+     ],
+     "verified": {
+      "solverAnswer": "Airy shaded balcony, to prevent colour fading from sun.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both prioritize shade to prevent fade",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch08-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch08-t02-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A clean bedsheet has a large tear but plenty of strong fabric. Your class needs cloth bags for library books. Should you throw the sheet away, donate it as a bedsheet, or cut and stitch the strong parts into bags?",
+     "prompt_hi": "Ek saaf bedsheet mein bada tear hai, lekin kaafi kapda mazboot hai. Class ko library books ke liye cloth bags chahiye. Sheet pheko, bedsheet ki tarah donate karo, ya mazboot hisson se bags silaao?",
+     "answer": "Cut and stitch the strong parts into bags.",
+     "acceptable": [
+      "make bags from the strong parts",
+      "mazboot hisson se bags banao"
+     ],
+     "hints": [
+      "Which option uses fabric that is still strong?",
+      "Match the usable cloth to what your class needs.",
+      "Use the ___ parts to make ___.",
+      "Cut and stitch the strong parts into bags; the torn sheet gets reused."
+     ],
+     "verified": {
+      "solverAnswer": "Cut and stitch the strong parts into bags",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.25,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch08-t02-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch09-t01",
+   "replacesOpeners": [
+    "c5-evs-ch09-t01-i01",
+    "diag:c5-evs-ch09-t01-m1",
+    "c5-evs-ch09-t01-i14"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch09-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch09-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "In a space photo, the Sun lights one half of Earth. Bengaluru is on the unlit half. Is it day or night in Bengaluru?",
+     "prompt_hi": "Space photo mein Suraj Prithvi ka aadha hissa roshan kar raha hai. Bengaluru bina roshni wale hisse mein hai. Bengaluru mein din hai ya raat?",
+     "answer": "Night",
+     "acceptable": [
+      "raat",
+      "night-time"
+     ],
+     "hints": [
+      "Is Bengaluru on the lit or unlit half?",
+      "The half facing away from sunlight is not in daylight.",
+      "Bengaluru is on the unlit half, so it is ___.",
+      "Night: Bengaluru is on the half facing away from the Sun."
+     ],
+     "verified": {
+      "solverAnswer": "Night",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch09-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A torch shines steadily on a ball marked with a dot for Pune. You turn the ball until the dot moves from darkness into light. Does this model sunrise or sunset in Pune?",
+     "prompt_hi": "Torch ek ball par lagataar roshni daal rahi hai, aur us par Pune ka dot hai. Ball ghumane par dot andhere se roshni mein aata hai. Yeh Pune ka sunrise dikhata hai ya sunset?",
+     "answer": "Sunrise",
+     "acceptable": [
+      "suraj ugna",
+      "suryoday",
+      "sun rise"
+     ],
+     "hints": [
+      "What change in light does the dot experience?",
+      "Think of the event when a place first enters sunlight.",
+      "The dot goes from darkness into light; this models ___.",
+      "Sunrise: turning the ball brings Pune into the torch’s light."
+     ],
+     "verified": {
+      "solverAnswer": "Sunrise",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch09-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A science club watches a model Earth spin for 72 hours of model time. About how many complete spins does it make?",
+     "prompt_hi": "Science club model Earth ko 72 ghante ke model time tak ghoomte dekhta hai. Woh lagbhag kitne poore chakkar lagayegi?",
+     "answer": "3 complete spins",
+     "acceptable": [
+      "3",
+      "three",
+      "teen",
+      "3 chakkar"
+     ],
+     "hints": [
+      "How much model time does one complete spin take?",
+      "Divide the total time by the time for one spin.",
+      "Number of spins = 72 ÷ ___ hours.",
+      "3 complete spins: Earth makes about one spin every 24 hours."
+     ],
+     "verified": {
+      "solverAnswer": "3 spins",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t01-s2",
+     "kind": "predict",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "On a globe, a dot for Jaipur is just inside the torchlit half. Keeping the torch still, you turn the globe until Jaipur moves into darkness. Which event have you shown: sunrise or sunset?",
+     "prompt_hi": "Globe par Jaipur ka dot torch ki roshni wale hisse mein hai. Torch ko wahi rakhkar globe ghumate ho, aur Jaipur andhere mein chala jaata hai. Kaunsi ghatna dikhayi: sunrise ya sunset?",
+     "answer": "Sunset",
+     "acceptable": [
+      "suraj doobna",
+      "suryast",
+      "sun set"
+     ],
+     "hints": [
+      "Does Jaipur enter or leave the light?",
+      "Match leaving sunlight to the end of daytime.",
+      "Jaipur moves from light into darkness; this models ___.",
+      "Sunset: turning the globe takes Jaipur out of the torch’s light."
+     ],
+     "verified": {
+      "solverAnswer": "Sunset",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "During a video call, it is daytime for Asha in India but night-time for her cousin in the USA. Why can both see different times of day at the same moment?",
+     "prompt_hi": "Video call ke waqt India mein Asha ke liye din hai, lekin USA mein uske cousin ke liye raat. Ek hi waqt par dono ko alag samay kyon dikh raha hai?",
+     "answer": "Earth’s rotation puts their places on different sides: one faces the Sun and the other faces away.",
+     "acceptable": [
+      "India faces the Sun while the USA faces away",
+      "Prithvi ke ghoomne se ek jagah Suraj ki taraf hai aur doosri usse door"
+     ],
+     "hints": [
+      "Are both places facing the Sun at that moment?",
+      "Earth’s rotation puts places on different sides of the planet.",
+      "One place faces the Sun while the other faces ___.",
+      "Earth’s rotation puts them on different sides: one faces sunlight, the other faces away."
+     ],
+     "verified": {
+      "solverAnswer": "Earth’s spherical shape causes only half to face the Sun at a time.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver omits rotation cause",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch09-t01-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch09-t02",
+   "replacesOpeners": [
+    "c5-evs-ch09-t02-i01",
+    "diag:c5-evs-ch09-t02-m1",
+    "c5-evs-ch09-t02-i14"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch09-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch09-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "In Jaipur, the air turns cooler after the rains and a school garden has fewer butterflies than during the rainy months. Which season is beginning: monsoon, autumn or summer?",
+     "prompt_hi": "Jaipur mein baarish ke baad hawa thandi hone lagi hai aur school garden mein rainy months se kam butterflies hain. Kaunsa mausam shuru ho raha hai: monsoon, autumn ya summer?",
+     "answer": "Autumn",
+     "acceptable": [
+      "post-monsoon",
+      "patjhad",
+      "sharad",
+      "autumn season"
+     ],
+     "hints": [
+      "Which season follows the rainy months?",
+      "Use both the weather and butterfly observations.",
+      "Rainy months have ended; the next season is ___.",
+      "Autumn: it follows the rains as the air cools."
+     ],
+     "verified": {
+      "solverAnswer": "Autumn",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch09-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "On 12 July, Meera sees rain and new leaves on a neem tree. For her seasons diary, which entry is better: ‘Rain; neem has new leaves’ or ‘The neem looks nice’?",
+     "prompt_hi": "12 July ko Meera ne baarish aur neem par naye patte dekhe. Seasons diary ke liye kaunsi entry behtar hai: ‘Baarish; neem par naye patte’ ya ‘Neem achha lag raha hai’?",
+     "answer": "Rain; neem has new leaves",
+     "acceptable": [
+      "the first entry",
+      "first option",
+      "baarish; neem par naye patte"
+     ],
+     "hints": [
+      "Which entry records things Meera could observe?",
+      "A diary note should name specific weather and plant changes.",
+      "Choose the entry that records ___ and ___.",
+      "‘Rain; neem has new leaves’ records two observable details."
+     ],
+     "verified": {
+      "solverAnswer": "‘Rain; neem has new leaves’",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch09-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t02-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A Bengaluru school notices many frogs calling after heavy rain, but few during a later dry, cooler period. Which period is the monsoon: the frog-calling period or the dry, cooler period?",
+     "prompt_hi": "Bengaluru ke school mein tez baarish ke baad bahut frogs ki awaaz aati hai, par baad ke sukhe, thande samay mein kam. Monsoon kaunsa hai: frogs ki awaaz wala samay ya sukha, thanda samay?",
+     "answer": "The frog-calling period",
+     "acceptable": [
+      "the first period",
+      "the period after heavy rain",
+      "frogs ki awaaz wala samay"
+     ],
+     "hints": [
+      "When are frogs often more active?",
+      "Link animal activity with the weather described.",
+      "Heavy rain and more frog calls point to ___.",
+      "The frog-calling period is the monsoon because it follows heavy rain."
+     ],
+     "verified": {
+      "solverAnswer": "The frog-calling period",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t02-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "A seasons diary says: 5 June—gulmohar has many flowers; 20 July—flowers are gone and seed pods are visible. What change should Riya record for the tree between these dates?",
+     "prompt_hi": "Seasons diary mein likha hai: 5 June—gulmohar par bahut phool; 20 July—phool gayab aur beej wali phaliyan dikh rahi hain. In dates ke beech ped mein kya badlav Riya record kare?",
+     "answer": "Flowers gave way to seed pods",
+     "acceptable": [
+      "flowers disappeared and seed pods appeared",
+      "phoolon ki jagah beej wali phaliyan aayi",
+      "flowers turned into seed pods"
+     ],
+     "hints": [
+      "What was visible on each date?",
+      "Compare the tree’s reproductive parts, not just the weather.",
+      "Earlier there were ___; later there were ___.",
+      "Flowers gave way to seed pods, as the two dated observations show."
+     ],
+     "verified": {
+      "solverAnswer": "Flowers fell, seed pods formed",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Equivalent change described",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch09-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch09-t02-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "In December, Delhi has winter while Sydney has summer. Why can’t Earth’s distance from the Sun explain both places’ seasons? Answer with the key cause.",
+     "prompt_hi": "December mein Delhi mein sardi hoti hai, jabki Sydney mein garmi. Earth ki Sun se doori dono jagahon ke mausam kyun nahi samjha sakti? Asli wajah batao.",
+     "answer": "Earth’s tilted axis makes the hemispheres receive sunlight differently",
+     "acceptable": [
+      "Earth's tilt",
+      "axial tilt",
+      "Dharti ka jhuka hua axis",
+      "tilt makes one hemisphere lean towards the Sun while the other leans away"
+     ],
+     "hints": [
+      "Do both cities share the same Earth–Sun distance?",
+      "Think about how sunlight reaches the two hemispheres.",
+      "The opposite seasons happen because Earth’s ___ changes sunlight received.",
+      "Earth’s tilted axis gives the hemispheres different sunlight, despite their shared distance."
+     ],
+     "verified": {
+      "solverAnswer": "Earth’s tilt causes opposite seasons, not distance.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 5.5,
+     "geRaters": {
+      "gpt6": 7,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch09-t02-i01": {
+     "ge": 4.5,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch10-t01",
+   "replacesOpeners": [
+    "c5-evs-ch10-t01-i01",
+    "diag:c5-evs-ch10-t01-m1",
+    "c5-evs-ch10-t01-i07"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch10-t01-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch10-t01-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A school collects rainwater in a tank. Some is used for drinking, and some waters the garden. Do only students depend on this water, or do students and plants both depend on it?",
+     "prompt_hi": "School baarish ka paani tank mein jama karta hai. Kuch peene ke liye aur kuch garden mein lagta hai. Kya is paani par sirf students nirbhar hain, ya students aur paudhe dono?",
+     "answer": "Students and plants both",
+     "acceptable": [
+      "both",
+      "dono",
+      "students aur paudhe dono"
+     ],
+     "hints": [
+      "Who uses the water in each part of the question?",
+      "A shared resource can support different kinds of living things.",
+      "The tank’s water supports students and ___.",
+      "Students and plants both; the tank’s water meets both their needs."
+     ],
+     "verified": {
+      "solverAnswer": "Students and plants both depend on it.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch10-t01-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch10-t01-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "A river flows from Nepal into Bihar. Waste enters it before it crosses the border. Could fish in Bihar be affected: yes or no?",
+     "prompt_hi": "Ek nadi Nepal se Bihar mein behti hai. Border paar karne se pehle usmein waste milta hai. Kya Bihar ki machhliyon par asar ho sakta hai: haan ya nahin?",
+     "answer": "Yes",
+     "acceptable": [
+      "haan",
+      "yes, because the river carries waste across the border"
+     ],
+     "hints": [
+      "Which way does the river flow after waste enters?",
+      "River water can carry substances across a border.",
+      "The waste can reach fish because the river flows into ___.",
+      "Yes; the river can carry waste into Bihar, affecting fish there."
+     ],
+     "verified": {
+      "solverAnswer": "yes",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch10-t01-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t01-s1",
+     "kind": "contrast",
+     "demand": "reason",
+     "genGrade": 5.5,
+     "prompt_en": "A housing society wants to pave every patch of soil for parking. Which plan better respects shared resources: pave everything, or keep some soil and trees? Give one reason involving another living thing.",
+     "prompt_hi": "Ek housing society parking ke liye saari mitti par pavement banana chahti hai. Shared resources ka zyada dhyaan kaunsa plan rakhega: sab pave karna, ya kuch mitti aur ped bachana? Kisi aur jeev se juda ek reason do.",
+     "answer": "Keep some soil and trees; plants and animals also depend on them",
+     "acceptable": [
+      "keep some soil and trees because other living things need them",
+      "kuch mitti aur ped bachao; paudhon aur jaanwaron ko bhi inki zaroorat hai"
+     ],
+     "hints": [
+      "Who besides residents uses soil or trees?",
+      "Consider whether parking is their only possible use.",
+      "Choose the plan that leaves space for ___ to live.",
+      "Keep some soil and trees; plants and animals depend on them too."
+     ],
+     "verified": {
+      "solverAnswer": "Keep some soil and trees, because trees give birds and insects a home.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both cite living things' needs",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch10-t01-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t01-s2",
+     "kind": "predict",
+     "demand": "transfer",
+     "genGrade": 5.5,
+     "prompt_en": "An oil spill happens near one coast. An ocean current flows from there towards another country's fishing area. Which is more likely: the oil stays near the spill, or fishers in the other country may be affected?",
+     "prompt_hi": "Ek coast ke paas oil spill hota hai. Ocean current wahan se doosre desh ke fishing area ki taraf behta hai. Kya zyada likely hai: oil wahin rahega, ya doosre desh ke fishers par asar ho sakta hai?",
+     "answer": "Fishers in the other country may be affected",
+     "acceptable": [
+      "the other country's fishers may be affected",
+      "doosre desh ke fishers par asar ho sakta hai"
+     ],
+     "hints": [
+      "Where is the current moving?",
+      "Ocean currents can move pollution beyond one country’s waters.",
+      "The current may carry oil towards the other country’s ___.",
+      "Fishers there may be affected; the current can carry oil towards them."
+     ],
+     "verified": {
+      "solverAnswer": "fishers in the other country may be affected",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch10-t01-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t01-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "A migratory bird feeds in one country and nests in another. Why must both countries protect its habitats, rather than just the country where it nests?",
+     "prompt_hi": "Ek migratory bird ek desh mein khana dhoondhti hai aur doosre mein nest banati hai. Sirf nesting wale desh ke bajay dono deshon ko uske habitats kyun bachane chahiye?",
+     "answer": "It needs safe habitats in both countries to survive its journey and breed",
+     "acceptable": [
+      "it depends on both places for food and nesting",
+      "dono jagah ki zaroorat hai—ek mein khana, doosre mein nesting"
+     ],
+     "hints": [
+      "What does the bird need at each stop?",
+      "Protecting only one part of its journey leaves another part unsafe.",
+      "It needs a safe feeding place and a safe ___ place.",
+      "Both must help; the bird needs safe feeding and nesting habitats."
+     ],
+     "verified": {
+      "solverAnswer": "It needs food in one country and safe nesting in the other to survive.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both stress dual-habitat needs",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "oldGE": {
+    "c5-evs-ch10-t01-i01": {
+     "ge": 4,
+     "tooEasy": false
+    }
+   }
+  },
+  {
+   "topicId": "c5-evs-ch10-t02",
+   "replacesOpeners": [
+    "c5-evs-ch10-t02-i01",
+    "diag:c5-evs-ch10-t02-m1",
+    "c5-evs-ch10-t02-i14"
+   ],
+   "openers": [
+    {
+     "id": "c5-evs-ch10-t02-rl-o1",
+     "role": "opener",
+     "skillId": "c5-evs-ch10-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "At a school picnic, Aarav has a clean, empty biscuit tin. Should he reuse it to store pencils or put it in the recycling bin?",
+     "prompt_hi": "School picnic ke baad Aarav ke paas ek saaf, khaali biscuit tin hai. Use pencils rakhne ke liye dobara istemaal kare ya recycling bin mein daale?",
+     "answer": "Reuse it to store pencils",
+     "acceptable": [
+      "reuse it",
+      "store pencils",
+      "pencils rakhne ke liye dobara istemaal kare"
+     ],
+     "hints": [
+      "Can the tin serve a purpose without being processed?",
+      "Using an object again is different from recycling its material.",
+      "The tin can hold pencils, so Aarav should ___ it.",
+      "Reuse it to store pencils; it is already suitable for another job."
+     ],
+     "verified": {
+      "solverAnswer": "reuse it to store pencils",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch10-t02-rl-o2",
+     "role": "opener",
+     "skillId": "c5-evs-ch10-t02-s2",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "Meera wants to check whether her family saves water for seven days. Which should she record daily: minutes the tap runs while brushing, or the colour of their toothbrushes?",
+     "prompt_hi": "Meera dekhna chahti hai ki uska parivaar saat din tak paani bachata hai ya nahi. Roz kya note kare: brush karte waqt nal kitni der chalta hai, ya toothbrush ka rang?",
+     "answer": "Minutes the tap runs while brushing",
+     "acceptable": [
+      "tap-running minutes",
+      "time the tap runs",
+      "nal chalne ka samay"
+     ],
+     "hints": [
+      "Which record could show a change in water use?",
+      "Track something connected to the action you want to improve.",
+      "Each day, Meera could note how long the ___ runs.",
+      "Record tap-running minutes; that measure can show whether water-saving improves."
+     ],
+     "verified": {
+      "solverAnswer": "minutes the tap runs while brushing",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "harder": [
+    {
+     "id": "c5-evs-ch10-t02-rl-h1",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t02-s1",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "After a school fair, a steel cup can be washed and used again, while a juice carton cannot. Which item should go for recycling: the steel cup or the juice carton?",
+     "prompt_hi": "School fair ke baad steel cup dhokar phir istemaal ho sakta hai, lekin juice carton nahi. Recycling ke liye kya bhejna chahiye: steel cup ya juice carton?",
+     "answer": "Juice carton",
+     "acceptable": [
+      "the carton",
+      "juice ka carton"
+     ],
+     "hints": [
+      "Which item can serve its purpose again as it is?",
+      "Keep a usable object in use before considering recycling.",
+      "The steel cup can be washed; send the ___ for recycling.",
+      "Recycle the juice carton; the steel cup can be reused."
+     ],
+     "verified": {
+      "solverAnswer": "the juice carton",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch10-t02-rl-h2",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t02-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.5,
+     "prompt_en": "For a five-day refillable-bottle challenge, Kabir marks each day he brings his bottle: yes, yes, no, yes, yes. How many days did he meet his goal?",
+     "prompt_hi": "Paanch din ke refillable-bottle challenge mein Kabir ne roz likha: haan, haan, nahi, haan, haan. Usne kitne din apna goal poora kiya?",
+     "answer": "4 days",
+     "acceptable": [
+      "4",
+      "four days",
+      "chaar din"
+     ],
+     "hints": [
+      "Which marks show he met his daily goal?",
+      "Count only the days marked ‘yes’.",
+      "Number of successful days = number of ___ marks.",
+      "4 days; four entries are marked ‘yes’."
+     ],
+     "verified": {
+      "solverAnswer": "4",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 2,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch10-t02-rl-h3",
+     "role": "harder",
+     "skillId": "c5-evs-ch10-t02-s3",
+     "kind": "why",
+     "demand": "reason",
+     "genGrade": 6,
+     "prompt_en": "A canteen offers disposable plastic spoons and has a recycling bin. Why is asking for no spoon better than taking one and recycling it?",
+     "prompt_hi": "Canteen mein disposable plastic spoons aur recycling bin dono hain. Spoon na lena, spoon lekar recycle karne se behtar kyun hai?",
+     "answer": "Refusing the spoon prevents plastic waste from being made or used in the first place.",
+     "acceptable": [
+      "It avoids waste in the first place",
+      "No spoon means less plastic is used",
+      "Pehle hi plastic ka istemaal kam hota hai"
+     ],
+     "hints": [
+      "What happens to the spoon before it reaches the bin?",
+      "Think about avoiding waste, not just handling it afterwards.",
+      "Spoon na lene se plastic waste ___ hi nahi hota.",
+      "Refusing prevents that plastic waste; recycling deals with it after use."
+     ],
+     "verified": {
+      "solverAnswer": "Recycling still uses energy and resources, while no spoon avoids waste.",
+      "agrees": false,
+      "how": "equivalence",
+      "correct": "key",
+      "note": "Solver focuses on energy, not prevention",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     },
+     "ge": 4.5,
+     "geRaters": {
+      "gpt6": 5,
+      "deepseek": 5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "hintFixes": [],
+   "ongrade": [
+    {
+     "id": "c5-evs-ch10-t02-rl-g1",
+     "role": "ongrade",
+     "skillId": "c5-evs-ch10-t02-s1",
+     "kind": "practice",
+     "demand": "apply",
+     "genGrade": 5,
+     "prompt_en": "After a school event, the waste includes banana peels, clean newspapers and plastic wrappers. Which should go into a compost pit: banana peels, clean newspapers or plastic wrappers?",
+     "prompt_hi": "School event ke baad kele ke chilke, saaf akhbaar aur plastic wrappers bache hain. Compost pit mein kya daalna chahiye: kele ke chilke, saaf akhbaar ya plastic wrappers?",
+     "answer": "Banana peels",
+     "acceptable": [
+      "kele ke chilke",
+      "banana peel",
+      "banana peels only"
+     ],
+     "hints": [
+      "Which waste can break down into compost?",
+      "Think about separating kitchen waste from recyclable dry waste.",
+      "Compost pit mein ___ daalo.",
+      "Banana peels break down and can become compost."
+     ],
+     "verified": {
+      "solverAnswer": "banana peels",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 2.5,
+     "geRaters": {
+      "gpt6": 3,
+      "deepseek": 3,
+      "rubric": "v2"
+     },
+     "tooEasy": true
+    },
+    {
+     "id": "c5-evs-ch10-t02-rl-g2",
+     "role": "ongrade",
+     "skillId": "c5-evs-ch10-t02-s2",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.2,
+     "prompt_en": "Before a no-plastic challenge, Sana's family used 3 disposable packets daily. During five days, their daily counts were 2, 1, 0, 1, 0. How many packets did they avoid compared with their earlier habit?",
+     "prompt_hi": "No-plastic challenge se pehle Sana ki family roz 3 disposable packets use karti thi. Challenge ke paanch din unke counts 2, 1, 0, 1, 0 the. Pehli aadat ke mukaable kitne packets bache?",
+     "answer": "11 packets",
+     "acceptable": [
+      "11",
+      "eleven packets",
+      "gyarah packets"
+     ],
+     "hints": [
+      "What would five days of the earlier habit total?",
+      "Compare that total with the recorded daily counts.",
+      "Packets avoided = (3 × 5) − ___ .",
+      "11 packets: earlier total 15, recorded total 4."
+     ],
+     "verified": {
+      "solverAnswer": "11 packets",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.25,
+     "geRaters": {
+      "gpt6": 4,
+      "deepseek": 3.5,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    },
+    {
+     "id": "c5-evs-ch10-t02-rl-g3",
+     "role": "ongrade",
+     "skillId": "c5-evs-ch10-t02-s3",
+     "kind": "near_transfer",
+     "demand": "apply",
+     "genGrade": 5.3,
+     "prompt_en": "In a school, 8 classes have 35 students each. Every student uses the blank side of old paper instead of 2 new sheets each week. If they continue for 3 weeks, how many new sheets do they avoid using together?",
+     "prompt_hi": "Ek school mein 8 classes hain, har class mein 35 students. Har student har hafte 2 naye sheets ki jagah purane paper ki khaali side use karta hai. 3 hafton mein sab milkar kitne naye sheets bachayenge?",
+     "answer": "1,680 sheets",
+     "acceptable": [
+      "1680",
+      "1680 sheets",
+      "one thousand six hundred eighty sheets",
+      "ek hazaar chhe sau assi sheets"
+     ],
+     "hints": [
+      "How many students take part altogether?",
+      "Find sheets saved by one student, then multiply by students.",
+      "Sheets saved = (8 × 35) × (2 × ___).",
+      "1,680 sheets: 280 students each save 6 sheets."
+     ],
+     "verified": {
+      "solverAnswer": "1680 sheets",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     },
+     "ge": 3.75,
+     "geRaters": {
+      "gpt6": 4.5,
+      "deepseek": 4,
+      "rubric": "v2"
+     },
+     "tooEasy": false
+    }
+   ],
+   "oldGE": {
+    "c5-evs-ch10-t02-i01": {
+     "ge": 4,
+     "tooEasy": false
+    }
+   }
+  }
+ ]
+}

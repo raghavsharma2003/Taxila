@@ -1,0 +1,20 @@
+--- a/server/brain/say.js	2026-10-05 01:27:48.025102852 +0000
++++ b/server/brain/say.js	2026-10-05 01:28:01.023384660 +0000
+@@ -11,7 +11,7 @@
+ import { registerBroken, toAap } from "../director/register.js";
+ import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+ import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
+-import { screenContradiction } from "../director/modules.js";
++import { screenContradiction, stripStrayParts } from "../director/modules.js";
+ 
+ /** Text-mode hard ceiling for the reply guard (the compiled rule asks for TURN_WORDS). */
+ export const REPLY_MAX_WORDS = { "6-9": 30, "10-15": 40 };
+@@ -267,6 +267,8 @@
+       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
+       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
+       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
++      // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
++      if (found.includes("parts")) { reply = keepOr(stripStrayParts(reply, module, undefined, { keep: item ? promptFor(item, lang) : "" })); guard.replaced = true; }
+       if (found.includes("register") && address === "aap") { reply = toAap(reply); guard.repaired = true; }
+       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
+       if (found.includes("long")) reply = trimToWords(reply, max);

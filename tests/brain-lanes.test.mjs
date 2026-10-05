@@ -4,7 +4,7 @@
 // and timers are fake, so the test is exact and fast. The control arm (no lanes) shows the same load DOES 429 the hot path.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createLanes, admit, settle, twinFor, BACKGROUND_SHARE } from "../server/lanes.js";
+import { createLanes, admit, settle, twinFor, sharedHot, BACKGROUND_SHARE, SHARED_HOT_DEFAULT } from "../server/lanes.js";
 
 /** A fake clock with a timer queue (ms resolution). */
 function fakeTime() {
@@ -41,7 +41,7 @@ function deployment(tpm, now) {
 
 async function simulate({ lanes }) {
   const clock = fakeTime();
-  const L = lanes ? createLanes({ now: clock.now, setTimer: clock.setTimer, tpm: { shared: 500_000 } }) : null;
+  const L = lanes ? createLanes({ now: clock.now, setTimer: clock.setTimer, tpm: { shared: 500_000 }, shared: ["shared"] }) : null;
   const dep = deployment(500_000, clock.now);
   const res = { hot: 0, hot429: 0, bg: 0, bg429: 0, bgWaitMax: 0 };
   async function call(lane, tokens, kind = "chat") {
@@ -75,7 +75,7 @@ test("G-QUOTA: 20 Studio races + a consolidation burst on a shared deployment �
 
 test("admit: hot and untagged calls never wait; background waits only when its 30% share is spent; a hot 429 pauses background", async () => {
   const clock = fakeTime();
-  const L = createLanes({ now: clock.now, setTimer: clock.setTimer, tpm: { d: 100_000 } });
+  const L = createLanes({ now: clock.now, setTimer: clock.setTimer, tpm: { d: 100_000 }, shared: ["d"] });
   assert.equal(L.admit({ quotaLane: "hot", deployment: "d", kind: "chat", estTokens: 99_000 }), undefined);
   assert.equal(L.admit({ deployment: "d", kind: "chat" }), undefined, "untagged = hot");
   // the background share is 30k tokens/min: 7 × 4k go at once, the 8th waits
@@ -107,4 +107,30 @@ test("the module's default lanes keep the azure.js contract: admit → undefined
   assert.doesNotThrow(() => settle(null));
   process.env.TAXILA_BG_TWINS = JSON.stringify({ "taxila-fast": "taxila-fast-bg" });
   try { assert.equal(twinFor("taxila-fast"), "taxila-fast-bg"); assert.equal(twinFor("taxila-brain"), null); } finally { delete process.env.TAXILA_BG_TWINS; }
+});
+
+test("the 30% cap is for SHARED deployments only: 40 builds on a Studio arm are never delayed, and the live whiteboard never queues behind builds", async () => {
+  const clock = fakeTime();
+  const L = createLanes({ now: clock.now, setTimer: clock.setTimer, shared: SHARED_HOT_DEFAULT });
+  // 40 prefetch builds on taxila-gpt6 (no hot traffic there), each ~18k real tokens booked after a 2k estimate
+  for (let i = 0; i < 40; i++) {
+    assert.equal(L.admit({ quotaLane: "background", deployment: "taxila-gpt6", kind: "chatStream" }), undefined, `build ${i + 1} goes at once`);
+    L.settle({ quotaLane: "background", deployment: "taxila-gpt6", kind: "chatStream", status: 200, usage: { in: 6000, out: 12_000 } });
+  }
+  // the whiteboard planner (a live, child-facing call tagged background) on taxila-gpt6-luna, Studio's third race arm,
+  // right after a burst of builds on that same arm: never queued
+  for (let i = 0; i < 30; i++) { L.admit({ quotaLane: "background", deployment: "taxila-gpt6-luna", kind: "chat" }); L.settle({ quotaLane: "background", deployment: "taxila-gpt6-luna", kind: "chat", status: 200, usage: { in: 9000, out: 9000 } }); }
+  assert.equal(L.admit({ quotaLane: "background", deployment: "taxila-gpt6-luna", kind: "chat" }), undefined, "the whiteboard call is admitted at once");
+  assert.equal(L.stats.waited, 0);
+  // a shared hot pool is still capped: the 30% window holds on taxila-fast
+  let queued = 0;
+  for (let i = 0; i < 60; i++) if (L.admit({ quotaLane: "background", deployment: "taxila-fast", kind: "chat" })) queued += 1;
+  assert.ok(queued > 0, "background on taxila-fast still waits for its 30% share");
+});
+
+test("sharedHot: the default pools, TAXILA_SHARED_HOT overrides, and the hot DEPLOY_* the server runs on are always included", () => {
+  assert.deepEqual([...sharedHot({})].sort(), [...SHARED_HOT_DEFAULT].sort());
+  const s = sharedHot({ TAXILA_SHARED_HOT: "a,b", DEPLOY_CLASSIFY: "grok-x", TAXILA_CLASSIFY_FALLBACK: "0" });
+  assert.deepEqual([...s].sort(), ["a", "b", "grok-x"]);
+  assert.ok(sharedHot({ TAXILA_SHARED_HOT: JSON.stringify(["z"]) }).has("z"));
 });

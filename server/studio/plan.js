@@ -8,20 +8,21 @@
 //   Content Safety runs beside the build: build.js). A number inside a string must be a params value (numbers otherwise
 //   come only from params at runtime). Child-free: no id, name or free text of the child reaches the model (§5.4).
 //
-// planWhiteboard(ask, ctx) → { ok, script, gate, ms, attempts, usd }
+// planWhiteboard(ask, ctx) → { ok, script, gate, ms, attempts, usage, usd }
 //   The whiteboard ask from the Brain (shared/brain.ts StudioAsk: the guarded line she is about to speak + the move's kit
 //   content). The MODEL writes a compact timed drawing script for that line; CODE expands it to a WhiteboardScript and
 //   the whiteboard gate (qa/whiteboard.js) checks it (fits the stage, labels anchored, numbers from her line or the kit,
 //   arithmetic true, words hers or the book's, timed to her voice). One repair round with the failing check ids when the
 //   time budget allows; a script that fails is never drawn (the explainer template rung or her voice instead).
-import { chat, DEPLOY } from "../azure.js";
+import { chat, DEPLOY, usdOf, normUsage } from "../azure.js";
 import { archetype, validateParams, stringKeys, buildParams } from "./archetypes/index.js";
-import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox } from "./qa/whiteboard.js";
+import { gateWhiteboard, numbersIn, CHARS_PER_SEC, segmentsOf, segHitsBox, innerBox, withheldValues, partitionCounts } from "./qa/whiteboard.js";
+import { toSpoken } from "../voice/spoken.js";
 import { opGeometry } from "../../shared/whiteboard.js";
 import { localStringFindings, contentSafetySeverity } from "../forge/g2/safety.js";
 
 export const PLAN_VERSION = "studio-plan@1";
-export const WB_PLAN_VERSION = "wb-plan@1";
+export const WB_PLAN_VERSION = "wb-plan@2";
 let chatFn = chat;
 /** Test seam (tests swap the model; production never sets it). */
 export const _setChat = (fn) => { chatFn = fn ?? chat; };
@@ -255,15 +256,27 @@ const WB_SYSTEM = [
   "  never write a person's name; the first op starts by t = 800;",
   "  every label has `to`; no two texts overlap; no text sits on a line or a box edge; arithmetic written on the board is correct;",
   "  a whole in N equal parts: N sectors of 360/N degrees for a round whole (never lines across a circle), N equal rects side by side for a bar or for N groups; N is her number;",
-  "  6-24 ops; the drawing follows her words in order and is spread across the whole line; nothing is drawn after her line ends;",
+  "  4-16 ops; the drawing follows her words in order and is spread across the whole line; nothing is drawn after her line ends;",
   "  nothing to draw (pure talk, a feeling, a question with no picture): return {\"ops\": []}.",
+  // last on purpose (position is mechanism): the child must answer what she asks, so the board never does
+  "a line that asks the child something: draw the setup only (the givens, an empty box or ? where the answer goes); never a result cell, a filled answer, a jump landing on it or its mark on a number line.",
 ].join("\n");
 
-/** The line cut into clauses with their estimated start times (12 chars/s until a DeliveryPlan gives real ones). */
+/**
+ * Her line as the voice speaks it (server/voice/spoken.js toSpoken: "3/8" is "teen bata aath", not 3 characters), so the
+ * timing estimate counts what TTS actually says. Never throws.
+ */
+export function spokenLength(text) {
+  try { return toSpoken(String(text ?? "")).length; } catch { return String(text ?? "").length; }
+}
+/** The spoken duration estimate of a line at CHARS_PER_SEC (until a DeliveryPlan gives real clause onsets). */
+export const speechMsOf = (text) => Math.round((spokenLength(text) / CHARS_PER_SEC) * 1000);
+
+/** The line cut into clauses with their estimated start times (12 spoken chars/s until a DeliveryPlan gives real ones). */
 export function clausesOf(text) {
   const parts = String(text ?? "").split(/(?<=[,.;:?!—–])\s+/).map((s) => s.trim()).filter(Boolean);
   let chars = 0;
-  return parts.map((t) => { const at = Math.round((chars / CHARS_PER_SEC) * 1000); chars += t.length + 1; return { atMs: at, text: t }; });
+  return parts.map((t) => { const at = Math.round((chars / CHARS_PER_SEC) * 1000); chars += spokenLength(t) + 1; return { atMs: at, text: t }; });
 }
 
 /** A leading vocative ("Riya, ...") and any redacted word (the child's name, a teacher name) out of the line. */
@@ -277,8 +290,9 @@ export function redactLine(text, redact = []) {
  * The deterministic layout fixer (fixes SHAPE, never truth): an op that sticks out of the board but fits inside it is
  * moved in by the smallest shift (a label moves its text, never its leader's point). → { ops, fixes }
  */
-export function fitOps(ops, board, margin = 6, prior = []) {
+export function fitOps(ops, board, margin = 6, prior = [], counts = null) {
   const fixes = [];
+  if (counts?.size) ops = sectorsForCutCircles(ops, counts, fixes);
   const byId = new Map(ops.map((o) => [o.id, o]));
   const sh = (p, dx, dy) => (Array.isArray(p) && p.length === 2 ? [p[0] + dx, p[1] + dy] : p);
   const out = ops.map((o) => {
@@ -299,6 +313,45 @@ export function fitOps(ops, board, margin = 6, prior = []) {
     return n;
   });
   return { ops: separateTexts(out, board, margin, fixes, prior), fixes };
+}
+
+/**
+ * A round whole cut by lines through its centre becomes N exact equal sectors when N is a count her line gives (the class
+ * 4-5 pizza: the model draws a circle and diameters, which W8 rightly refuses because the parts cannot be checked equal;
+ * code draws sectors exactly). k diameters → 2k parts, k radii → k parts; mixed cuts, or a cut some later op points at,
+ * are left alone. Fixes SHAPE, never truth: N must be a count she said. → ops
+ */
+export function sectorsForCutCircles(ops, counts, fixes = []) {
+  let out = ops;
+  const targeted = new Set(ops.filter((o) => o?.target).map((o) => o.target));
+  for (const c of ops.filter((o) => o?.op === "circle" && Array.isArray(o.c) && o.r >= 30)) {
+    const rim = (p) => Math.abs(Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) - c.r) <= c.r * 0.25;
+    const centre = (p) => Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) <= Math.max(6, c.r * 0.08);
+    const cuts = out.filter((o) => o?.op === "line" && Array.isArray(o.from) && Array.isArray(o.to)).map((o) => {
+      const [a, b] = [o.from, o.to];
+      const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+      const dist = Math.abs(dy * c.c[0] - dx * c.c[1] + b[0] * a[1] - b[1] * a[0]) / L;
+      if (dist > 8) return null;
+      if (rim(a) && rim(b)) return { o, parts: 2 };
+      if ((centre(a) && rim(b)) || (centre(b) && rim(a))) return { o, parts: 1 };
+      return null;
+    }).filter(Boolean);
+    if (!cuts.length || cuts.some((x) => targeted.has(x.o.id))) continue;
+    const kinds = new Set(cuts.map((x) => x.parts));
+    if (kinds.size > 1) continue;
+    const n = cuts.length * cuts[0].parts;
+    if (n < 2 || n > 24 || !counts.has(n)) continue;
+    const t0 = Math.min(...cuts.map((x) => Number(x.o.startMs) || 0)), t1 = Math.max(...cuts.map((x) => Number(x.o.endMs) || 0));
+    const step = Math.max(120, Math.round((t1 - t0) / n));
+    const sectors = Array.from({ length: n }, (_, j) => ({ id: `${c.id}p${j + 1}`, op: "sector", c: c.c, r: c.r, fromDeg: Math.round((360 / n) * j * 100) / 100,
+      toDeg: Math.round((360 / n) * (j + 1) * 100) / 100, startMs: t0 + j * step, endMs: t0 + j * step + Math.max(120, step), ...(c.ink ? { ink: c.ink } : {}) }));
+    if (sectors.some((x) => out.some((o) => o?.id === x.id))) continue;
+    const drop = new Set(cuts.map((x) => x.o.id));
+    const at = out.findIndex((o) => drop.has(o?.id));
+    out = [...out.slice(0, at).filter((o) => !drop.has(o?.id)), ...sectors, ...out.slice(at).filter((o) => !drop.has(o?.id))];
+    fixes.push(`sectors:${c.id}x${n}`);
+  }
+  return out;
 }
 
 /**
@@ -364,16 +417,20 @@ export function expandOps(ops) {
  * Plan the whiteboard drawing for one line (the Brain's StudioAsk). Never throws.
  * @param {import("../../shared/brain").StudioAsk} ask
  * @param {{ kit?: any, prev?: any, deployment?: string, effort?: string, budgetMs?: number, repairs?: number, trace?: object[] }} [ctx]
- * @returns {Promise<{ ok: boolean, script: any | null, gate: any, ms: number, attempts: number, usage: any[], why?: string, empty?: boolean }>}
+ * Hot quota lane (W2-E patch w2e-plan-whiteboard-hot): the child is waiting on it beside her voice, so it is never queued
+ * behind Studio builds. A repair round runs only when ≥ REPAIR_MIN_MS of the budget is left (a late board is a replay).
+ * @returns {Promise<{ ok: boolean, script: any | null, gate: any, ms: number, attempts: number, usage: any[], usd: number, why?: string, empty?: boolean }>}
  */
+export const WB_MAX_TOKENS = 1100;
+export const REPAIR_MIN_MS = 3000;
 export async function planWhiteboard(ask, { kit, prev, redact = [], deployment = process.env.STUDIO_WB_DEPLOY || "taxila-gpt6-luna", effort = "none", budgetMs = 7000, repairs = 1, trace } = {}) {
   const t0 = performance.now();
   const ms = () => Math.round(performance.now() - t0);
   // child-free (LIVE-STUDIO §5.4): the child's name (her vocative, and any name the caller lists) never reaches the model
   const spoken = String(ask?.line?.text ?? "").trim();
   const text = redactLine(spoken, redact);
-  if (!text) return { ok: false, script: null, gate: null, ms: ms(), attempts: 0, usage: [], why: "no_line" };
-  const speechMs = Math.round((spoken.length / CHARS_PER_SEC) * 1000);
+  if (!text) return { ok: false, script: null, gate: null, ms: ms(), attempts: 0, usage: [], usd: 0, why: "no_line" };
+  const speechMs = speechMsOf(spoken);
   const content = (ask.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const facts = { numbers: [...new Set([...numbersIn(text), ...numbersIn(content.join(" ")), ...numbersIn(itemText.join(" "))])].slice(0, 24), content: content.slice(0, 6) };
@@ -383,34 +440,43 @@ export async function planWhiteboard(ask, { kit, prev, redact = [], deployment =
     ...(ask.mode === "continue" && prev?.ops?.length ? { previous_board: prev.ops.slice(-12).map((o) => ({ id: o.id, op: o.op, ...(o.text ? { text: o.text } : {}) })), mode: "continue: draw beside what is already there, ids must be new" } : {}),
   };
   const usage = [];
+  const usdNow = () => +usage.reduce((s, u) => s + usdOf(deployment, normUsage(u)), 0).toFixed(6);
   let feedback = null, gate = null, attempts = 0;
   const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText] };
+  // W9: what the board must not show (the asked item's answer, every other item's answer), unless she says it here.
+  // From the kit the seam holds (L.kit, the verified kit) — the ask's item names which one is being asked.
+  const withhold = withheldValues({ items: [...(kit?.items ?? []), ...(ask.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
+    { itemId: ask.kit?.item?.id, line: text });
+  const counts = partitionCounts(text);
   for (let round = 0; round <= repairs; round++) {
     const left = budgetMs - ms();
-    if (left < 1500) break;
+    if (left < (round === 0 ? 1500 : REPAIR_MIN_MS)) break;
     attempts++;
     try {
       const msgs = [{ role: "system", content: WB_SYSTEM }, { role: "user", content: JSON.stringify(user) }];
       if (feedback) msgs.push({ role: "user", content: `previous script failed the board check: ${feedback}. Return the corrected script.` });
       // the deadline covers a wait for the background bucket too (server/lanes.js may queue the call before it is sent)
-      const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: 2200, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "background" }), left);
+      const r = await withDeadline(chatFn(deployment, msgs, { json: true, effort, maxTokens: WB_MAX_TOKENS, timeoutMs: Math.min(left, 9000), retries: 0, trace, quotaLane: "hot" }), left);
       usage.push(r.usage);
       const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((o) => o.op !== "erase") : [];
-      const fit = fitOps(expandOps(r.json?.ops), WB_BOARD, 6, prior);
+      const fit = fitOps(expandOps(r.json?.ops), WB_BOARD, 6, prior, counts);
       const ops = fit.ops;
-      if (!ops.length) return { ok: false, empty: true, script: null, gate: null, ms: ms(), attempts, usage, why: "nothing_to_draw" };
+      if (!ops.length) return { ok: false, empty: true, script: null, gate: null, ms: ms(), attempts, usage, usd: usdNow(), why: "nothing_to_draw" };
       const raw = { v: 1, scriptId: ask.intent?.intentId ?? "wb", line: { lessonId: ask.line?.lessonId ?? "", ...(ask.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
         anchor: "line_audio_start", board: { ...WB_BOARD, ground: "chalk" }, mode: ask.mode === "continue" ? "continue" : "fresh",
         durationMs: Math.max(...ops.map((o) => Number(o.endMs) || 0)), ops };
-      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior });
+      gate = gateWhiteboard(raw, { reply: text, kit: kitForGate, band, speechMs, banned: redact, prior, withhold });
       gate.fixes = fit.fixes;
-      if (gate.pass) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage };
-      feedback = gate.checks.filter((c) => !c.pass).map((c) => `${c.id} ${JSON.stringify(c.detail).slice(0, 160)}`).join("; ");
+      if (gate.pass) return { ok: true, script: { ...gate.script, facts: gate.facts }, gate, ms: ms(), attempts, usage, usd: usdNow() };
+      // W9 is the one failure the model cannot read from the check id: say what to do (a shape note, not a line)
+      feedback = gate.checks.filter((c) => !c.pass).map((c) => (c.id === "W9.no_reveal"
+        ? `W9.no_reveal: the board shows the answer to what she asks (${(c.detail ?? []).map((d) => String(d).split(":")[1]?.trim()).filter(Boolean).slice(0, 3).join(", ")}): remove that result, write ? or an empty box in its place, mark no position for it`
+        : `${c.id} ${JSON.stringify(c.detail).slice(0, 160)}`)).join("; ");
     } catch (e) {
       feedback = `error ${String(e?.code || e?.message || e).slice(0, 60)}`;
       if (e?.code === "content_filter" || e?.code === "deadline") break;
     }
   }
-  return { ok: false, script: null, gate, ms: ms(), attempts, usage, why: feedback ?? "budget" };
+  return { ok: false, script: null, gate, ms: ms(), attempts, usage, usd: usdNow(), why: feedback ?? "budget" };
 }
 

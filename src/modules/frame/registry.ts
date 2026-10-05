@@ -27,9 +27,17 @@ export function hasEngine(id: string): boolean {
   return Object.hasOwn(LOADERS, id);
 }
 
+const LOADED = new Map<string, EngineModule>();
+
 export async function loadEngine(id: string): Promise<EngineModule> {
   if (!hasEngine(id)) throw new Error(`unknown engine ${id}`);
   const { engine } = await LOADERS[id]();
   if (engine.def.id !== id) throw new Error(`engine file for ${id} declares ${engine.def.id}`);
+  LOADED.set(id, engine);
   return engine;
+}
+
+/** An engine this document already imported (a spare frame's pre-loaded engines), synchronously; else null. */
+export function loadedEngine(id: string): EngineModule | null {
+  return LOADED.get(id) ?? null;
 }

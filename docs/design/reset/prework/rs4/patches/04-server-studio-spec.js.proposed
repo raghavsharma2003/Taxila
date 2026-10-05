@@ -1,0 +1,45 @@
+// PROPOSED server/studio/spec.js (RESET-PLAN RS-4 step 3). Not created in the pre-work (server/** is outside RS-4's
+// pre-work paths). After integration RS-4 owns server/studio/**; drop this in, then wire `planSpec` into the router as
+// rung 1 (T-spec → library → T-build with ≥ 90 s lead → board → skeleton).
+//
+// The planner's structured call writes a SPEC, never code: archetype + items from the kit slice + order + pacing +
+// strings. The JSON schema it must follow is generated from the same zod schema the client validates with, and the
+// result is validated again here (repair, else the reviewed default). Strings go through Q8 before serving.
+import { ARCHETYPES_V2, ENGINE_SPECS, specJsonSchema, validateSpec } from "../../shared/studio-spec.ts";
+
+/** Which archetypes can serve a topic: the outcome tags in the spec registry (curriculum ids, kit misconception ids). */
+export function archetypesFor(topicId, { misconceptionId, want } = {}) {
+  const out = [];
+  for (const a of ARCHETYPES_V2) {
+    const d = ENGINE_SPECS[a];
+    if (!d.outcomes.topics.includes(topicId)) continue;
+    if (want === "game" && d.kind !== "game") continue;
+    if (want === "animation" && d.kind !== "explainer") continue;
+    const score = (misconceptionId && d.outcomes.misconceptions.includes(misconceptionId) ? 2 : 0) + (d.kind === "game" ? 0.5 : 0);
+    out.push({ archetype: a, kind: d.kind, score });
+  }
+  return out.sort((x, y) => y.score - x.score);
+}
+
+/**
+ * One structured call → a validated spec. `callModel(messages, jsonSchema)` is the Azure deployment adapter
+ * (taxila-fast-bg, effort none; LIVE-STUDIO §14.6 measured 3.25 s p50, 8/8 schema-valid for the plan-shaped call).
+ * Never throws to the caller: a failed or invalid call returns the reviewed default (fellBack: true).
+ */
+export async function planSpec({ archetype, kitSlice, lang = "en", band, misconceptionId, childRequest }, callModel) {
+  const d = ENGINE_SPECS[archetype];
+  if (!d) throw new Error("unknown archetype " + archetype);
+  const schema = specJsonSchema(archetype);
+  const shape = [
+    `archetype ${archetype}: ${d.title} (${d.kind}).`,
+    `Use only these kit items and keys: ${JSON.stringify(kitSlice).slice(0, 3000)}`,
+    misconceptionId ? `Target misconception: ${misconceptionId} (name it in a wave's "targets").` : "",
+    `Child band ${band}, language ${lang}. Strings: short labels, no sentences to recite, no markup.`,
+    childRequest ? `The child asked: ${String(childRequest).slice(0, 120)}` : "",
+    "Return only the JSON spec.",
+  ].filter(Boolean).join("\n");
+  let raw = null;
+  try { raw = await callModel([{ role: "user", content: shape }], schema); } catch { raw = null; }
+  const v = validateSpec(archetype, raw);
+  return { archetype, spec: v.spec, repairs: v.repairs, fellBack: v.fellBack };
+}

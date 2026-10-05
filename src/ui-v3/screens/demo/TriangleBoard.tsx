@@ -55,6 +55,8 @@ export function TriangleBoard({ settled, reducedMotion, onApexMoved }: { settled
         onPointerDown={(e) => { drag.current = true; (e.target as Element).setPointerCapture?.(e.pointerId); }}
         onPointerMove={(e) => { if (drag.current) move(toX(e)); }}
         onPointerUp={() => { drag.current = false; }}
+        onPointerCancel={() => { drag.current = false; }}
+        onLostPointerCapture={() => { drag.current = false; }}
         onKeyDown={(e) => { if (e.key === "ArrowLeft") move(ax - 20); if (e.key === "ArrowRight") move(ax + 20); }}
         tabIndex={step >= 4 ? 0 : -1} role="slider" aria-label="Top point of the triangle" aria-valuemin={170} aria-valuemax={790} aria-valuenow={Math.round(ax)}
         aria-valuetext="Area stays 20 square centimetres">

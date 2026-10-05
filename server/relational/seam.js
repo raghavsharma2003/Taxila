@@ -33,8 +33,12 @@ const LESSON_TTL_MS = 6 * 3600_000, PENDING_TTL_MS = 30 * 60_000, MAX_LESSONS = 
 const lessons = new Map();
 /** childId → { snapshot, at }: the start's snapshot, bound to the lesson on its first turn (start has no lesson id yet). */
 const pending = new Map();
-/** Do the 018 tables exist? null = not probed yet (probed once per process by snapshot). */
+/** Do the 018 tables exist? null = not probed yet (probed once at module load when a database is configured, else by snapshot). */
 let tablesReady = null;
+/** Classifier distress kinds that are harm (a disclosure), not pleading or loneliness. */
+const HARM_KINDS = new Set(["self_harm", "abuse", "fear"]);
+/** Lesson ends that found no in-memory session (a restart or another replica): counted so the loss is measured. */
+let missedEnds = 0;
 
 function sweep(now = Date.now()) {
   for (const [k, v] of lessons) if (now - v.at > LESSON_TTL_MS) lessons.delete(k);
@@ -46,7 +50,8 @@ async function probeTables() {
   if (tablesReady != null) return tablesReady;
   try {
     const r = await one("select to_regclass('public.rel_bond') is not null as b, to_regclass('public.relational_note') is not null as n");
-    tablesReady = !!(r?.b && r?.n);
+    const v = !!(r?.b && r?.n);
+    if (tablesReady == null) tablesReady = v;       // a test hook or a newer probe that already set it wins
   } catch {
     tablesReady = null;               // no database reachable: probe again next start, write nothing meanwhile
     return false;
@@ -72,6 +77,10 @@ const COUNTS_SQL = `with ev as (
                      and p.outcome <> 0 and not (p.cls = 'item.open' and p.outcome = 6))) as retry,
     (select count(*)::int from ev where cls = 'probe.teachback' and outcome = 0) as eb,
     (select count(distinct skill_ids[1])::int from ev where cls = 'probe.teachback' and outcome = 0) as ebt`;
+
+// Probe the 018 tables once at server start (not only on the first lesson start in this process), so a lesson end on a
+// replica or after a restart still writes its bond rows. Never awaited, never throws; no database configured = no probe.
+if ((process.env.DATABASE_URL || process.env.TAXILA_DB) && !process.env.NODE_TEST_CONTEXT) probeTables().catch(() => {});
 
 export const relationalSeam = {
   /**
@@ -140,7 +149,11 @@ export const relationalSeam = {
     if (turn < entry.lastTurn) return entry.directives.get(turn) ?? null;
     const childText = String(input.childText ?? "");
     // harm: false — the turn already ran the safety gate on these words; its verdict arrives as input.safety
-    const signals = signalsOf(childText, { turn, lane: input.lane === "voice" ? "L" : "typed", harm: false });
+    // harm: on a safeguarding turn the predicate runs here too (and a classifier-only disclosure counts), so a disclosure
+    // said with pleading ("mat jao didi, papa mujhe roz maarte hain") is new distress whose goodbye still gets its own
+    // check-in (I-7; fixer review 2026-10-05). On every other turn the gate's verdict already said no harm.
+    const signals = signalsOf(childText, { turn, lane: input.lane === "voice" ? "L" : "typed", harm: input.safety ? undefined : false });
+    if (input.safety && HARM_KINDS.has(input.cls?.flags?.distressKind) && !signals.some((s) => s.kind === "harm")) signals.push({ kind: "harm", turn, lane: "typed", confidence: "lexical" });
     const flags = input.cls?.flags ?? {};
     if (flags.humour && !signals.some((s) => s.kind === "joke")) signals.push({ kind: "joke", turn, lane: "typed", confidence: "lexical" });
     if (flags.personalShare && !signals.some((s) => s.kind === "share" || s.kind === "share_sad")) signals.push({ kind: "share", turn, lane: "typed", confidence: "lexical" });
@@ -166,6 +179,10 @@ export const relationalSeam = {
   onLessonEnd(child, end) {
     const entry = lessons.get(end?.lessonId);
     lessons.delete(end?.lessonId);                 // the session dies with the lesson, whatever is written
+    if (!entry && Number(end?.turns) >= 1) {
+      missedEnds += 1;
+      console.warn(`[relational] lesson end with no session in this process (${missedEnds} so far): restart or another replica; session-only notes for ${end?.lessonId} are lost`);
+    }
     if (!child?.id || child.legal_mode == null || tablesReady !== true) return [];
     if (legalModeOf(child.legal_mode) === "M0") return [];
     if (!(Number(end?.turns) >= 1)) return [];     // nothing happened in this lesson: no session is counted
@@ -189,7 +206,8 @@ export const relationalSeam = {
 
 /** Test hooks: the in-memory state (never used by the lesson). */
 export const __relTest = {
-  reset() { lessons.clear(); pending.clear(); tablesReady = null; },
+  reset() { lessons.clear(); pending.clear(); tablesReady = null; missedEnds = 0; },
+  missedEnds() { return missedEnds; },
   setTablesReady(v) { tablesReady = v; },
   session(lessonId) { return lessons.get(lessonId)?.session ?? null; },
   stash(childId, snapshot) { pending.set(String(childId), { snapshot, classLevel: snapshot?.classLevel ?? 5, lang: snapshot?.lang ?? "hinglish", at: Date.now() }); },

@@ -84,7 +84,10 @@ function measure({ isLesson, isKit }) {
   // text spilling out of its control (e.g. "TOMORROW" wider than a 56 px date cell) even when overflow is visible
   const spill = [...document.querySelectorAll("button, a[href], [role='radio']")].filter(vis).flatMap((b) => {
     const br = b.getBoundingClientRect();
-    return [...b.querySelectorAll("*")].filter((el) => vis(el) && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).filter((el) => { const r = el.getBoundingClientRect(); return r.right > br.right + 1 || r.left < br.left - 1; }).map((el) => el.textContent.trim().slice(0, 24));
+    // the control's own text nodes too (review fix 2026-10-05: "11:00 AM" spilled a 59 px grid cell as a direct text node, which the
+    // descendant-only check could not see)
+    const ownSpill = [...b.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim()) && b.scrollWidth > b.clientWidth + 1 ? [b.textContent.trim().slice(0, 24)] : [];
+    return [...ownSpill, ...[...b.querySelectorAll("*")].filter((el) => vis(el) && [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())).filter((el) => { const r = el.getBoundingClientRect(); return r.right > br.right + 1 || r.left < br.left - 1; }).map((el) => el.textContent.trim().slice(0, 24))];
   });
   const interactive = [...document.querySelectorAll("button, a[href], input, [role='radio'], [role='switch'], [role='slider'], canvas[tabindex]")].filter(vis);
   const hit = interactive.filter((el) => { const r = el.getBoundingClientRect(); return r.width < 36 || r.height < 36; }).map((el) => `${(el.getAttribute("aria-label") || el.textContent || el.tagName).trim().slice(0, 30)} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`);

@@ -11,6 +11,7 @@
 import { AUTHORITY, proposal } from "./kernel.js";
 import { relationalProposals } from "./relational-adapter.js";
 import { EXPLAIN_BEATS } from "./beat.js";
+import { BANDS } from "../learner/bands.js";
 
 /** The Director's proposal with the kernel's turn rules: one move (mandatory in its rank), safety freezes the rest. */
 export function directorProposalOf(r) {
@@ -44,22 +45,37 @@ export function turnStudioOf(arb) {
   return Object.keys(out).length ? out : null;
 }
 
+/** The moves that open or carry an explanation: only they ask Studio for the live board (not a repair or a hint inside one). */
+export const WHITEBOARD_MOVES = Object.freeze(new Set(["explain", "worked_example", "reteach", "recap"]));
+/** The Director's template whiteboard rung (W2-B, director/modules.js rungs 4-5): the live board replaces it, never adds. */
+export const RUNG_ENGINE = "explainer@1";
+
 /**
  * The whiteboard ask (owner priority 6; LIVE-STUDIO whiteboard slot): on an explanation beat, Studio is asked to draw
- * the explanation as a timed drawing script in sync with her line. A proposal, so the kernel can refuse it: it needs the
- * attention slot (nothing else new on screen this turn), and it is never asked during strain (a struggling child gets
- * smaller steps, not a new thing to watch; TEACHER-BRAIN §6.3 step 2), on a closing move, on the voice lane (the
- * realtime model's words are not known before it speaks) or for a late answer. Returns [proposal] or [] with the reason
- * it was not proposed (for the trace).
+ * the explanation as a timed drawing script in sync with her line. A proposal, so the kernel can refuse it. It is not
+ * proposed: on a move that does not explain (a repair, a hint or a module turn inside the beat), during strain (a
+ * struggling child gets smaller steps, not a new thing to watch; TEACHER-BRAIN §6.3 step 2), on the voice lane (the
+ * realtime model's words are not known before it speaks), for a late answer, while an interactive Studio piece is on
+ * screen (never pull a game away from a child using it: requestIntent's own refusal rule), or when Studio proposes a
+ * reveal this turn (the piece made for this beat wins).
+ * It needs the attention slot (nothing else new on screen), EXCEPT when the Director's only new thing is its template
+ * whiteboard rung (`rungMounted`): the live board is then the explanation surface and the rung its fallback, so the ask
+ * costs no attention and carries `replacesRung` (turn.js drops the rung once Studio acks; a refusal keeps it).
+ * Returns { proposals, declined } (the reason code for the trace when nothing was proposed).
  */
-export function whiteboardAskOf({ beat, lane, late, strained }) {
+export function whiteboardAskOf({ beat, lane, late, strained, move = null, studioView = null, rungMounted = false }) {
   if (!beat || !EXPLAIN_BEATS.has(beat.type)) return { proposals: [], declined: null };
   if (late) return { proposals: [], declined: "studio_rejected.late" };
+  if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
   if (lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
   if (strained) return { proposals: [], declined: "studio_rejected.strained" };
+  const on = studioView?.onScreen;
+  const interactive = !!on && typeof on.kind === "string" && on.kind !== "whiteboard" && on.archetype !== "whiteboard";
+  if (interactive && !studioView?.propose?.retire) return { proposals: [], declined: "studio_rejected.attention" };
+  if (studioView?.propose?.reveal) return { proposals: [], declined: "studio_rejected.reveal_ready" };
   return {
-    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat.type, beatId: beat.id }, urgency: 2,
-      costs: { attention: 1 }, reason: ["studio.whiteboard_asked", `beat.${beat.type}`] })],
+    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat.type, beatId: beat.id, ...(rungMounted ? { replacesRung: true } : {}) },
+      urgency: 2, costs: { attention: rungMounted ? 0 : 1 }, reason: ["studio.whiteboard_asked", `beat.${beat.type}`, ...(rungMounted ? ["studio.replaces_rung"] : [])] })],
     declined: null,
   };
 }
@@ -76,7 +92,6 @@ export function proposalsOf({ r, relational, studioView, whiteboard, vibe }) {
 }
 
 const STUDIO_LANG = { hinglish: "hinglish", english: "en", hindi: "hi" };
-const B4 = { 1: "B1", 2: "B1", 3: "B2", 4: "B2", 5: "B3", 6: "B3", 7: "B3", 8: "B4", 9: "B4" };
 /**
  * The whiteboard ask for Studio (shared/brain.ts StudioAsk → server/studio/seam.js requestIntent, W2-H; the drawing-script
  * planner is W2-F's archetype; the renderer is W2-B's). It carries the guarded line she is about to speak and the kit
@@ -85,7 +100,7 @@ const B4 = { 1: "B1", 2: "B1", 3: "B2", 4: "B2", 5: "B3", 6: "B3", 7: "B3", 8: "
  * @returns {import("../../shared/brain").StudioAsk}
  */
 export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line }) {
-  const band = B4[next?.ctx?.classLevel] ?? "B3";
+  const band = BANDS[next?.ctx?.classLevel]?.b4 ?? "B3"; // the one bands table (BUILD-PLAN §1.10)
   const mis = beat.type === "contrast" && next?.lastReteach?.turn === next?.turn ? next.lastReteach.misId ?? null : null;
   const skillId = next?.lastMove?.skillId ?? item?.skillId ?? kit?.skills?.[0]?.id ?? "";
   return {

@@ -7,7 +7,9 @@
 //
 // Rules, in order (the first that fires decides):
 //   1. parent control "off" → fallback; safety mode → fallback (no new thing on screen during a safeguard)
-//   2. kind whiteboard → whiteboard (cheap, per line; still never in safety mode or with control "off")
+//   2. kind whiteboard → whiteboard (cheap, per line; still never in safety mode or with control "off"; never under
+//      "ready_made": a model-written board is not ready-made. The first session (bond `meeting`) DOES get it: it is not
+//      a build (no code, nothing to interact with, our code draws a gated script): decision w2f-whiteboard-not-a-build)
 //   3. no admissible archetype (kit truth missing for the kind) → fallback
 //   4. a promoted library build → library
 //   5. bond stage `meeting` or parent control "ready_made": only promoted builds, skeletons and T1 engines → fallback
@@ -74,7 +76,7 @@ export function decide({ intent, archetypeId = null, admissible = true, child = 
   const control = child.studioControl ?? "on";
   if (control === "off") return { action: "fallback", reasons: ["studio.parent_off"] };
   if (child.safetyMode) return { action: "fallback", reasons: ["studio.safety_mode"] };
-  if (intent?.kind === "whiteboard") return { action: "whiteboard", reasons: ["studio.whiteboard"] };
+  if (intent?.kind === "whiteboard") return control === "ready_made" ? { action: "fallback", reasons: ["studio.ready_made_only"] } : { action: "whiteboard", reasons: ["studio.whiteboard"] };
   if (!admissible || !archetypeId || !ARCHETYPES.has(archetypeId)) return { action: "fallback", reasons: ["studio.no_truth"] };
   const a = ARCHETYPES.get(archetypeId);
   const lib = library && library.status !== "retired" ? library : null;

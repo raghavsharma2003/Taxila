@@ -1,0 +1,154 @@
+{
+ "nodes": [
+  {
+   "id": "rs1-ui-v3-scoped-tree",
+   "kind": "decision",
+   "title": "The ages 9-15 design system lives in a new tree src/ui-v3/** whose tokens and classes are scoped to .v3 and prefixed v3-. With the ui.v3 flag off (the default: localStorage tx.flag.ui.v3, ?uiv3=1|0|default, VITE_UI_V3=1), Wave 2 screens render exactly as integrated, and 0 shipped dist files contain v3 classes. Reverse if integration finds the two token sets must merge (one :root set): port tokens.css to src/styles/tokens.css and drop the scope.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-face-slot-contract",
+   "kind": "decision",
+   "title": "v3 screens never draw a teacher face. They render <FaceSlot>, whose default renderer is src/avatar's <TutorFace> (3D head, else the 2D plate of the same look). `still` forces the plate wherever several faces share a screen, so a page holds at most one live WebGL face: the lesson mounts the tile OR the PiP, never both. RS-7 swaps in the style-C puppet with setFaceRenderer() and no screen changes. No portrait or raster may appear in src/ui-v3; lint L-RASTER enforces it (owner O-R1). Reverse if RS-7's renderer needs per-screen props the slot does not carry; then extend FaceSlotProps.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-schedule-rules-pure",
+   "kind": "decision",
+   "title": "All scheduling rules live as pure functions in src/ui-v3/schedule.ts, and the caller passes 'today' and 'now' (the controls never read the device clock). The rules: a 15-minute rail that never lets a lesson end after lesson hours; a 14-day strip that disables clash days and days off with the reason in the accessible name; a time grid where past, outside-hours and clash rules are evaluated in that order, with a 15-min lead today. The server can re-validate with the same file, and no native date/time input exists anywhere (lint L-NATIVE). Reverse if a family's time zone must be resolved client-side; it is server-side by design.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-toast-predicate",
+   "kind": "decision",
+   "title": "A toast may carry only real-world facts (saved, offline, mic). A predicate in src/ui-v3/toast.ts drops build, generation, loading, error, model, server and retry copy, plus emoji and '!!', before render, and counts what it drops. This is safety by predicate, not by instruction to callers (R9). Reverse if a real-world fact the child must act on is ever dropped; then add it to the pass cases in tests/ui-v3-lint.test.mjs first.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-day-amber-965700",
+   "kind": "decision",
+   "title": "Day-theme amber changed from #A86200 (DESIGN-V3 / v3.css) to #965700, because #A86200 measured 4.76:1 on white and missed the spec's own ≥ 5:1 rule. #965700 measures 5.74 on bg-1, 5.31 on bg and 5.03 on bg-3, and its hue stays 34.8°. Reverse if the design owner prefers to keep #A86200 and drop amber text from white grounds (icon-only verdicts).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-tomorrow-not-printed",
+   "kind": "decision",
+   "title": "The 14-day strip prints 'Today', then weekdays. 'Tomorrow' is announced (aria) but not printed, because it spilled out of the 56 px cell at every viewport. Reverse if the cells widen to ≥ 72 px.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-shots-2026-10-04",
+   "kind": "measurement",
+   "title": "RS-1 v3 components with fixtures, Chromium via Playwright 1.63 against the vite dev server, 2026-10-04. 106 shots: 20 Night states × 4 viewports (360x640, 390x844, 820x1180, 1440x900), 7 Day states × 4, kit × 2. Results: horizontal scroll 0, off-screen boxes 0, clipped text 0, text spilling out of controls 0, hit targets < 36 px 0 (22 on the first run), unnamed controls 0, states with > 1 volt 0, console errors 0, rendered-text lint 0, missing fonts 0, smallest text 11 px. Lesson (n=36): document scroll 0, artifact outside the slot or under the rail 0, canvas text inside the PiP or label zones 0, zone overlap or collapse 0; floor slot 326x330 at 360x640. The layout metrics' negative controls (re-injected grid-area bug, 32 px switch, 'Tomorrow' label) all trip. Fixtures only, not the real app.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-r11-tap-430-2026-10-04",
+   "kind": "measurement",
+   "title": "The owner's R11 failure, reproduced on 390x844 touch in Chromium, 2026-10-04: set 4:30 PM by tap on v3 onboarding, 20/20 (7 quick pick, 7 steppers, 6 rail slot; the readout, the summary and the ready screen all agree). Parent reschedule to Tue 6 · 4:30 PM, 20/20; the negative control (tapping a clash day and an outside-hours time changes nothing) 20/20. Keyboard-only reschedule passes (arrows skip the clash day and the outside-hours time). Onboarding with defaults takes 7 taps (n=1). On v3 components with fixtures, not yet the real app.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-contrast-2026-10-04",
+   "kind": "measurement",
+   "title": "WCAG 2.x contrast of the 21 TEXT_PAIRS in src/ui-v3/tokens.ts × 2 themes, computed by tests/ui-v3-lint.test.mjs (glass composited over the stage), 2026-10-04: all ≥ 5:1 after Day amber became #965700. Before the change, Day amber on white was 4.76:1. The lowest passing pairs: Night ink-3 on bg-2 5.17, Day ink-3 on bg 5.33, Day mint on bg-1 5.15. Token pairs only, not painted-pixel sampling.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-lint-wave2-baseline-2026-10-04",
+   "kind": "measurement",
+   "title": "The RS-1 source lint over all of src/ (345 files, Wave 2 tree mid-edit), 2026-10-04: 277 hits. L-EMOJI 96 (mostly src/modules sprites), L-WORDS 47 (mostly 'grown-up'), L-MACHINE 43, L-RASTER 40, L-TALK 22 (HoldButton imports, 'Hold to talk'), L-FONT 12 (Literata/Andika), L-EXCLAIM 9, L-NATIVE 4, L-MASCOT 3, L-CANDY 1. Precision about 0.6 on a sample of n=26 that I judged myself: console strings and non-teacher rasters are false positives outside v3. src/ui-v3: 0 hits.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-bundle-2026-10-04",
+   "kind": "measurement",
+   "title": "v3 bundle size, from a rolldown build of the gallery entry with gzip -9, 2026-10-04: JS about 30.0 KB gz (including fixtures, demo artifacts and the kit; TutorFace is a separate 12.3 KB gz chunk) and CSS 11.2 KB gz. Fonts: Bricolage Grotesque variable latin 76.9 KB, Geist Mono latin 23.1 KB. Not on the shipped cold path: /v3 is lazy after PATCH 01.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-rs1-side-grid-area-inherited",
+   "kind": "rejection",
+   "title": "Reusing the phone zone rule `.v3-convo { grid-area: convo }` inside the wide side-column grid. On wide screens it collapsed the teacher tile to 2 px and put the transcript over the steer chips, because the side grid has no 'convo' area and the browser makes implicit lines. The first metric set (overflow, clip, hit size) reported 0 because nothing overflowed. Replaced by `.v3-side > * { grid-area: auto }`, plus zone-overlap and collapsed-zone checks in shoot.mjs; the re-injected bug now trips them.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-rs1-trust-tutorface-min-height",
+   "kind": "rejection",
+   "title": "Mounting src/avatar <TutorFace> in 36-84 px slots as it is. Its `.tx-tutorface { min-height: 120px }` cropped the PiP and the teacher chips to the forehead. Fixed in the slot (min-height: 0) with a --face-zoom on the PiP and chips; RS-7 sets it to 1 once the renderer honours framing='close'.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-rs1-canvas-edge-gradient",
+   "kind": "rejection",
+   "title": "Painting a stage artifact's glow only inside its design canvas (the leaf's corner gradient rect; the game world's radial fill). Letterboxing then showed a hard seam between the glow and the stage background, which breaks DESIGN-V3 §6.2. Replaced by glows that fade to zero before every canvas edge (the leaf) or are painted past the world bounds (the game).",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rj-rs1-node-test-dir-arg",
+   "kind": "rejection",
+   "title": "Adding `src/ui-v3/__tests__/` to `npm test` as a bare directory argument. On Node 22.22, `node --test src/ui-v3/__tests__/` fails with 'Cannot find module' (measured 2026-10-04), although `tests/` works. PATCH 02 uses the glob 'src/ui-v3/__tests__/*.test.mjs' instead.",
+   "at": "2026-10-04"
+  },
+  {
+   "id": "rs1-review-shots-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "RS-1 adversarial review re-run (Chromium/Playwright, gallery fixtures, n=106 shots at 360x640/390x844/820x1180/1440x900): the build report numbers reproduced exactly before any fix. Then 15 bad-input cases x 2 viewports (n=30: empty teacher roster, 24-char unbroken names, 120-char URL in transcript, 14 Later items, empty lines/steer/evidence/chapters, nowMin 23:55, no lessons, out-of-range edit index) found 1 crash (Onboarding with teachers=[]) and 3 horizontal-scroll pages at 360 px (onboarding Ready, home, parent header); after fixes 0 crashes, 0 hscroll across n=30. Full battery after fixes: all metrics 0, R11 flows 20/20 and 20/20, all three negative controls trip."
+  },
+  {
+   "id": "rj-rs1-spill-metric-descendants-only",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "The shoot.mjs text-spill metric only checked DESCENDANT elements of a control, so a control whose label is a direct text node could overflow unseen. It reported textSpill 0 while the parent reschedule grid cell \"11:00 AM\" overflowed its 59 px cell at 360x640 (scrollWidth 68 vs clientWidth 59) and at 390x844 (cells about 66 px). Found by looking at a crop, not by the metric. Fixed: the metric also checks the control own scrollWidth when it has direct text; the grid stacks AM/PM under the time when the grid is narrower than 310 px (container query)."
+  },
+  {
+   "id": "rj-rs1-global-overflow-wrap-anywhere",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Setting overflow-wrap:anywhere on the whole .v3 root fixed the long-name hscroll but silently turned control-label spills into mid-word breaks: the spill negative control (\"Tomorrow\" in a 56 px date cell) stopped tripping (spillTrips false). Scoped it to prose and name slots instead (h1-h4, p, dd, li, q, blockquote, .v3-kid, teacher-card name, transcript line); the negative control trips again."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rs1-ui-v3-scoped-tree",
+   "rel": "measured_by",
+   "dst": "rs1-shots-2026-10-04"
+  },
+  {
+   "src": "rs1-schedule-rules-pure",
+   "rel": "measured_by",
+   "dst": "rs1-r11-tap-430-2026-10-04"
+  },
+  {
+   "src": "rs1-day-amber-965700",
+   "rel": "measured_by",
+   "dst": "rs1-contrast-2026-10-04"
+  },
+  {
+   "src": "rs1-day-amber-965700",
+   "rel": "caused_by",
+   "dst": "rs1-contrast-2026-10-04"
+  },
+  {
+   "src": "rs1-face-slot-contract",
+   "rel": "caused_by",
+   "dst": "rj-rs1-trust-tutorface-min-height"
+  },
+  {
+   "src": "rs1-ui-v3-scoped-tree",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rj-rs1-spill-metric-descendants-only",
+   "rel": "measured_by",
+   "dst": "rs1-review-shots-2026-10-05"
+  },
+  {
+   "src": "rj-rs1-global-overflow-wrap-anywhere",
+   "rel": "measured_by",
+   "dst": "rs1-review-shots-2026-10-05"
+  }
+ ]
+}

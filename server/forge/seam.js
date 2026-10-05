@@ -49,8 +49,9 @@ export function ensureWarmer() {
     requestFill({ lessonId, childId: childId ?? undefined, kit, item: findKitItem(kit, item.id) ?? item, move, learner, needByMs: TURN_NEED_BY_MS }));
   // W2-B: the explain rung's live model fill, for a topic with no code pick and no library entry (background lane;
   // the kit only goes to the model: never the child's name or words)
-  setExplainerWarmer(async ({ lessonId, kit, band }) => !LESSON_ID.test(String(lessonId)) ? null :
-    modelFill({ kit, topicTitle: getTopic(kit.topicId)?.title, band }));
+  // the child's consented interest id (the lesson's pinned ctx.interests, never free text) may pick the context nouns
+  setExplainerWarmer(async ({ lessonId, kit, band, interest }) => !LESSON_ID.test(String(lessonId)) ? null :
+    modelFill({ kit, topicTitle: getTopic(kit.topicId)?.title, band, interest }));
 }
 if (!process.env.NODE_TEST_CONTEXT) ensureWarmer();
 

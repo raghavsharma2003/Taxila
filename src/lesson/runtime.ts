@@ -30,7 +30,7 @@ import { TeacherTurns } from "./teacherTurns.ts";
 import { TextLink } from "./textLink.ts";
 import { realTimers, type Timers } from "./timers.ts";
 import { VoiceLink } from "./voiceLink.ts";
-import { RATE_LIMITED } from "./realtime.ts";
+import { MINT_REFUSED, RATE_LIMITED, REALTIME_UNAVAILABLE } from "./realtime.ts";
 import { laneADeliveryEnabled, laneSwitchEnabled } from "./voiceFlags.ts";
 import { FaceProducer, faceCues, faceUiOf } from "../avatar/faceCues.ts";
 import { realtimeDeliveryLine } from "../../server/voice/expressive/compile/realtime.js";
@@ -81,7 +81,7 @@ export interface LessonState {
   lateSafeguard: number | null;
   /**
    * The Director's pace knobs (TurnResponse.pace; W2-C emits them, W2-D carries them): the YOUR TURN nudge timer reads
-   * waitNudgeSec, the realtime lane's server VAD reads endpointSilenceMs (clamped 600-1200 ms). null until a turn sends them.
+   * waitNudgeSec, the realtime lane's server VAD reads endpointSilenceMs (never below the minted 900 ms, at most 1200). null until a turn sends them.
    */
   pace: { waitNudgeSec: number; endpointSilenceMs: number } | null;
   /** The lesson left the realtime lane mid-sitting (W2-D #1): why and when. The lesson itself carries on, on cascade. */
@@ -149,6 +149,16 @@ const OUTBOX_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 /** A child turn waits at most this long for a teacher turn that started before it to finish streaming. */
 const TEACHER_SETTLE_MS = 2_000;
 const LESSON_ENDED = /lesson has ended/;
+/**
+ * A realtime refusal for quota is retried once before the lesson leaves the lane: RELATIONAL-OS P2 saw TPM refusals come
+ * and go at 3-wide, so one refusal that clears in seconds must not cost the child the realtime teacher for the sitting.
+ * A second refusal inside this window switches.
+ */
+const RATE_LIMIT_WINDOW_MS = 30_000;
+/** The wait before that one retry, when the session has not said when its quota resets. */
+const RATE_LIMIT_RETRY_MS = 1_000;
+/** ... and the longest wait a reset hint may ask for (longer than this, the switch is the better experience). */
+const RATE_LIMIT_RETRY_MAX_MS = 5_000;
 
 const initialState = (mode: LessonMode = "voice"): LessonState => ({
   phase: "idle",
@@ -178,6 +188,8 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
 
 interface ChildInput {
   childText: string;
+  /** The first turn after a realtime → cascade switch (TurnRequest.laneResume), with the realtime turn last heard. */
+  laneResume?: { heard: { text: string; interrupted: boolean } | null };
   startedAt?: number;
   asrConfidence?: number;
   chipId?: string;
@@ -238,6 +250,8 @@ export class LessonRuntime {
   private laneSwitching = false;
   /** The last applied turn was a safeguarding hand-off the realtime lane was asked to voice (speakNow interrupt). */
   private safeguardPending = false;
+  /** When the realtime lane last refused a response for quota (the first refusal is retried once). */
+  private rateLimitedAt: number | null = null;
 
   constructor(deps: RuntimeDeps = {}) {
     this.api = deps.api ?? httpLessonApi;
@@ -565,6 +579,8 @@ export class LessonRuntime {
     this.dispatch(e);
     switch (e.type) {
       case "connection":
+        // "stalled" (a transport blip that may heal) only updates the connection: the teacher turns held for the next
+        // child turn are kept, so the question she just asked still rides with the answer to it.
         this.store.set({ connection: e.state });
         if (e.state === "reconnecting") {
           this.teacherTurns.clear();
@@ -586,9 +602,17 @@ export class LessonRuntime {
         return;
       }
       case "error":
-        if (e.code === RATE_LIMITED && this.link?.mode === "voice" && laneSwitchEnabled()) {
-          void this.switchToCascade("rate_limit");
-          return;
+        if (this.link?.mode === "voice" && laneSwitchEnabled() && this.api.switchLane) {
+          if (e.code === RATE_LIMITED) {
+            this.onRateLimited();
+            return;
+          }
+          // The call dropped and the realtime lane will not come back (re-mint refused for quota, or every reconnect
+          // failed while online): the lesson carries on, on the cascade lane, instead of dying.
+          if (e.code === MINT_REFUSED || e.code === REALTIME_UNAVAILABLE) {
+            void this.switchToCascade(e.code === MINT_REFUSED ? "mint_refused" : "unavailable");
+            return;
+          }
         }
         this.store.set({ error: e.message });
         if (e.fatal) this.fail();
@@ -683,7 +707,16 @@ export class LessonRuntime {
     const batch = this.buffer.drain();
     if (!input && !batch.events.length) return; // this milestone already rode with an earlier call
     const req: TurnRequest = { lessonId, childText: input?.childText ?? "" };
-    if (input) {
+    if (input?.laneResume) {
+      // The resume turn after a realtime → cascade switch: the realtime turn last heard rides once (the server stores
+      // and checks it although the lesson is now cascade), and no child row is stored.
+      req.laneResume = true;
+      const heard = input.laneResume.heard;
+      if (heard?.text) {
+        req.teacherText = heard.text;
+        req.teacherInterrupted = heard.interrupted;
+      }
+    } else if (input) {
       if (input.asrConfidence !== undefined) req.asrConfidence = input.asrConfidence;
       const teacher = this.teacherTurns.take(input.startedAt);
       if (teacher && this.state.mode === "voice") {
@@ -780,16 +813,43 @@ export class LessonRuntime {
   // ───────────── lane switch (W2-D #1) ─────────────
 
   /**
-   * The realtime model refused a response for quota: move THIS lesson to the cascade lane mid-sitting, once. In order on
-   * the turn chain (so no Director call of this lesson is between the server's read and write of its mode):
+   * The realtime model refused a response for quota. The first refusal is retried once (after the session's reset hint,
+   * 1-5 s); a second refusal within RATE_LIMIT_WINDOW_MS moves the lesson to the cascade lane. Safety by predicate: a
+   * safeguarding hand-off waiting to be voiced is never left to a retry: the Help sheet opens and the lesson switches now.
+   */
+  private onRateLimited(): void {
+    const now = Date.now();
+    const recent = this.rateLimitedAt !== null && now - this.rateLimitedAt < RATE_LIMIT_WINDOW_MS;
+    if (this.safeguardPending || recent || this.laneSwitching) {
+      void this.switchToCascade("rate_limit");
+      return;
+    }
+    this.rateLimitedAt = now;
+    const link = this.link;
+    const reset = (link as { rateLimits?: { resetSeconds?: number }[] } | null)?.rateLimits
+      ?.map((r) => r.resetSeconds).filter((x): x is number => typeof x === "number" && x > 0);
+    const wait = Math.min(RATE_LIMIT_RETRY_MAX_MS, Math.max(RATE_LIMIT_RETRY_MS, reset?.length ? Math.max(...reset) * 1000 : 0));
+    const gen = this.generation;
+    this.timers.setTimeout(() => {
+      if (gen !== this.generation || this.link !== link || this.laneSwitching || this.state.phase !== "live") return;
+      link?.promptTeacher();
+    }, wait);
+  }
+
+  /**
+   * Move THIS lesson to the cascade lane mid-sitting, once. In order on the turn chain (so no Director call of this
+   * lesson is between the server's read and write of its mode):
    *   1. POST /api/lesson/lane (voice → cascade; the server's turns are then Director-written and spoken by TTS);
-   *   2. swap the link: the realtime call closes, a CascadeLink (through the same factory, so the UI bridge sees it)
-   *      connects on the cascade audio primed at start;
-   *   3. she speaks again: a "the line dropped" repair turn (an empty spoken turn with ASR confidence 0, which the
-   *      Director answers by re-asking the current question; no evidence either way).
+   *   2. swap the link: the realtime turn(s) she finished but no child turn has carried yet are taken first (they are
+   *      sent with the resume turn, so the server stores and checks them: answer leak, spoiled item, floor, the
+   *      helpline after a safeguard), then the realtime call closes and a CascadeLink (through the same factory, so the
+   *      UI bridge sees it) connects on the cascade audio primed at start;
+   *   3. she speaks again: a resume turn (TurnRequest.laneResume: no child row, no evidence) on which the server voices
+   *      the move it planned for the child's last answer if the realtime lane never did.
    * Safety by predicate: if the last thing the realtime lane was asked to voice was a safeguarding hand-off that never
    * started playing, the Help sheet (helplines) opens now (lateSafeguard), whatever the switch does.
-   * A failed switch leaves the lesson as it was (the realtime link and today's non-fatal error).
+   * A switch the server refused (a network blip) leaves the lesson on the realtime link and can be tried again; a switch
+   * the server took whose cascade link cannot connect fails the lesson (the realtime call is already gone).
    */
   private switchToCascade(reason: LaneSwitchReason): Promise<void> {
     const lessonId = this.state.lessonId;
@@ -797,6 +857,8 @@ export class LessonRuntime {
     this.laneSwitching = true;
     if (this.safeguardPending) this.store.set({ lateSafeguard: Date.now() });
     const gen = this.generation;
+    let swapped = false;
+    let heard: { text: string; interrupted: boolean } | null = null;
     const run = async () => {
       if (gen !== this.generation) return;
       await this.api.switchLane!(lessonId, reason);
@@ -806,10 +868,13 @@ export class LessonRuntime {
       this.unlisten = null;
       this.vf?.detach();
       this.vf = null;
+      heard = this.teacherTurns.take();
       old?.close();
+      swapped = true;
       this.teacherTurns.clear();
       this.wakeSettled(true);
       this.deferred = null;
+      this.rateLimitedAt = null;
       const link = this.createLink("text", { lessonId, voice: this.state.teacher?.voice ?? "", levels: this.levels, api: this.api, cascade: true });
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
@@ -822,11 +887,20 @@ export class LessonRuntime {
     const p = this.chain.then(run);
     this.chain = p.then(
       () => {
-        if (gen === this.generation && this.link?.mode === "text") this.queueTurn({ childText: "", asrConfidence: 0 });
+        if (gen === this.generation && this.link?.mode === "text") this.queueTurn({ childText: "", laneResume: { heard } });
       },
       (err) => {
         console.warn("lesson: could not move to the cascade lane", err);
-        if (gen === this.generation) this.store.set({ error: messageOf(err) });
+        if (gen !== this.generation) return;
+        if (swapped) {
+          // The server moved the lesson and the realtime call is closed, but the cascade link never came up.
+          this.store.set({ error: messageOf(err) });
+          this.fail();
+          return;
+        }
+        // The server never moved it (a network blip): still on the realtime link; a later refusal may try again.
+        this.laneSwitching = false;
+        this.store.set({ error: messageOf(err) });
       },
     );
     return p.catch(() => {});
@@ -948,6 +1022,7 @@ export class LessonRuntime {
     this.teardown();
     this.laneSwitching = false;
     this.safeguardPending = false;
+    this.rateLimitedAt = null;
     this.face = new FaceProducer();
     this.faceTurn = 0;
     this.modules.clear(); // a lesson left by page-hide or an auth error must not replay its modules into this one

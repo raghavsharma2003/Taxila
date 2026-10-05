@@ -433,3 +433,23 @@ Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 s
 | Own runtime additions: `life.js` (micro-saccades, stressed-syllable brow flick, shoulder breath, stud glint state), wink key bend, viseme pass 2 (`lips.js`), f/v teeth-over-lip pass (`gl.js`), adaptive plate mesh, warm-up pass | runtime | ours | ours | still zero runtime dependencies (plain WebGL2) |
 | Foundry `taxila-brain` (gpt-5.6-sol), `grok-4-20-reasoning` | advisory blind forced-choice mouth-crop label test (`labeltest.mjs`) and blind sheet opinion | Azure AI Foundry (sold direct) | Azure terms | raw replies in `art/character/puppet2d/polish-r5/work/labelres/`, `.../work/blind/` |
 | vite 8, Playwright + Chromium (SwiftShader), ffmpeg, numpy / scipy / Pillow / OpenCV | build, evidence, fps proxy | as r4 | as r4 | build/evidence only |
+
+## 2D puppet, polish r6 of arm P, 2026-10-05 (`art/character/puppet2d/polish-r6/`, `scripts/character/puppet2d/polish-r6/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| All r5 layers and keys (carried over). `bunclean.py` re-cuts `bun.png` from its own pixels (strip removed, arc-rounded bottom, 3.5 px feathered alpha); `bodyfill.py` writes a new `nape.png` from the body plate's own neck-edge colours | every layer; the new nape layer under the bun | ours | ours / Azure OpenAI terms (inherited layers) | **no image-model calls in r6: USD 0.00**, ledger total stays 9.98 of the 30 cap |
+| Own runtime additions (`scripts/character/puppet2d/polish-r6/runtime/*.js`): soft mouth cavity (occlusion, rims, tongue mound, lip volume, corner creases), jaw clamp + cheek lift, f/v incisor overlay with a teeth shadow, ch teeth-meet, ring visemes, lid-volume shading and lash bend, wink entry, stud glint quad (canvas-generated gradient texture), asymmetric expression takes + mouth bunching / cheek bunch / mentalis warp keys, rest-y turn-field sampling, nose side planes, screen-space edge AA | runtime | ours | ours | still zero runtime dependencies (plain WebGL2) |
+| Foundry `taxila-brain` (gpt-5.6-sol), `grok-4-20-reasoning` | advisory blind forced-choice mouth-crop label test and blind grid opinion (`labeltest.mjs`, `judge-r6-blind.mjs`) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `art/character/puppet2d/polish-r6/work/labelres/`, `.../work/blind-r6*/` |
+| vite 8, Playwright + Chromium (SwiftShader), ffmpeg, numpy / scipy / Pillow | build, evidence, tear gate, fps proxy | as r5 | as r5 | build/evidence only; nothing but PNG/WebP outputs and our JS ships |
+
+Not used: Live2D (licence blocked), Rive (GUI authoring), PixiJS (plain WebGL2 suffices).
+
+## 2D puppet, polish r7 of arm P, 2026-10-05 (`art/character/puppet2d/polish-r7/`, `scripts/character/puppet2d/polish-r7/`)
+
+| What | Used for | Source | Licence | Notes |
+|---|---|---|---|---|
+| All r6 layers and keys (carried over). `hairline.py` cuts the forehead shard off `hair.png` (alpha only lowered, 1.4 px AA ramp along a quadratic fitted to the clean hairline rows); `foreheadfill.py` extends `face.png` under the temple hairline from its own edge colours (transparent outside only) | `hair`, `face` layers | ours | ours / Azure OpenAI terms (inherited layers) | **no image-model calls in r7: USD 0.00**, ledger total stays 9.98 of the 30 cap; the r6 originals are kept as `hair.r6.png`, `face.r6.png` |
+| Own runtime additions (`scripts/character/puppet2d/polish-r7/runtime/*.js`): far-side silhouette deform baked into the yaw keyform grids (`silDx`), hairline-to-brow pin, upper-body lean / roll response, the acting layer (`ACTS` head + lean curves, `wob` micro-motion, weighted takes), surprise / delight / far-corner mouth tuning | runtime | ours | ours | still zero runtime dependencies (plain WebGL2) |
+| Foundry `taxila-brain` (gpt-5.6-sol), `grok-4-20-reasoning` | advisory blind grid opinion (`judge-r7-blind.mjs`, the judge-r6 prompt unchanged) | Azure AI Foundry (sold direct) | Azure terms | raw replies in `art/character/puppet2d/polish-r7/work/blind-*/` |
+| vite 8, Playwright + Chromium (SwiftShader), ffmpeg, numpy / scipy / Pillow | build, evidence, tear gate, hair gate (+ brow-mask pass), fps proxy | as r6 | as r6 | build/evidence only |

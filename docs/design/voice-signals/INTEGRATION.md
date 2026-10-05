@@ -57,7 +57,7 @@ go there.
   ```js
   const vs = input.voice?.kv ? toSignalInput(input.voice.kv, {
     verdict, safety: false, words: L.words, o3History: repeatWrong,
-    ling: { idk: L.idk?.v ?? null, hedge: L.hedge, fillerLex: L.fillerLead?.v === true, repairDir: L.repairDir, thinkAloud: !!L.thinkAloudLex },
+    ling: { idk: L.idk?.v ?? null, hedge: L.hedge, fillerLex: L.fillerLead?.v === true, toks: L.toks, repairDir: L.repairDir, thinkAloud: !!L.thinkAloudLex },
     context: input.item?.form === "read_aloud" ? "read_aloud" : "answer", form: input.item?.form ?? "number",
     langMode: L.langMode ?? input.langModeHint, ageBand: input.ageBand, baseline: new VsBaseline(input.voice.vsb ?? {}),
     qSignals: q.acoustic, deltaFitted: !!input.deltaFitted, deltaZ: input.delta && input.voice?.baseline?.onsetMs?.sd ? input.delta / input.voice.baseline.onsetMs.sd : 0,
@@ -83,6 +83,18 @@ go there.
   D10).
 - **Env.** `TAXILA_VOICESIG = off | shadow | on`. The turn handler reads it (`vsMode(process.env)`) and passes it as
   `input.vsMode`. The signals layer never reads env.
+
+- **`toks` is required (verify pass 2026-10-04).** server/signals' `fillerLead` counts `haan`, `ji`, `ok`, `achha` as
+  planning fillers, so `readText("haan ji, paanch").fillerLead.v === true`, measured. With `toks` present, the adapter
+  replaces `fillerLex` with `rules.fillerLexOf(toks)`, which skips deference and acknowledgement tokens. The same defect
+  feeds SIGNALS D1 L4 (`states.js` line 48), which this workstream may not edit. **Proposal A2b** (signals owner): remove
+  `haan, han, ji, ok, okay, achha, acha, accha, हां` from `PLANNING` in `lexicon/discourse.js`, or treat them as skippable
+  like `STOP`, and add the "haan ji, paanch" case to the signals tests.
+- **Privacy (verify pass).** `frame.vs` and the `vs:*` reason codes go to the trace row only. They must never reach a
+  prompt (`server/brain/**` compile), the child, a parent payload (`server/routes/parent.js`, `server/comprehension/report/**`)
+  or a stored learner profile, at any ladder level. Today server/signals has no caller in `server/`, so nothing leaks yet.
+  The step that wires signals into the brain must add a test asserting that no `vs:` string appears in any compiled prompt
+  or parent payload.
 
 ### A6: kv on the turn request: `src/lesson/runtime.ts` (link owner; not `src/child/lesson/**`)
 - Line 584, in the `child_final` case. Before `queueTurn`, start `head.commit({ fromT, toT, teacherEndAt, words, langMode, micClass })`:

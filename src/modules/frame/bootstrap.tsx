@@ -11,12 +11,21 @@ import type { HostToModule, ModuleToHost } from "../../../shared/contracts.ts";
 import type { EngineApi, EngineModule } from "./engine.ts";
 import { resolveParams } from "./params.ts";
 import { parseHostToModule } from "./protocol.ts";
-import { hasEngine, loadEngine } from "./registry.ts";
+import { hasEngine, loadEngine, loadedEngine } from "./registry.ts";
 
 type Init = Extract<HostToModule, { type: "init" }>;
 
 /** The host names this frame's module in the URL hash (#<moduleId>), so "ready" can carry it. */
-const MODULE_ID = decodeURIComponent(location.hash.slice(1));
+const HASH_ID = decodeURIComponent(location.hash.slice(1));
+/**
+ * A SPARE frame (W2-B fixer, major 4): `#spare:<engine>,<engine>` boots the runtime, imports those engines' chunks and
+ * then announces "ready" under its spare id. The first init it receives names the module it becomes (the host adopted
+ * it for a mount: src/modules/prewarm.ts adoptSpare); exactly one, so after that it is an ordinary live frame.
+ */
+const SPARE: string[] | null = HASH_ID.startsWith("spare:") ? HASH_ID.slice(6).split(",").filter((id) => hasEngine(id)).slice(0, 12) : null;
+/** This frame's module id: the hash's, or (a spare) the id of the init that adopted it. */
+let MODULE_ID = HASH_ID;
+let adopted = false;
 // The frame document's origin is opaque ("null"), but its URL's origin is the app's, which is where the
 // host lives; messages are only accepted from, and only sent to, that origin.
 const PARENT_ORIGIN = location.origin;
@@ -25,7 +34,7 @@ const PARENT_ORIGIN = location.origin;
  * browser's caches and then idles. It never announces "ready" (the host has no slot for it) and never renders an engine;
  * the host removes it once it has loaded. src/modules/prewarm.ts creates it at lesson start.
  */
-const WARM: string[] | null = MODULE_ID.startsWith("warm:") ? MODULE_ID.slice(5).split(",").filter((id) => hasEngine(id)).slice(0, 24) : null;
+const WARM: string[] | null = HASH_ID.startsWith("warm:") ? HASH_ID.slice(5).split(",").filter((id) => hasEngine(id)).slice(0, 24) : null;
 
 /** The host's end of this session, handed over with init. */
 let port: MessagePort | null = null;
@@ -42,13 +51,14 @@ function announce(): void {
   window.parent.postMessage({ type: "ready", moduleId: MODULE_ID } satisfies ModuleToHost, PARENT_ORIGIN);
 }
 
-function makeApi(moduleId: string): EngineApi {
+/** The engine's API; the module id is read at call time (a spare learns its id from the init that adopts it). */
+function makeApi(): EngineApi {
   return {
-    interaction: (name, data = {}) => post({ type: "interaction", moduleId, name, data }),
-    answer: (value, correct) => post({ type: "answer", moduleId, value, ...(correct !== undefined && { correct }) }),
-    goalMet: (goal) => post({ type: "goal_met", moduleId, goal }),
-    stuck: (reason) => post({ type: "stuck", moduleId, reason }),
-    error: (message) => post({ type: "error", moduleId, message }),
+    interaction: (name, data = {}) => post({ type: "interaction", moduleId: MODULE_ID, name, data }),
+    answer: (value, correct) => post({ type: "answer", moduleId: MODULE_ID, value, ...(correct !== undefined && { correct }) }),
+    goalMet: (goal) => post({ type: "goal_met", moduleId: MODULE_ID, goal }),
+    stuck: (reason) => post({ type: "stuck", moduleId: MODULE_ID, reason }),
+    error: (message) => post({ type: "error", moduleId: MODULE_ID, message }),
   };
 }
 
@@ -89,8 +99,16 @@ function LiveFrame() {
       const msg = parseHostToModule(data);
       if (!msg) return;
       switch (msg.type) {
-        case "init":
-          if (msg.moduleId !== MODULE_ID) return;
+        case "init": {
+          if (msg.moduleId !== MODULE_ID) {
+            // a spare takes the id of the one init that adopts it; any other mismatch is not for this frame
+            if (!SPARE || adopted) return;
+            MODULE_ID = msg.moduleId;
+          }
+          adopted = true;
+          // an engine this document already imported (a spare's) renders in the same commit as the init: no loading pass
+          const pre = loadedEngine(msg.engine);
+          if (pre) setLoaded({ status: "ready", engine: pre });
           initRef.current = msg;
           setInit(msg);
           setRaw(msg.params);
@@ -98,7 +116,15 @@ function LiveFrame() {
           setRevealed(false);
           setResetKey((k) => k + 1);
           return;
+        }
         case "set_param":
+          // a line anchor's age is stamped with this frame's receipt time, so an engine that mounts later still computes
+          // the anchor exactly (anchor = rxAt - ageMs on this frame's clock)
+          if (msg.name === "cue" && msg.value && typeof msg.value === "object") {
+            const value = { ...(msg.value as Record<string, unknown>), rxAt: performance.now() };
+            setRaw((r) => ({ ...r, cue: value }));
+            return;
+          }
           setRaw((r) => ({ ...r, [msg.name]: msg.value }));
           return;
         case "highlight":
@@ -124,8 +150,15 @@ function LiveFrame() {
       handle(e.data);
     };
     window.addEventListener("message", onMessage);
-    announce();
-    return () => window.removeEventListener("message", onMessage);
+    let live = true;
+    if (SPARE) {
+      // a spare says ready once its engines are imported: "ready" then means the next mount paints from memory
+      (async () => {
+        for (const id of SPARE) await loadEngine(id).catch(() => undefined);
+        if (live) announce();
+      })();
+    } else announce();
+    return () => { live = false; window.removeEventListener("message", onMessage); };
   }, []);
 
   const engineId = init?.engine;
@@ -137,6 +170,7 @@ function LiveFrame() {
       return;
     }
     let live = true;
+    if (loadedEngine(engineId)) { setLoaded({ status: "ready", engine: loadedEngine(engineId)! }); return; }
     setLoaded({ status: "loading" });
     loadEngine(engineId).then(
       (engine) => live && setLoaded({ status: "ready", engine }),
@@ -151,7 +185,7 @@ function LiveFrame() {
     };
   }, [engineId]);
 
-  const api = useMemo(() => makeApi(MODULE_ID), []);
+  const api = useMemo(() => makeApi(), []);
   const def = loaded.status === "ready" ? loaded.engine.def : null;
   const resolved = useMemo(() => (def ? resolveParams(def, raw) : null), [def, raw]);
   // Once per distinct set of issues (a set_param that leaves them unchanged is noise toward the buffer cap).

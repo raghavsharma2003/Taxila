@@ -10,8 +10,9 @@
 //   - Grading: Studio.answer posts the child's value; the HOST grades it (/api/studio/answer) and sends the verdict back.
 //   - Sizing: the frame is laid out at the build's design size and scaled to the stage box with a transform, so a build
 //     designed at 360 x 320 looks the same on every screen and can never overflow the box.
-//   - Failure: a frame that does not say ready within 5 s, errors, or violates its CSP reports `error` to the stage, which
-//     swaps in the skeleton-as-activity (the child sees a correct activity, never an error).
+//   - Failure: a frame that does not say ready within 5 s, errors, or violates its CSP reports `error` (with its reason) to
+//     the stage, which swaps in the skeleton-as-activity (the child sees a correct activity, never an error). Only a csp,
+//     runtime or navigation failure counts against the build on the server; a slow device (`not_ready`) never does.
 import { useEffect, useRef, useState } from "react";
 import type { ArtifactRendererProps } from "./renderers.ts";
 import { frameDocument } from "./kit/bundle.ts";
@@ -38,11 +39,11 @@ export function StudioFrame({ artifact, px, design, lang, onEvent }: ArtifactRen
     void (async () => {
       const b = await studioApi.build(artifact.src);
       if (!live) return;
-      if (!b) { emit.current({ type: "error", message: "build unavailable" }); return; }
+      if (!b) { emit.current({ type: "error", message: "build unavailable", reason: "unavailable" }); return; }
       const d = await frameDocument({ fragment: b.fragment, sha256: artifact.sha256, stage: design, params: (artifact.params ?? {}) as Record<string, unknown>,
         strings: fillStrings(artifact.strings ?? {}), lang, seed: 1 + m.epoch });
       if (!live) return;
-      if (!d) { emit.current({ type: "error", message: "build bytes did not match" }); return; }
+      if (!d) { emit.current({ type: "error", message: "build bytes did not match", reason: "bytes" }); return; }
       setDoc(d.html);
     })();
     return () => { live = false; };
@@ -53,11 +54,13 @@ export function StudioFrame({ artifact, px, design, lang, onEvent }: ArtifactRen
     const f = frameRef.current;
     if (!doc || !f) return;
     let loads = 0, ready = false, dead = false;
-    const fail = (message: string) => { if (dead) return; dead = true; portRef.current?.close(); portRef.current = null; emit.current({ type: "error", message }); };
-    const timer = setTimeout(() => { if (!ready) fail("frame not ready"); }, READY_MS);
+    type Why = "csp" | "runtime" | "navigated" | "not_ready";
+    const fail = (message: string, reason: Why) => { if (dead) return; dead = true; portRef.current?.close(); portRef.current = null; emit.current({ type: "error", message, reason }); };
+    // a slow device is not a broken build: `not_ready` swaps in the skeleton for this child only (the server never counts it)
+    const timer = setTimeout(() => { if (!ready) fail("frame not ready", "not_ready"); }, READY_MS);
     const onLoad = () => {
       loads++;
-      if (loads > 1) { fail("frame navigated"); return; }
+      if (loads > 1) { fail("frame navigated", "navigated"); return; }
       const ch = new MessageChannel();
       portRef.current = ch.port1;
       ch.port1.onmessage = async (e) => {
@@ -74,7 +77,8 @@ export function StudioFrame({ artifact, px, design, lang, onEvent }: ArtifactRen
             if (r && !dead) ch.port1.postMessage({ type: "verdict", correct: !!r.correct });
             break;
           }
-          case "error": case "csp": fail(`frame ${msg.type}`); break;
+          case "error": fail("frame error", "runtime"); break;
+          case "csp": fail("frame csp", "csp"); break;
           default: break;
         }
       };

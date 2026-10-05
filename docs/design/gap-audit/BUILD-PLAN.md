@@ -1736,3 +1736,26 @@ Nothing reads it yet. The order is SIGNALS-SPEC §8.2 steps 1-14, plus the verif
   - real-child panel;
   - 3 leftover prod test accounts blocked by synthetic safeguarding incidents;
   - USD 60-90 Azure budget.
+
+## Done overnight 2026-10-05: integrate after Wave 2 (in owner priority order)
+1. **Duplex v2** (wf_3622f8d6-318): `docs/research/duplex/{ARCHITECTURE v2, PLAN.md, CRITIQUE.md}`; runtime in `src/duplex/**` and `server/duplex/**`; TaxilaFDB in `evals/duplex/taxilafdb/**`.
+   - Stage A cuts off thinking pauses 0.0% (clean) against 82.8% for silence-640 and 24.9% for today's cascade; decision gap p50 360 ms.
+   - PLAN blockers, in order:
+     - (a) the safety predicate must survive real transcripts (16/84 missed under sttReal, today's prod too). Fixing it in wf_94977421-1ca;
+     - (b) freeze one engine config;
+     - (c) yield must cancel pending replies in the player;
+     - (d) the India MAI lane (owner ticket).
+   - Open bars: barge-in yield p50 760 ms against the 200 ms target; keeping talking through "haan/acchha" at 67-72%, target ≥ 90%.
+   - Then the 12 flagged steps in PLAN.md.
+2. **2D face:** still polishing (r5); r4 = 3.8/5.
+3. **Voice signals** (wf_085e782c-74c): a hesitation detector (45 KB ONNX, AUROC 0.94 on adults) and `server/voicesig/**`, shadow only.
+   - Nothing about understanding is measured on children yet; it needs the real-child pilot.
+   - Owner approvals asked: the `onnxruntime-web` dependency and a ≥ 200-child pilot bar.
+   - The AMI CC BY 4.0 attribution line must ship in the product.
+4. **Studio v2** (RS-4 pre-work): `shared/studio-spec.ts`, `src/studio-v2/**`, 16 engines, 16,000-spec fuzz; patches in `docs/design/reset/prework/rs4/patches`.
+5. **Interaction:** owner-truth patches 01-10, plus conversation v2.
+6. **Also ready:**
+   - RS-1 UI v3: `src/ui-v3/**` behind `ui.v3`; the scheduler passes 20/20 on the owner's 4:30 PM case.
+   - RS-6 placement plus the re-levelled overlay: too-easy first items fell from 44% to 30%; F0 patch.
+   - RS-7 Devanagari step: Diya number words 87% → 98% heard right; off by default.
+   - Reports are in `docs/design/reset/prework/*/REPORT.md`.

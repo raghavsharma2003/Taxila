@@ -1,0 +1,312 @@
+{
+ "date": "2026-10-04",
+ "round": "polish-r5 of arm P (from r4 base)",
+ "turn": {
+  "product": "yaw soft-clamped to +-10 (knee at 7), shared field only, painted plates not loaded",
+  "opt_in": "?turn=plates restores the +-20 plate path: adaptive 16/8 px mesh, 34 px erosion + sigma-13 feather (~52 px band). Still shows the +20 mouth-corner crease and a delight jaw warp at full size: NOT for product",
+  "method_change_plate_specific_feature_layers": "NOT done this round"
+ },
+ "visemes_gate_blind_forced_choice": {
+  "crops": 27,
+  "classes": 9,
+  "reps": 2,
+  "gpt56sol_taxila_brain": {
+   "model": "taxila-brain",
+   "n": 54,
+   "correct": 47,
+   "accuracy": 0.87,
+   "perClass": {
+    "fv": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "F",
+      "F",
+      "F",
+      "C",
+      "F",
+      "C"
+     ]
+    },
+    "mbp": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "E",
+      "E",
+      "E",
+      "E",
+      "E",
+      "E"
+     ]
+    },
+    "surprise": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "I",
+      "I",
+      "I",
+      "I",
+      "I",
+      "I"
+     ]
+    },
+    "o": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "B",
+      "B",
+      "B",
+      "B",
+      "B",
+      "B"
+     ]
+    },
+    "oo": {
+     "n": 6,
+     "hit": 5,
+     "said": [
+      "D",
+      "D",
+      "D",
+      "D",
+      "B",
+      "D"
+     ]
+    },
+    "ltdn": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "G",
+      "G",
+      "G",
+      "G",
+      "G",
+      "G"
+     ]
+    },
+    "aa": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A",
+      "A"
+     ]
+    },
+    "ch": {
+     "n": 6,
+     "hit": 2,
+     "said": [
+      "B",
+      "H",
+      "B",
+      "B",
+      "G",
+      "H"
+     ]
+    },
+    "ee": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    }
+   }
+  },
+  "grok_4_20_reasoning": {
+   "model": "grok-4-20-reasoning",
+   "n": 54,
+   "correct": 37,
+   "accuracy": 0.685,
+   "perClass": {
+    "fv": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    },
+    "mbp": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "E",
+      "E",
+      "E",
+      "E",
+      "E",
+      "E"
+     ]
+    },
+    "surprise": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "I",
+      "I",
+      "I",
+      "I",
+      "I",
+      "I"
+     ]
+    },
+    "o": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "B",
+      "A",
+      "B",
+      "I",
+      "B",
+      "B"
+     ]
+    },
+    "oo": {
+     "n": 6,
+     "hit": 4,
+     "said": [
+      "D",
+      "I",
+      "D",
+      "I",
+      "D",
+      "D"
+     ]
+    },
+    "ltdn": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "G",
+      "G",
+      "G",
+      "G",
+      "G",
+      "G"
+     ]
+    },
+    "aa": {
+     "n": 6,
+     "hit": 5,
+     "said": [
+      "A",
+      "A",
+      "A",
+      "A",
+      "A",
+      "C"
+     ]
+    },
+    "ch": {
+     "n": 6,
+     "hit": 0,
+     "said": [
+      "G",
+      "B",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    },
+    "ee": {
+     "n": 6,
+     "hit": 6,
+     "said": [
+      "C",
+      "C",
+      "C",
+      "C",
+      "C",
+      "C"
+     ]
+    }
+   }
+  },
+  "note": "gpt passes >= 80% (0.87; 0.89 on the previous run of the same mouths); grok fails (0.63-0.69): it labels any visible teeth 'ee'. f/v is the weakest class for both. Results for earlier iterations i1-i6 in work/labelres/."
+ },
+ "articulation_strip": "work/gatestrip-r5.png: ch protruded with teeth (4 frames), l tongue tip 4 frames in chalo / 3 in bubbly, m and b closures 3 frames each",
+ "rest_ssim_vs_cfront": {
+  "full": 0.9837,
+  "head": 0.9658,
+  "r4": {
+   "full": 0.9841,
+   "head": 0.9653
+  }
+ },
+ "fps_proxy_swiftshader_720px": {
+  "cpu4x_runs": [
+   {
+    "fps_p50": 20,
+    "work_p50": 6.5,
+    "work_p95": 12.0
+   },
+   {
+    "fps_p50": 15,
+    "work_p50": 7.2,
+    "work_p95": 13.4
+   },
+   {
+    "fps_p50": 15,
+    "work_p50": 7.1,
+    "work_p95": 12.3
+   }
+  ],
+  "unthrottled": {
+   "work_p50": 1.8,
+   "work_p95": 5.2
+  },
+  "opt_in_plates_cpu4x": {
+   "work_p50": 8.1,
+   "work_p95": 14.2
+  },
+  "triangles": 21642,
+  "vs": "r4 4x work p95 32.4, r3 17.3; same fps.mjs method. NOT a phone measurement: owner must read demo.html?facerig=1 on the cheap Android"
+ },
+ "fps_changes": [
+  "plates off in product",
+  "lip-shell per-vertex constants precomputed (mouth 8.1 -> 3.5 ms at 4x)",
+  "faceOffset weights precomputed for face/shell/plate",
+  "zHead 8 px bilinear table in hot loops",
+  "brow ribbon per column",
+  "lockbed 8 -> 12 px",
+  "load-time warm-up pass (first-use shader/JIT spikes)"
+ ],
+ "blind_panel_sheet_plus_full_turn": {
+  "gpt56sol": 4.0,
+  "grok_4_20_reasoning": 3.5,
+  "r4_same_models": {
+   "gpt56sol": 3.0,
+   "grok": 3.5
+  },
+  "files": "work/blind/judge-*.json"
+ },
+ "image_spend_usd": {
+  "r5": 0.0,
+  "ledger_total": 9.98,
+  "cap": 30
+ },
+ "clips": [
+  "clip-review-r5-1024.mp4 (45.2 s, 30 fps, voice at 5.0 s)",
+  "clip-talk-14s-r5.mp4 (4.5-18.5 s)"
+ ]
+}

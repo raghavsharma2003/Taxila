@@ -16,6 +16,8 @@ import { CHARACTERS } from "../server/compiler/characters/index.js";
 import { initLessonState, branchesFor } from "../server/director/state.js";
 import { promptFor } from "../server/director/items.js";
 import * as SH from "../server/director/shapes.js";
+import { estimateTokens } from "../server/learner/brief.js";
+import { realtimeDeliveryLine } from "../server/voice/expressive/compile/realtime.js";
 
 const ALL = process.argv.includes("--all");   // every item (slow, ~2 min): the measurement run, not the gate
 const TOP = ALL ? Infinity : Number(process.argv[process.argv.indexOf("--top") + 1]) || 60;
@@ -88,6 +90,19 @@ console.log(`compiled ${n} worst-case lesson states from the ${worst.length} lon
 console.log(`total: worst ${maxTotal.tokens} / ${TOKEN_BUDGET} tokens (${maxTotal.id}); headroom ${TOKEN_BUDGET - maxTotal.tokens}`);
 console.log(`sections (worst / cap): ${Object.entries(maxSection).map(([k, v]) => `${k} ${v}/${SECTION_CAPS[k]}`).join(" · ")}`);
 console.log(`longest correction pair: ${longestPair.join(" + ")} (${FLOOR_FIX[longestPair[0]].length + FLOOR_FIX[longestPair[1]].length} chars)`);
+
+// The realtime lane's delivery note (W2-D lane A, flagged): the browser inserts it into the voice instructions just before
+// their last line (src/lesson/voiceLink.ts withDeliveryNote), so the worst compile plus the longest note must still fit.
+let longestNote = "";
+for (const display of ["delight", "warm_pride", "enthusiasm", "gentle_concern", "playful", "calm_curious", "sheepish_own", "neutral_warm", "calm_steady"])
+  for (const move of ["greet", "hook", "explain", "worked_example", "probe", "hint", "reteach", "celebrate", "break", "wrap", "repair", "show_module"])
+    for (const band of ["B1", "B2", "B3", "B4"]) for (const engagement of ["engaged", "strained"]) {
+      const line = realtimeDeliveryLine({ move, verdict: "ungraded", engagement, teacherAffect: { display, intensity: 2, cause: "none", turn: 1 }, safety: false, band });
+      if (line && line.length > longestNote.length) longestNote = line;
+    }
+const noteTokens = estimateTokens(longestNote) + 1;
+console.log(`lane-A delivery note: longest ${longestNote.length} chars (${noteTokens} tokens); worst + note ${maxTotal.tokens + noteTokens} / ${TOKEN_BUDGET}`);
+if (maxTotal.tokens + noteTokens > TOKEN_BUDGET) failures.push(`lane-A delivery note: worst ${maxTotal.tokens} + note ${noteTokens} tokens is over the ${TOKEN_BUDGET} budget`);
 
 // negative controls: under pressure compile() sheds WHOLE droppable parts or throws — it never slices
 const controls = [];

@@ -70,7 +70,9 @@ export const W2A = {
   "home.homework.lesson": "Today's lesson",
   "home.test.head": "Revision for your {subject} test",
   "home.hold.head": "Let's take a break today.",
-  "home.hold.sub": "Talk to a grown-up at home.",
+  // a grown-up the child TRUSTS, never "at home": a hold follows a safeguarding incident, which can be at home (floor > spec)
+  "home.hold.sub": "Talk to a grown-up you trust.",
+  "home.hold.lines": "Childline 1098 is free, any time. To talk about worries, Tele-MANAS is 14416.",
   "home.hold.help": "Help",
   "home.madefor.title": "Made for you",
   "home.madefor.play": "Play again",

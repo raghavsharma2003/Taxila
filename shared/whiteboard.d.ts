@@ -14,7 +14,7 @@ export interface OpGeometry { paths: string[]; texts: DrawnText[]; fill?: string
 
 export function textProblem(t: unknown): string | null;
 export function textBox(text: string, size?: "s" | "m" | "l", at?: [number, number], align?: "start" | "middle" | "end"): Box;
-export function normalizeScript(raw: unknown, opts?: { strict?: boolean }): { ok: boolean; script: WhiteboardScript | null; errors: string[]; fixes: string[] };
+export function normalizeScript(raw: unknown, opts?: { strict?: boolean; clauses?: boolean; priorIds?: Iterable<string> | null }): { ok: boolean; script: WhiteboardScript | null; errors: string[]; fixes: string[] };
 export function opProgress(op: WbOp, t: number): number;
 export function erasers(script: WhiteboardScript): Map<string, WbOp>;
 export function visibleShare(op: WbOp, t: number, er: Map<string, WbOp>): number;

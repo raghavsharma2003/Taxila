@@ -9393,6 +9393,1174 @@
    "at": "2026-10-04",
    "title": "Diya (DragonHD) stays the production voice; TTS hunting stops. Tune pace after the Devanagari step and use punctuation-led phrasing (not SSML breaks) for the tiny natural pauses raters asked for. Reverse if the owner's own scores put another voice ahead.",
    "source": "inbox/voice-final.json"
+  },
+  {
+   "id": "duplex-verdict-anchor-last-voice",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "G7 verdict clock anchors on max(last value end, child's last voiced frame) + VERDICT.delayMs (2.0 s, re-chosen on TaxilaFDB train F1: 1.2 s 2-4/40, 1.6 s 1/40, 2.0 s 0/40). Reverse if real-child sessions (PLAN ET-2) show verdicts on repaired values > 0 with this anchor, or listeners rate the 2 s verdict wait as slow.",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "duplex-idk-tail-only",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "understand.js `idk` (which licenses idk_help SPEAK) is true only when the IDK phrase is the tail of the turn (vocatives / a few particles allowed after it); `idkAny` keeps the old reading for the Director. Reverse if real transcripts show tail IDKs followed by other filler words being missed (missed idk replies > 2%).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "duplex-echo-by-audio-span",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "EchoSubtractor matches her words that were audible inside the item's audio span regardless of the text's arrival time; empty-skeleton tails join a run by surface; on word-timed sources a single token whose own time sits on her same word is echo. Reverse if recorded sessions (ET-1) show children's words deleted (> 1% of answers).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "duplex-unreadable-script",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Transcript tokens in a script other than Devanagari/Latin (STT hallucination, 5/90 real segments) set LexicalMarkers.unreadable: never complete, never re-voiced, backstop first sound is a verdict-free prompt; the Director should ask again. Reverse if a future STT stops hallucinating scripts (0 in 500 real segments).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "duplex-turn-pace",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Within-turn pace: the longest pause this turn after which the child resumed x TURN_PACE.k (1.3, chosen on train slow-child world: k0 12.6%/1.5% cut/missed, k1.3 10.1%/3.6%, k1.6 9.6%/6.9%) floors later backstops (cap 6 s) and the verdict delay (cap 4 s); granted holds excluded. Reverse if ET-2 shows missed replies up > 3 pt with no cut-off gain.",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "m-d8-duplex-critique-stress-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D8 (2026-10-04, $0): TaxilaFDB test split (960 streams; 732 thinking pauses, 528 respond ends, 84 distress, 40 repairs, 48 holds) under world perturbations (sttReal calibrated on the L2 real-STT transcripts n=48, slow x1.6 pauses, quiet -12 dB, phone SNR 6 dB + bursts; [E] parameters) via evals/duplex/critic/stress.mjs, pre-fix hash 1d138d3168bf and post-fix 67a0af9b6551. Post-fix base: stage A cut-offs 0.0% FAST / 0.1% D4, missed 8.7/10.6%, verdict-on-repaired 0/40, unsafe 0/84; silence-640 82.8/73.6% cut-offs; cascade-900 24.9% (D4) with 40.2% missed. sttReal: distress detected 68/84 for EVERY arm; stage A unsafe 15/84. Slow child: stage A 8.2% cut-offs, 13/40 verdict on repaired. All three stresses: stage A 17.3% cut / 23.3% missed vs silence-640 97.3% / 1.9%. Duck p50 38-70 ms; yield p50 760/1207 ms. Duplex extras cost +$0.07-0.11 per lesson-hour (sim token counts x Azure retail). Details docs/research/duplex/CRITIQUE.md.",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "rj-duplex-verdict-anchor-value-word",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the G7 verdict gate at last VALUE end + 2.0 s. What broke: a unit/tail word after the value ate the wait ('पंद्रह | सेंटीमीटर [1.4 s] सॉरी बारह': gate fell 90 ms before 'सॉरी'), verdict on 15 played, TaxilaFDB test F1.rep_marker 4/40 FAST. Replaced by duplex-verdict-anchor-last-voice.",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "rj-duplex-idk-anywhere",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: idk_help licensed by an IDK phrase anywhere in the turn. What broke: 'पता नहीं … कभी कभी लगता है मैं ना' got a reply committed 30 ms after the last word, before the distress phrase was visible (TaxilaFDB test F10 after_pause). Replaced by duplex-idk-tail-only.",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "rj-duplex-echo-arrival-window",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: echo candidates = her words audible in the 2 s before the text's ARRIVAL. What broke: straddling items re-transcribed 3+ s after her question kept her tail; 92/181 stage A reply texts on a test sample began with her own last word ('है? तीन सौ साठ डिग्री'), re-voiced in the uptake. Replaced by duplex-echo-by-audio-span (0/172).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "rj-duplex-verbatim-stt-sim-as-gate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: TaxilaFDB L1 with a simulated STT that returns the script verbatim as the gate for lexical and safety behaviour. What broke: the real transcriber returned only 42/90 child segments verbatim on the same streams (5/90 in another script); with calibrated errors the shared safety predicate caught 68/84 distress lines (84/84 at L1) and stage A missed replies rose 8.7 -> 15.3%. Replaced by: the sttReal world in every duplex report, and TaxilaFDB v2 on real transcripts (PLAN section 4).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "open-duplex-safety-predicate-stt-robustness",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "server/director/safety.js scanSafety misses distress lines after one garbled token ('पाप मारते हैं', 'Nobody would evn notice') or a danda after the last word; 16/84 missed under sttReal for every arm. Blocker X-1 in docs/research/duplex/PLAN.md (owner: safety; model distress note into PartialSafety.modelNote via W2-E).",
+   "source": "inbox/duplex-critique.json"
+  },
+  {
+   "id": "duplex-stage-a-ships-2026-10-04",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex engine: stage A (rules + governor, src/duplex/engineRules.ts) is THE engine; the fast LLM semantic estimate stays behind flags.semantic (off); stage B stays behind flags.trained (off). Why: on the frozen TaxilaFDB test split (960 streams, held-out template families AND voices) stage A cut children off in 2.3% (FAST lane) / 2.6% (D4) of 732 thinking pauses vs cascade-900 31.3%, silence-640 74.2-82.8%, Smart Turn v3.2 off-the-shelf 36.9-64.2%, at a decision gap p50 370 ms (FAST) / 1,140 ms (D4), dominating the whole silence frontier (no threshold < 5% cut-offs without ~100% missed replies); the LLM did not lower cut-offs (3.6% / 4.6%, overlapping CIs) and costs ~640 ms per call; stage B failed the promotion gates (closed-loop cut-offs 13-55%). Reverse if: real-child audio (E1) shows stage A's cut-offs above silence-640 on the same audio, or a stage B trained on consented real audio beats stage A on held-out children (tick AUC beyond CI AND closed-loop cut-offs <= stage A at equal gap AND ECE <= 0.05 per context AND <= 30 ms on ACA 2 vCPU).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "duplex-stageb-features-only-no-vouch",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Only a floor model that READS AUDIO (audioMs > 0) may vouch for unseen audio at G5 (adapter.ts TrainedEngine.latestAcoustic); a features-only model's pComplete is also capped by the rules' horizon-penalised estimate. Why: letting the features-only stage B vouch removed the lexical horizon: 32/40 verdicts on repaired values and 86.9% thinking-pause cut-offs on TaxilaFDB test (D4), vs 1/40 and 13.4% after the fix. Reverse if: a features-only model is shown to predict the unseen tail (it cannot: it sees the same stale words).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "duplex-safety-alt-readings",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex partial safety runs the SAME shipped predicate (scanSafety) over extra readings of every partial: her echo stripped (echo.js stripAll) and punctuation removed. Why: TaxilaFDB F10 showed her echo interleaved inside a disclosure ('मुझे खुद पानी को चोट और लगानी') breaks the predicate's phrase, and the predicate misses 'कभी कभी लगता है मैं ना रहूं।' when the STT's danda follows the last word (true without the danda). After the fix: distress detected 84/84 test streams, safeguard over a talking child 0. One predicate, more readings — not a fork. Reverse if: server/director/safety.js normalises punctuation itself (then drop the punctuation reading) or alt readings produce false safety trips (0/24 benign on test today).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "duplex-wait-time-ii-backstop",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Open-explanation silence backstop = clamp(1.5 x hold p90, 2.5 s, 3.5 s) (was clamp(1.2 x p90, 2 s, 3 s)), and a yield tag ('है ना', 'bas') lifts stage A's explanation cap. Why: TaxilaFDB train, FAST lane: 49/440 mid-explanation pauses of 2.2-2.8 s were cut by the 2 s backstop; with the change train cut-offs 9.8% -> 2.0% and missed 11.2% -> 1.8%. Cost: either-class explanation ends wait p50 2.5 s (wait time II). Reverse if: real-child data shows mid-explanation pauses rarely exceed 2 s, or missed replies on open explanations exceed 5%.",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "m-taxilafdb-test-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB v1 test split, L1, 2026-10-04, runtime hash 1d138d3168bf (evals/duplex/results/taxilafdb-test-final3-2026-10-04.json): n=960 streams = 240 scenarios x 2 held-out voices x clean/noisy; 732 thinking pauses, 528 respond ends; 95% cluster-bootstrap CIs over scenarios (1,000). Thinking-pause cut-offs: cascade-900 D4 31.3% [22.0-41.1]; silence-640 D4 74.2% [68.7-80.0], FAST 82.8% [77.4-88.6]; Smart Turn v3.2 thr 0.5 FAST 64.2% [58.6-70.2], thr 0.95 36.9% [29.6-45.0]; stage A D4 2.6% [1.0-4.4], FAST 2.3% [0.6-4.6]; stage A + grok LLM FAST 3.6% [1.4-6.2]; stage B (features-only) FAST 55.2%. Decision gap p50/p90: cascade-900 1,690/1,950 ms; silence-640 640-650 ms; stage A D4 1,140/1,608, FAST 370/1,488 [CI p50 350-400]. Missed reply <= 2 s: stage A 8.5-10.4%, silence-640 2.1-2.5%, cascade-900 D4 37.3%. Hold violations: stage A 0/48 (D4), 2/48 (FAST); every silence arm 48/48. Verdict on a repaired value: stage A 0/40 (D4), 4/40 (FAST, one template, 1.4 s repair pause > 1.2 s verdict delay). Non-safety speech after distress: stage A 1-2/84; distress detected 84/84; safeguard over a talking child 0. Cut-in precision 100%, out-of-policy 0, recall 97% (FAST). Echo self-trigger 0/40. FAILS: yield on barge-in p50 770-1,151 ms (bar 200), keep-talking through continuers 67-72% (bar 90%), false yields to TV/sibling 50-67% (bar 10%), audible gap p50 2.0-2.7 s (bar 350 ms), nods 2.5x human rate. Synthetic TTS voices, one author's scripts, FAST lane modelled [E].",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "m-taxilafdb-l2-live-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB L2 simulator check (evals/duplex/results/taxilafdb-live-2026-10-04.json): 48 stratified TEST streams streamed in real time (20 ms chunks, 24 kHz) to taxila-live-transcribe (gpt-live-transcribe, eastus2) from the US sandbox with stage A live (its micro-commit probes sent as commits), vs the L1 simulator on the same streams; third pass 2026-10-04. Real STT: first partial after onset p50 1,154 / p90 1,517 ms, partial lag p50 396 / p90 1,218 ms (M-D2 calibration: 1,743 / 2,048 and 713 / 1,477: today's transcriber ran faster). Engine outcomes live vs sim: thinking-pause cut-offs 1/38 vs 0/38; gap p50 840 vs 1,165 ms (per-stream live-sim p50 -100, p10 -592, p90 +476 ms); missed 3/36 vs 2/36; per-stream agreement turn-cut-off 28/29, missed 35/36; distress detected 4/4 both; unsafe 0 both. The first pass exposed that the real transcriber DOES transcribe her -30 dB echo into the child's item (4/48) and hallucinates other scripts on noisy child audio (Korean/Japanese/Bengali tokens): the simulator was corrected (echo transcribed at >= -30 dB, dominant-speaker masking) and the runtime fixed (straddling items).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "m-taxilafdb-stageb-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Stage B training (scripts/duplex/train_stageb.py; evals/duplex/results/taxilafdb-stageb-train-2026-10-04.json): 54,146 silent child-floor train ticks (916 streams x 2 STT lanes), labels by construction; frozen Smart Turn v3.2 encoder embedding (384-d) + engine features (cce-features/1, 82) -> late-fusion MLP, silence-matched weights, per-exchange Platt on GroupKFold(template family) OOF. Tick AUC of pComplete, dev / test: fused 0.07 / 0.36 (OOF train 0.78), features-only 0.90 / 0.75, audio-only 0.47 / 0.51, Smart Turn's own probability 0.56 / 0.47, stage A 0.67 / 0.61. ECE (features-only, test): closed 0.42, open 0.10, chit-chat 0.20 (bar 0.05). Closed loop (features-only exported): thinking cut-offs 13.4% D4 / 55.2% FAST vs stage A 2.6% / 2.3%. Size/latency (sandbox x86, contended, load 6.8-12): head 53.7 KB, 0.29 ms CPU / 0.21 ms wasm p50; Smart Turn encoder 8.68 MB int8, 123 ms CPU (1 thread, contended; 39 ms at lower load) / 278 ms wasm SIMD p50; log-mel 36 ms.",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "m-taxilafdb-silence-frontier-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Silence frontier on TaxilaFDB test (FAST lane; D4 within +-5 pts), thinking-pause cut-offs / gap p50 / missed<=2 s: 300 ms 98.9% / 300 / 3.6%; 450 ms 94.0% / 460 / 2.8%; 640 ms 82.8% / 640 / 2.1%; 900 ms 56.1% / 900 / 0.8%; 1,200 ms 39.2% / 1,200 / 0.6%; 1,600 ms 26.9% / 1,600 / 0.9%; 2,200 ms 17.3% / 1,980 / 97.5%; 3,000 ms 5.1% / - / 100%. Stage A: 2.3% / 370 ms / 8.5% — fewer cut-offs than every threshold and a shorter gap than every threshold >= 450 ms. Children's thinking pauses (TaxilaFDB scripts: 0.4-3 s, holds to 16 s) are inseparable from turn ends by silence alone.",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "m-taxilafdb-spend-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB build spend 2026-10-04: Azure Speech renders <= $4.54 (1,120 renders, 237,492 SSML chars); Smart Turn features on Azure Container Apps (taxila-env eastus2, 16 executions x 4 vCPU / 8 GiB, stock python:3.12-slim, 8 min wall; job deleted, private blob container cleaned) ~ $1 [E list price]; semantic LLM cache 3,092 prefixes: grok-4-1-fast-nr $5.58, taxila-fast $0.27; L2 live STT < $0.10 [E]. Total Azure ~ $11.5 (cap $40). AWS $0 (no GPU needed: the fusion head trains on CPU in ~3 min).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Smart Turn v3.2 off the shelf as the child end-of-turn signal (and as stage B's audio branch on TTS training data). Tried: Pipecat pattern (run at 200 ms silence, thr 0.5 / 0.95, 3 s timeout) on TaxilaFDB test, and its frozen embedding fused into stage B. Broke: 64.2% / 36.9% thinking-pause cut-offs with 39-71% of replies falling to the 3 s timeout; its probability's tick AUC 0.47 on held-out voices; the fused stage B fell to AUC 0.36 (test) / 0.07 (dev) while its OOF train AUC was 0.78 — it learned the 4 TTS training voices. Smart Turn reads ~1 (complete) on almost every child window including silence before speech. Reverse if: fine-tuned and validated on REAL child Hinglish audio (E1), not TTS.",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "rj-stageb-features-only-closed-loop",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Promoting a trained floor model on tick-level AUC alone. Tried: the dev-selected features-only stage B (tick AUC 0.75 test vs stage A 0.61) dropped into TrainedEngine behind the same governor. Broke: closed-loop thinking-pause cut-offs 13.4% (D4) / 55.2% (FAST) vs stage A 2.6% / 2.3%: its calibrated pComplete is high inside complete-LOOKING pauses (verb-final clauses mid-explanation), where stage A's hand-set caps (explanation cap, closed-question no-value penalty) hold. Lesson: promotion is decided in closed loop on TaxilaFDB, never by tick AUC. Reverse if: a model passes the closed-loop gates (ARCHITECTURE.md §5.5).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "rj-llm-semantic-cutoff-benefit",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "The fast Azure LLM semantic completeness estimate as a cut-off reducer for stage A. Tried: grok-4-1-fast-nr on every stable-prefix change in open contexts (>= 2 new words, >= 600 ms apart), typed {pComplete, pHoldWanted, asksHer, offTask}, replayed at measured latency (p50 636 ms, sandbox -> eastus2), 3,092 unique prefixes. Broke: no cut-off benefit on TaxilaFDB test (2.3% -> 3.6% FAST, 2.6% -> 4.6% D4, overlapping CIs; on train 1.1-1.7% -> 3.7-4.9%): it reads finished-sounding clauses inside explanations as complete. It did cut missed replies 10.4% -> 5.9% on D4. Kept behind flags.semantic (off). Reverse if: from India (DX-4) a model returns in < 250 ms and lowers train+dev cut-offs at equal missed rate.",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "open-duplex-engine-failing-bars",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Stage A fails these TaxilaFDB test bars (ARCHITECTURE.md §7): A4 yield on barge-in p50 770-1,151 ms (bar 200; G11's 1 s sustained-voice rule decides most yields — the acoustic early classifier rarely fires on TTS barge-ins); A5 keep-talking through continuers 67-72% (bar 90%); A6 false yields to TV/sibling 50-67% (bar 10%; needs the target-speaker model X3); A1 audible gap p50 2.0 s FAST (the warm uptake primed only 164/483 first sounds; the rest are drafts or cold Director+TTS); A8 4/40 verdicts on a repaired value (F1.rep_marker: 1.4 s repair pause > VERDICT_DELAY 1.2 s; try 1.6 s on train first); A11 missed replies 8.5-10.4% (bar 2%); A7 nod rate 0.197/s = 2.5x human 0.079/s (bar <= 2x).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "open-scansafety-danda-miss",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "server/director/safety.js scanSafety('कभी कभी लगता है मैं ना रहूं।') returns distress:false; without the final danda it returns true (and 'पता नहीं. कभी कभी…' without the danda is true). Every STT final ends with a danda, so the cascade lane can miss this passive-ideation disclosure. The duplex partial-safety now also scans a punctuation-free reading (duplex-safety-alt-readings), but the predicate itself should normalise punctuation (owner of server/director/** to fix; child-safety floor).",
+   "source": "inbox/duplex-engine.json"
+  },
+  {
+   "id": "duplex-runtime-2026-10-04",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex v2 runtime shape: a device-side EngineHost (src/duplex/host.ts) builds one EngineTick per 100 ms timer AND per stream event (20 ms frames' voice edges, STT partial/final, her playback start/verdict/end/stopped, screen, Director context, async estimate) and runs engine.tick behind the ONE code governor (src/duplex/governor.ts, G1-G11); engines come from one factory (src/duplex/adapter.ts createEngine): stage A rules (engineRules.ts) today, TrainedEngine (ONNX via an injected onnxruntime, feature spec cce-features/1, <= 20 MB, falls back to stage A on any stale tick) when flags.trained AND a model are present, so stage B lands with no code change. The server slice (server/duplex/slice.js + routes.js) keeps the authorities the device must not hold: partials fan-in with the lexical horizon (fanin.js), known-text echo subtraction of her own TTS words (echo.js), sticky safety on every partial (partialSafety.js, the shipped scanSafety), speculative drafts + TTS warm-up of the code-built uptake driven by the PrepareHint stream with cancellation (speculator.js), build intents from partials (buildIntent.js; misconception values server-only). Hands-free and full-session: no press/release API anywhere in the duplex modules (test-asserted); push-to-talk survives only as the W2 recording/typed fallback. Shadow mode emits log rows only (numbers + closed codes, never child words). Reverse if: the host's per-tick cost on a low-end Android (DX-1) exceeds 5 ms p95 or the event-tick design misses a decision the timer would catch; then fold event ticks into the 100 ms timer (decisions only, perception stays continuous).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-verdict-delay-2s",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Fast mouth, late verdict: the verdict-bearing words of a closed-answer reply play no earlier than the child's last value end + 2.0 s (config VERDICT.delayMs; was 1.2 s in the v2 draft). The first sound (the code-built uptake of the child's own value) is not delayed: only the verdict segment, which the player holds (INTEGRATION.md §4). Evidence M-D7 (n = 96 scenarios x 10 seeds, fast word-timed lane): verdict played before the child finished / on a value the child then repaired = 13/9 of 379 at 1.2 s, 4/4 at 1.6 s, 0/0 at 2.0 s; first-audio p50 unchanged (2,027 vs 2,019 ms). Caveat: tuned on one author's scripted self-corrections (repair pauses 400-1,500 ms +-20 %), so it is a corpus bound, not a child bound. Reverse if: DX-6 on TaxilaFDB or real consented children shows repairs after a value pause > 2.0 s at a rate that matters (then raise, or key it to the child's own repair-pause p90), or that 2.0 s reads as unnatural hesitation in a blind listen against 1.2-1.6 s with 0 wrong-value verdicts.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-overlap-stay-ducked",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Overlap while she speaks: a burst still voicing at 250-449 ms is UNDECIDED (stay ducked at 0.2, keep listening) instead of adding +1.0 barge-in evidence (config OVERLAP.earlyVoicedZ = 0); it yields at the sustain threshold (OVERLAP.sustainedMs: 450 ms here; 600 ms after the TaxilaFDB tuning workstream), on a raised/rising onset, after her yes/no question (~200-300 ms), or when words land; a burst that ends short reads as a continuer and she un-ducks. The reflex duck at onset (~40 ms) already backs her voice off. Evidence M-D7 fast lane: the eager rule yielded on 20/30 continuers ('हम्म/अच्छा/ओके' over her) and resumed ~0.8 s later, vs 0/30 now; cost: barge-in yield p50 500 ms (fast) / 600 ms (D4, MAI) vs 300 ms (yes/no answers still yield at 300 ms). Reverse if: on real audio (DX-5) the stay-ducked rule's barge-in yield p50 exceeds 600 ms or children re-try their interruption, while the eager rule's continuer false-yields stay under 10 %.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-explain-sentence-cap",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Stage A without a fresh semantic read is uncertain about the end of a teach-back: in open_explanation a finished SENTENCE (verb-final, falling contour) caps pComplete at 0.8 < speakPc 0.9 (engineRules.ts EXPLAIN_SENTENCE_CAP), so only a fresh semantic estimate on the same text, an idk / complete question / repeat request, or the governor's context backstop (B3: 2.0 s at decision time, 2.5 s after the TaxilaFDB tuning change; x2.5 on an open tail) ends it. Evidence M-D7 (pre-cap dev run, 3 seeds): 'triangle के तीन sides होते हैं' + 1.6 s pause and 'जो ऊपर होता है ना' were taken over 3/3 and 3/3 (revoked before audio only because the reply was slow); after the cap 0 hard cut-offs in explanations; explanation gap p50 ~2.03 s on every lane (~2.53 s with the raised backstop) (the price, paid until the semantic call lands). Reverse when: the semantic arm (server/duplex/semantic.js, taxila-fast) is measured on TaxilaFDB F2 with thinking-pause cut-offs <= silence-640 on the same audio; then the cap applies only while the semantic estimate is stale.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-safeguard-defer-on-onset",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "The safeguard never plays over the child: a child onset while the safeguard is committed or audible defers it (governor YIELD reason safety, back to safety_attend, re-decided at the next pause; the distress state stays sticky and the safeguard is never dropped). Evidence M-D7 j05 ('मुझे मर जाना है' + 1.2 s pause + more words): 5/10 seeds had the safeguard decided in the pause and the child resume 16-130 ms before its first sound; after the fix 0 safeguards audible over child voice for > 120 ms on every lane; stops within <= 120 ms of a child onset (onset detector 40 ms + one frame tick + word-boundary stop 50 ms) are counted separately: 3 (D4) / 10 (MAI, fast) of 70 distress turns. Reverse if: real sessions show a child who keeps talking in short bursts never gets the safeguard within 10 s; then speak it at the first >= 1.5 s pause even mid-turn (still never over voice).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-hold-grant-fresh-words",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "G3 grants a hold request only on words that describe the child's latest audio (unseenVoicedMs <= 120 ms) and only once per text; a granted hold ends when new words land that no longer end on a hold request (no voice onset needed), and the words after the hold phrase are the answer (markers read the form on understand.tailText, so 'एक मिनट … बारह' is 12, not the list 1, 12). Evidence: M-D7 h01 regression (rejection rj-duplex-stale-hold-regrant); after the fix hold violations 0 and missed turn ends 0 on all CCE lanes, hold_request gap p50 365-469 ms on MAI/fast. Reverse if: real partials revise a hold phrase INTO the tail often enough that the freshness test drops real holds (then key the grant on the hold words' own end time).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "m-d7-duplex-runtime-tick-sim-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D7 (2026-10-04, $0, no network): the v2 runtime at tick level. Method: evals/duplex/tick-sim.mjs replays evals/duplex/scenarios.mjs (96 scripted Hinglish child turns, 10 categories, one author) x 10 seeds = 960 turns per arm through the REAL src/duplex/host.ts → engineRules.ts → governor.ts with server/duplex/speculator.js on the think track; streams.mjs frames (20 ms RMS/F0) and reactive STT (D4 calibrated from M-D2 n=28; MAI_HOME and FAST are [E] priors); her replies scheduled from the host's own speak commands (first audio = decision + bootstrapped measured Director/TTS stages, or the warm uptake / promoted draft). The tree includes the parallel TaxilaFDB tuning edits (sustain 600 ms, explanation backstop 2.5-3.5 s). Results (gap = decision after the child's true end; ttfa = first audio): cce-mai gap p50/p90 361/2,546 ms (closed answers p50 308-352 / p90 385-425), ttfa p50 1,888; cce-fast 400/2,546 (closed 300-366 / 537-587), ttfa 2,019; cce-d4 1,265/2,546, ttfa 2,672; cascade-900 1,895/2,360, ttfa 3,800; silence-640 1,590/2,077, ttfa 3,500. Hard cut-offs (an audible non-uptake turn before the child finished) 0.0 % on all CCE arms vs 2.9 % cascade-900 and 3.9 % silence-640; early verdict-free uptakes the child talked over (revoked at their onset) 9.1 % MAI, 8.4 % fast, 1.3 % D4 (self-correction / hesitant scripts). Hold violations 0 % vs 31.7 % / 38.3 %. Verdicts before the child finished or on a repaired value 0/0 of 370 (baselines 8/325 and 13/314 wrong-value). Unsafe non-safeguard lines 0 (cce-fast-nospec 1: an idk reply audible 7 ms after the distress segment began, before its words existed); safeguard over child voice > 120 ms 0. Overlap accuracy 99.5 % fast, 96.3 % MAI, 94.7 % D4 vs 79.5 % / 77.4 %; yield p50 500 ms fast (yes/no 300), 600 ms D4/MAI. Think-while-listening cuts ttfa p50 by 451-844 ms; warm uptake promoted on 44-48 % of speaks; wasted speculative tokens 20 % (MAI) to 61 % (fast). Explanations end by the stage A backstop (~2.53 s). Ablations: eager overlap 20/30 continuers yielded-then-resumed; verdict delay 1.2/1.6/2.0 s → 9/4/0 wrong-value verdicts. Caveats: synthetic voice/contours (short rising 'क्या?' too flat for the acoustic repair rule), no echo in frames, MAI/FAST latencies estimated, one author, chosen category mix; Smart Turn off the shelf not an arm. Pooled gap p90 misses the <= 700 ms target (explanations); closed answers on MAI/fast meet it.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "rj-duplex-fanin-single-commit-slot",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the fan-in kept ONE pending client-commit time (commitAt) and gave it to the next final as its audio coverage. What broke (M-D7 b04 on D4): the micro-commit probe fires once per voiced run, so a second probe (3,300 ms) overwrote the first (2,400 ms) before the first final landed; that final ('हम्म सात आठ') was then read as covering audio to 3,300 ms, the lexical horizon saw 0 unseen voice while 'छप्पन' was unspoken-in-text, the engine spoke and a verdict played on 8 instead of 56 (2 of 30 runs; 4 with no speculation). Replaced by: a FIFO commit queue (each final consumes the oldest commit at or after its item's audio start; coverage = the earlier of that commit and the source's own audio end) + a unit test.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "rj-duplex-stale-hold-regrant",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: G3 entered hold_requested whenever markers.holdRequest was true on the child's floor and the child was silent, and left it only on a voice onset. What broke (M-D7 h01, 'एक मिनट' … 3.5 s … 'हाँ, बारह'): at the offset after the answer the transcript still showed only 'एक मिनट' (the answer's words not landed), so the hold was re-granted on stale words; when 'हाँ, बारह' landed (pComplete 0.997) the phase stayed hold_requested, the turn never ended and the 8 s check-in look played to a child who had answered. Replaced by decision duplex-hold-grant-fresh-words.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "rj-duplex-no-text-resume-1600",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: after a resumable yield with no words yet, resume her line after 1,600 ms of silence (the v1 bargein.js NO_TEXT_RESUME_MS). What broke (M-D7 i08): D4's first words of a fresh burst arrive 1.7-2.0 s after its onset (M-D2 p90 2,048 ms), so she resumed over a child's 'रुको' whose words had simply not arrived; 'no text' meant 'not transcribed yet'. Replaced by: resume only after the source's first-text p90 + 300 ms measured from the overlap onset (config FIRST_TEXT_P90: live_transcribe 2,048 [T], mai_stream 3,200 [T], nemotron 800 [E]).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "rj-duplex-eager-overlap-yield",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried: the v2-draft overlap rule added +1.0 barge-in evidence once a burst over her had voiced 250 ms (aiming at 'yield <= 200 ms'). What broke (M-D7): continuers last ~300-400 ms, so 'हम्म' / 'अच्छा' / 'ओके' crossed 250 ms still voicing and yielded; she stopped mid-sentence and resumed ~0.8 s later on 20/30 continuer turns (fast lane), a stop-start a child hears as being interrupted for nodding. Replaced by decision duplex-overlap-stay-ducked (the reflex duck carries the first 450 ms).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "open-duplex-fast-lane-draft-churn",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Open: on a word-timed fast STT the PrepareHint stream relaunches speculative drafts as words land (cap 3/turn, 300 ms debounce, >= 1 new word): 63 % of speculative tokens wasted (~4.0k tokens/turn, M-D7 cce-fast) vs 22 % on MAI. Needs a DX-4 sweep of minNewWords / debounce / launching on stablePrefix only, against the ttfa it buys.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "open-duplex-semantic-call",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Open: server/duplex/semantic.js (the stage A fast-LLM completeness read on a stable prefix; host.ts already calls opts.semantic and engineRules weights it, decaying over 1.5 s, stale on a new text hash) is not built. Until it is, open explanations end only by the ~2.0 s backstop (duplex-explain-sentence-cap) and off-task drift never fires (it needs semantic.offTask). M-D5's taxila-fast numbers (accuracy 127/140 at 0.5, p50 963 ms) are the prior.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-echo-span-and-uptake",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Known-text echo subtraction removes only her words that were audible INSIDE the audio a transcript version describes: the fan-in passes each version's audio span (item start → word end / commit / arrival − lag) and, on word-timed sources, per-token times (a token is echo only if heard while her matching word was audible, ±300 ms); the single-token 'fresh echo' rule (added by the TaxilaFDB workstream) must match the surface form, not the consonant skeleton, and without token times only in the last two tokens; her UPTAKE (the child's own words re-voiced) is never subtracted. Evidence M-D7: before, 'हाँ' over her yes/no question was deleted as her 'हैं' (shared skeleton) and she resumed over the answer on 30/30 fast-lane turns; her uptake 'तीन बटा आठ' deleted the child's correction 'तीन बटा चार' → verdicts on 4 instead of 3/4 (2/30 MAI, 2/30 fast). After: 0 wrong-value verdicts on every lane. Reverse if: DX-7 on recorded speaker sessions shows the guards leave real echo that self-yields; then add the playback-level correlation (layer 3), never widen the text match.",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "rj-duplex-echo-skeleton-single-token",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (TaxilaFDB tuning workstream, 2026-10-04, against self-yields on word-timed streams): drop a single transcript token as echo when its consonant skeleton matches one of her words that ended within 1 s, anywhere in the text. What broke (M-D7): skeletons are too lossy for one word ('हाँ' = 'हैं' = 'h'), so a child's yes over her yes/no question vanished and she resumed over it (30/30 fast-lane turns); and it matched every occurrence, so her uptake 'तीन' deleted both of the child's own 'तीन's, the first spoken a second before hers (wrong-value verdicts). Replaced by decision duplex-echo-span-and-uptake (surface match, tail-only without token times, time-aligned with them, uptake never subtracted).",
+   "source": "inbox/duplex-runtime.json"
+  },
+  {
+   "id": "duplex-continuous-engine-2026-10-04",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Duplex turn-taking = a Continuous Conversational Engine (Griffin's principle) on the cascade streams: every 100 ms timer tick AND every stream event (voice onset/offset, STT partial/final, her playback, screen, model estimate) the engine re-assesses and picks one of SPEAK / HOLD / BACKCHANNEL (nod, 'mm'; 'haan/acchha' chit-chat only, flagged) / REACT (face floor behaviours) / YIELD / KEEP_TALKING / CUT_IN, with perception continuous while she speaks. pComplete and pHoldWanted come from semantics given the context (the Director's expected answer FORM, never the key: '62' after '27+35?' is complete with zero silence once the words cover the audio), Hinglish markers, prosody (timing only), the child's own pause profile and screen events; silence is one feature plus a context-keyed backstop when the engine is uncertain, never the gate. Two interchangeable engines implement src/duplex/engine.ts (stage A rules + fast Azure LLM; stage B trained small multimodal model, Smart Turn v3.2 backbone + text prefix + context tokens, ONNX on device or ACA CPU India), both behind ONE code governor (safety sticky + pre-speech barrier, hold requests, lexical horizon, verdict stability = fast mouth late verdict, closed CUT_IN list, rate limits, WT1, fail-patient fallbacks). Overlap is decided acoustically in 150-250 ms (yield <= 200 ms p50). Acceptance on TaxilaFDB: gap after a respond-labelled true end p50 <= 350 / p90 <= 700 ms incl. STT final; thinking-pause cut-offs <= tuned silence-640 on the same set (and <= 3%, <= Smart Turn off-the-shelf). Generation stays cascade (Azure brain, DragonHD, safety predicate); native S2S is not built (logs become its training data later). Reverse if: DX-12 on real consented children shows the best engine cutting off thinking pauses more often than tuned 640 ms silence on the same audio after a real data round; then silence returns as the floor for that context class only, and the continuous architecture (perception while speaking, overlap classifier, backchannel/react) stays.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "rj-silence-gated-turn-taking",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Rejected (owner correction + evidence): silence-gated turn-taking for the duplex teacher, i.e. v1 of docs/research/duplex/ARCHITECTURE.md (now Appendix Z) and the prototype server/duplex/floorManager.js + eot.js: a 500 ms candidate silence opened every take-over decision, a lexical combiner then committed or held, law 4 forbade any model decision inside the child's turn and a model could only SHORTEN a hold; barge-in waited for the transcript. What breaks: (1) the premise 'silence is the most reliable end signal' is false for our children: at age 9, 85% of >= 250 ms silences are holds and silence separates hold/shift at AUC 0.62 (Brahimi 2026 via Study C); on M-D6's 25 scripted scenarios tuned silence-640 cut off 15/25 and 900 ms 11/25, while words + lexical horizon on the SAME real D4 partials cut off 0/25; (2) a finished answer still waited >= 500 ms + STT final (v1 prototype sim gap p50 1,480 ms on D4, 577 on MAI; M-D3) when the words already said it was complete; (3) transcript-bound barge-in resolution took p50 1.70 s (D4) / 0.72 s (MAI) in simulation (M-D3) vs a 200 ms target; (4) a model barred from the child's turn cannot be the Griffin-style engine the owner asked for. Kept from v1: fast mouth late verdict, sticky partial safety, device floor, speech/work tracks, content-blind nods, wait-time drafts, heardUpTo, triage. Revisit only under duplex-continuous-engine-2026-10-04's reversal (DX-12), and then only as a per-context floor.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "m-d6-lexical-horizon-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D6 (evals/duplex/lexical-horizon.mjs, deterministic replay, USD 0): the 28 BASE runs of M-D2 (synthetic child TTS streamed in real time to taxila-live-transcribe D4, US container -> eastus2, server VAD 900 ms) through words-only completeness rules (understand.js + turnPolicy.ts) every 20 ms; 25 commit/hold scenarios + 3 distress. D4 measured: words+child-silent (W1) premature 4/25 [80% 0.09-0.27], wrong value at decision 5/13 (stale prefixes: 'Um, तीन' for 'तीन बटा चार', 'आठ' before 'नहीं नहीं', 'एक' before 'मिनट'), gap p50/p90 907/1436 ms; + lexical-horizon guard (W1H) premature 0/25 [0-0.06], wrong 0/11, gap 1103/1533, 6 never decided by words; silence-640 premature 15/25 [0.47-0.72] (gap 655), silence-900 11/25. Fast-ear re-timing [E] (partials at coverage + 294 ms, Nemotron p50 254 + 40 RTT): W1H premature 3/25 (all self-corrections c01/c03/c08: no word rule sees a repair not yet said) at decision gap ~306 ms; decided before the disclosure in 2/3 distress runs. STT dropped the projecting 'कि' in d02. Limits: n=25, one author, per-segment TTS (prosody unrealistic), one STT pass, coverage estimated by character mapping, W1HF (form grammar) in-sample, fast-ear rows are a model. Result evals/duplex/results/lexical-horizon-2026-10-04.json.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "m-d2-duplex-live-stt-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D2 (duplex prototype, evals/duplex/live-validate.mjs; logged by Architect v2 because the stopped prototype agent never logged it): 28 scripted scenarios, gpt-4o-mini-tts child clips (x1.2 pitch), real-time 20 ms streaming to taxila-live-transcribe (D4), US container -> eastus2. First delta after onset p50/p90 1,743/2,048 ms; delta lag (arrival - audio covered) 713/1,477 ms (n=266); final after server VAD 514/888 (n=43); final after a CLIENT input_audio_buffer.commit 915/1,311 ms (n=58, 0 socket errors: D4 honours the client commit with server VAD 1500 ms as backstop, but slower than its VAD final); only 67% (p50) of final tokens visible at true end + 500 ms; BASE arm end -> last final p50/p90 1,834/2,490 ms (n=28); the v1 floor manager live end -> commit 1,458/1,736 ms (n=25). Result evals/duplex/results/live-validate-2026-10-04.json, live-calibration, live-analysis.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "m-d3-duplex-sim-smoke-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D3 (duplex prototype, evals/duplex/sim.mjs; logged by Architect v2): 308 simulated turns per arm (scripted scenarios x 4 seeds, synthetic audio frames; STT timing calibrated on M-D2 for D4 and STT-v3 figures for MAI; post-commit stages bootstrapped from 48 measured cascade turns). Today's 900 ms cascade: gap after true end p50/p90 1,962/2,397 ms, false take-overs 63/280, hold-request violations 24/24, missed turn ends 108/280, overlap resolution accuracy 48/76 at p50 2.4 s. v1 floor manager on D4: gap 1,480/1,805, false take-overs 1/280, hold violations 0/24, missed 5/280, overlap 72/76 resolved at p50 1.70 s, nods 1 per 5.4 s with 0/56 mid-word, wait-draft hits 147/164, candidate-draft hits 64/243, 77% of draft tokens wasted (3,621/turn). v1 on MAI: gap 577/1,488, false take-overs 10/280, silent false commits 38/280, overlap 76/76 at p50 720 ms. Ranks arms on a chosen corpus; not a classroom prediction. Result evals/duplex/results/sim-smoke-2026-10-04.json.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "m-d4-duplex-draft-live-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D4 (duplex prototype, evals/duplex/draft-live.mjs; logged by Architect v2): taxila-fast chatStream drafts with a synthetic ~1.25k-token teacher brief, max 200 tokens, effort none, sequential, US -> eastus2, n=24 (0 errors): TTFT p50/p90 901/1,468 ms, total 1,015/1,566 ms, output 58/81 tokens; abort at ~302 ms cancelled 4/4 with 0 characters billed as text; USD 0.0077. Result evals/duplex/results/draft-live-2026-10-04.json.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "m-d5-duplex-model-arm-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "M-D5 (duplex prototype, evals/duplex/model-arm.mjs; logged by Architect v2): typed {done: p} end-of-turn judgments on 140 hold-time text prefixes from the simulator (labels from the scripts), json mode, US -> eastus2. grok-4-1-fast-non-reasoning: accuracy@0.5 118/140, precision@0.9 49/56, recall@0.9 49/71, false shortenings 7/69, ECE 0.068, latency p50/p90 490/957 ms, USD 0.152 (~0.0011/call). taxila-fast: 127/140, 63/71, 63/71, 8/69, ECE 0.062, 963/1,202 ms, USD 0.0087. Too slow for a zero-silence path; usable as the stage-A semantic estimate on open contexts during pauses >= 600 ms (DX-4 decides the deployment from India). Result evals/duplex/results/model-arm-2026-10-04.json.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "duplex-verdict-blind-timing",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "The engine's completeness is 'a complete answer of the asked form', never 'the right answer': the expected-answer context carries {form, slots, units, options}, never the key or misconception values, so right and wrong answers get the same reply timing (latency would otherwise leak the verdict, like correctness-keyed nods; design-v2-rejected-correctness-face) and no key material reaches the device (v1 §6.7). The owner brief's 'expected answer form/key' is honoured for form only, deliberately. Reverse only if a blind test shows children cannot detect a >= 300 ms right/wrong latency difference; the key stays off the device regardless.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "duplex-lexical-horizon-guard",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Words count only once they cover the audio: TranscriptView carries coverageEndMs and unseenVoicedMs (child voiced audio after the last covered word); lexical completeness is discounted and SPEAK/CUT_IN vetoed (governor G5) when unseenVoicedMs > 120 ms unless a fresh acoustic estimate vouches for the tail. Coverage comes from Nemotron token times (scale) or the MAI micro-commit probe (commit at a >= 150 ms acoustic micro-pause; the final covers all audio, 68 ms from Chennai) (pilot); D4 has no timings (713 ms lag) and cannot meet the 350 ms gap. Evidence M-D6: wrong values on stale prefixes 5/13 -> 0/11 with the guard. Reverse if the India-lane STT gives word coverage within 100 ms p90 (the guard becomes a no-op but stays).",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "duplex-taxilafdb",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "TaxilaFDB is the duplex benchmark (ARCHITECTURE.md v2 §6): ~1,110 scripted child Hinglish scenarios in 12 families (closed answers incl. self-repair, explanations with pauses, questions to her, chit-chat, holds/word searches, IDK, barge-ins, continuers while she speaks, TV/sibling/side-talk rejection, safety, off-task drift, echo) x 3 voices x 3 acoustic conditions, labels by construction, test split frozen before tuning; metrics M1-M16 on the action log and output-channel VAD (pause takeover, thinking-pause cut-offs, gap after respond-labelled ends, missed respond, backchannel rate/JSD/legality, yield latency, continuer keep-talking, rejection, cut-in correctness, wrong verdicts on repaired values, hold violations, safety, echo, jitter, ECE); baselines B0 cascade-900, B1 silence-640, B1* tuned silence, B2 Smart Turn v3.2 off the shelf, B3 the v1 floor manager; harness L1 sim (prototype harness kept) / L2 real STT / L3 at the ear in India. Reverse if E1 real-child results disagree with TaxilaFDB rankings of the arms (then the scenario priors are refit from E1).",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "open-duplex-mai-micro-probe",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "DX-1: does MAI-Transcribe-2-Streaming keep accuracy (answers >= 77/78, CER delta <= +0.005, 0/12 non-speech output) when the device commits the STT item at every >= 150 ms acoustic micro-pause, and is the final <= 100 ms p50 from India homes? It gives the engine exact lexical coverage on the pilot lane; probes are free only if streaming bills per audio hour (unverified, MODEL-STACK A8).",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "open-duplex-gap-at-ear",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "DX-2: at the ear on India phones, does a fluent closed answer get her first sound (a primed verdict-free uptake) within p50 350 / p90 700 ms? The v2 composition is ~290-390 ms (MAI probe) / ~330-430 ms (Nemotron India) [E]; it needs a pre-decoded clip and an output lead < ~60 ms (today's measured lead 110 ms).",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "open-duplex-seams-v2",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Duplex v2 seam requests (ARCHITECTURE.md v2 §11.2): S6 becomes UiDirectives.engine {exchange, expected{form,slots,units,options}, questionType, beat, wt1, cutIn, allowLexicalBackchannel, allowAudioBackchannel, weakerLanguage} (replaces ui.expect + ui.waitNudge); S2 adds TurnRequest.duplex.cutInReason + engineSummary; S7 adds stillWithYou/checkinLook/calmAttend; S10 becomes the engine host adapter beside cascadeLink.ts (frames + STT events, client commit probe, obey governed actions behind duplex.engine=shadow|on); new S12 Director moves offer_cue / redirect_with_uptake; S13 Studio prefetch keys; S14 ttsStream word-boundary events + playback clock; S15 consent-gated engine logs.",
+   "source": "inbox/duplex-v2.json"
+  },
+  {
+   "id": "rs1-ui-v3-scoped-tree",
+   "kind": "decision",
+   "title": "The ages 9-15 design system lives in a new tree src/ui-v3/** whose tokens and classes are scoped to .v3 and prefixed v3-. With the ui.v3 flag off (the default: localStorage tx.flag.ui.v3, ?uiv3=1|0|default, VITE_UI_V3=1), Wave 2 screens render exactly as integrated, and 0 shipped dist files contain v3 classes. Reverse if integration finds the two token sets must merge (one :root set): port tokens.css to src/styles/tokens.css and drop the scope.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-face-slot-contract",
+   "kind": "decision",
+   "title": "v3 screens never draw a teacher face. They render <FaceSlot>, whose default renderer is src/avatar's <TutorFace> (3D head, else the 2D plate of the same look). `still` forces the plate wherever several faces share a screen, so a page holds at most one live WebGL face: the lesson mounts the tile OR the PiP, never both. RS-7 swaps in the style-C puppet with setFaceRenderer() and no screen changes. No portrait or raster may appear in src/ui-v3; lint L-RASTER enforces it (owner O-R1). Reverse if RS-7's renderer needs per-screen props the slot does not carry; then extend FaceSlotProps.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-schedule-rules-pure",
+   "kind": "decision",
+   "title": "All scheduling rules live as pure functions in src/ui-v3/schedule.ts, and the caller passes 'today' and 'now' (the controls never read the device clock). The rules: a 15-minute rail that never lets a lesson end after lesson hours; a 14-day strip that disables clash days and days off with the reason in the accessible name; a time grid where past, outside-hours and clash rules are evaluated in that order, with a 15-min lead today. The server can re-validate with the same file, and no native date/time input exists anywhere (lint L-NATIVE). Reverse if a family's time zone must be resolved client-side; it is server-side by design.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-toast-predicate",
+   "kind": "decision",
+   "title": "A toast may carry only real-world facts (saved, offline, mic). A predicate in src/ui-v3/toast.ts drops build, generation, loading, error, model, server and retry copy, plus emoji and '!!', before render, and counts what it drops. This is safety by predicate, not by instruction to callers (R9). Reverse if a real-world fact the child must act on is ever dropped; then add it to the pass cases in tests/ui-v3-lint.test.mjs first.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-day-amber-965700",
+   "kind": "decision",
+   "title": "Day-theme amber changed from #A86200 (DESIGN-V3 / v3.css) to #965700, because #A86200 measured 4.76:1 on white and missed the spec's own ≥ 5:1 rule. #965700 measures 5.74 on bg-1, 5.31 on bg and 5.03 on bg-3, and its hue stays 34.8°. Reverse if the design owner prefers to keep #A86200 and drop amber text from white grounds (icon-only verdicts).",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-tomorrow-not-printed",
+   "kind": "decision",
+   "title": "The 14-day strip prints 'Today', then weekdays. 'Tomorrow' is announced (aria) but not printed, because it spilled out of the 56 px cell at every viewport. Reverse if the cells widen to ≥ 72 px.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-shots-2026-10-04",
+   "kind": "measurement",
+   "title": "RS-1 v3 components with fixtures, Chromium via Playwright 1.63 against the vite dev server, 2026-10-04. 106 shots: 20 Night states × 4 viewports (360x640, 390x844, 820x1180, 1440x900), 7 Day states × 4, kit × 2. Results: horizontal scroll 0, off-screen boxes 0, clipped text 0, text spilling out of controls 0, hit targets < 36 px 0 (22 on the first run), unnamed controls 0, states with > 1 volt 0, console errors 0, rendered-text lint 0, missing fonts 0, smallest text 11 px. Lesson (n=36): document scroll 0, artifact outside the slot or under the rail 0, canvas text inside the PiP or label zones 0, zone overlap or collapse 0; floor slot 326x330 at 360x640. The layout metrics' negative controls (re-injected grid-area bug, 32 px switch, 'Tomorrow' label) all trip. Fixtures only, not the real app.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-r11-tap-430-2026-10-04",
+   "kind": "measurement",
+   "title": "The owner's R11 failure, reproduced on 390x844 touch in Chromium, 2026-10-04: set 4:30 PM by tap on v3 onboarding, 20/20 (7 quick pick, 7 steppers, 6 rail slot; the readout, the summary and the ready screen all agree). Parent reschedule to Tue 6 · 4:30 PM, 20/20; the negative control (tapping a clash day and an outside-hours time changes nothing) 20/20. Keyboard-only reschedule passes (arrows skip the clash day and the outside-hours time). Onboarding with defaults takes 7 taps (n=1). On v3 components with fixtures, not yet the real app.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-contrast-2026-10-04",
+   "kind": "measurement",
+   "title": "WCAG 2.x contrast of the 21 TEXT_PAIRS in src/ui-v3/tokens.ts × 2 themes, computed by tests/ui-v3-lint.test.mjs (glass composited over the stage), 2026-10-04: all ≥ 5:1 after Day amber became #965700. Before the change, Day amber on white was 4.76:1. The lowest passing pairs: Night ink-3 on bg-2 5.17, Day ink-3 on bg 5.33, Day mint on bg-1 5.15. Token pairs only, not painted-pixel sampling.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-lint-wave2-baseline-2026-10-04",
+   "kind": "measurement",
+   "title": "The RS-1 source lint over all of src/ (345 files, Wave 2 tree mid-edit), 2026-10-04: 277 hits. L-EMOJI 96 (mostly src/modules sprites), L-WORDS 47 (mostly 'grown-up'), L-MACHINE 43, L-RASTER 40, L-TALK 22 (HoldButton imports, 'Hold to talk'), L-FONT 12 (Literata/Andika), L-EXCLAIM 9, L-NATIVE 4, L-MASCOT 3, L-CANDY 1. Precision about 0.6 on a sample of n=26 that I judged myself: console strings and non-teacher rasters are false positives outside v3. src/ui-v3: 0 hits.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-bundle-2026-10-04",
+   "kind": "measurement",
+   "title": "v3 bundle size, from a rolldown build of the gallery entry with gzip -9, 2026-10-04: JS about 30.0 KB gz (including fixtures, demo artifacts and the kit; TutorFace is a separate 12.3 KB gz chunk) and CSS 11.2 KB gz. Fonts: Bricolage Grotesque variable latin 76.9 KB, Geist Mono latin 23.1 KB. Not on the shipped cold path: /v3 is lazy after PATCH 01.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-side-grid-area-inherited",
+   "kind": "rejection",
+   "title": "Reusing the phone zone rule `.v3-convo { grid-area: convo }` inside the wide side-column grid. On wide screens it collapsed the teacher tile to 2 px and put the transcript over the steer chips, because the side grid has no 'convo' area and the browser makes implicit lines. The first metric set (overflow, clip, hit size) reported 0 because nothing overflowed. Replaced by `.v3-side > * { grid-area: auto }`, plus zone-overlap and collapsed-zone checks in shoot.mjs; the re-injected bug now trips them.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-trust-tutorface-min-height",
+   "kind": "rejection",
+   "title": "Mounting src/avatar <TutorFace> in 36-84 px slots as it is. Its `.tx-tutorface { min-height: 120px }` cropped the PiP and the teacher chips to the forehead. Fixed in the slot (min-height: 0) with a --face-zoom on the PiP and chips; RS-7 sets it to 1 once the renderer honours framing='close'.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-canvas-edge-gradient",
+   "kind": "rejection",
+   "title": "Painting a stage artifact's glow only inside its design canvas (the leaf's corner gradient rect; the game world's radial fill). Letterboxing then showed a hard seam between the glow and the stage background, which breaks DESIGN-V3 §6.2. Replaced by glows that fade to zero before every canvas edge (the leaf) or are painted past the world bounds (the game).",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-node-test-dir-arg",
+   "kind": "rejection",
+   "title": "Adding `src/ui-v3/__tests__/` to `npm test` as a bare directory argument. On Node 22.22, `node --test src/ui-v3/__tests__/` fails with 'Cannot find module' (measured 2026-10-04), although `tests/` works. PATCH 02 uses the glob 'src/ui-v3/__tests__/*.test.mjs' instead.",
+   "at": "2026-10-04",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs1-review-shots-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "RS-1 adversarial review re-run (Chromium/Playwright, gallery fixtures, n=106 shots at 360x640/390x844/820x1180/1440x900): the build report numbers reproduced exactly before any fix. Then 15 bad-input cases x 2 viewports (n=30: empty teacher roster, 24-char unbroken names, 120-char URL in transcript, 14 Later items, empty lines/steer/evidence/chapters, nowMin 23:55, no lessons, out-of-range edit index) found 1 crash (Onboarding with teachers=[]) and 3 horizontal-scroll pages at 360 px (onboarding Ready, home, parent header); after fixes 0 crashes, 0 hscroll across n=30. Full battery after fixes: all metrics 0, R11 flows 20/20 and 20/20, all three negative controls trip.",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-spill-metric-descendants-only",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "The shoot.mjs text-spill metric only checked DESCENDANT elements of a control, so a control whose label is a direct text node could overflow unseen. It reported textSpill 0 while the parent reschedule grid cell \"11:00 AM\" overflowed its 59 px cell at 360x640 (scrollWidth 68 vs clientWidth 59) and at 390x844 (cells about 66 px). Found by looking at a crop, not by the metric. Fixed: the metric also checks the control own scrollWidth when it has direct text; the grid stacks AM/PM under the time when the grid is narrower than 310 px (container query).",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rj-rs1-global-overflow-wrap-anywhere",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Setting overflow-wrap:anywhere on the whole .v3 root fixed the long-name hscroll but silently turned control-label spills into mid-word breaks: the spill negative control (\"Tomorrow\" in a 56 px date cell) stopped tripping (spillTrips false). Scoped it to prose and name slots instead (h1-h4, p, dd, li, q, blockquote, .v3-kid, teacher-card name, transcript line); the negative control trips again.",
+   "source": "inbox/prework-rs1.json"
+  },
+  {
+   "id": "rs4-v2-rung1-engine-spec",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "Studio v2 = 16 reviewed engines (8 games, 4 simulations, 4 explainers) + a model-written JSON spec per piece, mounted as rung 1 inside the W2-H host (patch 01 adds the `engine` artifact kind). The model never writes code on this rung; validateSpec repairs the spec or returns the reviewed default and never throws. Reverse if child playtests show spec-filled engines feel samey across lessons (repeat-play drop-off worse than W2-H code builds), or if the spec bench usable-after-repair rate falls below 90% for an archetype on the production planner.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-shared-pure-grader",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "Grading is one pure function, gradeAnswer(archetype, spec, itemId, rawValue) in shared/studio-spec.ts, run by the client host and re-run by the server (patch 02, createGradeSessionV2). The frame's own `correct` field is never read. Engine and host verdicts agreed on every graded answer in the record battery. Reverse if a needed act cannot be expressed as a raw value plus the spec (then grade that act server-side from the host log only, still never from the frame).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-host-recorded-input",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "Simulations that grade a process (phase-shift, shadow-play) send `{ $hostLog: name }` references; the host substitutes its own recorded input channel (api.record) and the grader replays it with the same fixed step. Inputs are quantised to 0.1 s sim boundaries so the replay is exact. The largest answer measured was 1768 B (phase-shift with host log), so the server bound for v2 answers is 256 KB, not W2-H's 512 B. Reverse if logs over 256 KB occur in real sessions (then checkpoint state server-side every N s).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-safe-zone-measured",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "The stage contract is measured, not trusted. Every text draw is checked against the label safe zone (0..180 x 0..75) and the PiP safe zone (837.5..1000 x 0..162.5) via ctx.getTransform, and labels under 38 world units are counted (tooSmall). FX pops are clamped out of the zones, and pop-in overshoot counts as decoration. Reverse if the PiP or label moves (update the zones in core/tokens.ts, then re-run record.mjs).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-erasable-ts",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "shared/studio-spec.ts and src/studio-v2/core|engines use erasable TypeScript only (no parameter properties, enums or namespaces), so Node 22 type stripping can import them in tests and on the server without a build. Reverse if the production image cannot run Node >= 22.18 (then bundle studio-spec for the server with esbuild).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-junk-labels-rejected",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "Spec strings that contain NaN, undefined, null, Infinity or '[object ' are treated like markup and fall back to the reviewed string. Found by the Playwright fuzz: seed 5 on area-claim rendered 'NaN' as a unit label. Reverse if a legitimate label in some language contains one of these tokens.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-perf-2026-10-05",
+   "kind": "measurement",
+   "status": "measured",
+   "at": "2026-10-05",
+   "title": "Studio v2 perf, n=16 engines, one 12 s bot-played window each after a 3 s warm-up, 915x412 @ DPR 2.625, CDP CPU throttle 4x, headless Chromium (software raster) on a shared 4-core host (load 2-8). fps: 10 of 16 engines at or above 56; the lowest were circuit-bench 44.9, beam 51.4, runner 52.4 and area-claim 52.7 (area re-measured at host load 15). p95 frame was 16.7-16.8 ms for 10 engines and 33.3-33.4 ms for 6 (circuit, runner, area, vault, beam, scale). Adaptive DPR stepped to 1.5 on runner and beam. This is not a device number; the real QB-G9 trace is still open.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-run-battery-2026-10-05",
+   "kind": "measurement",
+   "status": "measured",
+   "at": "2026-10-05",
+   "title": "Record battery, n=16 bot sessions (1024x640, up to 50 s, real pointer events). Engine/host verdict agreement 100% on all 16 engines (88/88 graded answers). 0 page errors, tooSmall 0 on all 16. After the fixes, safe-zone hits are 0 on all 16. On the first pass, area-claim's compare banner hit the PiP zone 200 times; it was split into two lines and that engine was re-recorded with 0 hits.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-fuzz-2026-10-05",
+   "kind": "measurement",
+   "status": "measured",
+   "at": "2026-10-05",
+   "title": "Playwright spec fuzz: per engine, 32 seeded mutated specs + 2 controls, each played 2.5 s, plus 3 fault injections (transient, permanent, boot). A visible failure is a page error, not ready in 6 s, a blank stage, or failure-shaped text. Final result: 0/544 visible failures across 16 engines, and all 48 fault injections held or fell to the board. The first pass found 4 failures, all fixed and re-fuzzed: area-claim seed 5 rendered 'NaN' as a label; angle-sum seeds 3, 9 and 11 left the stage blank after repair dropped the opening show cue. Node fuzz: 300 mutations per engine x 16, all strict-schema-valid after validateSpec, 0 throws.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-spec-bench-2026-10-05",
+   "kind": "measurement",
+   "status": "measured",
+   "at": "2026-10-05",
+   "title": "Spec bench on Azure taxila-fast-bg, JSON mode, effort low: n=30 per archetype (480 calls, $0.63 total). JSON parsed 480/480 and every output was schema-valid after repair (100%). Strict-raw validity ranged from 16/30 (balance-beam) to 30/30. Usable without falling back to the default was 25-30/30 for 14 archetypes; runner was 20/30 and moon 7/30 (23 fell back on unknown narration line ids). p50 latency 3.4-7.0 s.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-rej-model-narration-ids",
+   "kind": "rejection",
+   "status": "rejected",
+   "at": "2026-10-05",
+   "title": "Tried: the planner picks narration line ids for explainers (orbital-explainer) out of the measured narration table. Broke: 23/30 specs referenced line ids that do not exist, so validateSpec fell back to the default (usable only 7/30). Not yet fixed (open): the planner must be given the line ids as a schema enum, or it must supply text that is then TTS-measured. Until then, explainers serve the reviewed default timeline.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-rej-512b-answer-bound",
+   "kind": "rejection",
+   "status": "rejected",
+   "at": "2026-10-05",
+   "title": "Tried: W2-H's 512 B answer bound for v2 answers. Broke: process-graded simulations need their input log. The phase-shift answer was 1768 B with its host log, and before quantisation the log grew without bound. Instead: a 256 KB bound for v2, host-recorded channels, and 0.1 s input quantisation (rs4-host-recorded-input).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-rej-param-properties",
+   "kind": "rejection",
+   "status": "rejected",
+   "at": "2026-10-05",
+   "title": "Tried: TypeScript parameter properties (constructor(private x)) in FX, ExplainerShell and Playhead. Broke: Node 22 type stripping refuses non-erasable syntax, so neither the node suite nor the server could import engine code. Instead: plain fields (rs4-erasable-ts).",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-rej-first-eco-model",
+   "kind": "rejection",
+   "status": "rejected",
+   "at": "2026-10-05",
+   "title": "Tried: the first hand-tuned predator-prey population model for food-web@1. Broke: the populations collapsed to zero within the first simulated weeks, so 'what happens if we remove X' had no stable baseline. Instead: Beddington-DeAngelis with mortality derived from a chosen equilibrium (interference 0.6), so the undisturbed web holds steady and removal and drought trends are deterministic.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-rej-crude-drop-zero",
+   "kind": "rejection",
+   "status": "rejected",
+   "at": "2026-10-05",
+   "title": "Tried: flagging vault-heist answers as the drop-zero misconception whenever the answer had fewer zeros than the target. Broke: it labelled unrelated wrong answers as drop-zero. Instead: drop-zero matches only removal of exactly one internal zero, or of all zeros. Grade details remain a candidate signal for RS-5, never a verdict.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-explainer-establish-subject",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-05",
+   "title": "An explainer's repair must keep the subject on stage from beat 1. angle-sum injects a show-triangle cue on the first beat when repair removed it. Reason: fuzz seeds 3, 9 and 11 produced a blank stage for 2.5 s. Reverse if an explainer's design intends a dark open longer than 1 s; in that case the fuzz's blank-stage rule must allow it explicitly.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs4-review-2026-10-05",
+   "kind": "measurement",
+   "status": "measured",
+   "at": "2026-10-05",
+   "title": "Independent rs4 review (2026-10-05). (1) Node adversarial fuzz with a harsher mutator than mutate.ts (NaN/Infinity/-0/1e308/null/undefined/markup/prototype keys/5000-char strings/emoji/RTL), 1000 specs x 16 archetypes: 0 validateSpec throws, 0 outputs failing the strict schema, 0 failure-shaped strings or non-finite numbers in any output; 384,000 garbage gradeAnswer calls (raw nasty values, {correct:true}, {verdict:\"right\"}, bad item ids): 0 throws, 0 graded right. Fallback-to-default rate under that mutator 36-100% per archetype (heavy by design; real planner rates are in rs4-spec-bench). (2) Browser: 80 repaired-but-not-fallen-back specs (5 per engine, mutator seed 777, bot 3.5 s, 800x500) with fillText/strokeText hooked for NaN/undefined/null/Infinity/[object on the canvas: 0 page errors, 0 blank stages, 0 bad canvas or chrome text, 0 board fallbacks, 0 undersized labels, 0 safe-zone hits. (3) fuzz.mjs re-run on angle-sum, area-claim, phase-shift: 0/34 visible failures each, faults held/board/boot all true (phase-shift repaired 27 vs 26 recorded). (4) patch 01 as delivered did not apply (git apply: corrupt patch, wrong hunk counts) and would have left a stray semicolon before the new union member; regenerated with git diff, applies to the tree, tsc-clean via a symlink mirror. Gates: node --test 9/9, tsc -b 0, vite build 0.",
+   "source": "inbox/prework-rs4.json"
+  },
+  {
+   "id": "rs6-content-f0-selection",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Content F0 (patch docs/design/reset/prework/rs6/patches/01-content-f0.patch, flag TAXILA_CONTENT_F0, on by default): items 1-2 by expected success (0.85, 0.75; θ default C-0.5), never ge <= C-2 unless the child is weak, measured ge preferred over the difficulty proxy, opener floor ge >= C-1, never the topic's top level when two items sit below it, diagnostic at position 3+ off item 1's motif, cap across skills dropping the easiest; harderThan (null at the top, never a step down), fastForwardSkips, testedOut; topic start = school chapter > placement startGE > calendar x 0.8. Reverse if real-child first-item P(correct) for on-track children falls below 0.6 (M-OD-10 lower band): lower the floor or the target.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-placement-cat",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Placement CAT (server/placement): ability.js gridPosterior as a library; 4PL with c = 1/K for choices, item b set so P = 0.7 at the item's GE anchor; prior N(C-0.5, 1.25) (start mid-class, q50 for unimodal near-grade posteriors, q30 otherwise); first item near GE C-0.7; then P-target selection (0.8 after a miss, 0.65 after a hit) among items with P in [0.45, 0.9]; caps 8 below / 4 on / 4 above grade / 12 total; IDK = half an observation of not knowing; result.placement is an own-evidence site for initialBase. Code-graded only. Reverse the selection rule to 'blend' if real sessions show the down-move is not needed (blend RMSE 0.58 vs 0.61); reverse IDK weight if IDK rates differ by ability less than 2:1 in real data.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-rubric-v2",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Calibration rubric v2 (evals/content-level-v2/rubric-v2.mjs, frozen by sha): rater not shown chapter/topic/outcome; given the 2025-26 NCERT chapter scope of classes C-2..C+1; returns grade + demand + needsC, verdict computed by code (too easy = grade <= C-2). Two raters from different families: taxila-gpt6 + DeepSeek-V4-Pro. ge = mean grade - 0.5. Used for agreement and calibration, NOT as a sole gate (precision < 90%). Reverse if a teacher-rated anchor set shows v2 grades off by > 0.5 class on average.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-overlay-not-kits",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Re-levelled items live as an overlay (data/kits-relevel) merged by data/kits-relevel/merge.mjs into an output dir; only blind-solver-agreed, not-too-easy items merge; data/kits is written only after the human pass. Reverse when the human pass is complete: merge into data/kits and retire the overlay.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-m-rubric-v2-agreement",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Rubric v2 on v1's 240-item bank sample (both raters, blind): too easy gpt6 19/240, deepseek 24/240, both 13, either 30 (v1 judge strict 76, v1 Claude 35); kappa v2 0.57 (per class 0.64/0.50/-0.03/0.69) vs v1 judge-vs-Claude 0.45. On v1's 40 NCERT-adjudicated flags (23 true): precision gpt6 6/8, deepseek 6/8, both 4/5 (95% CI 0.38-0.96), recall 26%/26%/17%; at grade <= C-1 precision 0.72-0.80, recall 0.52-0.74. Method: evals/content-level-v2/judge.mjs + score.mjs, 2026-10-04.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-m-first-item-v1-crosscheck",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "First items served, 385 class 4-7 topics, judged by the v1 instrument (taxila-brain, v1 rubric verbatim; no part in selection), diagnostics excluded: item 1 grade <= C-2 old 170/385 (44%; c4 35%, c5 59%, c6 45%, c7 40%, reproducing CONTENT-LEVEL) -> new (patch 01+02 on merged overlay) 117/385 (30%; c4 21%, c5 34%, c6 37%, c7 28%); new item 2 87/385 (23%). v2 raters on positions 1-2 (circular, they set ge): either-flag 19% -> 1%. Code replay: first 10 questions of a new class 4-7 child all itemGE > C-2. Method: evals/content-level-v2/served.mjs + crosscheck-v1.mjs.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-m-relevel-items",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Re-level overlay: 2,072 items for 385 topics (770 openers, 114 on-grade repair, 1,188 harder) by taxila-gpt6; blind solver DeepSeek-V4-Pro agreed 1,894 (91%; 1,563 by code, 331 by grok-4-20 equivalence), disagreed 178 (checker said key correct in most; all excluded). Rated too easy by either v2 rater: openers 27%, on-grade 38%, harder 8%; mean ge - C openers -1.23, harder -0.68. Merged 1,586; 49 hint fixes applied; 384 old items got measured ge; dice item and 2 c6 copies dropped; dice diagnostic rewritten. End-of-class item (ge >= C-0.75) in 380/385 topics (5 language gaps); harder chip strictly above item 1 in 323/385.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-m-placement-sim",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Placement CAT simulation (labelled simulation, no child data): real bank (426 usable of 456; 5 solver disagreements adjudicated key-correct by a model; 30 excluded on anchor mismatch; rater GE minus anchor mean -0.28, MAE 0.44), real server/placement code, 56 cells x 100 runs per arm. 'target' selection: RMSE 0.61 (own model) / 0.78 (misspecified: anchor noise sd 0.6, slope 1.2, 10% unclear/IDK), 10.5 items, level correct 0.77/0.70, 95% CI coverage 0.95/0.89, moved down for 98% of children >= 2 classes behind, up for 95% of children ahead, skipAhead 0.67 at +1 class and 0.21 for on-track. 'blend': RMSE 0.58/0.77, down 0.76. Method: evals/content-level-v2/placement/simulate.mjs.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs6-m-spend",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "RS-6 pre-work Azure spend USD 14.27 (cap 15): re-level generation 6.94, placement generation 0.76, blind solve 0.65, v2 judging 4.77, v1 cross-check 1.15; from returned usage x retail prices of 2026-10-02 (evals/content-level-v2/out/spend.jsonl). Per topic re-level ~USD 0.017; v2 rating ~USD 0.0008/item (gpt6), 0.0005 (deepseek).",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rj-rs6-gentle-opener-prompt",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Asking the generator for a 'gentle first step that still needs the class-C idea' produced openers the raters graded EASIER than the old openers in 5 of 6 subjects (too easy either-rater: english 44->63%, hindi 28->64%, evs 10->24%, sst 9->21%, science 4->9%; maths 18->12%). Teen-relatable framing plus 'gentle' reads as everyday knowledge. What worked: selecting items 1-2 by MEASURED ge (harder items often became openers) and a repair prompt that quotes the rater's own definition.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rj-rs6-rubric-v2-as-gate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Rubric v2 (decimal grades, scope given, chapter hidden, comprehension rule) as a too-easy gate: it removed v1's false positives but now places adjudicated too-easy items about one class below instead of two; recall 26% at grade <= C-2, precision 75-80% at any cut (target >= 90%). Not a gate on its own; the human pass stays mandatory.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rj-rs6-v2-measures-what-it-selected",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Reporting the served-new too-easy rate with the same v2 raters that calibrated ge (19% -> 1%) measures the selection rule against itself. The independent check (v1 instrument, no part in selection) shows 44% -> 30% at item 1. Any future re-level must be measured by a rater or human that did not set ge.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rj-rs6-grader-letter-index-first",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Placement grader (server/placement/grade.js) reading a leading letter or bare digit BEFORE the option words: adversarial review found a child typing the correct option \"a rectangle\" graded as option A (wrong), typing the value \"3\" of a numeric choice graded as the third option, \"1/2 or 3/4\" and \"12 or 13\" hedges credited, \"i do not know\" parsed as 2 (Hindi do) and credited, \"two thousand\" parsed as 2, and \"10%\" vs \"10\" options colliding after punctuation stripping. Fixed: exact option text first (punctuation-preserving, then unique normalised match), letter/index only for a bare letter/digit, any second distinct number or a hedge word makes the answer unclear (null), refusal words block number-word parsing, thousand/hazaar/lakh composed strictly. Verified by a test that every one of 426 usable bank items grades its own key true and every option by text, tap and letter as keyed (review, n=426 items x 3 seeds, 2026-10-05).",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rj-rs6-placement-stale-throw",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "answerPlacement throwing on any itemId other than the current one: a double tap or network retry of the answer just graded became a 500 mid-round (visible failure). Fixed: a resend of the last graded item is idempotent (returns the current item, repeat:true); other stale ids throw code PLACEMENT_STALE, which the proposed route maps to 409 carrying the current item; retired items mid-round are censored; responses capped at 200 chars; non-numeric ms dropped. Route patch also skips classes outside 3-9 ({skip:true}) and 404s a malformed placementId instead of a Postgres 500.",
+   "source": "inbox/prework-rs6.json"
+  },
+  {
+   "id": "rs7-translit-roman-to-devanagari",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Roman Hinglish -> Devanagari step before TTS (server/voice/translit, flag TAXILA_VOICE_DEVANAGARI, OFF by default): per sentence, hand lexicon (numbers 0-100 + scale/ordinal/fraction words mapped to spoken-lexicon WORDS.hi.below100, core words, verb-inflection generator) > dev-learned lexicon > ambiguous words by context (strong-prior set: par/do/main/hum...) > number context (teen sau saath -> साठ) > की/कि after verb forms > rule transliteration for unknown Hindi-looking words; English words, names, acronyms stay Latin so langRuns wraps only Hindi in <lang hi-IN>; a sentence with no unambiguous Hindi word is untouched; safety text (helpline, identity, safety register/moment; predicate on the WRITTEN text) is byte-identical. Wired by patch 01 at dhd.js spokenRun (covers dhd, mai, omni) and patch 02 at speech.js ttsInput, via spoken.devanagari. Reverse if: a human listen on the RS-7 20 number lines finds Devanagari worse than Roman on any voice, or held-out word accuracy falls below 95% on a refreshed corpus.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-voice-switch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Voice switch server/voice/voice-switch.js: TAXILA_TEACHER_VOICE=diya|priya|marin behind one interface (styleFor maps onto the existing dhd/oai pipeline style; documentFor/synthesize standalone). Unset (default) = no change, voices.js decides as today; production default voice unchanged. priya refused unless TAXILA_ALLOW_PREVIEW_VOICE=1 (voice-ga-only-for-minors). Respects W2-D laneSwitched (a lane-switched lesson keeps the realtime voice). Lives in a new file because voices.js already exists. Reverse if: the owner's pick needs per-teacher voices (then fold into voices.js VOICE_TABLE).",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-devanagari-all-three-voices",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "All three switch rows carry devanagari: true (still behind the flag): the step raised number words heard on Diya 87.0 -> 98.2%, Priya 74.7 -> 93.7%, marin 91.0 -> 97.6% (rs7-m-render-diya, rs7-m-render-voices). Reverse if: a human listen prefers Roman on a voice.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-fallback-rules-not-model",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Unknown-word fallback default = rules (heuristic classifier + rule transliteration), not the char n-gram NB model: the model adds +0.2 pt word accuracy but turns 1.3 pt more English words into Devanagari (English kept 99.5 -> 98.2%), the expensive error. Model kept as opt-in arm (TAXILA_TRANSLIT_FALLBACK=model). Reverse if: on a refreshed corpus the model's English-kept is >= the rules arm's while recall is higher.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-m-translit-word-accuracy",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Translit held-out test split (441 real Director replies, 8,959 words; split by source file; gold = gpt-6.1-sol + DeepSeek-V4-Flash-0731 independent per-word labels, 97.8% keep-vs-convert agreement, 286 disagreement types adjudicated by written policy; exact match after norm.mjs): lexicon only 97.2% word acc; lexicon+rules 97.8% (convert P 99.8 / R 97.9, Hindi spelled right 97.1%, English kept 99.5%, Hindi number words 344/345); +NB model 98.0% (English kept 98.2%). First test run before dev fixes: rules 96.7%. Dev (in-sample) 99.6%. Safety replies 4/4 untouched. 35-80 us/reply. Method: node evals/translit/run.mjs --split test.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-m-render-diya",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "DragonHD Diya (centralindia, -35%), 40 real replies with Roman Hindi number words, 2 takes x before/after (160 renders): Azure STT hi-IN number words heard 289/332 (87.0%) -> 326/332 (98.2%), Hindi-word recall 95.4 -> 98.2%; साठ (Roman saath = 60) 0/30 -> 26/30, other number words 95.7 -> 99.3%. taxila-transcribe (Devanagari-script clips only) 76.4% -> 82.0% (it wrote 11/80 before and 5/80 after clips in Urdu script). Anchor v4 line, 4 takes: पैंतीस heard 1/4 -> 4/4, numbers 32/36 -> 36/36. Total duration -1.5% (screen, not a pace measurement). Method: node evals/translit/render.mjs all|anchor.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-m-render-voices",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Same 40 lines, 1 take, Azure STT hi-IN, documents from voice-switch documentFor: MAI-Voice-2.1 Priya number words 118/158 (74.7%) -> 148/158 (93.7%), Hindi recall 81.3 -> 97.3%, 1/40 lines a persistent HTTP 502 in both arms (r0842, Roman text with '|'); gpt-4o-mini-tts marin 151/166 (91.0%) -> 162/166 (97.6%), Hindi recall 93.8 -> 94.9%, 0 failures. Method: node evals/translit/render.mjs voices.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-rj-nb-model-default",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: char 1-4-gram naive Bayes (dev-trained, 37 KB) as the default unknown-word classifier. Broke: converted 1.3 pt more English words to Devanagari on the held-out split (English kept 99.5 -> 98.2%) for +0.2 pt word accuracy; not measurably necessary.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-rj-context-only-ambiguity",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: resolving ambiguous spellings (par, do, main, pehle) only by a +-2 word Hindi-vs-English neighbour vote. Broke: Hinglish puts English nouns before postpositions ('number line par'), so 'par' lost the vote 38 times on dev; replaced by a strong-prior set that converts unless the window is an English phrase (0 Hindi, >= 3 English).",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "rs7-rj-gpt-transcribe-as-sole-ear",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: taxila-transcribe as an STT judge for Hindi number words. Broke: it returns Urdu script for 7-14% of Hindi clips, writes digits and merges words (तीनसौ), so a script-blind scorer reads 67-75%; keep Azure STT hi-IN Lexical as the primary proxy and report the gpt numbers on Devanagari-script clips only.",
+   "source": "inbox/prework-rs7.json"
+  },
+  {
+   "id": "studio-v2-engine-plus-spec",
+   "kind": "decision",
+   "title": "Studio V2 (docs/design/reset/STUDIO-V2.md, answers owner-reset R3/R4/R9/R14): the default generation path is a hand-built archetype engine (craft, physics, truth, juice, failure handling) driven by a small model-written JSON spec (items, pairing, pacing, goals from a closed predicate list, narration cues, strings; 1.2-3.4 KB). The engine validates, recomputes every truth from the kit, repairs or falls back to its reviewed default. Live code builds (LIVE-STUDIO) become the opportunistic fallback for needs no engine covers. Catalogue: 36 game/sim and 27 animation archetypes mapped to NCERT 4-7 ids. Reverse if a live code arm reaches P(strict gate pass by deadline) >= 0.95 on n >= 30 per archetype AND blind child/owner craft ratings match the engine pieces (>= 4/5).",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "studio-v2-static-layers",
+   "kind": "decision",
+   "title": "Studio engines paint static art (full-screen gradients, star fields, floor grids, large additive glows) once per backing-store size into a layer (lib/stage.js st.layer) and blit it 1:1; only moving or twinkling elements stay live. Reverse if a real-device trace on the reference phone shows layer memory (about 4 MB per layer at 1830x824) costs more frames, through GC or upload stalls, than it saves.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "studio-v2-frame-guard",
+   "kind": "decision",
+   "title": "Studio loop runs every frame inside a guard: a throwing frame restores the last good image (snapshotted every 0.5 s); 3 errors in 1 s stop the loop and raise engine_failed so the host cross-fades to the board version; a malformed spec (truncated JSON, array, null) never throws, params() returns {} and the engine plays its reviewed default (spec_unparseable logged). Reverse: never (zero visible failure is owner-reset R9).",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "studio-v2-fuzz-2026-10-04",
+   "kind": "measurement",
+   "title": "prototypes/reset/studio/tools/spec-fuzz.mjs 30, 2026-10-04, headless Chromium: 87 route-served mutated specs + 3 controls across Landfall, Circuit Lab and Moon -> 0 visible failures (page error / no ready in 3 s / blank stage); 70 repaired, 28 fell back to the archetype default. Runtime faults (canvas save() throwing, transient then permanent): last good frame held and engine_failed raised, 3/3 engines.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "studio-v2-perf-ab-2026-10-04",
+   "kind": "measurement",
+   "title": "prototypes/reset/studio/tools/perf-ab.mjs, 2026-10-04: 915x412 @2.625 DSF, DPR pinned 2, CDP 4x CPU throttle, headless software raster on a shared 4-core host (load 9-12), interleaved arms, n=3 each, 12 s samples. Moon explainer with static layers 43.3 fps median vs 22.1 with per-frame re-raster; Landfall 51.0 (30.7 before its backdrop layer); Circuit Lab 57.4. With adaptive resolution: 43-46 fps at 4x, 35-46 at 6x. 60 fps on a real mid phone NOT demonstrated; a real-device trace is required before shipping.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "studio-v2-truth-probes-2026-10-04",
+   "kind": "measurement",
+   "title": "2026-10-04: Moon phase terminator, 49 angles x every disc pixel vs the exact projected-hemisphere mask -> 0 disagreeing pixels, waxing lit on the right 34/34 (tools/spec-fuzz.mjs). Circuit Lab solver, real source extracted from circuit.js, 9/9 hand-computed Ohm's-law loops within 0.2% (tools/solver-test.mjs). Narration: 21 lines, 246 words; first synthesis 166 wpm, re-paced offline with atempo 0.9 to 141 wpm (tools/narrate.mjs --offline --tempo 0.9), timeline 104.2 s.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "rj-fuzz-that-never-served-the-mutation",
+   "kind": "rejection",
+   "title": "The first Studio spec-fuzz matched its Playwright route on the page URL without the query string while every load used ?seed=, so all 87 'mutated' loads served the unmutated control and the reported '0 visible failures' measured nothing (tell: 0 repairs across 29 mutations). Run honestly it found a Moon crash on a null beat (2/30), params() throwing on truncated JSON, the same null-element crash in Landfall and Circuit Lab, and a frame guard the spec described but the loop lacked. Rule: a fault-injection harness must assert its injection happened (the harness now throws if a mutation is not served) and a zero-failure result with zero repairs is a harness bug until shown otherwise.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "rj-tts-pace-by-instruction",
+   "kind": "rejection",
+   "title": "Asking gpt-4o-mini-tts (voice marin) for an 'unhurried' teacher still produced 166 wpm of speech for the Moon explainer, over the 150 wpm bar for class 4 (n=21 lines, 2026-10-04). Pace is set by measurement and an offline pitch-preserving time-stretch (atempo 0.9 -> 141 wpm), not by the instruction. Listening quality after the stretch is not yet rated by a person.",
+   "at": "2026-10-04",
+   "source": "inbox/studio-v2.json"
+  },
+  {
+   "id": "m-voicesig-encoder-latency-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "On-device encoder candidates, onnxruntime-web WASM 1 thread vs native ORT 1 thread on a 4-vCPU Xeon 2.1 GHz (Node 22.22, ORT 1.30.0; container shared with other jobs, load avg 6-13, so min reported with p50; multi-thread cells invalid). WASM min / p50 ms: Smart Turn v3.2 int8 (8 s) 209.0/242.2 (native 40.3); Smart Turn with frames+pooled outputs exposed 209.1/215.9, logits identical (max diff 0.0); Whisper-tiny enc int8 8 s 211.9/227.5, 3 s window 67.2/98.3; Whisper-base enc 8 s 478.0/487.5; DistilHuBERT 3 s 895/917; wav2vec2-base / HuBERT-base / WavLM-base-plus 3 s 1363/1361/1388 min (8 s about 3.9 s), 122 MB int8, +650-793 MB RSS; prosody CNN+BiGRU (38,184 params) 1.87/2.06; logistic 0.02. int8 fidelity (pooled cos vs torch): wav2vec2-base 0.84, HuBERT 0.98, WavLM 0.99, DistilHuBERT 0.994, Whisper-tiny 0.997. Front-end: dsp.ts FrameAnalyzer 0.172 ms p50 per 20 ms hop (9.6 ms/audio-s); naive JS 80-bin log-mel 74 ms per 8 s (about 9 ms/audio-s incremental). Delivery: ort-wasm 3.7 MB gz, Smart Turn 7.5 MB gz. Phone figures are estimates (2-4x) until VSP-M1.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "m-voicesig-cloud-quota-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Read-only cloud probe for voice-signal training. Azure: every NC/ND/NV/NG family limit 0 in 10 regions (southindia, centralindia, westindia, eastus2, eastus, westus3, swedencentral, uaenorth, polandcentral, southeastasia); lowPriorityCores 3; ACA dedicated A100 0; 7 Compute quota requests dated 2026-10-03 all Failed; southindia D-family CPU limits 65-350 vCPU; ACA consumption $0.000024/vCPU-s. AWS account 780899467240: ap-south-1 G/VT quota 0 on-demand and 0 spot; us-east-1 8/8 vCPU; P 0 both. Spot minima over 6 h (us-east-1 / ap-south-1): g4dn.xlarge 0.252/0.216, g5.xlarge 0.412/0.656, g6.xlarge 0.564/0.529, c7i.2xlarge 0.156/0.153 USD/h; on-demand us-east-1 g5 1.006, g6 0.805. No instances running, 0 GB unattached volumes; budget taxila-build-gpu USD 100/month, actual 0.00. Neon: 11 regions, none in India (nearest aws-ap-southeast-1).",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "m-voicesig-train-cost-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "CPU training cost (4 vCPU, torch 2.14.1 cpu, shared container, upper bounds): 38k-param prosody GRU one epoch over 3,200 answers (E1 size) 20.4 s; frozen Whisper-tiny embedding 8.5 clips/s (batch 8 x 8 s); full Whisper-tiny encoder fine-tune 2.5 clip-passes/s (3.15 s per batch of 8 x 8 s), i.e. about 7 h for E1 x 20 epochs and about 167 h at 50k clips x 30 epochs. Conclusion: E1-scale heads need no GPU; GPU only for an encoder fine-tune.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "voicesig-shared-encoder-smart-turn",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "One shared audio front-end for duplex and voice signals: the existing 16 kHz tap, dsp.ts contours, one incremental log-mel ring, and ONE ORT-web session running the Smart Turn v3.2 backbone (BSD-2, data CC-BY-4.0, 8.7 MB int8) with its frame sequence (layer_norm_8) and pooled embedding (sum_1) exposed as extra outputs. One pass per committed turn end feeds pTurnEnd (duplex) and the knowledge head (voicesig); the backbone stays frozen through K2; a later fine-tune is multi-task and ships only if end-of-turn metrics do not regress. Devices too slow for the pass degrade to prosody + scalars. Reverse if VSP-M2 shows the embedding adds no knowledge signal over handcrafted features (voicesig drops the encoder; duplex keeps it), or VSP-M1 fails the mid device class (3 s window or prosody-only).",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "voicesig-outcome-defined-labels",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Label test for every voice-derived output: (1) its training target is a task outcome (correct now, delayed/transfer success, recognition-probe success after 'yaad nahi', a wrong answer persisting after feedback, replication on an isomorphic item), never a human rating of how the child seemed to feel or sound (E1 coder labels may evaluate, never train); (2) names from a closed knowledge vocabulary (Research A's state names fluentRecall, fragileCorrect, heldBelief, searching, absent, effortfulGuess, rapidGuess, workingAloud, answerReliability, plus q and ABSTAIN; each defined by the outcome it predicts), never unsure/confident/doubt/confused; (3) enters decisions only as evidence weights or move licences, never as a description in a prompt, never shown or stored as a state; (4) lint-enforced. Rationale: restriction 12 lists Ekman-type emotions; the EU guidelines Microsoft aligns with treat attitude and emotion as equivalent, so renaming alone does not move a model; an outcome target does. Reverse if Microsoft answers in writing that restriction 12 or 4 reaches outcome-trained knowledge evidence from speech timing or prosody (voice then reduces to Tier T plus timing-free features).",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "voicesig-training-cpu-first",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Voice knowledge-model training runs on CPU in India first (K1 on E1 and K2 monthly refits: an ACA job in southindia, under USD 2 [E]); GPU only for a K3 encoder fine-tune, on AWS g5/g6 spot through the existing scripts/gpu harness (self-shutdown, EventBridge backstop, reaper, terminate on exit), estimated USD 22-36 spot (at most 64 on-demand) against the USD 80 cap, behind a taxila-voicesig budget with a deny-RunInstances action. K3 waits for a Mumbai G-spot quota so P4 child audio stays in India, unless the P4 notice names US processing. Production uploads head outputs only; embeddings and audio for training come only from the P4 cohort. Reverse if Azure grants GPU quota in India (move K3 there), or K1/K2 show the encoder adds nothing (no K3).",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "voicesig-baselines-main-db",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-10-04",
+   "title": "Per-child voice baselines and head calibration stay in the main database (Azure PG Flexible, South India), under an opt-in parental grant (V2), keyed by an HMAC pseudonym, loaded at lesson start and written once at lesson end; the voicesig.* schema is Neon-portable. Storing numbers in a database is not use of a Microsoft AI service; Neon has no India region and would need a second deletion path. Reverse if the owner or counsel prefers separating voice-signal data from Microsoft (move to Neon, accepting Singapore residency and an outbox/reconciliation deletion path).",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "rj-voicesig-ssl-cnn-frontends-on-device",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (measured 2026-10-04): wav2vec2-base, HuBERT-base, WavLM-base-plus and DistilHuBERT as the on-device knowledge encoder, int8 in onnxruntime-web WASM. Broke: 1,361-1,388 ms (base) and 895 ms (Distil) per 3 s of audio on one Xeon thread, against 209 ms for the whole Whisper-tiny/Smart Turn encoder over 8 s; 50-122 MB; +390-793 MB RSS; wav2vec2-base int8 pooled cos 0.84. The raw-waveform CNN front-end dominates, so distilling the transformer does not help. Revisit if a <= 20 MB SSL student without the raw-waveform CNN reaches <= 250 ms per 3 s in WASM.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "rj-voicesig-licence-blocked",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Licence-blocked for shipped voice-signal weights (checked 2026-10-04): facebook/mms-300m and mms-1b (CC-BY-NC-4.0: eval/research only); ai4bharat/indicwav2vec-hindi and indic-conformer-600m (gated repos, no-gated rule; IndicWav2Vec also 1.26 GB); microsoft/wavlm-base(-plus) as shipped weights (UniSpeech licence CC BY-SA 3.0: share-alike on distributed derivatives; offline teacher only); openSMILE/eGeMAPS (non-commercial; dsp.ts reimplements the features); MyST corpus (non-commercial unless licensed: evaluation only). Revisit on a licence change or a purchased commercial licence.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "rj-voicesig-placement-as-cure",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Tried (analysis 2026-10-04): moving an emotion-from-voice model off Azure (device or AWS) to escape Microsoft CoC restriction 12. Broke: restriction 4 forbids applications built with Microsoft AI Services from using the services to 'interact with content, decisions, or actions prohibited in this Code', so an off-Azure emotion inference that steers the Azure-served teacher, Director or TTS is still covered. Placement only separates a shadow research arm whose output reaches no Microsoft service. What keeps voice signals compliant is the outcome-defined knowledge target (voicesig-outcome-defined-labels), not where the model runs.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "open-voicesig-dpdp-9-3",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Counsel, before DPDP s.9 commences on 13 May 2027: (a) is Taxila an 'educational institution' ('an institution of learning that imparts education') under the Fourth Schedule exemption from s.9(1)/(3); (b) is a persistent per-child record of answer timing and fluency kept to adapt teaching 'behavioural monitoring' under s.9(3), which consent cannot cure? If not exempt and yes, V2 (persistent voice baselines) stays off for everyone and voice signals run session-only (M0). The same question applies to the persistent learner model.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "open-voicesig-mumbai-g-quota",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "Owner action: file AWS Service Quotas requests in ap-south-1 for L-3819A6DF (All G and VT Spot Instance Requests) and L-DB2E81BA (On-Demand G and VT), 0 -> 8 vCPU, so a K3 voice-encoder fine-tune on P4 child audio can run in Mumbai (g6.xlarge spot USD 0.529/h) instead of us-east-1. Also create the taxila-voicesig USD 80 budget with a deny-RunInstances action.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "open-voicesig-smart-turn-phone-budget",
+   "kind": "open",
+   "at": "2026-10-04",
+   "title": "For the duplex workflow: the duplex architecture budgets Smart Turn v3.2 at the vendor's 10-100 ms CPU per candidate endpoint, but measured WASM 1 thread on a Xeon is 209 ms min (native 40 ms), about 420-840 ms estimated on a mid-range Android big core. Decide on VSP-M1: 3 s window (67 ms min here), WASM threads (needs COOP/COEP; Taxila sets neither), WebGPU, or encoder on own ACA CPU in India.",
+   "source": "inbox/voicesig-placement.json"
+  },
+  {
+   "id": "m-vs-filler-ami-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Filler detector (bi-GRU 32, 10,817 params, 45 KB fp32) on the product front-end's 22-dim relative features, AMI CC BY 4.0, speaker-disjoint (train 48 spk 10.3 h / val 12 / test 32 spk 7.2 h = all Indian-L1 series). Test word AUROC 0.942 [0.929, 0.955] vs shipped flat-run proxy 0.561 [0.526, 0.594]; event P/R 0.753/0.601 vs proxy 0.278/0.166; ECE 0.0073 calibrated. Indian-L1 adults 0.922 [0.907, 0.936]. ICSI cross-corpus 0.956 (block clusters, optimistic), P/R 0.696/0.626. FLEURS read-speech runs/speech-min hi 3.80 vs en 3.36. Not covered: children, Hindi fillers, phone AGC capture.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-filler-onnx-latency-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Filler ONNX p50 1 thread: node 0.31/0.92/1.76 ms, WASM 0.57/1.49/2.99 ms for 5/15/30 s turns (N=50, shared Xeon). int8 dynamic larger (47,092 B) and rejected; fp32 ships. Phone x2-4 [E].",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-frontend-cpu-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "CPU per audio-s (process.cpuUsage, 60 s): FrameCore 6.5 ms; 10 ms log-mel 9.85 ms with mixed-radix FFT (22.9 ms direct DFT); 20 ms mel 4.8 ms. Adapter toSignalInput p50 0.006 / p99 0.029 ms (n=20k).",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-whisper-mel-parity-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Streaming log-mel ring vs HF WhisperFeatureExtractor(chunk_length=8) on one 8 s clip: interior max abs diff 1.7e-6 (mean 4.6e-8).",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-sy1-sy2-synthetic-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "SY-1/SY-2 clean synthetic (n=21 turns, gaps 0.3-6 s, gains x0.25/x1/x4): onset error -10 ms constant; pauseFrac gain-invariant. Noise/child not covered.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-sim-power-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "SIMULATED pilot power through the product adapter + harness (20 reps, B=200): 95% half-width of dAUROC 0.042 at 30 children, 0.012 at 200; null median -0.001; effect x1 median 0.086 (pass 19/20 at 30); effect x0.5 median 0.010 at 30, 0.033 at 200 (pass 12/20). Null false-pass of the 80%-CI L2 bar 10/60 = 16.7% at 30 children.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-no-paid-compute-cpu-training",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "K3 encoder fine-tune approved (then scripts/gpu + taxila-voicesig USD 80 budget action).",
+   "title": "All training in this build on the session CPU (filler GRU, K1 heads); AWS USD 0, Azure USD 0, no instance launched.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-filler-detector-ami",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "VS-A8 on child pilot audio: filler recall < 0.6 at <= 0.05 FP.",
+   "title": "Stage-2 public-data component = per-frame filled-pause detector trained on AMI (CC BY 4.0) over the product front-end features; feeds F3 acoustic only.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-z-on-server",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A device stage-2 head needs z inputs (K2 embedding branch).",
+   "title": "Device sends raw measurements KnowledgeVoice.f; server z-scores against the voicesig baseline (deviation from SPEC 1.5 z-on-device).",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-voice-lr-over-text",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A fitted head without a text-only counterfactual; then dAUROC-matched calibration.",
+   "title": "lrV = odds(h all terms)/odds(h text-only terms), gated qA x maturity, clipped to ladder cap; replaces SIGNALS A1/L4 term (replaceTimingTerm).",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-age-factor-once",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "VS-M6 measures 9-10 cue strength.",
+   "title": "9-10 age halving applied once, to E terms in rules.js, not again in gating (SPEC applied it twice).",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-adapter-inside-signals-step",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "Signals owner prefers the turn handler calling it (one extra readText).",
+   "title": "Proposal A2: signals step() calls server/voicesig/adapter.js after readText/quality; one G-SIG-PURE allowlist line.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-l2-bar-95ci-200",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "status": "proposed",
+   "reverseIf": "A cluster-robust interval shows nominal coverage at pilot size in the same simulation.",
+   "title": "PROPOSED: ladder L2 needs dAUROC >= 0.03 with the 95% child-clustered CI excluding 0 on >= 200 children.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-knowledge-head-on-public-data",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Training h1-h4 on public corpora: none carries O1-O4 outcomes; IndicVoices/Vaani are gated; proxy labels would break the outcome-only label test.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-direct-dft-logmel",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Direct 400-pt DFT log-mel cost 22.9 ms CPU/audio-s (> 20 ms budget); replaced by mixed-radix FFT 9.85 ms.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-whole-channel-extraction-shared-box",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Whole-channel AMI extraction at load 15-23 projected ~4 h; replaced by owner-speech regions +-2 s.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-sim-null-not-null",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Simulator effect 0 still carried rapid-guess onset; harness showed dAUROC 0.025 / 8 of 20 passes at the fake null; fixed.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-l2-bar-80ci-at-pilot-scale",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "80%-CI L2 bar false-passes 16.7% (10/60) of 30-child null pilots.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-r-chunk-reset-alignment",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Per-chunk R buffer reset misaligned R windows vs P; replaced by FIFO with join padding.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-worklet-globals-in-shared-test-process",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Worklet global stubs would leak across the single-process npm test; now restored in finally.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-verify-rerun-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Verify pass: filler-detector eval re-run from the shipped ONNX on the same AMI/ICSI/FLEURS features reproduced every test, ICSI and FLEURS number exactly (word AUROC 0.9421 [0.9294, 0.9546], event P/R 0.7526/0.6012). Split re-checked: series-disjoint, speaker-disjoint asserted; threshold, Platt and epoch chosen on val only.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-verify-capture-chain-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Capture-chain proxies on 4 AMI test channels (3 Indian-L1, 303 filler words; perturb_eval.py): word AUROC / event P,R: clean 0.932 / 0.895,0.644; AGC 0.933 / 0.882,0.597; spectral NS+15 dB noise 0.935 / 0.900,0.535; TV speaker at -10 dB 0.928 / 0.874,0.594; narrowband 300-3400 Hz alone 0.707 / 0.310,0.152; narrowband+AGC+NS 0.917 / 0.902,0.366. Fires in non-own stretches: clean 1.9/min, AGC 4.3/min, NS 0.3/min. Proxies, not phone recordings.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "m-vs-verify-fleurs-lead-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "False LEADING filler >= 300 ms on fluent read utterances (FLEURS): hi_in 7.4% of 95, en_us 7.3% of 41; any false run in 27% of utterances (median 6-8 s). AMI test true-filler rate 6.67 per own-speech minute vs 3.4-3.8 false runs/min on read speech.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-haanji-as-filler",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "server/signals fillerLead counts haan/ji/ok/achha as planning fillers: readText('haan ji, paanch').fillerLead.v === true, so a deferential child's correct answer supplied Tier-T agreement for fragileCorrect. voicesig now uses register-aware rules.fillerLexOf(toks); signals fix proposed as A2b.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "rj-vs-absolute-filler-lead",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "An absolute fillerLeadMs >= 300 ms E term fired every turn for a child who habitually opens with 'aaa', and on ~7% of fluent utterances by false alarm. Now the acoustic lead counts only at baselined z >= 1 (mature per-child baseline), and is ignored on bt / speaker_route.",
+   "source": "inbox/voicesig.json"
+  },
+  {
+   "id": "vs-verify-guards-2026-10-04",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Verify-pass guards in server/voicesig: (1) register-aware lexical filler; (2) acoustic filler lead only when unusual for this child; (3) detector ignored on narrowband mic routes; (4) voice-only licence only when g > 0; (5) safety abstain carries shadow:true, licence:null. Reverse (3) if a phone/BT-recorded child set shows narrowband recall >= 0.5; reverse (2) if pilot shows absolute lead predicts O1 better than z.",
+   "source": "inbox/voicesig.json"
   }
  ],
  "edges": [
@@ -15360,6 +16528,601 @@
    "src": "voice-final-diya-2026-10-04",
    "rel": "measured_by",
    "dst": "m-voice-final-pick-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-anchor-last-voice",
+   "rel": "supersedes",
+   "dst": "rj-duplex-verdict-anchor-value-word"
+  },
+  {
+   "src": "duplex-idk-tail-only",
+   "rel": "supersedes",
+   "dst": "rj-duplex-idk-anywhere"
+  },
+  {
+   "src": "duplex-echo-by-audio-span",
+   "rel": "supersedes",
+   "dst": "rj-duplex-echo-arrival-window"
+  },
+  {
+   "src": "duplex-verdict-anchor-last-voice",
+   "rel": "measured_by",
+   "dst": "m-d8-duplex-critique-stress-2026-10-04"
+  },
+  {
+   "src": "duplex-turn-pace",
+   "rel": "measured_by",
+   "dst": "m-d8-duplex-critique-stress-2026-10-04"
+  },
+  {
+   "src": "duplex-echo-by-audio-span",
+   "rel": "measured_by",
+   "dst": "m-d8-duplex-critique-stress-2026-10-04"
+  },
+  {
+   "src": "open-duplex-safety-predicate-stt-robustness",
+   "rel": "caused_by",
+   "dst": "rj-duplex-verbatim-stt-sim-as-gate"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-silence-frontier-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-stageb-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-l2-live-2026-10-04"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-stageb-features-only-closed-loop"
+  },
+  {
+   "src": "duplex-stage-a-ships-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-llm-semantic-cutoff-benefit"
+  },
+  {
+   "src": "duplex-stageb-features-only-no-vouch",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-stageb-2026-10-04"
+  },
+  {
+   "src": "duplex-safety-alt-readings",
+   "rel": "caused_by",
+   "dst": "open-scansafety-danda-miss"
+  },
+  {
+   "src": "duplex-safety-alt-readings",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "rel": "constrains",
+   "dst": "wb-predictive-endpoint"
+  },
+  {
+   "src": "rj-smart-turn-off-the-shelf-child-hinglish",
+   "rel": "measured_by",
+   "dst": "m-taxilafdb-test-2026-10-04"
+  },
+  {
+   "src": "open-duplex-engine-failing-bars",
+   "rel": "blocks",
+   "dst": "duplex-stage-a-ships-2026-10-04"
+  },
+  {
+   "src": "duplex-runtime-2026-10-04",
+   "rel": "constrains",
+   "dst": "owner-always-listen-full-session-2026-10-04"
+  },
+  {
+   "src": "duplex-runtime-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-delay-2s",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-overlap-stay-ducked",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-overlap-stay-ducked",
+   "rel": "caused_by",
+   "dst": "rj-duplex-eager-overlap-yield"
+  },
+  {
+   "src": "duplex-explain-sentence-cap",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-explain-sentence-cap",
+   "rel": "blocks",
+   "dst": "open-duplex-semantic-call"
+  },
+  {
+   "src": "duplex-safeguard-defer-on-onset",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-hold-grant-fresh-words",
+   "rel": "caused_by",
+   "dst": "rj-duplex-stale-hold-regrant"
+  },
+  {
+   "src": "open-duplex-fast-lane-draft-churn",
+   "rel": "part_of",
+   "dst": "duplex-runtime-2026-10-04"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
+   "rel": "caused_by",
+   "dst": "rj-duplex-echo-skeleton-single-token"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
+   "rel": "measured_by",
+   "dst": "m-d7-duplex-runtime-tick-sim-2026-10-04"
+  },
+  {
+   "src": "duplex-echo-span-and-uptake",
+   "rel": "part_of",
+   "dst": "duplex-runtime-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "caused_by",
+   "dst": "owner-duplex-no-silence-gate-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "caused_by",
+   "dst": "rj-silence-gated-turn-taking"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "supersedes",
+   "dst": "duplex-no-model-in-child-turn"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "supersedes",
+   "dst": "duplex-cascade-listening-teacher-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "duplex-arch-six-loops-device-floor"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "wb-predictive-endpoint"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "open-predictive-turn-model"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "constrains",
+   "dst": "w2e-predictive-turn-lite"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "duplex-fast-mouth-late-verdict"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "duplex-safety-sticky-partials"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "code-keeps-decisions-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "inherits",
+   "dst": "rj-native-duplex-teacher-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "duplex-continuous-engine-2026-10-04",
+   "rel": "measured_by",
+   "dst": "smart-turn-unproven-vs-silence-2026-10-04"
+  },
+  {
+   "src": "rj-silence-gated-turn-taking",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "rj-silence-gated-turn-taking",
+   "rel": "measured_by",
+   "dst": "m-d3-duplex-sim-smoke-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-blind-timing",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-verdict-blind-timing",
+   "rel": "inherits",
+   "dst": "design-v2-rejected-correctness-face"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "measured_by",
+   "dst": "m-d6-lexical-horizon-2026-10-04"
+  },
+  {
+   "src": "duplex-lexical-horizon-guard",
+   "rel": "measured_by",
+   "dst": "m-d2-duplex-live-stt-2026-10-04"
+  },
+  {
+   "src": "duplex-taxilafdb",
+   "rel": "part_of",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "duplex-taxilafdb",
+   "rel": "measured_by",
+   "dst": "m-d3-duplex-sim-smoke-2026-10-04"
+  },
+  {
+   "src": "open-duplex-mai-micro-probe",
+   "rel": "blocks",
+   "dst": "duplex-lexical-horizon-guard"
+  },
+  {
+   "src": "open-duplex-gap-at-ear",
+   "rel": "blocks",
+   "dst": "duplex-continuous-engine-2026-10-04"
+  },
+  {
+   "src": "open-duplex-seams-v2",
+   "rel": "supersedes",
+   "dst": "open-duplex-seams-w2"
+  },
+  {
+   "src": "rs1-ui-v3-scoped-tree",
+   "rel": "measured_by",
+   "dst": "rs1-shots-2026-10-04"
+  },
+  {
+   "src": "rs1-schedule-rules-pure",
+   "rel": "measured_by",
+   "dst": "rs1-r11-tap-430-2026-10-04"
+  },
+  {
+   "src": "rs1-day-amber-965700",
+   "rel": "measured_by",
+   "dst": "rs1-contrast-2026-10-04"
+  },
+  {
+   "src": "rs1-day-amber-965700",
+   "rel": "caused_by",
+   "dst": "rs1-contrast-2026-10-04"
+  },
+  {
+   "src": "rs1-face-slot-contract",
+   "rel": "caused_by",
+   "dst": "rj-rs1-trust-tutorface-min-height"
+  },
+  {
+   "src": "rs1-ui-v3-scoped-tree",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rj-rs1-spill-metric-descendants-only",
+   "rel": "measured_by",
+   "dst": "rs1-review-shots-2026-10-05"
+  },
+  {
+   "src": "rj-rs1-global-overflow-wrap-anywhere",
+   "rel": "measured_by",
+   "dst": "rs1-review-shots-2026-10-05"
+  },
+  {
+   "src": "rs4-v2-rung1-engine-spec",
+   "rel": "part_of",
+   "dst": "reset-studio-v2-on-w2h-host"
+  },
+  {
+   "src": "rs4-v2-rung1-engine-spec",
+   "rel": "measured_by",
+   "dst": "rs4-spec-bench-2026-10-05"
+  },
+  {
+   "src": "rs4-v2-rung1-engine-spec",
+   "rel": "measured_by",
+   "dst": "rs4-perf-2026-10-05"
+  },
+  {
+   "src": "rs4-shared-pure-grader",
+   "rel": "measured_by",
+   "dst": "rs4-run-battery-2026-10-05"
+  },
+  {
+   "src": "rs4-host-recorded-input",
+   "rel": "supersedes",
+   "dst": "rs4-rej-512b-answer-bound"
+  },
+  {
+   "src": "rs4-safe-zone-measured",
+   "rel": "measured_by",
+   "dst": "rs4-run-battery-2026-10-05"
+  },
+  {
+   "src": "rs4-erasable-ts",
+   "rel": "supersedes",
+   "dst": "rs4-rej-param-properties"
+  },
+  {
+   "src": "rs4-junk-labels-rejected",
+   "rel": "measured_by",
+   "dst": "rs4-fuzz-2026-10-05"
+  },
+  {
+   "src": "rs4-v2-rung1-engine-spec",
+   "rel": "measured_by",
+   "dst": "rs4-fuzz-2026-10-05"
+  },
+  {
+   "src": "rs4-explainer-establish-subject",
+   "rel": "measured_by",
+   "dst": "rs4-fuzz-2026-10-05"
+  },
+  {
+   "src": "rs4-v2-rung1-engine-spec",
+   "rel": "measured_by",
+   "dst": "rs4-review-2026-10-05"
+  },
+  {
+   "src": "rs6-content-f0-selection",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rs6-content-f0-selection",
+   "rel": "measured_by",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "rs6-placement-cat",
+   "rel": "part_of",
+   "dst": "learner-ge-scale-one-cat"
+  },
+  {
+   "src": "rs6-placement-cat",
+   "rel": "measured_by",
+   "dst": "rs6-m-placement-sim"
+  },
+  {
+   "src": "rs6-rubric-v2",
+   "rel": "measured_by",
+   "dst": "rs6-m-rubric-v2-agreement"
+  },
+  {
+   "src": "rs6-overlay-not-kits",
+   "rel": "measured_by",
+   "dst": "rs6-m-relevel-items"
+  },
+  {
+   "src": "rj-rs6-gentle-opener-prompt",
+   "rel": "measured_by",
+   "dst": "rs6-m-relevel-items"
+  },
+  {
+   "src": "rj-rs6-rubric-v2-as-gate",
+   "rel": "measured_by",
+   "dst": "rs6-m-rubric-v2-agreement"
+  },
+  {
+   "src": "rj-rs6-v2-measures-what-it-selected",
+   "rel": "measured_by",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "rj-rs6-grader-letter-index-first",
+   "rel": "part_of",
+   "dst": "rs6-placement-cat"
+  },
+  {
+   "src": "rj-rs6-placement-stale-throw",
+   "rel": "part_of",
+   "dst": "rs6-placement-cat"
+  },
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "measured_by",
+   "dst": "rs7-m-translit-word-accuracy"
+  },
+  {
+   "src": "rs7-translit-roman-to-devanagari",
+   "rel": "measured_by",
+   "dst": "rs7-m-render-diya"
+  },
+  {
+   "src": "rs7-devanagari-all-three-voices",
+   "rel": "measured_by",
+   "dst": "rs7-m-render-voices"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "part_of",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "voice-ga-only-for-minors",
+   "rel": "constrains",
+   "dst": "rs7-voice-switch"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "caused_by",
+   "dst": "voice-final-diya-2026-10-04"
+  },
+  {
+   "src": "rs7-fallback-rules-not-model",
+   "rel": "measured_by",
+   "dst": "rs7-m-translit-word-accuracy"
+  },
+  {
+   "src": "rs7-fallback-rules-not-model",
+   "rel": "caused_by",
+   "dst": "rs7-rj-nb-model-default"
+  },
+  {
+   "src": "rs7-m-render-diya",
+   "rel": "blocks",
+   "dst": "w2g-base-rate-minus-35"
+  },
+  {
+   "src": "rs7-voice-switch",
+   "rel": "caused_by",
+   "dst": "rs7-m-render-voices"
+  },
+  {
+   "src": "studio-v2-engine-plus-spec",
+   "rel": "measured_by",
+   "dst": "studio-v2-fuzz-2026-10-04"
+  },
+  {
+   "src": "studio-v2-static-layers",
+   "rel": "measured_by",
+   "dst": "studio-v2-perf-ab-2026-10-04"
+  },
+  {
+   "src": "studio-v2-frame-guard",
+   "rel": "measured_by",
+   "dst": "studio-v2-fuzz-2026-10-04"
+  },
+  {
+   "src": "rj-fuzz-that-never-served-the-mutation",
+   "rel": "part_of",
+   "dst": "studio-v2-fuzz-2026-10-04"
+  },
+  {
+   "src": "studio-v2-engine-plus-spec",
+   "rel": "measured_by",
+   "dst": "studio-v2-truth-probes-2026-10-04"
+  },
+  {
+   "src": "rj-tts-pace-by-instruction",
+   "rel": "part_of",
+   "dst": "studio-v2-truth-probes-2026-10-04"
+  },
+  {
+   "src": "voicesig-shared-encoder-smart-turn",
+   "rel": "measured_by",
+   "dst": "m-voicesig-encoder-latency-2026-10-04"
+  },
+  {
+   "src": "rj-voicesig-ssl-cnn-frontends-on-device",
+   "rel": "measured_by",
+   "dst": "m-voicesig-encoder-latency-2026-10-04"
+  },
+  {
+   "src": "voicesig-training-cpu-first",
+   "rel": "measured_by",
+   "dst": "m-voicesig-train-cost-2026-10-04"
+  },
+  {
+   "src": "voicesig-training-cpu-first",
+   "rel": "measured_by",
+   "dst": "m-voicesig-cloud-quota-2026-10-04"
+  },
+  {
+   "src": "voicesig-training-cpu-first",
+   "rel": "inherits",
+   "dst": "aws-build-gpu"
+  },
+  {
+   "src": "voicesig-baselines-main-db",
+   "rel": "caused_by",
+   "dst": "rj-neon-india-region"
+  },
+  {
+   "src": "voicesig-baselines-main-db",
+   "rel": "inherits",
+   "dst": "india-move-southindia-azure-pg-2026-10-04"
+  },
+  {
+   "src": "ct-no-voice-emotion-inference",
+   "rel": "constrains",
+   "dst": "voicesig-outcome-defined-labels"
+  },
+  {
+   "src": "voicesig-outcome-defined-labels",
+   "rel": "caused_by",
+   "dst": "wb-coc-epistemic-vs-emotional"
+  },
+  {
+   "src": "rj-voicesig-placement-as-cure",
+   "rel": "caused_by",
+   "dst": "ct-no-voice-emotion-inference"
+  },
+  {
+   "src": "voicesig-outcome-defined-labels",
+   "rel": "inherits",
+   "dst": "voice-features-longitudinal"
+  },
+  {
+   "src": "open-voicesig-dpdp-9-3",
+   "rel": "blocks",
+   "dst": "voicesig-baselines-main-db"
+  },
+  {
+   "src": "open-voicesig-mumbai-g-quota",
+   "rel": "blocks",
+   "dst": "voicesig-training-cpu-first"
   }
  ]
 }

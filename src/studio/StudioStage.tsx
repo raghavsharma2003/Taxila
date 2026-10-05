@@ -37,6 +37,24 @@ const STAGE_INSET = 8;
 const MAX_SCALE = 3;
 /** The corner control (44 px: the touch minimum at every band). */
 const CTRL = 44;
+/** The open menu's size (studio.css .st-menu: 168 px wide; two 44 px rows, gap, padding, border). */
+const MENU_W = 168, MENU_H = 104;
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+/**
+ * Where the open menu goes, relative to the control: below and right-aligned when it fits, else flipped above, else
+ * slid beside; always clamped INSIDE the stage (the stage clips: a menu item outside it could never be tapped).
+ */
+export function menuPlacement(ctrl: { left: number; top: number }, stage: { w: number; h: number }): { left: number; top: number } {
+  const below = CTRL + 4, above = -MENU_H - 4;
+  let top = ctrl.top + below + MENU_H <= stage.h - 4 ? below : ctrl.top + above >= 4 ? above : 0;
+  top = clamp(top, 4 - ctrl.top, stage.h - 4 - MENU_H - ctrl.top);
+  // a menu beside the control when it cannot sit below or above (a very short tray)
+  const beside = top !== below && top !== above;
+  let left = beside ? (ctrl.left - MENU_W - 4 >= 4 ? -MENU_W - 4 : CTRL + 4) : CTRL - MENU_W;
+  left = clamp(left, 4 - ctrl.left, stage.w - 4 - MENU_W - ctrl.left);
+  return { left: Math.round(left), top: Math.round(top) };
+}
+let mounts = 0;
 
 function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(() => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -54,6 +72,7 @@ function useReducedMotion(): boolean {
 function useAreaFit(design: { w: number; h: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState<StageFit | null>(null);
+  const [avail, setAvail] = useState<{ w: number; h: number } | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -61,6 +80,7 @@ function useAreaFit(design: { w: number; h: number }) {
       const r = el.getBoundingClientRect();
       const next = fitStage({ w: r.width, h: r.height }, design, { inset: STAGE_INSET, maxScale: MAX_SCALE });
       setFit((prev) => (prev && prev.w === next.w && prev.h === next.h && prev.x === next.x && prev.y === next.y ? prev : next));
+      setAvail((prev) => (prev && prev.w === Math.round(r.width) && prev.h === Math.round(r.height) ? prev : { w: Math.round(r.width), h: Math.round(r.height) }));
     };
     measure();
     if (typeof ResizeObserver !== "function") return;
@@ -68,7 +88,7 @@ function useAreaFit(design: { w: number; h: number }) {
     ro.observe(el);
     return () => ro.disconnect();
   }, [design.w, design.h]);
-  return { ref, fit };
+  return { ref, fit, avail };
 }
 
 /** The phase the stage draws for a tray state. */
@@ -97,11 +117,15 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const [epoch, setEpoch] = useState(0);
   const [menu, setMenu] = useState(false);
   const [gone, setGone] = useState(false);
+  // one key per stage MOUNT (and per "Show me again" epoch): the host restarts its bookkeeping when the activity on the
+  // child's screen restarts (a remount after the Director took the tray, a reload, a reconnect)
+  const mountId = useRef<string>("");
+  if (!mountId.current) mountId.current = `${Date.now().toString(36)}${(++mounts).toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
   useEffect(() => { setSwap(null); setEpoch(0); setMenu(false); setGone(false); }, [slot.slotId]);
   const artifact: StudioArtifact | undefined = gone ? undefined : swap ?? slot.artifact;
   const design = useMemo(() => validStage(artifact?.stage ?? (artifact?.kind === "whiteboard" ? artifact.script.board : undefined), STAGE_DEFAULT),
     [artifact]);
-  const { ref, fit } = useAreaFit(design);
+  const { ref, fit, avail } = useAreaFit(design);
   const reducedMotion = useReducedMotion();
   const state = swap ? "fallback_shown" : slot.state;
   const phase = phaseOf(state, !!artifact);
@@ -114,13 +138,14 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const latest = useRef(onEvent);
   latest.current = onEvent;
   const emit = useCallback((e: StudioStageEvent) => {
-    latest.current?.(e);
+    // a renderer's own "answer" is only the child's claim: the lesson hears the HOST's verdict ("graded", below)
+    if (e.type !== "answer" && e.type !== "graded") latest.current?.(e);
     // a frame that cannot run becomes the skeleton-as-activity, quietly (LIVE-STUDIO §4.4)
     if (e.type === "error" && artifact?.kind === "frame") {
       const local = skeletonFor(artifact);
       if (local) setSwap(local);
       if (lessonId && slot.intentId) {
-        void studioApi.frameError(lessonId, slot.intentId).then((r) => {
+        void studioApi.frameError(lessonId, slot.intentId, e.reason ?? "runtime").then((r) => {
           const next = r?.slot?.artifact ?? null;
           if (!local && next?.kind === "skeleton") setSwap(next);
         });
@@ -130,10 +155,14 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
 
   const moment: StageMoment = useMemo(() => ({
     interactive, epoch,
-    answer: async (value: unknown) => {
+    answer: async (value: unknown, opts?: { itemId?: string }) => {
       if (!lessonId || !slot.intentId) return null;
-      latest.current?.({ type: "answer", value });
-      return studioApi.answer(lessonId, slot.intentId, value);
+      const r = await studioApi.answer(lessonId, slot.intentId, value, { ...(opts?.itemId ? { itemId: opts.itemId } : {}), mount: `${mountId.current}.${epoch}` });
+      // the server no longer has the piece on screen: the calm ground, never a Check button that cannot answer
+      if (r === "gone") { setGone(true); return null; }
+      if (r) latest.current?.({ type: "graded", correct: !!r.correct, complete: !!r.complete, ...(r.alreadyClosed ? { alreadyClosed: true } : {}),
+        ...(typeof r.wrongTries === "number" ? { wrongTries: r.wrongTries } : {}) });
+      return r;
     },
   }), [interactive, epoch, lessonId, slot.intentId]);
 
@@ -149,6 +178,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const controls = !!artifact && artifact.kind !== "whiteboard" && interactive && !!lessonId;
   // the corner control sits outside the box when the stage has room beside it (tablet / desktop), else on its corner
   const ctrlStyle = fit ? (fit.x >= CTRL + 8 ? { left: fit.x + fit.w + 4, top: fit.y } : { left: fit.x + fit.w - CTRL - 4, top: fit.y + 4 }) : undefined;
+  const menuStyle = ctrlStyle && avail ? menuPlacement(ctrlStyle, avail) : undefined;
   return (
     <div ref={ref} className={`st-stage${reducedMotion ? " is-still" : ""}`} data-testid="studio-stage" data-state={state} data-phase={phase} data-kind={artifact?.kind}>
       <div className={`st-box st-${phase}`} data-testid="studio-box"
@@ -176,7 +206,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
             <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="2" /><circle cx="10" cy="10" r="2" /><circle cx="16" cy="10" r="2" /></svg>
           </button>
           {menu && (
-            <div className="st-menu" role="menu">
+            <div className="st-menu" role="menu" data-testid="studio-menu" style={menuStyle}>
               <button type="button" role="menuitem" onClick={again} data-testid="studio-again">{tw2h("again")}</button>
               <button type="button" role="menuitem" onClick={notThis} data-testid="studio-notthis">{tw2h("notThis")}</button>
             </div>

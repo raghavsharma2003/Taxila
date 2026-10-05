@@ -6,10 +6,28 @@
 //      words), exactly one accepted move, the lane recorded (needs TAXILA_DB_URL / the Neon test branch for a local run;
 //      without a DB url these checks WARN, never pass);
 //   4. W2E_DRILL=1: the server under test was started with a classify deployment that does not exist (the failure drill):
-//      every turn still answers with her words and no error reaches the child (the classify fallback, L5).
+//      every turn still answers with her words and no error reaches the child (the classify fallback, L5);
+//   5. (W2-E fixer) the owner-priority paths: a Studio reveal always carries its slot (ui.studioSlot, tray "studio"); on an
+//      explain turn the trace shows the live board's slot or a code for why not; the comprehension trail (one cls.*, one
+//      cls_source.*, one verdict.* matching the child's screen); a true goodbye ends the lesson that turn with
+//      release.goodbye in the trace; a bare stop phrase gets ONE check-in (asserted once W2-C's stop check is live:
+//      W2E_STOP_CHECK=1, or a local tree whose state.js has it; otherwise WARN).
 // Timing gates are NOT here: they run from the Central India probe fleet (BUILD-PLAN §1.7). The server ms is reported.
 // Deletes its test account in a finally (lib.mjs withTestAccount).
+import { readFileSync } from "node:fs";
 import { withTestAccount, runLesson, dbq, ok, warn, done, isLocal } from "./lib.mjs";
+
+const EXPLAIN_MOVES = new Set(["explain", "worked_example", "reteach", "recap"]);
+const STOP_CHECK = process.env.W2E_STOP_CHECK === "1"
+  || (isLocal && readFileSync(new URL("../../server/director/state.js", import.meta.url), "utf8").includes("stopAsked"));
+const arr = (v) => (Array.isArray(v) ? v : JSON.parse(v ?? "[]"));
+/** A second (third…) child on the test account, with consent and open hours: one release scenario per child-day. */
+async function newChild(api, firstName) {
+  const { child } = await api("POST", "/api/children", { firstName, classLevel: 5, languagePref: "hinglish", interests: ["cricket"] });
+  await api("POST", "/api/consent", { childId: child.id, grants: { core_tutoring: true, learning_profile: true, memory: true } });
+  await api("POST", "/api/parent/controls", { childId: child.id, hoursStart: "00:00", hoursEnd: "23:59", dailyMinutes: 120 });
+  return child;
+}
 
 const DISPLAYS = new Set(["delight", "warm_pride", "enthusiasm", "gentle_concern", "playful", "calm_curious", "sheepish_own", "neutral_warm", "calm_steady"]);
 const BEATS = new Set(["arrive", "warmup", "hook", "explain", "worked_example", "contrast", "practice_set", "probe", "explore_question", "teachback", "reflect", "recap", "wrap", "break", "safeguard"]);
@@ -51,6 +69,12 @@ await withTestAccount(async ({ api, child }) => {
   ok(bad.length === 0, `every turn's Moment and beat have their contract shape${bad.length ? `: ${bad.slice(0, 4).join("; ")}` : ""}`);
   const beats = [...new Set(t.turns.map((x) => x.ui?.beat?.beatId))];
   ok(beats.length >= 2, `the beat moves through the lesson (${beats.join(" → ")})`);
+  // the blocker (W2-E fixer): a Studio reveal never reaches the response without its slot in the tray
+  const revealNoSlot = t.turns.filter((x) => x.studio?.reveal && !(x.ui?.studioSlot?.intentId === x.studio.reveal && x.ui?.tray === "studio"));
+  ok(revealNoSlot.length === 0, `every Studio reveal carries its slot in the tray (${t.turns.filter((x) => x.studio?.reveal).length} reveals)`);
+  ok(t.turns.every((x) => !x.ui?.studioSlot || x.ui.tray === "studio"), "a studio slot always owns the tray");
+  const boards = t.turns.filter((x) => x.ui?.studioSlot && !x.studio?.reveal);
+  warn(`live-board slots on this lesson: ${boards.length} (${boards.map((x) => x.ui.studioSlot.state).join(", ") || "none"})`);
   const ms = t.turns.map((x) => x.ms).sort((a, b) => a - b);
   warn(`text turn round trip from this machine (not a gate): p50 ${ms[Math.floor(ms.length / 2)]} ms, max ${ms.at(-1)} ms, n=${ms.length}`);
 
@@ -86,6 +110,39 @@ await withTestAccount(async ({ api, child }) => {
       ok(!!sgRow && (Array.isArray(sgRow.accepted) ? sgRow.accepted : JSON.parse(sgRow.accepted)).every((p) => p.source === "safety"), "on the safeguarding turn only the safety floor is accepted");
     }
   }
+  // (W2-E fixer) the comprehension trail and the live board, from the rows alone
+  if (rows) {
+    const trail = rows.map((r, i) => {
+      const reasons = r.reasons, ui = t.turns[i]?.ui ?? {};
+      const cls = reasons.filter((x) => x.startsWith("cls.")), src = reasons.filter((x) => x.startsWith("cls_source.")), v = reasons.filter((x) => x.startsWith("verdict."));
+      return cls.length === 1 && src.length === 1 && v.length === 1 && v[0] === `verdict.${ui.verdict ?? "ungraded"}` ? null : `turn ${r.turn}: ${[...cls, ...src, ...v].join(",")} vs ui ${ui.verdict}`;
+    }).filter(Boolean);
+    ok(trail.length === 0, `each row carries one cls.*, one cls_source.* and the verdict the child saw${trail.length ? `: ${trail.slice(0, 3).join("; ")}` : ""}`);
+    const explainRows = rows.filter((r) => EXPLAIN_MOVES.has(r.move));
+    const unexplained = explainRows.filter((r) => !r.reasons.includes("studio.whiteboard_slot") && !r.reasons.some((x) => /^(studio_rejected|over_budget|conflict)\./.test(x)));
+    ok(explainRows.length > 0 && unexplained.length === 0, `on every explain turn the trace shows the live board's slot or why not (${explainRows.map((r) => r.reasons.find((x) => x === "studio.whiteboard_slot" || /^(studio_rejected|over_budget)\./.test(x))).join(", ")})`);
+    const graded = rows.filter((r, i) => t.turns[i]?.ui?.verdict);
+    const ids = await dbq("select count(*)::int as n from information_schema.columns where table_name = 'brain_trace' and column_name = 'item_id'").catch(() => null);
+    if (ids?.[0]?.n) {
+      const named = await dbq("select turn, item_id from brain_trace where lesson_id = $1 order by turn", [t.start.lessonId]);
+      ok(graded.every((r) => named.find((x) => x.turn === r.turn)?.item_id), `every graded turn names its kit item (${graded.length} graded)`);
+    } else warn("brain_trace.item_id not on this database yet (016 fixer columns)");
+  }
+
+  // (W2-E fixer) G-AUTHORITY end to end: a true goodbye ends the lesson that turn; a bare stop gets one check-in
+  const kid2 = await newChild(api, "Kabir");
+  const g = await runLesson(api, kid2.id, { mode: "text", lines: ["haan ready", "bye didi, mummy bula rahi hai", "aur ek baat"] });
+  const gl = g.turns.at(-1);
+  ok(g.turns.length === 2 && gl?.end === true && gl?.move?.kind === "wrap", `a true goodbye ends the lesson that turn (${g.turns.map((x) => x.move?.kind).join(", ")})`);
+  const gRows = await dbq("select turn, reasons from brain_trace where lesson_id = $1 order by turn", [g.start.lessonId]).catch(() => null);
+  if (gRows) ok(gRows.at(-1)?.reasons?.some((x) => x === "release.goodbye" || x === "release.goodbye_wrap"), `the goodbye turn is traced as a release (${gRows.at(-1)?.reasons?.filter((x) => x.startsWith("release.")).join(",")})`);
+  const kid3 = await newChild(api, "Meera");
+  const st = await runLesson(api, kid3.id, { mode: "text", lines: ["haan", "ab band karo"], end: true });
+  const sl = st.turns.at(-1);
+  const checkIn = sl?.move?.kind === "break" && !sl?.end && (sl?.ui?.chips ?? []).some((c) => c.id === "stop:end");
+  if (STOP_CHECK) ok(checkIn, `a bare stop phrase gets ONE check-in, not the end (${sl?.move?.kind}${sl?.end ? "/end" : ""})`);
+  else warn(`stop phrase → ${sl?.move?.kind}${sl?.end ? "/end" : ""} (the single check-in waits for W2-C's stop check: set W2E_STOP_CHECK=1 once it is live)`);
+
   if (DRILL) ok(t.turns.every((x) => x.teacherReply && !/error/i.test(x.teacherReply)), "failure drill: the classify deployment is gone, the lesson goes on");
 }, { tag: "w2e" });
 done();
