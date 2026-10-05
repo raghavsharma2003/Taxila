@@ -15,7 +15,12 @@ import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent }
 import { getJson, postJson, ApiError } from "../../lesson/api.ts";
 import { eligibleTutors, tutorById, type TutorCharacter } from "../../../shared/tutors.js";
 import { Plate2D } from "../Plate2D.tsx";
-import { TutorFace } from "../TutorFace.tsx";
+// V4 patch 06 (Review v4): the face the child picks is the face that teaches. Where the puppet IS the tutor (Asha) and
+// face.puppet2d is on, the picker shows the style-C puppet (live when selected, its rest poster on the tiles); every
+// other tutor keeps TutorFace / Plate2D exactly as before.
+import { LessonFace as TutorFace } from "../../face-puppet/LessonFace.tsx";
+import { PuppetFace, PUPPET_TUTORS } from "../../face-puppet/PuppetFace.tsx";
+import { puppet2dEnabled } from "../../face-puppet/flag.ts";
 import { p, role } from "./copy.ts";
 import "../avatar.css";
 
@@ -176,6 +181,8 @@ export function TutorPicker(props: TutorPickerProps) {
               <div className="tx-tile-portrait">
                 {on && !reducedMotion ? (
                   <TutorFace tutorId={tu.id} band={band} status="your_turn" teacher={[]} reducedMotion={reducedMotion} framing="medium" lang={lang} />
+                ) : PUPPET_TUTORS.has(tu.id) && puppet2dEnabled() ? (
+                  <PuppetFace tutorId={tu.id} band={band} status={null} teacher={[]} still framing="medium" lang={lang} className="tx-tutorface-plate" />
                 ) : (
                   <Plate2D tutor={tu} still reducedMotion={reducedMotion} className="tx-tutorface-plate" lang={lang} />
                 )}

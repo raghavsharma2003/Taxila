@@ -6,6 +6,10 @@ import "./v3.css";
 import { prefersReducedMotion } from "./motion.ts";
 import { ToastRegion } from "./Toast.tsx";
 import type { ThemeName } from "./tokens.ts";
+import { installPuppetFace } from "../face-puppet/adapter.tsx";
+
+// V4: every FaceSlot shows the style-C 2D puppet (face.puppet2d, default on; a tutor the puppet is not keeps inHouseFace)
+installPuppetFace();
 
 interface V3Ctx {
   theme: ThemeName;

@@ -10,7 +10,8 @@
 //  - label="none":  only when the caller prints the label itself.
 // The 3D canvas is aria-hidden behind the role="img" host (TutorFace), and her state is exposed through the dock.
 import type { CSSProperties } from "react";
-import { TutorFace } from "../../avatar/TutorFace.tsx";
+// V4 (face.puppet2d, default on): the style-C 2D puppet where the puppet is the tutor; TutorFace otherwise.
+import { LessonFace as TutorFace } from "../../face-puppet/LessonFace.tsx";
 import type { Emotion, FloorStatus } from "../../avatar/behaviour.ts";
 import type { FaceTier } from "../../avatar/tier.ts";
 import type { TapSource } from "../../avatar/tap.ts";
