@@ -9794,7 +9794,22 @@ function Ae(e) {
 		return t || k.set(e, t = ke++), t;
 	}).join(",");
 }
-function je(e) {
+var je = 1500, Me = null;
+function Ne(e, t) {
+	Me && (window.clearTimeout(Me.timer), Me.stage.dispose()), e.stop(), e.canvas.remove(), Me = {
+		stage: e,
+		key: t,
+		timer: window.setTimeout(() => {
+			Me?.stage === e && (Me = null), e.dispose();
+		}, je)
+	};
+}
+function Pe(e) {
+	if (!Me || Me.key !== e || !Me.stage.isRevealed) return null;
+	let t = Me.stage;
+	return window.clearTimeout(Me.timer), Me = null, t;
+}
+function Fe(e) {
 	let t = be(e.tutorId, e.band), n = `${t.displayName.roman}, ${T("aiTeacher", e.lang ?? "english")}`, r = (0, C.useRef)(null), i = (0, C.useRef)(null), [a, o] = (0, C.useState)(Oe ? "fallback" : "poster"), s = (0, C.useRef)({
 		status: e.status,
 		mic: e.mic,
@@ -9810,31 +9825,36 @@ function je(e) {
 	let l = (0, C.useRef)(!1), u = Ae(e.teacher), d = (0, C.useMemo)(() => e.teacher, [u]);
 	return (0, C.useEffect)(() => {
 		if (e.still || a === "fallback" || !r.current) return;
-		let n = !1, u = 0, f = r.current, p = (e) => {
-			n || (Oe = e, c.current?.({
+		let n = !1, f = 0, p = !1, m = r.current, h = `${t.id}|${e.band}|${u}`, g = (e) => {
+			n || (p = !0, Oe = e, c.current?.({
 				type: "fallback",
 				reason: e
 			}), i.current?.dispose(), i.current = null, o(l.current ? "held" : "fallback"));
-		};
-		return import("./stage-CgbIDCCN.js").then(async ({ PuppetStage: r }) => {
+		}, _ = (e) => {
+			c.current?.(e), !n && (e.type === "reveal" ? (l.current = !0, o("live")) : e.type === "fallback" && g(e.reason));
+		}, v = () => {
+			n = !0, window.clearInterval(f);
+			let e = i.current;
+			i.current = null, e && !p && e.isRevealed ? Ne(e, h) : e?.dispose();
+		}, y = Pe(h);
+		return y ? (y.attach(m, e.framing ?? "medium", _), i.current = y, y.set({
+			status: s.current.status,
+			reducedMotion: s.current.reducedMotion
+		}), y.start(), l.current = !0, o("live"), f = window.setInterval(() => y.set({ childLevel: s.current.mic?.value ?? 0 }), 50), v) : (import("./stage-BLhXGfLv.js").then(async ({ PuppetStage: r }) => {
 			if (n) return;
-			let a = new r(f, {
+			let a = new r(m, {
 				band: e.band,
 				sources: d,
 				framing: e.framing ?? "medium",
 				reducedMotion: s.current.reducedMotion,
 				seed: [...t.id].reduce((e, t) => e + t.charCodeAt(0), 0),
-				onEvent: (e) => {
-					c.current?.(e), !n && (e.type === "reveal" ? (l.current = !0, o("live")) : e.type === "fallback" && p(e.reason));
-				}
+				onEvent: _
 			});
 			i.current = a, await a.init(), !n && (a.set({
 				status: s.current.status,
 				reducedMotion: s.current.reducedMotion
-			}), a.start(), u = window.setInterval(() => a.set({ childLevel: s.current.mic?.value ?? 0 }), 50), typeof location < "u" && /[?&]facerig=1/.test(location.search) && (window.__puppet = a));
-		}).catch((e) => p(`puppet failed: ${String(e).slice(0, 160)}`)), () => {
-			n = !0, window.clearInterval(u), i.current?.dispose(), i.current = null;
-		};
+			}), a.start(), f = window.setInterval(() => a.set({ childLevel: s.current.mic?.value ?? 0 }), 50), typeof location < "u" && /[?&]facerig=1/.test(location.search) && (window.__puppet = a));
+		}).catch((e) => g(`puppet failed: ${String(e).slice(0, 160)}`)), v);
 	}, [
 		e.still,
 		t.id,
@@ -9899,7 +9919,7 @@ function je(e) {
 }
 //#endregion
 //#region evals/face-puppet/rerender/app.tsx
-var Me = { level: () => 0 }, Ne = window.H = {
+var Ie = { level: () => 0 }, Le = window.H = {
 	loaded: 0,
 	reveal: 0,
 	canvases: 0,
@@ -9909,18 +9929,18 @@ var Me = { level: () => 0 }, Ne = window.H = {
 };
 new MutationObserver((e) => {
 	for (let t of e) t.addedNodes.forEach((e) => {
-		e.classList?.contains("fp-canvas") && Ne.canvases++;
+		e.classList?.contains("fp-canvas") && Le.canvases++;
 	});
 }).observe(document.body, {
 	childList: !0,
 	subtree: !0
 });
-function Pe() {
+function Re() {
 	let [e, t] = (0, C.useState)(0);
-	return Ne.renders = e, (0, C.useEffect)(() => {
+	return Le.renders = e, (0, C.useEffect)(() => {
 		if (e >= 12) {
 			setTimeout(() => {
-				Ne.done = !0;
+				Le.done = !0;
 			}, 4e3);
 			return;
 		}
@@ -9931,16 +9951,16 @@ function Pe() {
 			width: 360,
 			height: 360
 		},
-		children: /* @__PURE__ */ (0, E.jsx)(je, {
+		children: /* @__PURE__ */ (0, E.jsx)(Fe, {
 			tutorId: "asha",
 			band: "b2",
 			status: e % 2 ? "speaking" : "idle",
-			teacher: [Me],
+			teacher: [Ie],
 			onEvent: (e) => {
-				Ne.events.push(e.type), e.type === "loaded" && Ne.loaded++, e.type === "reveal" && Ne.reveal++;
+				Le.events.push(e.type), e.type === "loaded" && Le.loaded++, e.type === "reveal" && Le.reveal++;
 			}
 		})
 	});
 }
-(0, w.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, E.jsx)(Pe, {}));
+(0, w.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ (0, E.jsx)(Re, {}));
 //#endregion

@@ -1,0 +1,327 @@
+--- /dev/null
++++ b/server/grading/spoken-number.js	2026-10-05 10:57:22.802614598 +0000
+@@ -0,0 +1,164 @@
++// ONE reader for a number a child writes or says (VALUES-100 V1.1). Before this, five graders each had their own
++// (placement/grade.js parseNumber, comprehension/grade/numbers.js numbersIn, director/classify.js norm, owner-truth
++// patch 01 numericOf, forge/kitmath.js parseValue), and the grading-truth battery found each one wrong in its own way:
++// "three hundred." read as 3, "ek sau pandrah" as 100, "minus 3" as 3, "-1250" as 1250, "point five" as 5, "three
++// quarters" as 3 (evals/grading-truth, 2026-10-05). The rule here: return a value only when EVERY number word in the
++// reply composes into exactly one number; anything unreadable or ambiguous is null (the grader abstains, a re-ask),
++// never a different number.
++//
++// Reads: Latin and Devanagari digits; Indian (3,45,000) and international (345,000) grouping; decimals ("2.5", ".5",
++// "two point five"); fractions ("3/4", "3 by 4", "3 upon 4", "teen bata chaar", "three fourths", "three quarters",
++// "ek tihai", "teen chauthai"), mixed numbers ("1 1/2"), Hindi fraction words (aadha, dedh, dhai, sawa / saade / paune +
++// a number); English number words (international and lakh / crore); Roman-Hindi 1-99 with common spellings, sau, hazaar,
++// lakh, crore; Devanagari number words 1-100; a digit times a scale word ("3 lakh"); a sign word (minus, negative) or "-".
++// Filler and unit words are ignored; a hedge ("12 ya 13"), two different numbers, or an unknown word INSIDE a number
++// phrase is null. Pure.
++
++const EN1 = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
++  "sixteen", "seventeen", "eighteen", "nineteen"];
++const EN10 = { twenty: 20, thirty: 30, forty: 40, fourty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
++const HI99 = ("ek do teen chaar paanch chhah saat aath nau das gyaarah baarah terah chaudah pandrah solah satrah athaarah unnees bees ikkees baais teis chaubees " +
++  "pachchees chhabbees sattaees atthaees untees tees iktees battees taintees chauntees paintees chhattees saintees adtees untaalees chaalees iktaalees bayaalees " +
++  "taintaalees chavaalees paintaalees chhiyaalees saintaalees adtaalees unchaas pachaas ikyaavan baavan tirpan chauvan pachpan chhappan sattaavan atthaavan unsath " +
++  "saath iksath baasath tirsath chausath painsath chhiyaasath sadsath adsath unhattar sattar ikhattar bahattar tihattar chauhattar pachhattar chhihattar satattar " +
++  "athattar unaasi assi ikyaasi bayaasi tiraasi chauraasi pachaasi chhiyaasi sattaasi athaasi navaasi nabbe ikyaanve baanve tiraanve chauraanve pachaanve " +
++  "chhiyaanve sattaanve atthaanve ninyaanve").split(" ");
++/** Folded spelling: doubled vowels collapse, so "chaar"/"char" and "pachaas"/"pachas" meet; other variants are listed. */
++// (no aspirate folding: "saat" 7 and "saath" 60 differ only by it)
++const fold = (w) => w.replace(/aa/g, "a").replace(/ee|ii/g, "i").replace(/oo|uu/g, "u").replace(/w/g, "v");
++const HI = new Map();
++HI99.forEach((w, i) => HI.set(fold(w), i + 1));
++for (const [w, n] of Object.entries({ chhe: 6, che: 6, chah: 6, chheh: 6, chhah: 6, cheh: 6, panch: 5, paach: 5, unnis: 19, unis: 19, ikkis: 21, pachchis: 25, pachis: 25, chabbis: 26, chalis: 40, pachas: 50,
++  nabbe: 90, navve: 90, sath: 60, sau: 100 })) if (!HI.has(fold(w))) HI.set(fold(w), n);
++const DEV = { "शून्य": 0, "एक": 1, "दो": 2, "तीन": 3, "चार": 4, "पाँच": 5, "पांच": 5, "छह": 6, "छः": 6, "सात": 7, "आठ": 8, "नौ": 9, "दस": 10, "ग्यारह": 11, "बारह": 12, "तेरह": 13,
++  "चौदह": 14, "पंद्रह": 15, "सोलह": 16, "सत्रह": 17, "अठारह": 18, "उन्नीस": 19, "बीस": 20, "पच्चीस": 25, "तीस": 30, "चालीस": 40, "पचास": 50, "साठ": 60, "सत्तर": 70,
++  "अस्सी": 80, "नब्बे": 90 };
++const SCALE = { hundred: 100, sau: 100, "सौ": 100, thousand: 1000, hazaar: 1000, hazar: 1000, hajar: 1000, "हज़ार": 1000, "हजार": 1000, lakh: 1e5, lac: 1e5, lakhs: 1e5,
++  "लाख": 1e5, crore: 1e7, karod: 1e7, crores: 1e7, "करोड़": 1e7, million: 1e6 };
++const DEN = { half: 2, halves: 2, third: 3, thirds: 3, fourth: 4, fourths: 4, quarter: 4, quarters: 4, fifth: 5, fifths: 5, sixth: 6, sixths: 6, seventh: 7, sevenths: 7,
++  eighth: 8, eighths: 8, ninth: 9, ninths: 9, tenth: 10, tenths: 10, twelfth: 12, twelfths: 12, chauthai: 4, tihai: 3 };
++const SPECIAL = { half: 0.5, aadha: 0.5, adha: 0.5, aadhi: 0.5, "आधा": 0.5, dedh: 1.5, derh: 1.5, "डेढ़": 1.5, dhai: 2.5, dhaai: 2.5, "ढाई": 2.5 };
++const PREFIX = { sawa: 0.25, savva: 0.25, saade: 0.5, sade: 0.5, saadhe: 0.5, sadhe: 0.5, paune: -0.25 };
++const SIGN = new Set(["minus", "negative", "ऋण"]);
++const JOIN = new Set(["and", "aur"]);
++const OVER = new Set(["by", "upon", "bata", "over"]);
++/** "do" and "no" are English words too: a number only next to another number word. */
++const WEAK = new Set(["do", "no", "das", "saath", "tees", "bees"]);
++
++function wordNum(w) {
++  if (EN1.includes(w)) return { v: EN1.indexOf(w), k: "unit" };
++  if (w in EN10) return { v: EN10[w], k: "tens" };
++  if (w in DEV) return { v: DEV[w], k: "unit" };
++  const h = HI.get(fold(w));
++  if (h != null && h !== 100) return { v: h, k: "unit", hi: true };
++  return null;
++}
++
++/**
++ * The one number a reply gives, or null.
++ * @param {unknown} raw @returns {number | null}
++ */
++export function spokenNumber(raw) {
++  const ph = numberPhrases(raw);
++  if (!ph) return null;
++  const distinct = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
++  return distinct.length === 1 ? distinct[0] : null;
++}
++
++/** A key that IS a number (an optional ₹ / Rs and a unit of up to three words around it): its value, else null. */
++export function plainNumberKey(answer) {
++  const s = String(answer ?? "").trim().replace(/^(?:₹|rs\.?)\s*/i, "").replace(/\s*(?:[\p{L}°²³%][\p{L}°²³%.]*\s*){0,3}$/u, "").trim();
++  if (!/^-?(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?$|^\d+\s*\/\s*\d+$|^\d+\s+\d+\s*\/\s*\d+$/.test(s)) return null;
++  return spokenNumber(s);
++}
++
++/**
++ * Every number phrase in a reply, in order (a self-correction or a hedge gives two), or null when a number phrase cannot
++ * be read (an unknown word inside it, two units in a row, a zero denominator).
++ * @param {unknown} raw @returns {number[] | null}
++ */
++export function numberPhrases(raw) {
++  let s = String(raw ?? "").toLowerCase().normalize("NFC").replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
++    .replace(/[−–—]/g, "-").replace(/₹|\brs\.?|\brupees?\b|\brupaye\b/g, " ")
++    .replace(/(?<=\d),(?=\d)/g, "").replace(/(\p{L})-(?=\p{L})/gu, "$1 ");
++  // digit fractions and mixed numbers first ("1 1/2", "3/4", "3 by 4", "3 upon 4"), then decimals
++  s = s.replace(/(\d+)\s+(\d+)\s*\/\s*(\d+)/g, (_, w, n, d) => (+d ? ` #${+w + +n / +d}# ` : " #NaN# "))
++    .replace(/(-?\d+(?:\.\d+)?)\s*(?:\/|\bby\b|\bupon\b|\bbata\b)\s*(\d+(?:\.\d+)?)/g, (_, n, d) => (+d ? ` #${+n / +d}# ` : " #NaN# "));
++  const toks = s.split(/[^\p{L}\p{M}\p{N}#.\-]+/u).map((t) => t.replace(/^[.\-]+(?=\D)|[.\-]+$/g, "").replace(/^\.(?=\d)/, "0.")).filter(Boolean);
++  const phrases = [];   // each: number
++  let cur = null;        // { total, part, last, sign, prefix, num }
++  const open = () => (cur ??= { total: 0, part: null, last: null, sign: 1, prefix: 0, num: null, words: 0 });
++  const close = () => {
++    if (!cur) return true;
++    if (cur.part === null && !cur.total && !cur.prefix) { cur = null; return true; }
++    let v = cur.total + (cur.part ?? 0) + cur.prefix;
++    if (cur.num !== null) { if (!v) return false; v = cur.num / v; }
++    phrases.push(cur.sign * v);
++    cur = null;
++    return true;
++  };
++  for (let i = 0; i < toks.length; i++) {
++    const t = toks[i], next = toks[i + 1];
++    let m;
++    if ((m = /^#(.+)#$/.exec(t))) { if (!close()) return null; if (m[1] === "NaN") return null; phrases.push(Number(m[1])); continue; }
++    if (/^-?\d+(?:\.\d+)?$/.test(t)) {
++      const neg = t.startsWith("-");
++      const v = Math.abs(Number(t));
++      if (cur && cur.part === null && !cur.total && (cur.sign === -1 || cur.prefix)) { cur.part = v; if (neg) cur.sign = -1; continue; }
++      if (!close()) return null;
++      open(); cur.part = v; cur.last = "digits"; if (neg) cur.sign = -1;
++      if (!(next && next in SCALE)) { if (!close()) return null; }
++      continue;
++    }
++    if (SIGN.has(t) && next && (/^\d/.test(next) || wordNum(next) || next in SPECIAL)) { if (!close()) return null; open(); cur.sign = -1; continue; }
++    if (t === "point" && next) {
++      const digits = [];
++      let j = i + 1;
++      for (; j < toks.length; j++) { const w = wordNum(toks[j]); if (w && w.v <= 9 && w.k === "unit" && !w.hi) digits.push(w.v); else if (/^\d$/.test(toks[j])) digits.push(+toks[j]); else break; }
++      if (!digits.length) return null;
++      open();
++      cur.part = (cur.part ?? 0) + Number(`0.${digits.join("")}`);
++      i = j - 1; if (!close()) return null;
++      continue;
++    }
++    if (t in PREFIX) { if (!close()) return null; open(); cur.prefix = PREFIX[t]; continue; }
++    if (t in SPECIAL && !(t === "half" && cur && cur.part !== null)) { if (!close()) return null; phrases.push(SPECIAL[t]); continue; }
++    if (cur && t in DEN && cur.part !== null && cur.num === null) {           // "three fourths", "teen chauthai", "one half"
++      const n = cur.total + cur.part; cur = null; phrases.push(n / DEN[t]); continue;
++    }
++    if (cur && OVER.has(t) && cur.part !== null && next && (wordNum(next) || /^\d/.test(next))) { cur.num = cur.total + cur.part; cur.total = 0; cur.part = null; cur.last = null; continue; }
++    if (t in SCALE) {
++      open();
++      const mult = SCALE[t];
++      if (mult === 100) { cur.part = ((cur.part ?? 0) || 1) * 100 + (cur.prefix ? cur.prefix * 100 : 0); cur.prefix = 0; cur.last = "hundred"; }
++      else { cur.total += (((cur.part ?? 0) || 1) + cur.prefix) * mult; cur.part = null; cur.prefix = 0; cur.last = "scale"; }
++      continue;
++    }
++    if (JOIN.has(t) && cur && cur.part !== null) continue;                   // "one hundred and twelve"
++    const w = wordNum(t);
++    if (w && !(WEAK.has(t) && !cur && !(next && (next in SCALE || wordNum(next) || next in DEN || OVER.has(next))) && toks.length > 2)) {
++      open();
++      if (w.k === "tens") { if (cur.last === "unit" || cur.last === "tens" || cur.last === "digits") return null; cur.part = (cur.last === "hundred" ? cur.part : 0) + w.v; cur.last = "tens"; continue; }
++      if (cur.last === "unit" || cur.last === "digits") return null;          // "two three", "teen chaar": not one number
++      if (cur.last === "tens") { if (w.v >= 10 || w.hi) return null; cur.part += w.v; cur.last = "unit"; continue; }
++      cur.part = (cur.last === "hundred" ? cur.part : 0) + w.v; cur.last = "unit";
++      continue;
++    }
++    // any other word ends a number phrase (a unit, a filler, an object name)
++    if (!close()) return null;
++  }
++  if (!close()) return null;
++  return phrases.every(Number.isFinite) ? phrases : null;
++}
++
++/** A child's self-correction ("47/21... nahi nahi, 47/20", "5, sorry, 6"): the number after the LAST correction marker,
++ * when exactly one number follows it and at least one came before; else null. */
++const MARK = /(?:^|[^\p{L}])(?:nahi|nahin|nhi|no|sorry|matlab|i mean|wait)(?![\p{L}])/giu;
++export function selfCorrected(raw) {
++  const s = String(raw ?? "");
++  let last = -1, m; MARK.lastIndex = 0;
++  while ((m = MARK.exec(s))) last = m.index + m[0].length;
++  if (last < 0) return null;
++  const before = numberPhrases(s.slice(0, last)), after = numberPhrases(s.slice(last));
++  return before?.length && after?.length === 1 ? after[0] : null;
++}
+--- /dev/null
++++ b/server/content/parts.js	2026-10-05 10:57:22.804513232 +0000
+@@ -0,0 +1,21 @@
++// Required answer parts per kit item (VALUES-100 V1.1 "multi-part keys are graded partial"). A kit key often carries a
++// reason or an example the question never asked for, so "is this key multi-part?" cannot be read off the key's commas:
++// owner-truth patch 04's multiPartKey called 97% (169/174) of two-rater-agreed SINGLE-part keys multi-part
++// (evals/grading-truth/data/parts-labels.json, 2026-10-05). The answer is data, authored once per item and adjudicated:
++//   { "<itemId>": { "parts": ["…", "…"], "acceptable": { "<entry>": "complete" | "partial" | "wrong" } } }
++// built by evals/grading-truth/label-parts.mjs (two raters from different model families; only agreed labels) plus a
++// human pass on every disagreement. An item with no row keeps today's behaviour (single-part, acceptable = complete).
++import { readFileSync, existsSync } from "node:fs";
++
++let cache = null;
++const FILE = () => process.env.TAXILA_PARTS_FILE || new URL("../../data/kits-parts.json", import.meta.url).pathname;
++function load() {
++  if (cache) return cache;
++  const f = FILE();
++  try { cache = existsSync(f) ? JSON.parse(readFileSync(f, "utf8")).items ?? {} : {}; } catch { cache = {}; }
++  return cache;
++}
++/** @returns {{ parts?: string[], acceptable?: Record<string, "complete"|"partial"|"wrong"> } | null} */
++export const partsOf = (itemId) => (itemId ? load()[itemId] ?? null : null);
++/** Tests only. */
++export const resetPartsCache = () => { cache = null; };
+--- a/server/director/classify.js	2026-10-05 10:57:22.798204354 +0000
++++ b/server/director/classify.js	2026-10-05 10:57:22.800163217 +0000
+@@ -8,6 +8,8 @@
+ import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
+ import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
+ import { INTEREST_IDS } from "../../shared/interests.js";
++import { partsOf } from "../content/parts.js";
++import { plainNumberKey, numberPhrases, selfCorrected } from "../grading/spoken-number.js";
+ import { requestOf, FLOW_REQUESTS } from "./requests.js";
+ 
+ // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
+@@ -101,12 +103,18 @@
+   if (s.pendingWhy === item.id) return { mode: "why", item, ideas, misconceptions: mis };
+   // "Show me choices" tiles offered for THIS item (state.js offerChoices): a tap on one is graded in code.
+   const offered = s.offered?.itemId === item.id && Array.isArray(s.offered.options) ? s.offered.options : undefined;
+-  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || multiPartKey(item.answer),
++  // multi-part only when the item's authored parts say so (server/content/parts.js), never from the key's punctuation
++  const pl = partsOf(item.id);
++  const parts = Array.isArray(pl?.parts) && pl.parts.length >= 2 ? pl.parts : null;
++  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || !!parts,
++    ...(parts ? { parts } : {}), ...(pl?.acceptable ? { alsoLabel: pl.acceptable } : {}),
+     ...(offered ? { offered } : {}) };
+ }
+ 
+ /** Exact-match form: canonical fractions, punctuation and trailing filler stripped. */
+-const norm = (s) => normAnswer(s).replace(/[.\-]+/g, " ").replace(/\s+/g, " ").trim();
++// A minus before a digit and a point between digits are part of the number (V1.1, evals/grading-truth: "-6" matched the
++// key "6" 424 times and "37 4" matched "37.4" 23 times in the deterministic path); any other dot or dash is punctuation.
++const norm = (s) => normAnswer(String(s ?? "").replace(/[−–]/g, "-")).replace(/(?<!\d)\.|\.(?!\d)/g, " ").replace(/(?<=[\p{L}\p{N}])-|-(?!\d)/gu, " ").replace(/\s+/g, " ").trim();
+ 
+ /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
+ function fromMatch(match, target) {
+@@ -136,7 +144,9 @@
+   if (target.mode === "none") return obj({ ...(tags.length ? { belief: { type: "string", enum: ["none", ...tags] } } : {}), ...flags });
+   const options = ["key", ...tags, ...(target.open ? ["partial"] : []), "other_wrong", "dont_know", "no_attempt"];
+   const reason = target.mode === "item" && target.ideas.length ? { reason: { type: "string", enum: ["none", "right", ...tags] } } : {};
+-  return obj({ match: { type: "string", enum: options }, ...reason, confidence: { type: "number" }, ...flags });
++  // the model says WHICH key parts the reply contains; code turns that into key / partial (a model never grades)
++  const partsField = target.parts ? { parts_present: { type: "array", items: { type: "string", enum: target.parts.map((_, i) => `p${i + 1}`) } } } : {};
++  return obj({ match: { type: "string", enum: options }, ...reason, ...partsField, confidence: { type: "number" }, ...flags });
+ }
+ 
+ function systemPrompt(target, classLevel) {
+@@ -158,17 +168,20 @@
+       target.mode === "why"
+         ? "- key: the reply gives a REASON that matches ANY of the KEY IDEAS, in any words or language (a child's simple version counts). A bare answer, a fraction's name or a repeat of the question is not a reason: other_wrong."
+         : target.open
+-          ? "- key: the reply gives ALL of the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
++          ? (target.parts ? "- key: the reply gives EVERY one of the KEY PARTS (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
++            : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.")
+           : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
+       "- mN: the reply's answer or reason is what misconception mN predicts.",
+-      target.open ? "- partial: part of the key is there but not all of it (one part of a key with several parts)." : "",
++      target.open ? (target.parts ? "- partial: some of the KEY PARTS are there but not all of them." : "- partial: part of the key idea is there but not all of it.") : "",
+       "- other_wrong: any other attempted answer.",
+       "- dont_know: says they don't know or are unsure, with no answer.",
+       "- no_attempt: not an answer to this question (greeting, chit-chat, a question back, unrelated talk).",
+       target.mode === "item" && target.ideas.length
+         ? "reason: if the reply ALSO gives a reason or explanation — 'right' if it matches a KEY IDEA, 'mN' if it is what misconception mN predicts; otherwise 'none'."
+         : "",
++      target.parts ? "parts_present: the KEY PARTS (p1, p2, ...) the reply actually contains, in any words or language." : "",
+       "confidence: 0-1, how sure you are of the label.",
++      "- a reply that names the key only to say it is NOT the answer ('X nahi', 'not X', 'X nahi hai') is other_wrong; a reply that gives two different answers without choosing one is no_attempt.",
+     ].filter(Boolean).join("\n"));
+   }
+   if (signalsOn()) base.push(SIGNALS_NOTE);
+@@ -185,7 +198,8 @@
+       "The teacher then asked how they knew / why it is right.", "KEY IDEAS:", ...target.ideas.map((e) => `- ${e}`));
+   } else if (target.mode === "item") {
+     lines.push(`QUESTION: ${target.item.prompt_en} | ${target.item.prompt_hi}`,
+-      `KEY: ${target.key}${target.also.length ? `; also counts as key: ${target.also.join("; ")}` : ""}`);
++      `KEY: ${target.key}${target.also.length ? `; also counts as key: ${target.also.filter((a) => !target.alsoLabel || target.alsoLabel[a] === "complete" || !target.alsoLabel[a]).join("; ")}` : ""}`);
++    if (target.parts) lines.push(`KEY PARTS (a complete answer has every one): ${target.parts.map((p, i) => `p${i + 1}: ${p}`).join(" | ")}`);
+     if (target.options?.length) lines.push("OPTIONS AS POSED:", ...target.options.map((o) => `"${o.text}" → ${optionTag(o, target)}`));
+     if (target.ideas.length) lines.push("KEY IDEAS (for a reason, if one is given):", ...target.ideas.map((e) => `- ${e}`));
+   }
+@@ -228,6 +242,10 @@
+   }
+   if (confidence < CONFIDENCE_MIN) return { outcome: "no_evidence", confidence, modelFlags };
+   const mapped = fromMatch(json?.match, target);
++  if (target.parts && (mapped.outcome === "correct" || mapped.outcome === "partial") && Array.isArray(json?.parts_present)) {
++    const got = new Set(json.parts_present.filter((p) => /^p\d+$/.test(p) && Number(p.slice(1)) <= target.parts.length));
++    mapped.outcome = got.size >= target.parts.length ? "correct" : got.size > 0 ? "partial" : mapped.outcome === "correct" ? "partial" : "partial";
++  }
+   if (mapped.outcome === "correct" && json?.reason && json.reason !== "none") {
+     const m = target.misconceptions.find((x) => x.tag === json.reason);
+     Object.assign(mapped, m ? { reason: "misconception", reasonMisconceptionId: m.id } : json.reason === "right" ? { reason: "right" } : {});
+@@ -444,10 +462,38 @@
+   }
+   if (target.mode === "item" && !other) {
+     const t = norm(text);
+-    if ([target.key, ...(target.also || [])].some((k) => k && norm(k) === t)) return done("correct", "exact");
++    if (target.key && norm(target.key) === t) return done("correct", "exact");
++    // an acceptable entry counts as the key only when it is a complete answer; one the parts data marks partial is
++    // partial, one it marks wrong is not credited (V1.1: 947 of 1,631 rater-agreed acceptable entries were partial)
++    const hit = (target.also || []).find((k) => k && norm(k) === t);
++    if (hit) {
++      const lab = target.alsoLabel?.[hit];
++      if (lab === "partial") return done("partial", "exact");
++      if (lab !== "wrong") return done("correct", "exact");
++    }
+     const opt = target.options?.find((o) => norm(o.text) === t);
+     if (opt) { const m = fromMatch(optionTag(opt, target), target); return done(m.outcome, "exact", m); }
+   }
++  // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
++  // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number
++  // that differs → the model still names a misconception, but may not call it the key (numericMismatch, applied in
++  // classify); two different numbers → no single answer, so no evidence (a re-ask: "which one?").
++  const kv = target.mode === "item" && !other ? plainNumberKey(target.key) : null;
++  // a denial ("not 5", "5 nahi") or a correction is read by the model, never by the value alone
++  const denies = /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|nope|galat|wrong|isn'?t)(?![\p{L}])/iu.test(text);
++  // a self-correction ("47/21... nahi nahi, 47/20") is the child's final answer: the number after the last correction
++  const fixed = kv != null ? selfCorrected(text) : null;
++  if (fixed != null) return Math.abs(fixed - kv) < 1e-9 ? done("correct", "number_selfcorrect") : { result: null, flags, text, numericMismatch: true };
++  if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
++    const ph = numberPhrases(text);
++    if (ph && ph.length) {
++      const vals = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
++      if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return done("correct", "number");
++      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
++      if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) < 1e-9 ? done("correct", "number_selfcorrect") : { result: null, flags, text, numericMismatch: true }; }
++      return { result: null, flags, text, numericMismatch: true };
++    }
++  }
+   // A bare "pata nahi" / "just tell me" (no number, a few words) needs no model to read.
+   if ((target.mode === "item" || target.mode === "why") && !/\d/.test(text)
+     && (read.dontKnow && read.words <= 4 || read.asksForAnswer && read.words <= 8)) return done("no_evidence", "lexical");
+@@ -520,6 +566,8 @@
+     effort: target.mode === "none" ? "none" : "low", maxTokens: target.mode === "none" ? 120 : 900, timeoutMs: 7000, trace, quotaLane: "hot" };
+   const labelled = (json, viaFallback = false) => {
+     const { modelFlags, ...label } = parseClassification(json, target);
++    // a number that is not the key's value is never the key, whatever the model read (V1.1)
++    if (fast.numericMismatch && label.outcome === "correct") { label.outcome = "incorrect"; label.overridden = "numeric_mismatch"; }
+     for (const k of Object.keys(modelFlags)) flags[k] = flags[k] || modelFlags[k];
+     const signals = signalsOn() ? parseSignals(json) : null;
+     if (signals) Object.assign(flags, signalFlags(signals));

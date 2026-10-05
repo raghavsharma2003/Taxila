@@ -84,6 +84,25 @@ function movedApostrophe(a) {
   if (/\b(\w+)'s\b/.test(s)) return s.replace(/\b(\w+)'s\b/, "$1s'");
   return null;
 }
+// Review v1: number + words keys. DECISIVE words change what the number is; SWAP gives the classic confusion for a word
+// (oracle-side lists, written from the kit census of 446 such keys; no grader table imported).
+const DECISIVE = /(?:^|[^\p{L}])(?:a\.?m\.?|p\.?m\.?|am|pm|bce|bc|ce|ad|century|lakhs?|crores?|thousands?|hundreds?|tens|ones|tenths|hundredths|january|february|march|april|may|june|july|august|september|october|november|december)(?![\p{L}])|°\s*[ewns](?![\p{L}])/iu;
+const SWAP = [["a.m.", "p.m."], ["p.m.", "a.m."], ["am", "pm"], ["pm", "am"], ["bce", "ce"], ["ce", "bce"], ["bc", "ad"], ["lakh", "crore"], ["crore", "lakh"],
+  ["hundreds", "tens"], ["tens", "hundreds"], ["thousands", "hundreds"], ["ones", "tens"], ["tenths", "hundredths"], ["hundredths", "tenths"], ["edges", "faces"],
+  ["faces", "vertices"], ["vertices", "edges"], ["corners", "sides"], ["sides", "corners"], ["°c", "°F"], ["june", "December"], ["right angles", "straight angles"],
+  ["full turn", "half turn"], ["minutes", "hours"], ["hours", "minutes"], ["seconds", "minutes"], ["days", "weeks"], ["weeks", "days"], ["years", "months"]];
+function nounTail(key) {
+  const m = String(key).trim().match(/^(?:₹|rs\.?\s*)?(-?\d[\d,]*(?:\.\d+)?(?:\/\d+)?)\s*((?:th\b|st\b|nd\b|rd\b)?\s*[\p{L}°][\p{L}°²\s.']*)$/iu);
+  if (!m) return null;
+  const q = O.keyValue(m[1].replace(/,/g, ""));
+  if (!q || UNIT_RE.test(` ${m[2]}`) && !/[\p{L}]{2,}\s+[\p{L}]/u.test(m[2]) && !DECISIVE.test(m[2])) return null;   // a plain unit: the num: block covers it
+  return { q, num: m[1], tail: m[2].trim(), decisive: DECISIVE.test(m[2]) };
+}
+function swapTail(tail) {
+  const low = tail.toLowerCase();
+  for (const [a, b] of SWAP) { const re = new RegExp(`(^|[^\\p{L}])${a.replace(/[.]/g, "\\.")}(?![\\p{L}])`, "iu"); if (re.test(low)) return { tail: low.replace(re, `$1${b}`), from: a, to: b }; }
+  return null;
+}
 const partsLabels = existsSync(PARTS) ? JSON.parse(readFileSync(PARTS, "utf8")) : { items: {} };
 
 // ═════════════ 1. lesson classifier, deterministic path (server/director/classify.js classifyFast) ═════════════
@@ -133,6 +152,26 @@ for (const { kit, cls, subject } of kits) {
       run(O.selfCorrect(O.qStr(wv.q), O.qStr(q)), "correct", "num-self-correct");
     } else {
       const key = String(item.answer);
+      // Review v1 (2026-10-05): a number followed by WORDS that are not a plain unit ("3 edges", "8 a.m.", "320 BCE coin",
+      // "4 lakh", "16 tenths", "21 June"). oracleKey cannot read these, so before this block they were probed only as
+      // text keys and the by-value grader was never tested on them. Truth is set by the oracle's own word lists.
+      const nt = nounTail(key);
+      if (nt) {
+        const f = R.pick(formsOf(nt.q).filter((x) => x.kind !== "dev-digits"));
+        run(`${f.text} ${nt.tail}`, "correct", `numnoun:${f.kind}+key-words`);
+        const wv = wrongOf(nt.q);
+        run(`${O.qStr(wv.q)} ${nt.tail}`, "incorrect", `numnoun-wrong:value(${wv.why})+key-words`);
+        const sw = swapTail(nt.tail);
+        if (sw) run(`${nt.num} ${sw.tail}`, "incorrect", `numnoun-wrong:words-swapped(${sw.from}->${sw.to})`);
+        // a bare number where the words decide WHAT it is ("8" for "8 a.m.", "4" for "4 lakh") is not the full key
+        // ...unless the question itself names that word and not its counterpart ("How many hundreds...?" -> "3" is complete)
+        const dw = nt.decisive ? (nt.tail.toLowerCase().match(DECISIVE)?.[0] ?? "").replace(/^[^\p{L}°]+/u, "") : "";
+        const counter = SWAP.find(([a]) => a === dw)?.[1]?.toLowerCase();
+        const pr = String(item.prompt_en ?? "").toLowerCase();
+        const named = dw && pr.includes(dw.replace(/s$/, "")) && !(counter && pr.includes(counter.replace(/s$/, "")));
+        const bareTruth = !nt.decisive || named ? "correct" : "incomplete";
+        run(nt.num, bareTruth, bareTruth === "correct" ? `numnoun:bare-number(${nt.decisive ? "question-names-it" : "count"})` : "numnoun:bare-number(words-decide)");
+      }
       run(key, "correct", "text:verbatim-key");
       run(key.toUpperCase() + ".", "correct", "text:case-punct");
       // acceptable entries: truth from the two-rater parts labels when present, else the kit's own claim
@@ -333,13 +372,16 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
       screen = s;
       // --studio-stamp all: the V1-04 world, where the frame stamps the on-screen item on every answer. Default: half
       // the answers carry no id (today's frames). The coin is drawn either way so the RNG stream stays paired.
-      const coin = R.chance(0.5), st = steps[s], frame = coin && STUDIO_STAMP !== "all" ? {} : { itemId: st.itemId };
+      // --studio-stamp seam: what V1-04 really delivers. The runtime stamps the first [data-item] in the document, and only
+      // archetypes whose seam declares data-item (shade_fraction, number_line_jump) render one; every other kind sends none.
+      const stamps = STUDIO_STAMP === "all" || (STUDIO_STAMP === "seam" && JSON.stringify(a).includes("data-item"));
+      const coin = R.chance(0.5), st = steps[s], frame = coin && !stamps ? {} : { itemId: st.itemId };
       const tag = frame.itemId ? "item-stamped" : "no-item-id";
       if (R.chance(0.4) && st.wrongAct !== undefined && st.wrongAct !== null) answer(st.wrongAct, frame, st.right(st.wrongAct), `wrong-try:${tag}`);
       answer(st.rightAct, frame, true, `${st.tie ? "right:tie-member" : "right"}:${tag}`);
       if (s === Math.floor(steps.length / 2) && steps.length > 1 && R.chance(0.5)) {
         sess.mount(`k${rep}-${s}`);
-        for (let t = 0; t <= s; t++) { screen = t; answer(steps[t].rightAct, STUDIO_STAMP === "all" ? { itemId: steps[t].itemId } : {}, true, "right:after-remount"); }
+        for (let t = 0; t <= s; t++) { screen = t; answer(steps[t].rightAct, stamps ? { itemId: steps[t].itemId } : {}, true, "right:after-remount"); }
       }
     }
     // a restart the host was NOT told about (no new mount key): the screen is back at step 1 and the child answers it right.
@@ -348,7 +390,7 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
     if (steps.length > 1) {
       const g3 = SG.createGradeSession(id, p); g3.mount("r");
       for (let s2 = 0; s2 < steps.length - 1; s2++) g3.grade(steps[s2].rightAct, {});
-      const v = g3.grade(steps[0].rightAct, STUDIO_STAMP === "all" ? { itemId: steps[0].itemId } : {}).correct ? "correct" : "incorrect";
+      const v = g3.grade(steps[0].rightAct, STUDIO_STAMP === "all" || (STUDIO_STAMP === "seam" && JSON.stringify(a).includes("data-item")) ? { itemId: steps[0].itemId } : {}).correct ? "correct" : "incorrect";
       rec({ grader: "studio.w2h", path: "server/studio/grade.js createGradeSession", archetype: id, itemId: steps[0].itemId, input: JSON.stringify(steps[0].rightAct)?.slice(0, 80), truth: "correct", kind: "restart-without-mount-key", verdict: v, wrong: wrongKind("correct", v) });
     }
     for (const m of R.shuffle(MALFORMED).slice(0, 3)) {
@@ -480,7 +522,8 @@ if (MODEL_N > 0) {
     const o = r.outcome, verdict = o === "correct" ? "correct" : o === "partial" ? "partial" : o === "incorrect" || o === "misconception" ? "incorrect" : "abstain";
     modelRows.push({ ...d.c, grader: "lesson.classify(model)", source: r.source, fallback: !!r.fallback, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict) });
   } catch (e) { modelRows.push({ ...d.c, grader: "lesson.classify(model)", verdict: "abstain", error: String(e.message).slice(0, 80), wrong: null }); } } };
-  await Promise.all(Array.from({ length: 6 }, work));
+  // Review v1: concurrency is a flag; the model leg shares the production deployment's rate limit (6 workers x 3 trees hit 429s)
+  await Promise.all(Array.from({ length: Number(arg("--model-conc", 6)) }, work));
 }
 
 // ───────────── report ─────────────

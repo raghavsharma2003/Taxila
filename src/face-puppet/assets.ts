@@ -4,7 +4,7 @@
 export const PUPPET_REV = "r8";
 export const PUPPET_BASE = `/face-puppet/${PUPPET_REV}/`;
 /** The rest-pose still per framing (the same face at t = 0, the `still` slot and the post-reveal fallback). Rendered by
- *  evals/face-puppet/poster.mjs from the live rig at rest, over the view's full width and down to the bottom of the art,
+ *  `node evals/face-puppet/run.mjs poster` from the live rig at rest, over the view's full width and down to the bottom of the art,
  *  so `width: 100%; height: auto` from the top lines up with the canvas pixel for pixel. */
 export const puppetPoster = (framing: "medium" | "close" = "medium") => `${PUPPET_BASE}rest-${framing}.webp`;
 /** c-front's backdrop cream: the painted layers were cut against it, so the canvas clears to it (no halo). */

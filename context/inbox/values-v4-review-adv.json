@@ -17,6 +17,60 @@
    "kind": "decision",
    "at": "2026-10-05",
    "title": "The puppet safety floor fails closed: applySafetyFloor() now ends with assertPresetsSafe(), which throws if any preset/take still winks, pouts or pushes one cheek; the throw lands in PuppetDriver's constructor, so PuppetFace falls back to TutorFace before reveal. Reason: safety.ts promised a boot check that did not exist, and sync-runtime.mjs r9 will re-import judged tables that sanitize may not cover. Reverse never (child-safety floor)."
+  },
+  {
+   "id": "v4-review2-verdict",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Adversarial review v4, second pass (2026-10-05; the first pass's notes are the v4-review-adv-* nodes). Re-run offline: face-puppet unit tests 11/11; tsc --noEmit 0 errors on the main tree; patches 01, 02, 03 and the new 06 pass git apply --check on today's tree; in-app lip timing re-recorded (24 lines, 8,209 frames, Chromium SwiftShader, harness re-implementation of the patch-02 contract): in-app minus judged timing median -35 ms (IQR -40..-5, n = 21 Roman lines), 20/21 within +-50 ms, scheduling error median +3.2 ms (p95 9.3); the first pass's +90 ms line-00 outlier did not recur (287 frames vs 118). Verdict: engineering-complete pending apply + deploy, NOT at the V4 face bar: not live; 3 of the 4 class-4-7 years default to Arjun (shared/tutors.js: class <= 4 -> asha); listening nods are not yet timed by the duplex engine (patch 05 waits for V5's host); the blind models score 3.75 (< the 4.0 ship bar, which rests on the art-director judge's 4.1); concern does not read as caring at any product intensity; no phone reading."
+  },
+  {
+   "id": "v4-review2-retroflex-gate",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A word-timed retroflex curl is drawn only when the word holds as many Azure id-19 events as the word text has t/d/n stops (src/face-puppet/visemes.ts resolveVisemes); lexicon fixes dhoondh/dhundh RDR (curled the nasal), ganda DD (गंदा is dental), homorganic nasal before a retroflex is retroflex (ghanta/anda/danda/jhanda, anusvara before ट/ड). Measured on the 24-line battery (evals/face-puppet/retro-words.mjs, offline): the ungated with-words path, which retro-align.mjs used as its TRUTH, drew 10 curls of which 4 were on the wrong sound by inspection of the id stream (bada: word onset; dhoondh: the nasal, both ढ missed; chhoti/chhota: the chh onset, which Azure emits as id 19); gated: 7 curls, all in count-matched words (Thoda, thodi, मिट्टी x2, pattern, dhoondh x2), 0 wrong by inspection; retroflex words still curled 5/10, the rest draw the dental tip. Reverse if a phone recording or a per-phone alignment shows the gated curls on the wrong sound, or Azure's Hinglish ids change."
+  },
+  {
+   "id": "v4-review2-subscribe-at-construction",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "PuppetStage listens to the puppet bus and faceCues from construction, not after the pack loads (src/face-puppet/stage.ts). Before: a part-0 viseme batch, a Director affect or a look arriving during init (chunk + pack + GL warm) was silently dropped, so the greeting lost its visemes. Code-path fix, no separate measurement; listeners are removed by dispose() on every path. Reverse never (a lost event has no upside)."
+  },
+  {
+   "id": "v4-review2-layout-switch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A revealed puppet stage is parked for 1.5 s on unmount and adopted by the next mount of the same teacher (tutor, band, meters): PuppetStage.attach() moves the canvas, keeps the WebGL context, rig, driver and in-flight visemes (src/face-puppet/PuppetFace.tsx, stage.ts). The lesson's Face <-> Work layout switch is two <Teacher> mounts (TeacherWindow medium, SpeechRow close). Measured (evals/face-puppet/layout/run.mjs, Chromium SwiftShader, 9 switches every 1.8 s while she talks): HEAD code built 10 stages, and the new face was the still poster for the whole 1.8 s in 4 of 7 recorded switches and for 1,030-1,377 ms in the other 3; with park/adopt 1 stage, live in 1-15 ms (median 6). Also: a fresh stage while she talks now reveals at a closed-mouth moment or after 0.8 s (was silence or 2.5 s): evals/face-puppet/remount.mjs 2,514-2,535 ms -> 824-1,366 ms (n = 3, includes init on SwiftShader). Reverse if a phone shows the re-parented canvas blank or mis-sized after a switch."
+  },
+  {
+   "id": "v4-review2-concern-read",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Concern face at product intensities, blind forced-choice single-frame read (evals/face-puppet/concern-read.mjs, 512 px production-stage frames, models taxila-brain + grok-4-20-reasoning, n = 1 per model per cell, 2026-10-05): the policy plays concern at 0.6*0.85*band (b2 0.46, b3 0.36) and SAFETY calm_steady at 0.35 on take 2; every such cell read 'warm' (8/8 reads: concern A/B/C at 0.46, calm_steady), i.e. the Director's concern and the safety face are invisible and look like a smile. Intensity-2 (0.77): caring-concern (sol) / disappointed (grok, stern 1/3). Full intensity (the judge grid): caring-concern / disappointed. The 4 in-app judge-grid runs read the same cell as sad (sol x2) and mildly angry / irritated (grok x2); the build report did not mention it. JUDGE-r9 reports the same on r9 (concern reads sad/disappointed 4/4)."
+  },
+  {
+   "id": "rj-v4-caring-floor",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: a load-time 'caring' transform of the concern takes (brow lowerer <= 0.15, lid tightener <= 0.08, lip press <= 0.12, symmetric corners <= 0.22, no side pull, eyes a touch wide) plus playing every concern and calm_steady at >= 0.75. Broke / no gain: 0.75 still read 'warm' 12/12 (both models, 2 runs, takes A/B/C), full-intensity A still 'disappointed' (grok 2/2). It also changed the judged look without the art judge. Reverted; the judged presets stay. Concern must be re-acted in the polish loop (JUDGE-r9 fix 4) and accepted with concern-read.mjs (both models 'caring-concern' at the product intensities, never sad/disappointed/angry)."
+  },
+  {
+   "id": "v4-review2-picker-patch06",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Patch 06 (docs/design/values/v4/patches/06-picker-face.diff): the tutor picker shows the puppet for Asha (LessonFace when selected, the rest poster on tiles). Without it the child picks Asha by the 3D head / Plate2D face and meets a different face in the lesson (one face everywhere, RESET-PLAN RS-7 step 4). Verified git apply --check and tsc --noEmit on an overlay; not run in a browser. Reverse if the owner wants the picker to show every tutor in one shared style."
+  },
+  {
+   "id": "v4-review2-r9-sync-due",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "JUDGE-r9 (08:13 today) scored polish r9 4.2 > r8 4.1, which is the build report's own trigger for 'node evals/face-puppet/sync-runtime.mjs r9 + bump PUPPET_REV'. Not done in review: r10 is in flight, r9 still has the concern-reads-sad defect, and a sync must re-render the posters (node evals/face-puppet/run.mjs poster, which reads the r8 manifest path hard-coded) and re-run rest parity, lip timing and the judges. A main-loop call."
+  },
+  {
+   "id": "v4-review2-governor-cpu-only",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "The stage governor steps quality down on JS work only (driver + rig calls), never on drawn-frame intervals: a GPU-bound phone is not detected. Evidence: under SwiftShader the face drew 16-20 fps with workP95 4 ms and the governor never stepped (cpu-1x.json fpsCap 60). At 4x CPU throttle it did cap at 30 fps while she spoke (cpu-4x.json, workP95 9.6 ms > 8 ms), so on a cheap phone CPU the talking face is likely 30 fps, not the 60 the report states. Both open until the phone gate (?facerig=1 on a Mali-G52-class device)."
   }
  ],
  "edges": [
@@ -39,6 +93,61 @@
    "src": "v4-face-puppet-production",
    "rel": "measured_by",
    "dst": "v4-review-adv-verdict"
+  },
+  {
+   "src": "v4-review2-retroflex-gate",
+   "rel": "measured_by",
+   "dst": "v4-review2-verdict"
+  },
+  {
+   "src": "v4-review2-layout-switch",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-subscribe-at-construction",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "rj-v4-caring-floor",
+   "rel": "caused_by",
+   "dst": "v4-review2-concern-read"
+  },
+  {
+   "src": "v4-review2-concern-read",
+   "rel": "constrains",
+   "dst": "v4-puppet-acting-policy"
+  },
+  {
+   "src": "v4-review2-picker-patch06",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-verdict",
+   "rel": "supersedes",
+   "dst": "v4-review-adv-verdict"
+  },
+  {
+   "src": "v4-review2-governor-cpu-only",
+   "rel": "constrains",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-retroflex-gate",
+   "rel": "constrains",
+   "dst": "v4-m-retroflex-text-map"
+  },
+  {
+   "src": "v4-review2-governor-cpu-only",
+   "rel": "constrains",
+   "dst": "v4-adaptive-rate-governor"
+  },
+  {
+   "src": "v4-review2-concern-read",
+   "rel": "constrains",
+   "dst": "v4-m-inapp-blind-judge"
   }
  ]
 }

@@ -1,0 +1,43 @@
+{
+  "stream": "values-v3-review",
+  "date": "2026-10-05",
+  "entries": [
+    {
+      "kind": "decision",
+      "id": "v3-hold-pending-owner-test-2026-10-05",
+      "title": "V3 duplicate build stream not executed; no new V3 catalogue authoring until the owner has tested the deployed wave",
+      "rationale": "Follows owner-build-deploy-then-test-2026-10-05 (logged 09:37:48Z, after VALUES-100 at 06:02Z, so it is the later directive). The V3 catalogue run stopped at 09:36:53Z (0 writes to its paths in the 36 min to 10:13Z), mid-topic. It was not still running, as the build report inferred.",
+      "reversal": "The owner finishes hands-on testing and approves a re-scoped V3 plan built from a per-topic coverage table."
+    },
+    {
+      "kind": "rejection",
+      "id": "v3-model-crosscheck-missed-unknown-kit-ids",
+      "title": "Trusting the prompt ('use the id exactly') plus the DeepSeek cross-check to keep catalogue specs tied to real kit ids",
+      "what_broke": "3 unknown kit ids in 2 of 20 topic files. c4-maths-ch06-t01 game targets m-is-10cm, but the kit id is m-m-is-10cm. c6-hindi-ch05-t01 game and explainer target m-doha-four-lines, but the kit uses mc-doha-four-lines. The model cross-check gave c6-hindi-ch05-t01 verdict=pass. ext.test.mjs catalogue test failed (106/107).",
+      "fix": "evals/studio-catalogue/author.mjs authorSpec now rejects a spec that cites an id outside the topic's kit (predicate check, retried with the valid ids as feedback). The 3 ids were corrected in the topic files. ext.test.mjs is now 107/107.",
+      "measurements": [
+        {"what": "ext.test.mjs before fix", "value": "106/107 pass", "method": "npx tsx --test evals/studio-catalogue/ext.test.mjs", "date": "2026-10-05T10:15Z"},
+        {"what": "ext.test.mjs after fix", "value": "107/107 pass", "method": "same", "date": "2026-10-05T10:25Z"},
+        {"what": "unknown cited ids", "value": 3, "files": 2, "of_files": 20, "method": "topic-local kit id scan over targets/src", "date": "2026-10-05"}
+      ]
+    },
+    {
+      "kind": "measurement",
+      "id": "v3-catalogue-coverage-2026-10-05",
+      "title": "V3 catalogue coverage when the run stopped (real files, not simulated)",
+      "measurements": [
+        {"what": "topic files", "value": 20, "of": 385, "method": "ls data/studio-catalogue/topics", "date": "2026-10-05T10:13Z"},
+        {"what": "game spec present and validating", "value": 19, "of": 385, "note": "c4-maths-ch04-t02 game is spec:null, failed after 3 attempts"},
+        {"what": "cinematic explainer spec", "value": 14, "of": 385},
+        {"what": "whiteboard plans", "value": 12, "of": 385, "note": "all beats lint-ok in those 12"},
+        {"what": "game+explainer+whiteboard+check pass+ids valid", "value": 12, "of": 385, "pct": 3.1},
+        {"what": "Azure spend", "value_usd": 0.4964, "n": 177, "method": "sum spend.jsonl usd, 09:24:03Z to 09:36:53Z"},
+        {"what": "spend with no saved output (interrupted or failed)", "value_usd": 0.0459, "n": 15},
+        {"what": "ext engines registered", "value": 26, "method": "src/studio-v2/engines/ext/index.ts; registry parity test passes"}
+      ],
+      "not_measured": ["STUDIO-V2 rubric (two judges plus human)", "fps on the reference phone", "quiz-in-costume audit", "stagecraft readiness/stale/latency", "cost per lesson-hour"]
+    }
+  ],
+  "files_written": ["evals/studio-catalogue/author.mjs (edit: kitIdsOf/unknownIds guard in authorSpec)", "data/studio-catalogue/topics/c4-maths-ch06-t01.json (id fix)", "data/studio-catalogue/topics/c6-hindi-ch05-t01.json (id fix)", "context/inbox/values-v3-review.json"],
+  "azure_spend_usd": 0
+}

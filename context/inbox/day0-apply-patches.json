@@ -1,0 +1,50 @@
+{
+ "nodes": [
+  {
+   "id": "m-day0-apply-reverify-2026-10-05",
+   "kind": "measurement",
+   "title": "Day-0 patch application re-verified on the integrated tree (2026-10-05 ~10:20Z, after the container restart that cut the first apply run short; that run's edits were already in checkpoints 80a9a63/16112c5). owner-truth 01-10: every hunk present or reconciled (patch --dry-run: reversed/already-applied, or W2 holds a superset: WRAP_WORDS, CHECK_ONLY_KINDS safeguard wording keeping W2-I openings, W2-I stopCheck kept and patch 07's not added, whiteboardAskOf requested + rungMounted). safety-robust 01-03: all present (classify unreadable + needsModelDistressRead, turn.js safetyPending OR + modelNote, duplex registry). Tests: state/director-truth/brain-turn/lesson-truth/owner-requests/owner-truth-guards 88/88; tests/safety*.test.mjs 45/45 (seams no longer skip); APPLY.md suite list 101/101; rs6 + content-level-v2 tests 62/62; safety-guard-frames + verify-b 7/7",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-day0-guard-frames-rerun-2026-10-05",
+   "kind": "measurement",
+   "title": "Guard frames on the original distress families, re-run 2026-10-05 (evals/safety-robust/run.mjs, 20 report seeds 0-19 and 20 dev seeds 1000-1019, $0, deterministic). Recall identical to the pre-guard run (results/2026-10-05-day0-run-before*.json) on every set, clean / no-punct / caught / ask-again / missed: TaxilaFDB 84/84 (1588 caught, 91 ask, 1 missed of 1680), ES-3 80/80 (1505/82/13), held-out 40/40 (761/34/5), red team 225/225 (4162/215/123), conversation-v2 9/10 (169/8/23); dev seeds also identical. Fingerprint diff vs pre-guard: lost 0. False alarms: hard negatives plain dev 7/204 -> 1/204 (sttReal 105 -> 25 of 4080), holdout 7/101 -> 3/101 (127 -> 62 of 2020), red-team quiet 4/127 -> 1/127 (73 -> 24 of 2540); verify-b probes clean 53/572 (pass1 52) -> 31/572 (pass1 30), sttReal pass1 868 -> 534 of 11440. ES-1, ES-3 other, prod transcripts, TaxilaFDB lesson segments stay 0. The 30 remaining pass-1 probe hits are outside the five frames (negations 'papa kabhi nahi maarte', safety-education 'good touch bad touch', 'I don't want to live in Delhi', 'bully' as a word) and were not guarded",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-rs6-served-first-items-live-2026-10-05",
+   "kind": "measurement",
+   "title": "Served first three items, all 385 class 4-7 topics, on the LIVE tree (real server/director/items.js buildPracticeQueue with classLevel, data/kits already merged with the re-levelled overlay), 2026-10-05, no model calls (existing ratings reused; v1 judge coverage 385/385). Measured ge <= C-2: pos1 0/385 (4 items have no ge), pos2 0/385 (10 no ge); with TAXILA_CONTENT_F0=off pos1 72/385. Independent v1 judge grade <= C-2 (CONTENT-LEVEL 'strict'): pos1 old 170/385 (44%) -> 100/385 (26%), pos2 127 -> 80 (21%); v1 too_easy verdict pos1 236 -> 170, pos2 193 -> 130. v2 raters either <= C-2: pos1 90 -> 7, pos2 56 -> 1. The 14 unmeasured pos1-2 items (c6/c7 Hindi mostly) fall back to old order and 9 of them are v1 <= C-2. So the F0 bar (no measured item >= 2 classes below at 1-2) holds; by the independent judge it does NOT (26% / 21%)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-owner-acceptance-local-day0-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod owner-1..5 against a LOCAL server (server/serve.mjs, TAXILA_DB=test, Neon test branch; real Azure models), n=1 run each, 2026-10-05: owner-1 4/7 (F1 still open: 10/14 forged module claims 'wrong value, correct:true' graded correct - patch 01 recheckValue reads top-level fields but the act is nested in data.value, exactly what docs/design/values/v1/patches/V1-01 fixes; plus 1 unanswerable activity, place-value@1 and patterns@1 gave no verifiable commit); owner-2 5/12 (45 defects on 27 of 90 turns: bare_question 14, loop 13, repeat 11); owner-3 30/39 -> 40/40 after a HARNESS fix (the confirm step picked chip id 'stop:continue' = 'Keep going' because /stop|end/ matched the id; now prefers stop:end); owner-4 10/17 (steering acted on 10/16: differently, example x2, hindi, story x2 missed); owner-5 12/14 (11/12 visual requests produced; one animation slot failed). 5 test accounts deleted",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "m-day0-guard-frames-rerun-2026-10-05",
+   "rel": "part_of",
+   "dst": "sr-va-predicate-is-a-floor-not-coverage"
+  },
+  {
+   "src": "m-rs6-served-first-items-live-2026-10-05",
+   "rel": "part_of",
+   "dst": "rs6-content-f0-selection"
+  },
+  {
+   "src": "m-rs6-served-first-items-live-2026-10-05",
+   "rel": "supersedes",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "m-owner-acceptance-local-day0-2026-10-05",
+   "rel": "measured_by",
+   "dst": "m-day0-apply-reverify-2026-10-05"
+  }
+ ]
+}

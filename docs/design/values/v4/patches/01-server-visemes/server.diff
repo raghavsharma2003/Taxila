@@ -46,7 +46,7 @@
        try {
 -        ({ chunks } = await dhdStream(ssml, { signal }));
 +        // V4: the websocket carries Diya's visemes. Part 0 of a reply asks for visemes only (first sound must not wait:
-+        // words + visemes cost ~480 ms of first audio, evals/face-puppet/out/ttfb-warm.json); later parts, prefetched
++        // words + visemes cost a median +378 ms of first audio, evals/face-puppet/out/ttfb-warm.json); later parts, prefetched
 +        // while part 0 plays, also ask for word boundaries (the face's Hindi retroflex curls). A websocket failure
 +        // retries on REST (same voice, no visemes) before the breaker counts it.
 +        const partNo = lane ? (lane.parts = (lane.parts ?? 0) + 1) - 1 : 0;

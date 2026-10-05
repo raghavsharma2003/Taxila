@@ -53,6 +53,28 @@ export function sourcesKey(list: readonly TapSource[]): string {
   }).join(",");
 }
 
+// Review v4 (2026-10-05): a revealed stage is PARKED on unmount for PARK_MS and adopted by the next mount of the same
+// teacher (same tutor, band and meters), instead of being disposed and rebuilt. The lesson's Face <-> Work layout switch
+// unmounts TeacherWindow's face and mounts SpeechRow's in one commit (React runs the old cleanup before the new effect),
+// and a rebuilt stage shows the still poster over her voice until it reveals: 2.5 s while she talked under the old reveal
+// rule, 0.8-1.4 s with the closed-mouth reveal (evals/face-puppet/out/remount-*.json). Adopted: 0 ms, the same context.
+const PARK_MS = 1500;
+let parked: { stage: PuppetStage; key: string; timer: number } | null = null;
+function park(stage: PuppetStage, key: string): void {
+  if (parked) { window.clearTimeout(parked.timer); parked.stage.dispose(); }
+  stage.stop();
+  stage.canvas.remove();
+  const timer = window.setTimeout(() => { if (parked?.stage === stage) parked = null; stage.dispose(); }, PARK_MS);
+  parked = { stage, key, timer };
+}
+function adopt(key: string): PuppetStage | null {
+  if (!parked || parked.key !== key || !parked.stage.isRevealed) return null;
+  const s = parked.stage;
+  window.clearTimeout(parked.timer);
+  parked = null;
+  return s;
+}
+
 /** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face. */
 export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
@@ -74,27 +96,50 @@ export function PuppetFace(p: PuppetFaceProps) {
     if (p.still || phase === "fallback" || !host.current) return;
     let cancelled = false;
     let micTimer = 0;
+    let failed = false;
     const el = host.current;
+    const parkKey = `${tutor.id}|${p.band}|${srcKey}`;
     const fail = (reason: string) => {
       if (cancelled) return;
+      failed = true;
       failedThisPage = reason;
       onEvent.current?.({ type: "fallback", reason });
       stage.current?.dispose();
       stage.current = null;
       setPhase(revealed.current ? "held" : "fallback");
     };
+    const handler = (e: PuppetStageEvent) => {
+      onEvent.current?.(e);
+      if (cancelled) return;
+      if (e.type === "reveal") { revealed.current = true; setPhase("live"); }
+      else if (e.type === "fallback") fail(e.reason);
+    };
+    const cleanup = () => {
+      cancelled = true;
+      window.clearInterval(micTimer);
+      const s = stage.current;
+      stage.current = null;
+      if (s && !failed && s.isRevealed) park(s, parkKey);
+      else s?.dispose();
+    };
+    const kept = adopt(parkKey);
+    if (kept) {
+      kept.attach(el, p.framing ?? "medium", handler);
+      stage.current = kept;
+      kept.set({ status: live.current.status, reducedMotion: live.current.reducedMotion });
+      kept.start();
+      revealed.current = true;
+      setPhase("live");
+      micTimer = window.setInterval(() => kept.set({ childLevel: live.current.mic?.value ?? 0 }), 50);
+      return cleanup;
+    }
     import("./stage.ts")
       .then(async ({ PuppetStage }) => {
         if (cancelled) return;
         const s = new PuppetStage(el, {
           band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
-          onEvent: (e) => {
-            onEvent.current?.(e);
-            if (cancelled) return;
-            if (e.type === "reveal") { revealed.current = true; setPhase("live"); }
-            else if (e.type === "fallback") fail(e.reason);
-          },
+          onEvent: handler,
         });
         stage.current = s;
         await s.init();
@@ -105,12 +150,7 @@ export function PuppetFace(p: PuppetFaceProps) {
         if (import.meta.env?.DEV || (typeof location !== "undefined" && /[?&]facerig=1/.test(location.search))) (window as unknown as { __puppet?: PuppetStage }).__puppet = s;
       })
       .catch((err: unknown) => fail(`puppet failed: ${String(err).slice(0, 160)}`));
-    return () => {
-      cancelled = true;
-      window.clearInterval(micTimer);
-      stage.current?.dispose();
-      stage.current = null;
-    };
+    return cleanup;
     // rebuilt only when the person, the framing or the meters change; status and motion flow through set()
   }, [p.still, tutor.id, p.framing, sources, phase === "fallback"]);
 

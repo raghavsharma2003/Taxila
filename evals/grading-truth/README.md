@@ -34,3 +34,16 @@ NODE_USE_ENV_PROXY=1 node evals/grading-truth/label-parts.mjs --n 800
   an answer, so a disagreement here goes to a human. It is never counted as a proven wrong grade.
 - The two-rater labels are only as good as the raters' agreement. Measured on 800 items: κ 0.43 on multi- vs single-part,
   κ 0.53 on acceptable entries. That is why the V1 parts data needs a human adjudication pass before it ships.
+
+## Review v1 additions (2026-10-05)
+
+- `numnoun:*` cases: keys that are a number followed by words ("3 edges", "8 a.m.", "4 lakh", "21 June"). Correct = the
+  number in any form plus the key's words; wrong = another value with the key's words, or the decisive word swapped from an
+  oracle-side confusion list (a.m./p.m., BCE/CE, lakh/crore, hundreds/tens, edges/faces, °C/°F, months...); a bare number is
+  `incomplete` (no credit) when the words decide what it is and the question does not name them.
+- `num-wrong:unit-swap`, `text-wrong:apostrophe-moved`, and `invalid-dup-keys` tagging for Studio sequence content the
+  validator should reject.
+- `--studio-stamp half|all|seam`: `seam` stamps the item only for archetypes whose seam declares `data-item` (what
+  V1-04 delivers in a real frame); `all` is the upper bound.
+- `--model-conc N` (default 6). The model leg shares the production deployment's rate limit: 3 trees x 6 workers hit 429s
+  and the errors silently became abstentions. Use 2 and check the log for 429 before trusting a model-leg number.

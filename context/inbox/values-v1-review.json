@@ -1,0 +1,94 @@
+{
+ "nodes": [
+  {
+   "id": "v1r-rj-v1-02-free-variable-on-integrated-tree",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: V1-02 as built (written against an 08:00Z copy). Broke on the integrated tree (~10:20Z): W2-E moved the classifier's model call into classifyModel(), so V1-02's `fast.numericMismatch` is an undefined free variable; EVERY model-leg call threw 'fast is not defined', the child's answer earned no_evidence and the model's wants_to_stop flag was dropped (tests/classify.test.mjs 2 failures). The build report's 'no new test failures' was measured on the old copy. Instead: V1-02c passes `fast` into classifyModel; patches are re-verified on the integrated tree before they are reported as applying."
+  },
+  {
+   "id": "v1r-rj-by-value-ignores-words-after-number",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: V1-02 grades a numeric key by value in code after stripping up to 3 trailing words (plainNumberKey). Broke: the stripped words change what the number is. On the integrated tree V1-02 code-credited '8 p.m.' for '8 a.m.' (question: a.m. or p.m.?), '320 CE coin' for '320 BCE coin', '3 faces' for '3 edges', '3 tens' for '3 hundreds', '21 December' for '21 June', '24 °F' for '24 °C', and 183/183 unit swaps ('5 dm' for '5 cm'); today's tree sends all of these to the model. The battery missed it because its oracle could not read any key with words after the number (446 such keys). Instead (V1-02c): decisive words make a key non-plain; count keys require every word after the number to be a filler or the key's own; unit, sign and bare-number checks the model cannot overrule."
+  },
+  {
+   "id": "v1r-rj-studio-stamp-all-overstates-v1-04",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: measuring V1-04 (frame stamps the on-screen item) with --studio-stamp all, which stamps every archetype. Broke: V1-04 stamps the first [data-item] and only shade_fraction and number_line_jump declare that seam, so sequence_steps sends no item id; realistic --studio-stamp seam leaves 2-6 wrong tries told 'right' per seed (n 755-853), all sequence_steps. Instead: V1-04b (sequence honours a named item) + V1-04c (sequence seam declares data-item), the latter unmeasured end to end."
+  },
+  {
+   "id": "v1r-dc-headline-grading-number-includes-model-leg",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "V1.1 is reported as one end-to-end number per path: code-decided wrong grades PLUS the model leg's rate on the answers code defers (about 31% of the battery mix), with the parts-data circularity stated next to it. A '0 wrong on 30,000' headline that leaves out the deferred 31% and the circular partial-credit labels is not reported again. Reverse if the model leg is removed from the lesson grader (every answer code-decided or abstained)."
+  },
+  {
+   "id": "v1r-m-grading-truth-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SYNTHETIC grading-truth battery on the integrated tree (~10:20Z, owner-truth 01-10 merged), evals/grading-truth/run.mjs with review cases (numnoun, unit-swap, apostrophe), seeds 7/13/29, n ~39,400 cases per run. Wrong grades: integrated main 1,864 / 1,873 / 1,865 (lesson classifyFast 1,530/35,088 at s7: 833 rater-partial acceptable credited, 523 '-N' for N; frame-protocol engines 128/256; placement 34; rKey 167); V1 as built (rebased) 210 / 209 / 217 (unit swaps 183, numnoun 13+); V1 + review patches, realistic stamping: 3 / 2 / 6 (all Studio sequence_steps), lesson classifyFast 0/35,088 each seed, uncredited 856-879; with every frame stamped 0/0/0; with NO parts data (how it ships until data/kits-parts.json exists) 870 / 876 / 871. The 0 on partial-credit cases is circular (grader and oracle read the same unadjudicated two-rater labels)."
+  },
+  {
+   "id": "v1r-m-model-leg-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SYNTHETIC model leg (real classify() on taxila-fast, 420 sampled deferred cases, 6 buckets, 2 workers, 0 HTTP 429 in logs, seed 7, weak-truth rows excluded): integrated main 67/364 = 18.4%; V1 + review patches 20/348 = 5.7% (Wilson 95% ~3.7-8.6%), 16 of 20 on rater-labelled partial answers (kappa 0.53 truth), 0/70 on wrong numbers, 1/49 on right number forms. A first run with 3 trees x 6 workers hit 429s on the production deployment and was discarded."
+  },
+  {
+   "id": "v1r-m-mastery-sim-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SIMULATED mastery (evals/mastery-calibration/sim.mjs, 240 children x 12 lessons, seeds 11 and 12, integrated tree ~10:20Z). Integrated main / + V1-10/11/12: false mastery at mastered 7.4% [6.0,9.1] & 8.2% / 7.7% [5.9,9.9] & 8.2% (bar 2%: FAIL, unchanged by V1); delayed checks on a never-seen item (ledger) 42% & 39% / 100%; >= 2 days 68% & 69% / 100%; first-try ECE 0.083 & 0.081 / 0.095 & 0.102; delayed-check ECE pooled 0.039 & 0.038 / 0.133 & 0.090 (per family main A 0.20/0.18, B 0.13/0.12); boredom 16.4% & 16.7% / 15.5% & 15.3% (bar 5%: FAIL); overload in-session 4.9% & 5.3% / 3.0% & 2.9%; across sessions 6.2% & 6.6% / 3.7% & 3.6%. The build report's baseline (0.3% new-item checks, 10.8% FM, 28.6% boredom) was an 08:00Z tree and no longer describes main."
+  },
+  {
+   "id": "v1r-m-kit-check-census-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Kit census on the integrated tree (class 4-7 maths, 424 skills, getKit with overlays): check-kind items (near_transfer/practice/retrieval) per skill 0 for 46, 1 for 59 (25% of skills cannot hold a V1-11 reserve); 145 skills have no near_transfer item. In the V1 sim 550 of 1,369 ledger checks used a practice-form item."
+  }
+ ],
+ "edges": [
+  {
+   "src": "v1r-m-grading-truth-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-grading-truth-2026-10-05"
+  },
+  {
+   "src": "v1r-m-mastery-sim-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-mastery-sim-2026-10-05"
+  },
+  {
+   "src": "v1r-m-kit-check-census-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-kit-check-items-census"
+  },
+  {
+   "src": "v1r-rj-by-value-ignores-words-after-number",
+   "rel": "measured_by",
+   "dst": "v1r-m-grading-truth-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-rj-studio-stamp-all-overstates-v1-04",
+   "rel": "measured_by",
+   "dst": "v1r-m-grading-truth-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-dc-headline-grading-number-includes-model-leg",
+   "rel": "measured_by",
+   "dst": "v1r-m-model-leg-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-rj-by-value-ignores-words-after-number",
+   "rel": "part_of",
+   "dst": "v1-dc-one-number-reader"
+  },
+  {
+   "src": "v1r-rj-v1-02-free-variable-on-integrated-tree",
+   "rel": "measured_by",
+   "dst": "v1r-m-model-leg-integrated-2026-10-05"
+  }
+ ]
+}

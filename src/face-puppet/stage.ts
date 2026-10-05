@@ -87,6 +87,11 @@ export class PuppetStage {
     this.canvas = c;
     c.addEventListener("webglcontextlost", this.onLost, false);
     c.addEventListener("webglcontextrestored", this.onRestored, false);
+    // Review v4 (2026-10-05): listen from construction, not after the pack loads. The driver needs no rig, and init()
+    // awaits the chunk + pack + GL warm (seconds on a cold phone): a part-0 viseme batch, a Director affect or a look that
+    // arrived in that window was silently dropped, so the greeting (the first line of every lesson) lost its visemes.
+    // dispose() removes these listeners on every path, including a failed init.
+    this.subscribe();
   }
 
   private emit(e: PuppetStageEvent): void {
@@ -110,7 +115,6 @@ export class PuppetStage {
     rig.warm();
     this.rig = rig;
     this.emit({ type: "loaded", ms: Math.round(performance.now() - t0) });
-    this.subscribe();
   }
 
   private subscribe(): void {
@@ -146,6 +150,20 @@ export class PuppetStage {
       const id = window.setTimeout(() => { this.timers.delete(id); this.driver.voiceEvent(kind); }, Math.max(0, Math.min(10_000, cue.event.atMs)));
       this.timers.add(id);
     }
+  }
+
+  /** Move this live stage into another host (a Face <-> Work layout switch: two <Teacher> mounts, medium <-> close),
+   *  keeping its WebGL context, rig, driver state and her in-flight visemes. Review v4 (2026-10-05): the alternative is a
+   *  new stage per mount, which shows the still poster over her voice until it reveals (evals/face-puppet/out/remount.json). */
+  attach(host: HTMLElement, framing: "medium" | "close", onEvent?: (e: PuppetStageEvent) => void): void {
+    this.host = host;
+    this.o = { ...this.o, framing, onEvent: onEvent ?? this.o.onEvent };
+    host.appendChild(this.canvas);
+    if (this.rig) this.rig.view = [...PUPPET_VIEW[framing]];
+  }
+
+  get isRevealed(): boolean {
+    return this.revealed && !this.disposed;
   }
 
   set(p: { status?: FloorStatus | null; reducedMotion?: boolean; gentle?: boolean; childLevel?: number }): void {
@@ -200,8 +218,16 @@ export class PuppetStage {
     if (this.work.length > 120) { this.work.shift(); this.rigMs.shift(); }
     if (this.intervals.length > 120) this.intervals.shift();
     this.frames++;
-    // reveal in her silence (never cross-fade a face in mid-word), or after 2.5 s regardless
-    if (!this.revealed && this.frames > 2 && (f.state !== "speaking" || now - this.t0 > 2500)) {
+    // reveal in her silence, or while she talks at a moment her live mouth is closed (the poster under it is the same face
+    // with the mouth closed, so the 220 ms fade shows no jump), or after 0.8 s regardless. Review v4 (2026-10-05): the
+    // rule was "silence or 2.5 s", and every Face <-> Work layout switch (TeacherWindow medium <-> SpeechRow close are two
+    // mounts) while she talked held the still poster for 2.5 s over her voice: a frozen mouth on a talking teacher
+    // (evals/face-puppet/out/remount.json: 2514-2535 ms, n = 3; in silence 157-161 ms).
+    // "Closed" = jaw under 0.12 of the rig's range with no open vowel at full: a near-closure (p/b/m, a word gap), so the
+    // fade from the poster's closed lips shows no jump. Bounded at 800 ms of talking: a still mouth over her voice is the
+    // worse failure, and the face is the same either side of the fade.
+    const closedMouth = (f.mouth.jawOpen ?? 0) < 0.12 && (f.mouth.viseme_aa ?? 0) < 0.5 && (f.mouth.viseme_O ?? 0) < 0.5;
+    if (!this.revealed && this.frames > 2 && (f.state !== "speaking" || closedMouth || now - this.t0 > 800)) {
       this.revealed = true;
       this.canvas.style.opacity = "1";
       this.emit({ type: "reveal", ms: Math.round(now - this.t0) });

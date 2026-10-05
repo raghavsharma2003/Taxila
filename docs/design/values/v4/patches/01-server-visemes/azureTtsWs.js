@@ -1,8 +1,9 @@
 // Azure Speech TTS over the websocket protocol (V4 patch 01, NEW FILE → server/voice/azureTtsWs.js): the same DragonHD
 // synthesis as azureTts.js dhdStream (raw PCM s16le 24 kHz, streamed), plus Diya's VISEME events with their audio offsets,
 // which only the websocket protocol carries. The face uses them to time her mouth (src/face-puppet).
-// Measured (evals/face-puppet/out/ttfb-warm.json, 2026-10-05, n = 8 lines, alternating on one warm socket):
-//   no metadata 433-464 ms · visemes only 496 ms · words only 436 ms · visemes + words 919-931 ms · REST 554-905 ms.
+// Measured (evals/face-puppet/out/ttfb-warm.json, 2026-10-05, n = 8 lines, alternating on one warm socket, eval container
+// through the agent proxy, NOT the India lane; true medians, Review v4): no metadata 433 ms · visemes only 483 ms ·
+// words only 432 ms · visemes + words 811 ms (bimodal: 647-702 / 919-964) · REST 902 ms (an earlier run: 554 ms).
 // So: part 0 of a reply asks for visemes only (first sound must not wait); later parts (prefetched while part 0 plays)
 // also ask for word boundaries, which give the face the Hindi retroflex curls.
 // Rules kept from azureTts.js: the key only in the upgrade header; logs carry kind, voice, status and ms, never text.

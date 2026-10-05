@@ -448,13 +448,13 @@ var l = c(s.cx + 4), u = (e) => (e - s.cx) / (e < s.cx ? s.hwL : s.hwR), d = (e)
 			R: a("mouthFrownLeft")
 		}, N = r((a("mouthFrownLeft") + a("mouthFrownRight")) / 2 * 2 + Math.max(0, a("browInnerUp") - .5) * 1.2);
 		this.worry = N, this.unsmile = r(1 - A.sm);
-		let P = (e) => .22 * (1 - N) + .23 * r(e / .045) + .6 * r((e - .045) / .8), F = a("mouthLeft") - a("mouthRight"), I = Math.max(A.round, A.flat);
+		let ee = (e) => .22 * (1 - N) + .23 * r(e / .045) + .6 * r((e - .045) / .8), P = a("mouthLeft") - a("mouthRight"), F = Math.max(A.round, A.flat);
 		for (let e of ["L", "R"]) {
-			let n = P(j[e]) * (1 - .5 * I), i = .3 + (n - .3) * (n > .3 ? A.sm : 1), a = (e === "L" ? s.hwL : s.hwR) * (A.W - 1) + (i - .45) * 13 * (1 - .6 * I) - (this.pressSide ? this.pressSide[e] : 0) * 5, o = this.pressSide ? this.pressSide[e] : 0, c = -(i - .45) * 19 * (1 - .6 * I) * (1 - .7 * this.surprised) + M[e] * 12.5 + A.press * 1.5 + A.tuck * 2.5 + A.pout * 1.5 - o * 1.2, l = r((i - .16) / .29) * (1 - .7 * I), u = this.side[e], d = this.first ? 1 : 1 - Math.exp(-t / .045);
+			let n = ee(j[e]) * (1 - .5 * F), i = .3 + (n - .3) * (n > .3 ? A.sm : 1), a = (e === "L" ? s.hwL : s.hwR) * (A.W - 1) + (i - .45) * 13 * (1 - .6 * F) - (this.pressSide ? this.pressSide[e] : 0) * 5, o = this.pressSide ? this.pressSide[e] : 0, c = -(i - .45) * 19 * (1 - .6 * F) * (1 - .7 * this.surprised) + M[e] * 12.5 + A.press * 1.5 + A.tuck * 2.5 + A.pout * 1.5 - o * 1.2, l = r((i - .16) / .29) * (1 - .7 * F), u = this.side[e], d = this.first ? 1 : 1 - Math.exp(-t / .045);
 			u.wid += d * (a - u.wid), u.dy += d * (c - u.dy), u.crease += d * (l - u.crease);
 		}
-		let ee = n(F * 1.6, -1, 1) * 13;
-		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (ee - this.shift), this.first = !1, this.sideTilt = n(F * 1.6, -1, 1), this;
+		let te = n(P * 1.6, -1, 1) * 13;
+		return this.shift += (this.first ? 1 : 1 - Math.exp(-t / .08)) * (te - this.shift), this.first = !1, this.sideTilt = n(P * 1.6, -1, 1), this;
 	}
 	lowerDrop() {
 		return this.p.g * (1 - this.p.up);
@@ -830,7 +830,7 @@ var M = {
 	chin: 16,
 	w: .4,
 	sideKeep: 1
-}, N = [[364, 384], [684, 368]], P = /* @__PURE__ */ new Set([
+}, N = [[364, 384], [684, 368]], ee = /* @__PURE__ */ new Set([
 	"hair",
 	"lockbed",
 	"lockL",
@@ -838,22 +838,22 @@ var M = {
 	"ears",
 	"hairback"
 ]);
-function F(e, t, n) {
+function P(e, t, n) {
 	let r = (e - 530) / 208, i = Math.abs(r), a = D(320, 430, t) * (1 - D(690, 790, t)), o = r * n > 0, s = Math.exp(-(((i - 1) / (i < 1 ? .3 : M.w)) ** 2)), c = -n * (o ? M.far : M.near) * s * a;
 	return o && i > 1 && (c *= 1 + D(1, 1.12, i) * .3 - D(1.3, 1.55, i) * .8), c += n * M.chin * D(560, 690, t) * (1 - D(720, 800, t)) * Math.exp(-((r / .75) ** 2)), c;
 }
-var I = {
+var F = {
 	nose: 16,
 	wing: 4,
 	bindi: 9,
 	mouth: 8
 };
-function ee(e, t, n) {
+function te(e, t, n) {
 	if (t < 320 || t > 700 || e < 400 || e > 660) return 0;
 	let r = 0, i = e - 533;
-	return t > 470 && t < 600 && (r += I.nose * Math.exp(-((i / 27) ** 2) - ((t - 540) / 24) ** 2), r -= I.wing * Math.exp(-(((i - n * 23) / 11) ** 2) - ((t - 552) / 13) ** 2)), t < 400 && (r += I.bindi * Math.exp(-(((e - 526) / 20) ** 2) - ((t - 354) / 18) ** 2)), t > 560 && (r += I.mouth * Math.exp(-(((e - 530) / 40) ** 2)) * D(560, 585, t) * (1 - D(650, 700, t))), n * r;
+	return t > 470 && t < 600 && (r += F.nose * Math.exp(-((i / 27) ** 2) - ((t - 540) / 24) ** 2), r -= F.wing * Math.exp(-(((i - n * 23) / 11) ** 2) - ((t - 552) / 13) ** 2)), t < 400 && (r += F.bindi * Math.exp(-(((e - 526) / 20) ** 2) - ((t - 354) / 18) ** 2)), t > 560 && (r += F.mouth * Math.exp(-(((e - 530) / 40) ** 2)) * D(560, 585, t) * (1 - D(650, 700, t))), n * r;
 }
-var L = {
+var I = {
 	s: 4,
 	x0: 400,
 	y0: 320,
@@ -862,34 +862,34 @@ var L = {
 	key: "",
 	T: null
 };
-function te() {
-	let e = JSON.stringify(I);
-	return L.key === e ? L.T : (L.key = e, L.T = [1, -1].map((e) => {
-		let t = new Float32Array(L.nx * L.ny);
-		for (let n = 0; n < L.ny; n++) for (let r = 0; r < L.nx; r++) t[n * L.nx + r] = ee(L.x0 + r * L.s, L.y0 + n * L.s, e);
+function ne() {
+	let e = JSON.stringify(F);
+	return I.key === e ? I.T : (I.key = e, I.T = [1, -1].map((e) => {
+		let t = new Float32Array(I.nx * I.ny);
+		for (let n = 0; n < I.ny; n++) for (let r = 0; r < I.nx; r++) t[n * I.nx + r] = te(I.x0 + r * I.s, I.y0 + n * I.s, e);
 		return t;
-	}), L.T);
+	}), I.T);
 }
-function ne(e, t, n) {
-	let r = (e - L.x0) / L.s, i = (t - L.y0) / L.s;
-	if (r <= 0 || i <= 0 || r >= L.nx - 1.001 || i >= L.ny - 1.001) return 0;
-	let a = r | 0, o = i | 0, s = r - a, c = i - o, l = o * L.nx + a;
-	return (n[l] * (1 - s) + n[l + 1] * s) * (1 - c) + (n[l + L.nx] * (1 - s) + n[l + L.nx + 1] * s) * c;
+function re(e, t, n) {
+	let r = (e - I.x0) / I.s, i = (t - I.y0) / I.s;
+	if (r <= 0 || i <= 0 || r >= I.nx - 1.001 || i >= I.ny - 1.001) return 0;
+	let a = r | 0, o = i | 0, s = r - a, c = i - o, l = o * I.nx + a;
+	return (n[l] * (1 - s) + n[l + 1] * s) * (1 - c) + (n[l + I.nx] * (1 - s) + n[l + I.nx + 1] * s) * c;
 }
-function re(e, t) {
+function ie(e, t) {
 	if (e._sil) return;
 	e._sil = t;
 	let n = e.grid.step, r = e.grid.n;
 	for (let [i, a] of [["R", 1], ["L", -1]]) {
 		let o = e[i];
-		for (let e = 0; e < r; e++) for (let i = 0; i < r; i++) o[e][i][0] += t * F(i * n, e * n, a);
+		for (let e = 0; e < r; e++) for (let i = 0; i < r; i++) o[e][i][0] += t * P(i * n, e * n, a);
 	}
 }
-function ie(e, t) {
+function ae(e, t) {
 	let n = .7 * t, r = Math.abs(e);
 	return r <= n ? e : Math.sign(e) * (n + (t - n) * Math.tanh((r - n) / (t - n)));
 }
-function ae(e, t, n, r) {
+function oe(e, t, n, r) {
 	let [i, a, o, s] = e, c = Math.ceil((o - i) / t), l = Math.ceil((s - a) / t), u = new Uint8Array(c * l), d = (e) => Math.min(o, i + e * t), f = (e) => Math.min(s, a + e * t);
 	for (let e = 0; e < l; e++) for (let t = 0; t < c; t++) u[e * c + t] = +!!r(d(t), f(e), d(t + 1), f(e + 1));
 	let p = [], m = /* @__PURE__ */ new Map(), h = (e, t) => {
@@ -939,17 +939,17 @@ function ae(e, t, n, r) {
 		n: v
 	};
 }
-var R = 8, z = 129, B = /* @__PURE__ */ new Float32Array(16641);
-for (let e = 0; e < z; e++) for (let t = 0; t < z; t++) B[e * z + t] = j(t * R, e * R);
-function oe(e, t) {
-	let n = T(e / R, 0, 127.999), r = T(t / R, 0, 127.999), i = n | 0, a = r | 0, o = n - i, s = r - a, c = a * z + i;
-	return (B[c] * (1 - o) + B[c + 1] * o) * (1 - s) + (B[c + z] * (1 - o) + B[c + z + 1] * o) * s;
-}
+var L = 8, R = 129, z = /* @__PURE__ */ new Float32Array(16641);
+for (let e = 0; e < R; e++) for (let t = 0; t < R; t++) z[e * R + t] = j(t * L, e * L);
 function se(e, t) {
+	let n = T(e / L, 0, 127.999), r = T(t / L, 0, 127.999), i = n | 0, a = r | 0, o = n - i, s = r - a, c = a * R + i;
+	return (z[c] * (1 - o) + z[c + 1] * o) * (1 - s) + (z[c + R] * (1 - o) + z[c + R + 1] * o) * s;
+}
+function ce(e, t) {
 	let n = Math.abs(e - 530);
 	return Math.sign(e - 530) * D(40, 170, n) * Math.exp(-(((t - 650) / 70) ** 2));
 }
-function ce(e, t) {
+function le(e, t) {
 	return [
 		Math.exp(-((e - 455) ** 2 + (t - 585) ** 2) / 3528),
 		Math.exp(-((e - 605) ** 2 + (t - 585) ** 2) / 3528),
@@ -958,16 +958,16 @@ function ce(e, t) {
 		v(e, t),
 		Math.sign(e - 530),
 		Math.max(0, D(606, 668, t) * Math.exp(-(((e - 530) / 180) ** 2)) - v(e, t)),
-		se(e, t)
+		ce(e, t)
 	];
 }
-var le = 8;
-function ue(e, t) {
-	let n = new Float32Array(t * le);
-	for (let r = 0; r < t; r++) n.set(ce(e[r * 2], e[r * 2 + 1]), r * le);
+var ue = 8;
+function de(e, t) {
+	let n = new Float32Array(t * ue);
+	for (let r = 0; r < t; r++) n.set(le(e[r * 2], e[r * 2 + 1]), r * ue);
 	return n;
 }
-function de(e, t) {
+function fe(e, t) {
 	let [n, r, i, a] = e, o = Math.max(1, Math.ceil((i - n) / t)), s = Math.max(1, Math.ceil((a - r) / t)), c = (o + 1) * (s + 1), l = new Float32Array(c * 2), u = new Float32Array(c * 2), d = 0;
 	for (let e = 0; e <= s; e++) for (let t = 0; t <= o; t++) {
 		let c = t / o, f = e / s;
@@ -993,7 +993,7 @@ function de(e, t) {
 		n: c
 	};
 }
-function fe(e, t) {
+function pe(e, t) {
 	let n = new Uint16Array((e - 1) * (t - 1) * 6), r = 0;
 	for (let i = 0; i < e - 1; i++) for (let e = 0; e < t - 1; e++) {
 		let a = i * t + e, o = a + 1, s = a + t, c = s + 1;
@@ -1008,14 +1008,14 @@ function fe(e, t) {
 	}
 	return n;
 }
-function V(e, t, n) {
+function B(e, t, n) {
 	let r = n - e;
 	if (r <= 0) return t[0];
 	if (r >= t.length - 1) return t[t.length - 1];
 	let i = Math.floor(r), a = r - i;
 	return t[i] * (1 - a) + t[i + 1] * a;
 }
-var pe = class {
+var me = class {
 	constructor(e, t) {
 		this.k = e, this.c = 2 * t * Math.sqrt(e), this.x = 0, this.v = 0;
 	}
@@ -1027,7 +1027,7 @@ var pe = class {
 		}
 		return this.x;
 	}
-}, me = .6, he = class e {
+}, he = .6, ge = class e {
 	static async load(t, n, r = {}) {
 		let i = await ((e) => fetch(n + e).then((e) => e.json()))("geom.json"), a = Object.keys(i.rects).filter((e) => e !== "bg").concat(["interior"], r.plates ? ["L", "R"].filter((e) => i.plates && i.plates[e]).map((e) => "plate" + e) : []), o = {};
 		return await Promise.all(a.map(async (e) => {
@@ -1036,7 +1036,7 @@ var pe = class {
 		})), new e(t, i, null, o, r);
 	}
 	constructor(e, n, r, i, a) {
-		this.g = n, n.yawKeys && a.sil !== 0 && re(n.yawKeys, a.sil ?? 1), this.M = r, this.R = new t(e, {
+		this.g = n, n.yawKeys && a.sil !== 0 && ie(n.yawKeys, a.sil ?? 1), this.M = r, this.R = new t(e, {
 			clear: a.clear || [
 				251.4 / 255,
 				229.4 / 255,
@@ -1051,7 +1051,7 @@ var pe = class {
 		for (let [e, t] of Object.entries(i)) this.tex[e] = this.R.texture(t, e !== "interior");
 		this.solver = new _(), this.clock = null, this.lastT = -1, this.layers = {};
 		let o = this.R.paint, s = (e, t, r) => {
-			let i = n.rects[e], a = de(i, t), s = new Float32Array(a.rest), c = new Float32Array(a.n);
+			let i = n.rects[e], a = fe(i, t), s = new Float32Array(a.rest), c = new Float32Array(a.n);
 			for (let e = 0; e < a.n; e++) c[e] = j(a.rest[e * 2], a.rest[e * 2 + 1]);
 			let l = this.R.mesh(o, {
 				aPos: {
@@ -1073,11 +1073,11 @@ var pe = class {
 				mesh: l,
 				kind: r,
 				n: a.n,
-				FW: r === "face" ? ue(a.rest, a.n) : null
-			}, M.sideKeep < 1 && P.has(e) && n.yawKeys && n.yawKeys._sil) {
+				FW: r === "face" ? de(a.rest, a.n) : null
+			}, M.sideKeep < 1 && ee.has(e) && n.yawKeys && n.yawKeys._sil) {
 				let t = n.yawKeys._sil, r = (e) => Float32Array.from({ length: a.n }, (n, r) => {
 					let i = a.rest[r * 2], o = a.rest[r * 2 + 1];
-					return (i - 530) * e > 0 ? -(1 - M.sideKeep) * t * F(i, o, e) : 0;
+					return (i - 530) * e > 0 ? -(1 - M.sideKeep) * t * P(i, o, e) : 0;
 				});
 				this.layers[e].silK = [r(1), r(-1)];
 			}
@@ -1102,9 +1102,9 @@ var pe = class {
 		}
 		for (let e of ["L", "R"]) {
 			let t = this.layers["lock" + e];
-			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new pe(55, .22), t.springY = new pe(70, .3);
+			t.y0 = t.rect[1] + 6, t.len = t.rect[3] - t.y0, t.spring = new me(55, .22), t.springY = new me(70, .3);
 		}
-		this.bunSpring = [new pe(90, .5), new pe(90, .5)], this.eyes = {};
+		this.bunSpring = [new me(90, .5), new me(90, .5)], this.eyes = {};
 		for (let e of ["L", "R"]) {
 			let t = n.eyes[e], r = t.x[0], i = t.x[1], a = Math.floor((i - r) / 2) + 1, s = a * 4, c = new Float32Array(s * 2), l = new Float32Array(s * 2), u = new Float32Array(s), d = new Float32Array(s);
 			for (let e = 0; e < a; e++) for (let t = 0; t < 4; t++) u[e * 4 + t] = t === 0 || t === 3 ? 0 : Math.min(1, e / 2, (a - 1 - e) / 2);
@@ -1128,9 +1128,9 @@ var pe = class {
 					size: 1,
 					dynamic: !0
 				}
-			}, fe(a, 4)), p = t.lashX[0], m = t.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = n.rects["lid" + e];
+			}, pe(a, 4)), p = t.lashX[0], m = t.lashX[1], h = Math.floor((m - p) / 3) + 1, g = new Float32Array(h * 8 * 2), _ = new Float32Array(h * 8 * 2), v = new Float32Array(h * 8), y = n.rects["lid" + e];
 			for (let e = 0; e < h; e++) {
-				let n = Math.min(m, p + e * 3), r = V(p, t.lashTop, n) - t.fall, i = V(p, t.lashBot, n) + 8.5;
+				let n = Math.min(m, p + e * 3), r = B(p, t.lashTop, n) - t.fall, i = B(p, t.lashBot, n) + 8.5;
 				for (let t = 0; t < 8; t++) {
 					let a = t / 7, o = r + a * (i - r), s = e * 8 + t;
 					g[s * 2] = n, g[s * 2 + 1] = o, _[s * 2] = (n - y[0]) / (y[2] - y[0]), _[s * 2 + 1] = (o - y[1]) / (y[3] - y[1]), v[s] = D(.1, .55, a);
@@ -1168,15 +1168,15 @@ var pe = class {
 					data: C,
 					size: 1
 				}
-			}, fe(h, 8)), O = Math.floor((i - r) / 3) + 1, k = new Float32Array(O * 5 * 2), A = new Float32Array(O * 5 * 2), j = new Float32Array(O * 5), M = n.rects["lower" + e];
+			}, pe(h, 8)), O = Math.floor((i - r) / 3) + 1, k = new Float32Array(O * 5 * 2), A = new Float32Array(O * 5 * 2), j = new Float32Array(O * 5), M = n.rects["lower" + e];
 			for (let e = 0; e < O; e++) {
-				let n = Math.min(i, r + e * 3), a = V(r, t.bot, n);
+				let n = Math.min(i, r + e * 3), a = B(r, t.bot, n);
 				for (let t = 0; t < 5; t++) {
 					let r = t / 4, i = Math.max(M[1], a - 3) + r * (Math.min(M[3], a + 19) - Math.max(M[1], a - 3)), o = e * 5 + t;
 					k[o * 2] = n, k[o * 2 + 1] = i, A[o * 2] = (n - M[0]) / (M[2] - M[0]), A[o * 2 + 1] = (i - M[1]) / (M[3] - M[1]), j[o] = r;
 				}
 			}
-			let N = new Float32Array(k), P = this.R.mesh(o, {
+			let N = new Float32Array(k), ee = this.R.mesh(o, {
 				aPos: {
 					data: N,
 					size: 2,
@@ -1186,7 +1186,7 @@ var pe = class {
 					data: A,
 					size: 2
 				}
-			}, fe(O, 5));
+			}, pe(O, 5));
 			this.eyes[e] = {
 				e: t,
 				xa: r,
@@ -1212,13 +1212,13 @@ var pe = class {
 				brest: k,
 				bpos: N,
 				bv: j,
-				bmesh: P,
+				bmesh: ee,
 				top: new Float32Array(i - r + 1),
 				bot: new Float32Array(i - r + 1)
 			};
 		}
 		if (this.lidKeyMesh = {}, n.lidKeys) for (let e of ["L", "R"]) for (let t of ["mid", "shut"]) {
-			let r = `lid${t}${e}`, i = n.rects[r], a = de(i, 8), o = new Float32Array(a.rest), s = new Float32Array(a.n), c = new Float32Array(a.n);
+			let r = `lid${t}${e}`, i = n.rects[r], a = fe(i, 8), o = new Float32Array(a.rest), s = new Float32Array(a.n), c = new Float32Array(a.n);
 			for (let e = 0; e < a.n; e++) s[e] = j(a.rest[e * 2], a.rest[e * 2 + 1]);
 			if (t === "mid") {
 				let t = this.eyes[e], r = this.midLift(e, n), o = n.lidKeys[e].midLash;
@@ -1342,7 +1342,7 @@ var pe = class {
 					n *= D(-r.f, 0, o);
 				}
 				return n * (1 - D(675, 715, t));
-			}, s = ae(e, 16, 8, (e, t, n, r) => {
+			}, s = oe(e, 16, 8, (e, t, n, r) => {
 				if (n > 410 && e < 660 && r > 530 && t < 725) return !0;
 				let i = 1, a = 0;
 				for (let [s, c] of [
@@ -1445,7 +1445,7 @@ var pe = class {
 		if (!this.glints) return;
 		let e = this.life.glint, t = Math.min(1, Math.hypot(e[0], e[1]) * 1.6), n = .5 + .5 * Math.sin(this.now() * 2.1);
 		for (let r of this.glints) {
-			let i = T(e[0] * 5, -3.5, 3.5), a = T(e[1] * 5, -3.5, 3.5), o = this.project(r.gx + i, r.gy + a, oe(r.gx, r.gy)), s = 4.2 + 2.4 * t;
+			let i = T(e[0] * 5, -3.5, 3.5), a = T(e[1] * 5, -3.5, 3.5), o = this.project(r.gx + i, r.gy + a, se(r.gx, r.gy)), s = 4.2 + 2.4 * t;
 			r.pos.set([
 				o[0] - s,
 				o[1] - s,
@@ -1473,7 +1473,7 @@ var pe = class {
 	_applyBody(e, t, n, r, i) {
 		let a = this.now(), o = this.lastT < 0 ? 1 / 60 : T(a - this.lastT, 0, .1);
 		this.lastT = a, this.bs = e, this.gaze = n;
-		let s = (t) => e[t] ?? 0, c = ie(T(t[1], -20, 20), this.yawMax), l = T(t[0], -10, 12), u = T(t[2], -12, 12), d = {
+		let s = (t) => e[t] ?? 0, c = ae(T(t[1], -20, 20), this.yawMax), l = T(t[0], -10, 12), u = T(t[2], -12, 12), d = {
 			sy: Math.sin(c * O) * A.gain,
 			cy: Math.cos(c * O),
 			sp: Math.sin(l * O) * A.gain,
@@ -1490,7 +1490,7 @@ var pe = class {
 		};
 		if (this.g.yawKeys) {
 			let e = this.g.yawKeys, t = T(c / e.keyDeg, -1, 1);
-			d.yk = t >= 0 ? e.R : e.L, d.ykf = Math.abs(t), this.featOn && d.ykf > 0 && (d.featT = te()[t >= 0 ? 0 : 1]), this.yawStep = e.grid.step, this.yawN = e.grid.n;
+			d.yk = t >= 0 ? e.R : e.L, d.ykf = Math.abs(t), this.featOn && d.ykf > 0 && (d.featT = ne()[t >= 0 ? 0 : 1]), this.yawStep = e.grid.step, this.yawN = e.grid.n;
 		}
 		this.st = d;
 		let f = (s("mouthSmileLeft") + s("mouthSmileRight")) / 2, p = (s("cheekSquintLeft") + s("cheekSquintRight")) / 2, m = E(s("jawOpen") / .85);
@@ -1574,7 +1574,7 @@ var pe = class {
 		if (this.liftCache = this.liftCache || {}, this.liftCache[e]) return this.liftCache[e];
 		let n = this.eyes[e], r = n.e, i = t.lidKeys[e].midLash, a = n.xb - n.xa + 1, o = 0;
 		for (let e = 0; e < a; e++) r.bot[e] - r.top[e] > r.bot[o] - r.top[o] && (o = e);
-		let s = r.bot[o] - r.top[o], c = Math.min(0, r.top[o] + me * s - i.y[Math.min(i.y.length - 1, o)]), l = new Float32Array(a);
+		let s = r.bot[o] - r.top[o], c = Math.min(0, r.top[o] + he * s - i.y[Math.min(i.y.length - 1, o)]), l = new Float32Array(a);
 		for (let e = 0; e < a; e++) {
 			let t = E((r.bot[e] - r.top[e]) / s);
 			l[e] = c * t * t * (3 - 2 * t);
@@ -1614,7 +1614,7 @@ var pe = class {
 	}
 	projectTo(e, t, n, r, i, a) {
 		let o = this.st, s = e, c = t;
-		if (o.yk && o.ykf > 0 && this.featOn && (s += o.ykf * ne(i ?? e, a ?? t, o.featT)), o.yk) {
+		if (o.yk && o.ykf > 0 && this.featOn && (s += o.ykf * re(i ?? e, a ?? t, o.featT)), o.yk) {
 			let n = o.yk, r = this.yawStep, l = T((i ?? e) / r, 0, this.yawN - 1.001), u = T((a ?? t) / r, 0, this.yawN - 1.001), d = Math.floor(l), f = Math.floor(u), p = l - d, m = u - f, h = n[f][d], g = n[f][d + 1], _ = n[f + 1][d], v = n[f + 1][d + 1], y = o.ykf;
 			s += y * ((h[0] * (1 - p) + g[0] * p) * (1 - m) + (_[0] * (1 - p) + v[0] * p) * m), c += y * ((h[1] * (1 - p) + g[1] * p) * (1 - m) + (_[1] * (1 - p) + v[1] * p) * m);
 		}
@@ -1638,7 +1638,7 @@ var pe = class {
 		!n && this.solver && (o += this.solver.jaw() * v(e, t));
 		let l = this._fc;
 		if (l) {
-			let n = ce(e, t);
+			let n = le(e, t);
 			o += l[7] * n[6], a -= l[8] * n[7];
 		}
 		return [a, o];
@@ -1667,7 +1667,7 @@ var pe = class {
 		];
 	}
 	faceOffW(e, t, n, r) {
-		let i = this._fc, a = t * le;
+		let i = this._fc, a = t * ue;
 		return r[0] = e[a + 5] * (i[2] * e[a] + i[3] * e[a + 1]) - i[8] * e[a + 7], r[1] = -(i[0] * e[a] + i[1] * e[a + 1]) - i[4] * e[a + 2] - i[5] * e[a + 3] + (n ? 0 : i[6] * e[a + 4]) + i[7] * e[a + 6], r;
 	}
 	deformLayer(e) {
@@ -1683,7 +1683,7 @@ var pe = class {
 				}
 				let l = D(772, 700, a) * (1 - D(110, 160, Math.abs(i - 527)));
 				if (l > 0) {
-					let [e, t] = this.project(i, a, oe(i, a));
+					let [e, t] = this.project(i, a, se(i, a));
 					s += (e - i) * l, o += (t - a) * l;
 				}
 				n[e * 2] = s, n[e * 2 + 1] = o;
@@ -1781,7 +1781,7 @@ var pe = class {
 		a && (a.eyes = (a.eyes || 0) + o() - c), s("browL"), s("browR"), c = a ? o() : 0, this.drawMouth(n), a && (a.mouth = (a.mouth || 0) + o() - c, c = o()), this.drawPlate(), a && (a.plate = (a.plate || 0) + o() - c, a.frames = (a.frames || 0) + 1), s("lockbed", n), s("hair", r), s("lockL"), s("lockR");
 	}
 	drawEye(e, t) {
-		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = oe, s = this._t2 ||= [0, 0], c = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, l = this.project(n.xa, c, o(n.xa, c)), u = this.project(n.xb, c, o(n.xb, c)), d = (u[0] - l[0]) / (n.xb - n.xa), f = (l[0] + u[0]) / 2, p = 1 - .15 * T(Math.abs(a.yaw) / 20, 0, 1), m = d < p ? p / d : 1, h = (e) => (m !== 1 && (e[0] = f + (e[0] - f) * m), e);
+		let n = this.eyes[e], r = n.e, i = this.R, a = this.st, o = se, s = this._t2 ||= [0, 0], c = (r.top[Math.floor(r.top.length / 2)] + r.bot[Math.floor(r.bot.length / 2)]) / 2, l = this.project(n.xa, c, o(n.xa, c)), u = this.project(n.xb, c, o(n.xb, c)), d = (u[0] - l[0]) / (n.xb - n.xa), f = (l[0] + u[0]) / 2, p = 1 - .15 * T(Math.abs(a.yaw) / 20, 0, 1), m = d < p ? p / d : 1, h = (e) => (m !== 1 && (e[0] = f + (e[0] - f) * m), e);
 		this.eyeFix = {
 			ecx: f,
 			em: m
@@ -1809,7 +1809,7 @@ var pe = class {
 		i.update(n.mesh, "aPos", n.pos), i.update(n.mesh, "aRest", n.restA), i.update(n.mesh, "aTop", n.topA);
 		let _ = this.winkI && this.winkI[e] ? 1 - D(.5, .54, n.blink) : 1 - D(.05, .35, this.wink ? this.wink[e] : 0), v = this.bsh && this.bsh.active && this.blinkDip || 0, y = this.gaze || [0, 0], b = this.life.sacc, x = [y[0] + b[0], y[1] + b[1] - (v > 0 ? 6 * v : 0)], S = x[0] / 25 * 18, C = -(x[1] / 20) * 12 + (x[1] < 0 ? -x[1] / 25 * 2 : 0);
 		Math.cos((x[0] + .2 * a.yaw) * O * 1.2);
-		let [w, k] = r.iris, [A, j, M] = r.catch, N = V(n.xa, n.top, A), P = Math.max(0, N + M + 1.5 - (j + C * .45)), F = C * .45 + Math.min(P, 14), I = E((.92 - n.blink) / .2) * (1 - (this.g.lidKeys ? E((n.blink - .6) / .1) : 0)), ee = h(this.project(w + S, k + C, o(w + S, k + C))), L = this.project(w - 12, k, o(w - 12, k)), te = this.project(w + 12, k, o(w + 12, k)), ne = Math.hypot(te[0] - L[0], te[1] - L[1]) / 24, re = Math.abs(a.yaw) > .5 && e === "R" == a.yaw > 0, ie = re ? 1 : T(.55 + .45 * ne, .9, 1.06), ae = re ? 1 - .15 * T(Math.abs(a.yaw) / 20, 0, 1) : 1, R = h(this.project(A + S * .45, j + F, o(A, j)));
+		let [w, k] = r.iris, [A, j, M] = r.catch, N = B(n.xa, n.top, A), ee = Math.max(0, N + M + 1.5 - (j + C * .45)), P = C * .45 + Math.min(ee, 14), F = E((.92 - n.blink) / .2) * (1 - (this.g.lidKeys ? E((n.blink - .6) / .1) : 0)), te = h(this.project(w + S, k + C, o(w + S, k + C))), I = this.project(w - 12, k, o(w - 12, k)), ne = this.project(w + 12, k, o(w + 12, k)), re = Math.hypot(ne[0] - I[0], ne[1] - I[1]) / 24, ie = Math.abs(a.yaw) > .5 && e === "R" == a.yaw > 0, ae = ie ? 1 : T(.55 + .45 * re, .9, 1.06), oe = ie ? 1 - .15 * T(Math.abs(a.yaw) / 20, 0, 1) : 1, L = h(this.project(A + S * .45, j + P, o(A, j)));
 		_ > .02 && i.drawEye(n.mesh, {
 			sclera: {
 				tex: this.tex["sclera" + e],
@@ -1824,30 +1824,30 @@ var pe = class {
 				rect: this.g.rects["catch" + e]
 			},
 			irisC: [w, k],
-			irisScr: ee,
-			irisK: ie,
-			irisScale: [ae, n.blink > .85 ? .95 : 1],
-			catchScr: R,
+			irisScr: te,
+			irisK: ae,
+			irisScale: [oe, n.blink > .85 ? .95 : 1],
+			catchScr: L,
 			catchC: [A, j],
-			catchA: I,
+			catchA: F,
 			lidShade: .4,
-			topY: V(n.xa, n.top, w)
+			topY: B(n.xa, n.top, w)
 		});
 		for (let e = 0; e < n.BC; e++) for (let t = 0; t < n.BR; t++) {
 			let i = e * n.BR + t, a = n.brest[i * 2], c = n.brest[i * 2 + 1], l = Math.round(a - n.xa), u = c - (r.bot[T(l, 0, r.bot.length - 1)] - n.bot[T(l, 0, n.bot.length - 1)]) * (1 - .75 * n.bv[i]), d = h(this.projectTo(a, u, o(a, u), s));
 			n.bpos[i * 2] = d[0], n.bpos[i * 2 + 1] = d[1];
 		}
 		i.update(n.bmesh, "aPos", n.bpos), i.drawPaint(n.bmesh, this.tex["lower" + e], this.g.rects["lower" + e], _, t);
-		let z = n.LC * n.LR;
-		for (let e = 0; e < z; e++) {
+		let R = n.LC * n.LR;
+		for (let e = 0; e < R; e++) {
 			let t = n.lrest[e * 2], i = n.lrest[e * 2 + 1], a = Math.round(t - n.xa), c = 1;
 			a < 0 && (c = Math.max(.45, 1 + a / 30), a = 0), a > n.xb - n.xa && (c = Math.max(.45, 1 - (a - (n.xb - n.xa)) / 30), a = n.xb - n.xa), c += (1 - c) * E(n.blink / .34);
 			let l = i + (n.top[a] - r.top[a]) * c * n.lv[e], u = h(this.projectTo(t, l, o(t, l), s));
 			n.lpos[e * 2] = u[0], n.lpos[e * 2 + 1] = u[1];
 		}
 		i.update(n.lmesh, "aPos", n.lpos);
-		let B = Math.max(this.happy || 0, .8 * D(.08, .34, n.blink));
-		for (let e = 0; e < z; e++) n.lA[e] = _, n.lL[e] = 1 + B * (.075 * n.LH[e] - .07 * n.LS[e]);
+		let z = Math.max(this.happy || 0, .8 * D(.08, .34, n.blink));
+		for (let e = 0; e < R; e++) n.lA[e] = _, n.lL[e] = 1 + z * (.075 * n.LH[e] - .07 * n.LS[e]);
 		if (i.update(n.lmesh, "aA", n.lA), i.update(n.lmesh, "aL", n.lL), i.drawLip(n.lmesh, this.tex["lid" + e], this.g.rects["lid" + e], t), this.g.lidKeys) {
 			let r = n.blink, a = this.winkI && this.winkI[e], o = a ? 0 : D(.3, .36, r), s = a ? D(.5, .54, r) : D(.72, .82, r);
 			for (let [r, a] of [["mid", o * (1 - (s >= 1))], ["shut", s]]) {
@@ -1876,7 +1876,7 @@ var pe = class {
 		let i = this._fo ||= [0, 0];
 		for (let e of ["U", "L"]) {
 			let t = r.sheets[e];
-			t.FW ||= ue(t.rest, t.C * t.R);
+			t.FW ||= de(t.rest, t.C * t.R);
 			for (let e = 0; e < t.C * t.R; e++) {
 				let n = t.pos[e * 2], r = t.pos[e * 2 + 1], [a, o] = this.faceOffW(t.FW, e, !0, i), s = this.projectTo(n + a, r + o, t.z[e], this._tmp ||= [0, 0], n + a, t.rest[e * 2 + 1]);
 				t.pos[e * 2] = s[0], t.pos[e * 2 + 1] = s[1];
@@ -1894,7 +1894,7 @@ var pe = class {
 		}
 		let a = r.inner;
 		for (let e = 0; e < a.pos.length / 2; e++) {
-			let t = a.pos[e * 2], n = a.pos[e * 2 + 1], [i, o] = this.faceOffset(t, n, !0), s = r.cols[e >> 1], l = this.projectTo(t + i, n + o, oe(s, c(s)), this._tmp ||= [0, 0], t + i, c(s));
+			let t = a.pos[e * 2], n = a.pos[e * 2 + 1], [i, o] = this.faceOffset(t, n, !0), s = r.cols[e >> 1], l = this.projectTo(t + i, n + o, se(s, c(s)), this._tmp ||= [0, 0], t + i, c(s));
 			a.proj[e * 2] = l[0], a.proj[e * 2 + 1] = l[1];
 		}
 		t.update(this.innerMesh, "aPos", a.proj), t.update(this.innerMesh, "aDT", a.dt), t.update(this.innerMesh, "aGap", a.gap);
@@ -1931,7 +1931,7 @@ var pe = class {
 		let t = e.yaw >= 0 ? "R" : "L", n = this.plates[t], r = D(.04, 1, e.ykf);
 		if (!n || r <= .004) return;
 		let i = this.solver, a = i.p, o = this._tmp ||= [0, 0], s = i.lowerDrop(), l = i.shift || 0, u = Math.max(69 * a.W + Math.max(0, i.side.L.wid), 78) + 14, d = Math.max(71 * a.W + Math.max(0, i.side.R.wid), 80) + 14;
-		n.FW ||= ue(n.rest, n.n);
+		n.FW ||= de(n.rest, n.n);
 		let f = this._fo ||= [0, 0];
 		for (let e = 0; e < n.n; e++) {
 			let t = n.rest[e * 2], i = n.rest[e * 2 + 1], [p, m] = this.faceOffW(n.FW, e, !1, f);
@@ -2028,14 +2028,14 @@ var pe = class {
 	dispose() {
 		this.R.gl.getExtension("WEBGL_lose_context")?.loseContext();
 	}
-}, ge = 512, _e = 1024, ve = 2, ye = 250, be = 300;
-function xe(e, t = ge) {
+}, _e = 512, ve = 1024, ye = 2, be = 250, xe = 300;
+function Se(e, t = _e) {
 	let n = Math.max(0, e.length - t), r = 0;
 	for (let t = n; t < e.length; t++) r += e[t] * e[t];
 	let i = e.length - n;
 	return i > 0 ? Math.sqrt(r / i) : 0;
 }
-function Se(e, t, n = _e) {
+function Ce(e, t, n = ve) {
 	let r = Math.max(0, e.length - n), i = 1 - Math.exp(-2 * Math.PI * 1200 / t), a = 0, o = 0, s = 0;
 	for (let t = r; t < e.length; t++) {
 		let n = e[t];
@@ -2046,7 +2046,7 @@ function Se(e, t, n = _e) {
 	let c = o + s;
 	return c > 1e-12 ? s / c : 0;
 }
-var Ce = (e) => e < 0 ? 0 : e > 1 ? 1 : e, we = class {
+var we = (e) => e < 0 ? 0 : e > 1 ? 1 : e, Te = class {
 	sampleRate;
 	tau;
 	ceiling;
@@ -2087,25 +2087,25 @@ var Ce = (e) => e < 0 ? 0 : e > 1 ? 1 : e, we = class {
 	step(e, t) {
 		let n = this.lastT < 0 ? 1 / 30 : Math.max(0, Math.min(.25, t - this.lastT));
 		this.lastT = t;
-		let r = xe(e), i = this.gate(), a = r > Math.max(i * 1.6, .006);
-		if (a && (this.refRing.push(r), this.refRing.length > be && this.refRing.shift(), ++this.refDirty >= 15 && this.refRing.length >= 15)) {
+		let r = Se(e), i = this.gate(), a = r > Math.max(i * 1.6, .006);
+		if (a && (this.refRing.push(r), this.refRing.length > xe && this.refRing.shift(), ++this.refDirty >= 15 && this.refRing.length >= 15)) {
 			this.refDirty = 0;
 			let e = [...this.refRing].sort((e, t) => e - t);
 			this.ref = Math.max(.01, e[Math.floor(.9 * (e.length - 1))]);
 		}
 		this.voicedRun = a ? this.voicedRun + 1 : 0, a && (this.lastVoicedT = t);
 		let o = a ? 0 : Math.max(0, (t - this.lastVoicedT) * 1e3);
-		!this.speaking && this.voicedRun >= ve ? this.speaking = !0 : this.speaking && !a && o >= ye && (this.speaking = !1);
-		let s = Ce((r - i) / Math.max(1e-4, this.ref * this.refScale - i)), c = this.ceiling * s ** +this.curve, l = 1 - Math.exp(-n / this.slowTau);
+		!this.speaking && this.voicedRun >= ye ? this.speaking = !0 : this.speaking && !a && o >= be && (this.speaking = !1);
+		let s = we((r - i) / Math.max(1e-4, this.ref * this.refScale - i)), c = this.ceiling * s ** +this.curve, l = 1 - Math.exp(-n / this.slowTau);
 		this.speaking || a ? this.slow += l * (r - this.slow) : this.slow += l * (0 - this.slow);
-		let u = a || this.nasalDark > 0 || this.expandDark > 0 ? Se(e, this.sampleRate) : 0;
+		let u = a || this.nasalDark > 0 || this.expandDark > 0 ? Ce(e, this.sampleRate) : 0;
 		if (this.expandRatio > 0 && this.slow > i) {
 			let e = r / this.slow;
 			(e < this.hardRatio || e < this.expandRatio && (this.expandDark <= 0 || u < this.expandDark)) && (c *= (e / this.expandRatio) ** +this.expandPow), this.nasalDark > 0 && a && u < this.nasalDark && e < .85 && (c *= .15);
 		}
 		let d = 1 - Math.exp(-n / (c < this.jaw ? this.closeTau : this.tau));
 		this.jaw += d * (c - this.jaw), this.jaw < .005 && (this.jaw = 0);
-		let f = Ce((this.jaw - .05) / .25), p = a ? Ce((u - .3) / .3) * f : 0, m = a ? Ce((.12 - u) / .1) * f : 0, h = 1 - Math.exp(-n / .06);
+		let f = we((this.jaw - .05) / .25), p = a ? we((u - .3) / .3) * f : 0, m = a ? we((.12 - u) / .1) * f : 0, h = 1 - Math.exp(-n / .06);
 		return this.wide += h * (p - this.wide), this.round += h * (m - this.round), {
 			t,
 			rms: r,
@@ -2118,7 +2118,7 @@ var Ce = (e) => e < 0 ? 0 : e > 1 ? 1 : e, we = class {
 		};
 	}
 };
-function Te(e) {
+function Ee(e) {
 	return {
 		jawOpen: e.jaw,
 		mouthClose: 0,
@@ -2130,7 +2130,7 @@ function Te(e) {
 }
 //#endregion
 //#region shared/tutors.js
-function Ee(e) {
+function De(e) {
 	let t = e >>> 0;
 	return () => {
 		t = t + 1831565813 | 0;
@@ -2149,25 +2149,25 @@ Object.freeze({
 ]);
 //#endregion
 //#region src/avatar/behaviour.ts
-var De = {
+var Oe = {
 	idle: 17,
 	speaking: 26,
 	your_turn: 18,
 	listening: 18,
 	thinking: 22
-}, Oe = 3, H = {
+}, ke = 3, V = {
 	close: 70,
 	hold: 40,
 	open: 140
-}, ke = {
+}, Ae = {
 	b1: 1,
 	b2: .9,
 	b3: .7,
 	b4: .55
-}, Ae = 120, je = .6, Me = .004, Ne = (() => {
-	let e = Math.sqrt(Ae), t = e * Math.sqrt(1 - je ** 2), n = Math.atan(t / (je * e)) / t;
+}, je = 120, Me = .6, Ne = .004, Pe = (() => {
+	let e = Math.sqrt(je), t = e * Math.sqrt(1 - Me ** 2), n = Math.atan(t / (Me * e)) / t;
 	return Math.exp(-.6 * e * n) * Math.sin(t * n) / t;
-})(), Pe = {
+})(), Fe = {
 	warm: {
 		bs: {
 			mouthSmile: .28,
@@ -2235,42 +2235,42 @@ var De = {
 			1e3
 		]
 	}
-}, Fe = /* @__PURE__ */ new Set([
+}, Ie = /* @__PURE__ */ new Set([
 	"mouthSmile",
 	"cheekSquint",
 	"mouthPress"
 ]);
-function Ie(e, t) {
-	let n = 2 * je * Math.sqrt(Ae), r = Math.min(t, .25);
+function Le(e, t) {
+	let n = 2 * Me * Math.sqrt(je), r = Math.min(t, .25);
 	for (; r > 1e-6;) {
-		let t = Math.min(Me, r);
+		let t = Math.min(Ne, r);
 		e.v += (-120 * e.x - n * e.v) * t, e.x += e.v * t, r -= t;
 	}
 }
-function Le(e) {
+function Re(e) {
 	let t = 0, n = 0;
 	for (; !t;) t = e();
 	for (; !n;) n = e();
 	return Math.sqrt(-2 * Math.log(t)) * Math.cos(2 * Math.PI * n);
 }
-var U = (e, [t, n], r = .05, i = Infinity) => Math.min(i, Math.max(r, t + n * Le(e)));
-function Re(e, t, n) {
+var H = (e, [t, n], r = .05, i = Infinity) => Math.min(i, Math.max(r, t + n * Re(e)));
+function ze(e, t, n) {
 	let r = t - 1 / 3, i = 1 / Math.sqrt(9 * r);
 	for (;;) {
 		let t, a;
 		do
-			t = Le(e), a = 1 + i * t;
+			t = Re(e), a = 1 + i * t;
 		while (a <= 0);
 		a = a * a * a;
 		let o = e();
 		if (o < 1 - .0331 * t ** 4 || Math.log(o) < .5 * t * t + r * (1 - a + Math.log(a))) return r * a * n;
 	}
 }
-var ze = (e) => e < 0 ? 0 : e > 1 ? 1 : e, W = (e, t, n) => e < t ? t : e > n ? n : e;
-function Be(e) {
+var Be = (e) => e < 0 ? 0 : e > 1 ? 1 : e, U = (e, t, n) => e < t ? t : e > n ? n : e;
+function Ve(e) {
 	return e.status === "listening" ? "listening" : e.tapSpeaking ? "speaking" : e.status === "speaking" ? e.silenceMs < 1200 ? "speaking" : "your_turn" : e.status === "thinking" ? e.spokeSinceStatus ? "your_turn" : "thinking" : e.status === "your_turn" ? "your_turn" : "idle";
 }
-var Ve = class {
+var He = class {
 	r;
 	scale;
 	smileGain;
@@ -2336,7 +2336,7 @@ var Ve = class {
 	pauseHandled = !1;
 	log = [];
 	constructor(e = {}) {
-		this.r = Ee(e.seed ?? 1), this.scale = ke[e.band ?? "b2"] ?? .8, this.smileGain = e.faceStyle?.smile ?? .7, this.headGain = e.faceStyle?.headGain ?? 1, this.browGain = e.faceStyle?.browGain ?? 1, this.reduced = !!e.reducedMotion, this.gentle = !!e.gentle, this.asym = 1 + (this.r() - .5) * .12, this.drift = [
+		this.r = De(e.seed ?? 1), this.scale = Ae[e.band ?? "b2"] ?? .8, this.smileGain = e.faceStyle?.smile ?? .7, this.headGain = e.faceStyle?.headGain ?? 1, this.browGain = e.faceStyle?.browGain ?? 1, this.reduced = !!e.reducedMotion, this.gentle = !!e.gentle, this.asym = 1 + (this.r() - .5) * .12, this.drift = [
 			this.r() * 99,
 			this.r() * 99,
 			this.r() * 99
@@ -2356,10 +2356,10 @@ var Ve = class {
 		}), this.log.length > 2e3 && this.log.splice(0, 500);
 	}
 	blinkMean() {
-		return 60 / De[this.state];
+		return 60 / Oe[this.state];
 	}
 	scheduleBlink() {
-		this.blink.mean = this.blinkMean(), this.blink.next = this.t + Re(this.r, Oe, this.blink.mean / Oe);
+		this.blink.mean = this.blinkMean(), this.blink.next = this.t + ze(this.r, ke, this.blink.mean / ke);
 	}
 	rescaleBlink() {
 		let e = this.blinkMean(), t = this.blink.mean || e;
@@ -2396,8 +2396,8 @@ var Ve = class {
 		let i = this.t < 0 ? 0 : this.t;
 		this.gaze = {
 			mode: "avert",
-			yaw: W(e, -40, 40),
-			pitch: W(t, -25, 20),
+			yaw: U(e, -40, 40),
+			pitch: U(t, -25, 20),
 			until: i + Math.max(.3, Math.min(3, n)),
 			reason: `look:${r}`
 		}, this.ev("gaze", `look:${r}`), this.nextAvert = Math.max(this.nextAvert, i + n + 1);
@@ -2410,7 +2410,7 @@ var Ve = class {
 			kind: e,
 			I: Math.min(t, 3) / 3 * this.scale,
 			t0: this.t,
-			env: Pe[e].env
+			env: Fe[e].env
 		}, this.ev("emote", e);
 	}
 	release(e) {
@@ -2430,7 +2430,7 @@ var Ve = class {
 		return a < t ? i * (.5 - .5 * Math.cos(Math.PI * a / t)) : a < t + n ? i : a < t + n + r ? i * (.5 + .5 * Math.cos(Math.PI * (a - t - n) / r)) : 0;
 	}
 	impulse(e) {
-		this.nod.v += e / Ne;
+		this.nod.v += e / Pe;
 	}
 	setState(e) {
 		if (e === this.state) return;
@@ -2440,10 +2440,10 @@ var Ve = class {
 		e === "speaking" ? (this.armed &&= (this.emote(this.armed.emotion, this.armed.intensity), null), this.brow = {
 			t0: this.t + .05,
 			amp: .22
-		}, this.gaze.mode === "avert" && (this.gaze.until = this.t + U(n, [.75, .3], .2, 1.5)), this.nextAvert = this.t + U(n, [4.75, 1.39], 1.5), t === "listening" && this.release(200)) : e === "your_turn" ? (this.lean = 1, this.lookChild("ring"), this.nextAvert = this.t + U(n, [7.21, 1.88], 3)) : e === "listening" ? (this.lean = .5, t === "speaking" && (this.release(200), this.brow = {
+		}, this.gaze.mode === "avert" && (this.gaze.until = this.t + H(n, [.75, .3], .2, 1.5)), this.nextAvert = this.t + H(n, [4.75, 1.39], 1.5), t === "listening" && this.release(200)) : e === "your_turn" ? (this.lean = 1, this.lookChild("ring"), this.nextAvert = this.t + H(n, [7.21, 1.88], 3)) : e === "listening" ? (this.lean = .5, t === "speaking" && (this.release(200), this.brow = {
 			t0: this.t,
 			amp: .15
-		}, this.nod.v = 0), this.lookChild("listen"), this.nextAvert = this.t + U(n, [7.21, 1.88], 3)) : e === "thinking" ? (this.lean = .2, this.release(300), this.thinkAvertAt = this.t + U(n, [.3, .1], .1, .6)) : this.lean = 0, this.rescaleBlink();
+		}, this.nod.v = 0), this.lookChild("listen"), this.nextAvert = this.t + H(n, [7.21, 1.88], 3)) : e === "thinking" ? (this.lean = .2, this.release(300), this.thinkAvertAt = this.t + H(n, [.3, .1], .1, .6)) : this.lean = 0, this.rescaleBlink();
 	}
 	update(e, t = {}) {
 		this.t < 0 && (this.t = e, this.contactSince = e, this.scheduleBlink(), this.nextAvert = e + 2 + this.r() * 2, this.nextMicro = e + 1);
@@ -2452,18 +2452,18 @@ var Ve = class {
 		let r = this.r, i = t.herRms ?? 0, a = this.rms;
 		a.fast += (1 - Math.exp(-n / .03)) * (i - a.fast), i > .01 && (a.slow += (1 - Math.exp(-n / 1.5)) * (i - a.slow));
 		let o = t.herVoiced ?? a.fast > .012;
-		this.state === "speaking" && (!o && this.herVoiced && (this.herPauseT0 = e), !o && this.herPauseT0 > 0 && e - this.herPauseT0 > .15 && !this.pauseHandled && (this.pauseHandled = !0, this.blinkNow(.6), this.gaze.mode === "child" && r() < .35 && this.avert("floor", U(r, [2.3, 1.1], .8, 3))), o && (this.pauseHandled = !1, this.gaze.reason.startsWith("floor") && !this.herVoiced && (this.gaze.until = e + U(r, [1.27, .51], .3, 2.5))), o && a.fast > a.slow * 1.6 && e - a.lastAccent > .35 && (a.lastAccent = e, this.impulse(Math.min(3, 1.5 * a.fast / a.slow / 1.6)), a.fast > a.slow * 2.2 && e - this.brow.t0 > 1.2 && r() < .35 && (this.brow = {
+		this.state === "speaking" && (!o && this.herVoiced && (this.herPauseT0 = e), !o && this.herPauseT0 > 0 && e - this.herPauseT0 > .15 && !this.pauseHandled && (this.pauseHandled = !0, this.blinkNow(.6), this.gaze.mode === "child" && r() < .35 && this.avert("floor", H(r, [2.3, 1.1], .8, 3))), o && (this.pauseHandled = !1, this.gaze.reason.startsWith("floor") && !this.herVoiced && (this.gaze.until = e + H(r, [1.27, .51], .3, 2.5))), o && a.fast > a.slow * 1.6 && e - a.lastAccent > .35 && (a.lastAccent = e, this.impulse(Math.min(3, 1.5 * a.fast / a.slow / 1.6)), a.fast > a.slow * 2.2 && e - this.brow.t0 > 1.2 && r() < .35 && (this.brow = {
 			t0: e,
 			amp: .18
 		}))), this.herVoiced = o;
 		let s = this.gaze;
-		if (this.state === "thinking" && this.thinkAvertAt && e >= this.thinkAvertAt && (this.thinkAvertAt = 0, this.avert("cognitive", Math.min(3.5, U(r, [3.54, 1.26], 1)))), s.mode !== "child" && e >= s.until && this.lookChild("return"), this.gaze.mode === "child" && this.state !== "thinking") {
+		if (this.state === "thinking" && this.thinkAvertAt && e >= this.thinkAvertAt && (this.thinkAvertAt = 0, this.avert("cognitive", Math.min(3.5, H(r, [3.54, 1.26], 1)))), s.mode !== "child" && e >= s.until && this.lookChild("return"), this.gaze.mode === "child" && this.state !== "thinking") {
 			let t = e - this.contactSince >= 3.95;
-			(e >= this.nextAvert || t) && (this.state === "speaking" ? (this.avert("intimacy", U(r, [1.96, .32], .6)), this.nextAvert = e + U(r, [4.75, 1.39], 1.5)) : (this.avert("intimacy", U(r, [1.14, .27], .5)), this.nextAvert = e + U(r, [7.21, 1.88], 3)));
+			(e >= this.nextAvert || t) && (this.state === "speaking" ? (this.avert("intimacy", H(r, [1.96, .32], .6)), this.nextAvert = e + H(r, [4.75, 1.39], 1.5)) : (this.avert("intimacy", H(r, [1.14, .27], .5)), this.nextAvert = e + H(r, [7.21, 1.88], 3)));
 		}
 		if (!this.reduced && e >= this.nextMicro) {
-			let t = U(r, [2, .6], 1.5, 3), n = r() * 2 * Math.PI;
-			this.micro = [t * Math.cos(n), t * Math.sin(n) * .6], this.nextMicro = e + U(r, [1.2, .4], .4);
+			let t = H(r, [2, .6], 1.5, 3), n = r() * 2 * Math.PI;
+			this.micro = [t * Math.cos(n), t * Math.sin(n) * .6], this.nextMicro = e + H(r, [1.2, .4], .4);
 		}
 		this.reduced && (this.micro = [0, 0]);
 		let c = this.gaze.yaw + this.micro[0] * .5, l = this.gaze.pitch + this.micro[1] * .5, u = this.blink;
@@ -2471,32 +2471,32 @@ var Ve = class {
 		let d = 0;
 		if (u.active) {
 			let t = (e - u.t0) * 1e3;
-			d = t < H.close ? t / H.close : t < H.close + H.hold ? 1 : ze(1 - (t - H.close - H.hold) / H.open), t >= H.close + H.hold + H.open && (u.active = !1, u.lastEnd = e, !u.queueDouble && r() < .12 ? (u.queueDouble = !0, u.next = e + .12) : (u.queueDouble = !1, this.scheduleBlink()));
+			d = t < V.close ? t / V.close : t < V.close + V.hold ? 1 : Be(1 - (t - V.close - V.hold) / V.open), t >= V.close + V.hold + V.open && (u.active = !1, u.lastEnd = e, !u.queueDouble && r() < .12 ? (u.queueDouble = !0, u.next = e + .12) : (u.queueDouble = !1, this.scheduleBlink()));
 		}
-		Ie(this.nod, n);
+		Le(this.nod, n);
 		let f = this.reduced ? .3 : this.gentle ? .5 : 1, p = this.emoLevel(), m = this.state === "your_turn" ? .5 : this.state === "listening" ? .7 : 1, h = (this.state === "speaking" ? 1.5 : 1) * m * f * this.headGain, g = this.drift, _ = [
 			.31,
 			.23,
 			.17
-		].map((t, n) => Math.sin(2 * Math.PI * t * e + g[n]) * .6 + Math.sin(2 * Math.PI * t * 2.71 * e + g[n] * 1.3) * .4), v = this.emo.kind ? Pe[this.emo.kind] : null, y = (this.state === "listening" ? 4 : 0) + (v && this.emo.I > 0 ? v.tilt * p / this.emo.I : 0);
+		].map((t, n) => Math.sin(2 * Math.PI * t * e + g[n]) * .6 + Math.sin(2 * Math.PI * t * 2.71 * e + g[n] * 1.3) * .4), v = this.emo.kind ? Fe[this.emo.kind] : null, y = (this.state === "listening" ? 4 : 0) + (v && this.emo.I > 0 ? v.tilt * p / this.emo.I : 0);
 		this.tilt += (1 - Math.exp(-n / .4)) * (y * f - this.tilt), this.leanV += (1 - Math.exp(-n / .35)) * ((this.reduced ? .3 : 1) * this.lean - this.leanV);
-		let b = W(c, -25, 25), x = W(l, -25, 20), S = c - b, C = Math.abs(b) > 15 ? b - Math.sign(b) * 10 : b * .3;
+		let b = U(c, -25, 25), x = U(l, -25, 20), S = c - b, C = Math.abs(b) > 15 ? b - Math.sign(b) * 10 : b * .3;
 		this.headYaw += (1 - Math.exp(-n / .25)) * (C * f + S - this.headYaw);
 		let w = (this.reduced ? .3 : this.gentle ? .5 : 1) * this.scale * this.headGain, T = [
-			W(this.nod.x * w + _[0] * h - 3 * this.leanV - x * .2 * f, -20, 20),
-			W(this.headYaw + _[1] * h, -20, 20),
-			W(this.tilt + _[2] * h * .6, -20, 20)
+			U(this.nod.x * w + _[0] * h - 3 * this.leanV - x * .2 * f, -20, 20),
+			U(this.headYaw + _[1] * h, -20, 20),
+			U(this.tilt + _[2] * h * .6, -20, 20)
 		], E = this.brow, D = (e - E.t0) * 1e3, O = D < 0 ? 0 : D < 80 ? E.amp * D / 80 : D < 320 ? E.amp : D < 520 ? E.amp * (1 - (D - 320) / 200) : 0, k = this.reduced ? .3 : 1, A = {}, j = (e, t) => {
 			A[e + "Left"] = (A[e + "Left"] ?? 0) + t * this.asym, A[e + "Right"] = (A[e + "Right"] ?? 0) + t / this.asym;
 		};
 		if (v) for (let [e, t] of Object.entries(v.bs)) {
 			let n = t * p * k;
-			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && Fe.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? A.browInnerUp = (A.browInnerUp ?? 0) + n : j(e, n);
+			e === "mouthSmile" && (n *= this.smileGain / .7), this.gentle && Ie.has(e) && (n *= .5), e.startsWith("brow") && (n *= this.browGain), e === "browInnerUp" ? A.browInnerUp = (A.browInnerUp ?? 0) + n : j(e, n);
 		}
 		j("mouthSmile", (this.state === "thinking" ? .03 : this.state === "speaking" ? .06 : .1) * this.smileGain * (this.gentle ? .5 : 1)), j("browOuterUp", O * this.browGain), A.browInnerUp = (A.browInnerUp ?? 0) + (O * .8 + (this.state === "listening" ? .08 : 0)) * this.browGain;
 		let M = Math.max(A.eyeSquintLeft ?? 0, A.eyeSquintRight ?? 0) * .3, N = Math.max(d, M);
 		A.eyeBlinkLeft = N, A.eyeBlinkRight = N;
-		for (let e in A) A[e] = ze(A[e]);
+		for (let e in A) A[e] = Be(A[e]);
 		return {
 			t: e,
 			state: this.state,
@@ -2510,7 +2510,7 @@ var Ve = class {
 	inStateFor() {
 		return this.t - this.stateT;
 	}
-}, He = /* @__PURE__ */ new Set([
+}, Ue = /* @__PURE__ */ new Set([
 	"jawOpen",
 	"mouthClose",
 	"mouthFunnel",
@@ -2524,7 +2524,7 @@ var Ve = class {
 	"mouthLowerDownLeft",
 	"mouthLowerDownRight",
 	"tongueOut"
-]), Ue = /* @__PURE__ */ new Set(["eyeBlinkLeft", "eyeBlinkRight"]), We = .06, Ge = (e) => e < 0 ? 0 : e > 1 ? 1 : e, Ke = class {
+]), We = /* @__PURE__ */ new Set(["eyeBlinkLeft", "eyeBlinkRight"]), Ge = .06, Ke = (e) => e < 0 ? 0 : e > 1 ? 1 : e, qe = class {
 	prev = {};
 	closure = 0;
 	jawCeiling;
@@ -2536,29 +2536,29 @@ var Ve = class {
 	}
 	compose(e, t, n) {
 		let r = {};
-		for (let [t, n] of Object.entries(e)) He.has(t) || (r[t] = n);
+		for (let [t, n] of Object.entries(e)) Ue.has(t) || (r[t] = n);
 		for (let [e, n] of Object.entries(t)) r[e] = (r[e] ?? 0) + n;
-		let i = Math.min(Ge(r.jawOpen ?? 0), this.jawCeiling);
-		r.jawOpen = i, r.mouthClose = Math.min(Ge(r.mouthClose ?? 0), i);
+		let i = Math.min(Ke(r.jawOpen ?? 0), this.jawCeiling);
+		r.jawOpen = i, r.mouthClose = Math.min(Ke(r.mouthClose ?? 0), i);
 		let a = +(t.jawOpen !== void 0 && i < .04 && (t.mouthClose ?? 0) > 0), o = a > this.closure ? .06 : .12;
 		this.closure += (1 - Math.exp(-n / o)) * (a - this.closure);
 		let s = 1 - .6 * this.closure;
 		for (let e of ["mouthSmileLeft", "mouthSmileRight"]) r[e] !== void 0 && (r[e] *= s);
 		for (let e of Object.keys(r)) {
-			let t = Ge(r[e]);
-			if (!He.has(e) && !Ue.has(e)) {
+			let t = Ke(r[e]);
+			if (!Ue.has(e) && !We.has(e)) {
 				let n = this.prev[e] ?? 0;
-				t = Math.max(n - We, Math.min(n + We, t));
+				t = Math.max(n - Ge, Math.min(n + Ge, t));
 			}
 			r[e] = t < .01 ? 0 : t;
 		}
-		for (let [e, t] of Object.entries(this.prev)) if (r[e] === void 0 && !He.has(e) && !Ue.has(e) && t > 0) {
-			let n = Math.max(0, t - We);
+		for (let [e, t] of Object.entries(this.prev)) if (r[e] === void 0 && !Ue.has(e) && !We.has(e) && t > 0) {
+			let n = Math.max(0, t - Ge);
 			n >= .01 && (r[e] = n);
 		}
 		return this.prev = r, r;
 	}
-}, qe = class {
+}, Je = class {
 	slots = [];
 	fresh = !1;
 	constructor(e) {
@@ -2615,14 +2615,14 @@ var Ve = class {
 		this.slots = [];
 	}
 };
-function Je(e, t) {
+function Ye(e, t) {
 	let n = (e > 0 ? 10 ** ((e * 50 - 60) / 20) : 0) * Math.SQRT2;
 	for (let e = 0; e < t.length; e++) t[e] = n * Math.sin(e * .2);
 	return t;
 }
 //#endregion
 //#region src/face-puppet/runtime/expr.js
-var G = {
+var W = {
 	thinking: {
 		bs: {
 			browOuterUpLeft: .72,
@@ -2818,7 +2818,7 @@ var G = {
 			r: .12
 		}
 	}
-}, Ye = (e) => {
+}, Xe = (e) => {
 	let t = (e) => e.endsWith("Left") ? e.slice(0, -4) + "Right" : e.endsWith("Right") ? e.slice(0, -5) + "Left" : e, n = {};
 	for (let [r, i] of Object.entries(e.bs)) n[r === "mouthLeft" ? "mouthRight" : r === "mouthRight" ? "mouthLeft" : t(r)] = i;
 	let r = {
@@ -2836,7 +2836,7 @@ var G = {
 		...e.pulse,
 		keys: e.pulse.keys.map(t)
 	}), r;
-}, Xe = {
+}, Ze = {
 	bs: {
 		browOuterUpLeft: .82,
 		browInnerUp: .2,
@@ -2862,7 +2862,7 @@ var G = {
 	],
 	act: "thinkUp",
 	search: [2.4, 1.8]
-}, Ze = {
+}, Qe = {
 	bs: {
 		browOuterUpLeft: .3,
 		browInnerUp: .34,
@@ -2888,7 +2888,7 @@ var G = {
 		.45
 	],
 	act: "thinkDown"
-}, Qe = {
+}, $e = {
 	bs: {
 		browInnerUp: 1,
 		browDownLeft: .5,
@@ -2915,7 +2915,7 @@ var G = {
 		.6
 	],
 	act: "concern"
-}, $e = {
+}, et = {
 	bs: {
 		browInnerUp: 1,
 		browDownLeft: .22,
@@ -2941,11 +2941,11 @@ var G = {
 		.6
 	],
 	act: "concernLean"
-}, K = {
+}, G = {
 	thinking: [
-		Xe,
+		Ze,
 		{
-			...Ye(Xe),
+			...Xe(Ze),
 			head: [
 				-3,
 				3,
@@ -2953,11 +2953,11 @@ var G = {
 			],
 			gaze: [-13, 22]
 		},
-		Ze
+		Qe
 	],
 	concern: [
-		Qe,
 		$e,
+		et,
 		{
 			bs: {
 				browInnerUp: .88,
@@ -2989,56 +2989,56 @@ var G = {
 			act: "concern"
 		}
 	]
-}, et = { thinking: [
+}, tt = { thinking: [
 	.58,
 	.3,
 	.12
-] }, q = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), J = 2 * Math.PI, tt = {
+] }, K = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), q = 2 * Math.PI, nt = {
 	concern: (e) => ({
 		head: [
-			2.5 * q(e / .9),
+			2.5 * K(e / .9),
 			0,
-			1.2 * Math.sin(J * .32 * e) * q(e / .6)
+			1.2 * Math.sin(q * .32 * e) * K(e / .6)
 		],
-		lean: .7 * q(e / .9)
+		lean: .7 * K(e / .9)
 	}),
 	concernLean: (e) => ({
 		head: [
-			3.5 * q(e / .8),
-			.5 * Math.sin(J * .25 * e),
+			3.5 * K(e / .8),
+			.5 * Math.sin(q * .25 * e),
 			0
 		],
-		lean: 1.25 * q(e / .8) + .08 * Math.sin(J * .4 * e)
+		lean: 1.25 * K(e / .8) + .08 * Math.sin(q * .4 * e)
 	}),
 	thinkDown: (e) => ({
 		head: [
-			3.5 * q(e / .6) + .8 * Math.sin(J * .23 * e),
-			2.4 * Math.sin(J * .28 * e + .6) * q(e / .8),
-			1 * Math.sin(J * .19 * e + 1.2)
+			3.5 * K(e / .6) + .8 * Math.sin(q * .23 * e),
+			2.4 * Math.sin(q * .28 * e + .6) * K(e / .8),
+			1 * Math.sin(q * .19 * e + 1.2)
 		],
-		lean: -.25 * q(e / .6)
+		lean: -.25 * K(e / .6)
 	}),
 	thinkUp: (e) => ({
 		head: [
-			-1.5 * q(e / .5),
-			2 * Math.sin(J * .26 * e + .4) * q(e / .8),
-			1.2 * Math.sin(J * .2 * e)
+			-1.5 * K(e / .5),
+			2 * Math.sin(q * .26 * e + .4) * K(e / .8),
+			1.2 * Math.sin(q * .2 * e)
 		],
-		lean: -.35 * q(e / .5)
+		lean: -.35 * K(e / .5)
 	}),
 	delight: (e) => {
-		let t = Math.sin(J * 3.1 * e) * Math.exp(-e / .7) * q(e / .08);
+		let t = Math.sin(q * 3.1 * e) * Math.exp(-e / .7) * K(e / .08);
 		return {
 			head: [
 				-2.2 * t,
 				0,
-				1.4 * Math.sin(J * .45 * e) * q(e / 1)
+				1.4 * Math.sin(q * .45 * e) * K(e / 1)
 			],
-			lean: -.5 * t + .15 * q(e / .5)
+			lean: -.5 * t + .15 * K(e / .5)
 		};
 	},
 	surprise: (e) => {
-		let t = e < .18 ? q(e / .18) : 1 + .25 * Math.sin(J * 1.6 * (e - .18)) * Math.exp(-(e - .18) / .35);
+		let t = e < .18 ? K(e / .18) : 1 + .25 * Math.sin(q * 1.6 * (e - .18)) * Math.exp(-(e - .18) / .35);
 		return {
 			head: [
 				-2.5 * t,
@@ -3052,9 +3052,9 @@ var G = {
 		head: [
 			0,
 			0,
-			3 * Math.sin(J * 1.5 * e) * Math.exp(-e / .9) * q(e / .1)
+			3 * Math.sin(q * 1.5 * e) * Math.exp(-e / .9) * K(e / .1)
 		],
-		lean: .15 * q(e / .4)
+		lean: .15 * K(e / .4)
 	}),
 	warm: (e) => ({
 		head: [
@@ -3062,17 +3062,17 @@ var G = {
 			0,
 			0
 		],
-		lean: .2 * q(e / .6)
+		lean: .2 * K(e / .6)
 	}),
 	listening: (e) => ({
 		head: [
 			0,
 			0,
-			.8 * Math.sin(J * .22 * e)
+			.8 * Math.sin(q * .22 * e)
 		],
-		lean: .45 * q(e / 1)
+		lean: .45 * K(e / 1)
 	})
-}, nt = /* @__PURE__ */ new Set([
+}, rt = /* @__PURE__ */ new Set([
 	"jawOpen",
 	"mouthFunnel",
 	"mouthPucker",
@@ -3083,7 +3083,7 @@ var G = {
 	"mouthUpperUpLeft",
 	"mouthUpperUpRight"
 ]);
-function rt(e, t, n) {
+function it(e, t, n) {
 	if (!n || e < .5) return [0, 0];
 	let r = [
 		[0, 0],
@@ -3095,10 +3095,10 @@ function rt(e, t, n) {
 		[-.9, -.1]
 	], i = (e) => .5 + .4 * (.5 + .5 * Math.sin(e * 2.17 + t)), a = e - .5, o = 0;
 	for (; a > i(o) && o < 400;) a -= i(o), o++;
-	let s = r[(o + Math.floor(t * 3)) % r.length], c = r[(o + 1 + Math.floor(t * 3)) % r.length], l = Y((a - (i(o) - .07)) / .07);
-	return [n[0] * (s[0] + (c[0] - s[0]) * l) * Y((e - .5) / .3), n[1] * (s[1] + (c[1] - s[1]) * l) * Y((e - .5) / .3)];
+	let s = r[(o + Math.floor(t * 3)) % r.length], c = r[(o + 1 + Math.floor(t * 3)) % r.length], l = J((a - (i(o) - .07)) / .07);
+	return [n[0] * (s[0] + (c[0] - s[0]) * l) * J((e - .5) / .3), n[1] * (s[1] + (c[1] - s[1]) * l) * J((e - .5) / .3)];
 }
-var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
+var J = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), at = class {
 	constructor(e = 21) {
 		this.cur = null, this.lean = 0, this.bounce = {
 			x: 0,
@@ -3112,12 +3112,12 @@ var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
 		}, this.lastVar = {};
 	}
 	pick(e, t) {
-		let n = K[e];
+		let n = G[e];
 		if (!n) return {
-			P: G[e],
+			P: W[e],
 			i: 0
 		};
-		let r = et[e], i = () => {
+		let r = tt[e], i = () => {
 			if (!r) return Math.floor(this.rng() * n.length);
 			let e = this.rng(), t = 0;
 			for (; t < n.length - 1 && e >= r[t];) e -= r[t], t++;
@@ -3134,7 +3134,7 @@ var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
 		};
 	}
 	emote(e, t, { hold: n = 1.6, intensity: r = 1, variant: i } = {}) {
-		if (!G[e]) return;
+		if (!W[e]) return;
 		let { P: a, i: o } = this.pick(e, i);
 		this.cur = {
 			name: e,
@@ -3153,7 +3153,7 @@ var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
 	level(e) {
 		let t = this.cur;
 		if (!t) return 0;
-		let [n, , r] = (t.P || G[t.name]).env, i = Y((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - Y((e - a) / r);
+		let [n, , r] = (t.P || W[t.name]).env, i = J((e - t.t0) / n), a = t.rel >= 0 ? t.rel : t.t0 + n + t.hold, o = e < a ? 1 : 1 - J((e - a) / r);
 		return o <= 0 && e > a ? (this.cur = null, 0) : i * o * t.I;
 	}
 	apply(e, t, n, r, i, a) {
@@ -3165,25 +3165,25 @@ var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
 		r[0] += this.bounce.x;
 		let s = this.level(e);
 		if (!this.cur || s <= 0) return this.lean = 0, 0;
-		let c = this.cur.P || G[this.cur.name], l = c.pulse, u = e - this.cur.t0 - (l ? l.delay : 0), d = l ? u < 0 ? 0 : u < l.a ? Y(u / l.a) : u < l.a + l.hold ? 1 : 1 - Y((u - l.a - l.hold) / l.r) : 1, f = e - this.cur.t0;
+		let c = this.cur.P || W[this.cur.name], l = c.pulse, u = e - this.cur.t0 - (l ? l.delay : 0), d = l ? u < 0 ? 0 : u < l.a ? J(u / l.a) : u < l.a + l.hold ? 1 : 1 - J((u - l.a - l.hold) / l.r) : 1, f = e - this.cur.t0;
 		for (let [e, t] of Object.entries(c.bs)) {
 			let r = l && l.keys.includes(e) ? t * d : t;
 			if (c.wob && c.wob[e]) for (let [t, n] of c.wob[e]) r += t * Math.sin(2 * Math.PI * n * f + (this.cur.ph || 0) + n);
-			if (nt.has(e)) {
+			if (rt.has(e)) {
 				a && (a[e] = Math.max(a[e] ?? 0, r * s));
 				continue;
 			}
 			n[e] = r < 0 ? (n[e] ?? 0) * (1 - s) : Math.max(n[e] ?? 0, r * s);
 		}
 		for (let e = 0; e < 3; e++) r[e] += c.head[e] * s;
-		if (this.lean = 0, c.act && tt[c.act]) {
-			let e = tt[c.act](f), t = c.mir ? -1 : 1;
+		if (this.lean = 0, c.act && nt[c.act]) {
+			let e = nt[c.act](f), t = c.mir ? -1 : 1;
 			r[0] += e.head[0] * s, r[1] += t * e.head[1] * s, r[2] += t * e.head[2] * s, this.lean = e.lean * s;
 		}
-		let p = rt(f, this.cur.ph || 0, c.search);
+		let p = it(f, this.cur.ph || 0, c.search);
 		return i[0] = i[0] * (1 - s) + (c.gaze[0] + p[0]) * s, i[1] = i[1] * (1 - s) + (c.gaze[1] + p[1]) * s, s;
 	}
-}, at = class {
+}, ot = class {
 	constructor(e = 3) {
 		this.s = {
 			x: 0,
@@ -3208,15 +3208,15 @@ var Y = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), it = class {
 			smile: this.smile
 		};
 	}
-}, X = (e, t, n, r = {}) => ({
+}, Y = (e, t, n, r = {}) => ({
 	...e,
 	head: t,
 	gaze: n,
 	bs: Object.fromEntries(Object.entries(e.bs).map(([e, t]) => [e, t < 0 ? t : Math.min(1, t * (r[e] ?? 1))]))
 });
-K.delight = [
-	G.delight,
-	X(G.delight, [
+G.delight = [
+	W.delight,
+	Y(W.delight, [
 		-3,
 		3,
 		-5
@@ -3225,7 +3225,7 @@ K.delight = [
 		browOuterUpLeft: 1.1,
 		browOuterUpRight: 1.1
 	}),
-	X(G.delight, [
+	Y(W.delight, [
 		-1,
 		-2,
 		6
@@ -3233,14 +3233,14 @@ K.delight = [
 		jawOpen: .78,
 		browInnerUp: 1.3
 	})
-], K.warm = [
-	G.warm,
-	X(G.warm, [
+], G.warm = [
+	W.warm,
+	Y(W.warm, [
 		1,
 		2,
 		-4
 	], [1, 0], { mouthSmileRight: .85 }),
-	X(G.warm, [
+	Y(W.warm, [
 		-1,
 		-2,
 		5
@@ -3248,9 +3248,9 @@ K.delight = [
 		cheekSquintLeft: 1.3,
 		cheekSquintRight: 1.3
 	})
-], K.surprise = [
-	G.surprise,
-	X(G.surprise, [
+], G.surprise = [
+	W.surprise,
+	Y(W.surprise, [
 		-6,
 		2,
 		-3
@@ -3258,7 +3258,7 @@ K.delight = [
 		browOuterUpRight: .85,
 		jawOpen: .9
 	}),
-	X(G.surprise, [
+	Y(W.surprise, [
 		-4,
 		-2,
 		2
@@ -3266,30 +3266,30 @@ K.delight = [
 		eyeWideLeft: 1.05,
 		eyeWideRight: 1.05
 	})
-], K.playful = [G.playful, Ye(G.playful)], K.listening = [
-	G.listening,
+], G.playful = [W.playful, Xe(W.playful)], G.listening = [
+	W.listening,
 	{
-		...Ye(G.listening),
+		...Xe(W.listening),
 		head: [
 			5,
 			-4,
 			9
 		]
 	},
-	X(G.listening, [
+	Y(W.listening, [
 		3,
 		2,
 		-6
 	], [-2, 2], { browInnerUp: .8 })
-], G.thinking = K.thinking[0], G.concern = K.concern[0];
+], W.thinking = G.thinking[0], W.concern = G.concern[0];
 //#endregion
 //#region src/face-puppet/policy.ts
-var ot = {
+var st = {
 	b1: 1,
 	b2: .9,
 	b3: .7,
 	b4: .55
-}, st = 1.4, ct = {
+}, ct = 1.4, lt = {
 	excited: {
 		name: "delight",
 		big: !0,
@@ -3315,7 +3315,7 @@ var ot = {
 		big: !1,
 		k: .85
 	}
-}, lt = class {
+}, ut = class {
 	band;
 	state = "idle";
 	armed = null;
@@ -3325,7 +3325,7 @@ var ot = {
 	current = null;
 	log = [];
 	constructor(e) {
-		this.band = ot[e] ? e : "b2";
+		this.band = st[e] ? e : "b2";
 	}
 	note(e) {
 		this.log.push(e), this.log.length > 200 && this.log.splice(0, 50);
@@ -3340,16 +3340,16 @@ var ot = {
 	fireArmed(e) {
 		let t = this.armed;
 		if (this.armed = null, !t || e - t.at > 15) return [];
-		let n = ct[t.emotion];
+		let n = lt[t.emotion];
 		if (n.big) {
-			if (e - this.lastBig < 30) return this.note(`${e.toFixed(2)} ${t.emotion} over the 30 s budget: warm instead`), [this.emote("warm", .8, st, "budget")];
+			if (e - this.lastBig < 30) return this.note(`${e.toFixed(2)} ${t.emotion} over the 30 s budget: warm instead`), [this.emote("warm", .8, ct, "budget")];
 			this.lastBig = e;
 		}
 		let r = t.intensity === 2 ? 1 : .6;
-		return [this.emote(n.name, r * n.k, st, `affect:${t.emotion}`)];
+		return [this.emote(n.name, r * n.k, ct, `affect:${t.emotion}`)];
 	}
 	emote(e, t, n, r, i) {
-		let a = r.startsWith("floor:") || r.startsWith("duplex:"), o = Math.max(0, Math.min(1, t * (a ? 1 : ot[this.band])));
+		let a = r.startsWith("floor:") || r.startsWith("duplex:"), o = Math.max(0, Math.min(1, t * (a ? 1 : st[this.band])));
 		return this.note(`emote ${e} ${o.toFixed(2)} (${r})`), this.current = e, {
 			op: "emote",
 			name: e,
@@ -3439,7 +3439,7 @@ var ot = {
 	get duplexAttached() {
 		return this.duplex;
 	}
-}, ut = [
+}, dt = [
 	{
 		v: "viseme_sil",
 		w: 1
@@ -3534,7 +3534,7 @@ var ot = {
 		v: "viseme_PP",
 		w: 1
 	}
-], dt = [
+], ft = [
 	0,
 	.6,
 	1,
@@ -3557,7 +3557,7 @@ var ot = {
 	.2,
 	.35,
 	0
-], ft = /[टठडढण]/u, pt = /[तथदधन]/u, mt = /व/u, ht = {
+], pt = /[टठडढण]/u, mt = /[तथदधन]/u, ht = /व/u, gt = {
 	baanta: "DR",
 	baant: "DR",
 	baantte: "DR",
@@ -3567,8 +3567,8 @@ var ot = {
 	thode: "DR",
 	dabba: "R",
 	dibba: "R",
-	ghanta: "DR",
-	ghante: "DR",
+	ghanta: "RR",
+	ghante: "RR",
 	tukda: "RR",
 	tukde: "RR",
 	tukdon: "RRD",
@@ -3580,8 +3580,8 @@ var ot = {
 	ped: "R",
 	pedh: "R",
 	dar: "R",
-	dhoondh: "DR",
-	dhundh: "DR",
+	dhoondh: "RDR",
+	dhundh: "RDR",
 	pattern: "RD",
 	chhota: "R",
 	chhoti: "R",
@@ -3589,56 +3589,62 @@ var ot = {
 	mota: "R",
 	moti: "R",
 	gaadi: "R",
-	ganda: "DR",
-	anda: "DR",
-	danda: "RDR",
-	jhanda: "DR",
+	ganda: "DD",
+	anda: "RR",
+	danda: "RRR",
+	jhanda: "RR",
 	pahad: "R",
 	sadak: "R",
 	ude: "R",
 	ud: "R",
 	tota: "DD"
 };
-function gt(e) {
-	let t = ht[e], n = [];
+function _t(e) {
+	let t = gt[e], n = [];
 	for (let r = 0; r < e.length; r++) {
 		let i = e[r], a = e[r + 1] ?? "";
 		(i === "t" || i === "d" || i === "n") && (i !== "n" || a !== "k" && a !== "g") && ((a === i || a === "h") && r++, n.push(t ? t[n.length] === "R" : !1));
 	}
 	return n;
 }
-function _t(e) {
+function vt(e) {
 	let t = [...e], n = [];
 	for (let e = 0; e < t.length; e++) {
 		let r = t[e];
-		ft.test(r) ? n.push(!0) : (pt.test(r) || r === "ं" && pt.test(t[e + 1] ?? "")) && n.push(!1);
+		pt.test(r) ? n.push(!0) : mt.test(r) || r === "ं" && mt.test(t[e + 1] ?? "") ? n.push(!1) : r === "ं" && pt.test(t[e + 1] ?? "") && n.push(!0);
 	}
 	return n;
 }
-function vt(e) {
-	let t = e.normalize("NFC"), n = /[ऀ-ॿ]/u.test(t), r = n ? t : t.toLowerCase().replace(/[^a-z]/g, ""), i = n ? _t(t) : gt(r);
+function yt(e) {
+	let t = e.normalize("NFC"), n = /[ऀ-ॿ]/u.test(t), r = n ? t : t.toLowerCase().replace(/[^a-z]/g, ""), i = n ? vt(t) : _t(r);
 	return {
 		stops: i,
 		retroflex: i.filter(Boolean).length,
-		va: n ? mt.test(t) : /^v|[aeiou]v/.test(r) && !/ve?$/.test(r)
+		va: n ? ht.test(t) : /^v|[aeiou]v/.test(r) && !/ve?$/.test(r)
 	};
 }
-function yt(e) {
+function bt(e) {
 	let t = [];
-	for (let n of e.normalize("NFC").split(/[\s,.;:!?।"'()\-]+/u)) n && t.push(...vt(n).stops);
+	for (let n of e.normalize("NFC").split(/[\s,.;:!?।"'()\-]+/u)) n && t.push(...yt(n).stops);
 	return t;
 }
-function bt(e, t = [], n) {
+function xt(e, t = [], n) {
 	let r = [], i = t.map((e) => ({
 		...e,
-		f: vt(e.text),
-		k: 0
-	})), a = !t.length && n ? yt(n) : null;
-	a && a.length !== e.filter((e) => e.id === 19).length && (a = null);
-	let o = 0;
+		f: yt(e.text),
+		k: 0,
+		n19: 0
+	})), a = (e) => i.find((t) => e >= t.ms - 10 && e < t.ms + t.durMs + 10);
+	for (let t of e) if (t.id === 19) {
+		let e = a(t.ms);
+		e && e.n19++;
+	}
+	let o = !t.length && n ? bt(n) : null;
+	o && o.length !== e.filter((e) => e.id === 19).length && (o = null);
+	let s = 0;
 	for (let t of e) {
-		if (a && t.id === 19) {
-			let e = a[o++] === !0;
+		if (o && t.id === 19) {
+			let e = o[s++] === !0;
 			r.push({
 				ms: t.ms,
 				id: t.id,
@@ -3649,12 +3655,12 @@ function bt(e, t = [], n) {
 						tongueCurl: .9,
 						tongueTipUp: 0
 					}
-				} : ut[19]
+				} : dt[19]
 			});
 			continue;
 		}
-		let e = ut[t.id] ?? ut[0], n = i.find((e) => t.ms >= e.ms - 10 && t.ms < e.ms + e.durMs + 10);
-		n && (t.id === 19 ? n.f.stops[n.k++] === !0 && (e = {
+		let e = dt[t.id] ?? dt[0], n = a(t.ms);
+		n && (t.id === 19 ? n.f.stops[n.k++] === !0 && n.n19 === n.f.stops.length && (e = {
 			v: "viseme_DD",
 			w: 1,
 			tongue: {
@@ -3672,7 +3678,7 @@ function bt(e, t = [], n) {
 	}
 	return r;
 }
-function xt(e, t, n, r = 0) {
+function St(e, t, n, r = 0) {
 	for (let e in n) delete n[e];
 	let i = r, a = e.length;
 	for (; i < a;) {
@@ -3690,11 +3696,11 @@ function xt(e, t, n, r = 0) {
 			let r = (t ?? 0) * s;
 			(n[e] ?? 0) < r && (n[e] = r);
 		}
-		o = Math.max(o, (dt[i.id] ?? 0) * s);
+		o = Math.max(o, (ft[i.id] ?? 0) * s);
 	}
 	return n.jawOpen = o * .62, i;
 }
-var St = class {
+var Ct = class {
 	parts = [];
 	lead = 50;
 	received = 0;
@@ -3703,7 +3709,7 @@ var St = class {
 		if (!n.length) return;
 		let o = this.parts.find((n) => n.part === e && Math.abs(n.playAt - t) < 5), s = o ? [...o.rawV, ...n] : [...n], c = o ? [...o.rawW, ...r] : [...r];
 		s.sort((e, t) => e.ms - t.ms);
-		let l = s.filter((e, t) => t === 0 || e.ms !== s[t - 1].ms || e.id !== s[t - 1].id), u = bt(l, c, a ?? o?.text), d = t + u[u.length - 1].ms + 200;
+		let l = s.filter((e, t) => t === 0 || e.ms !== s[t - 1].ms || e.id !== s[t - 1].id), u = xt(l, c, a ?? o?.text), d = t + u[u.length - 1].ms + 200;
 		if (d < i) {
 			this.stale++;
 			return;
@@ -3736,29 +3742,43 @@ var St = class {
 			return !1;
 		}
 		let r = e - n.playAt + this.lead;
-		return n.cursor = xt(n.track, r, t, 0), !0;
+		return n.cursor = St(n.track, r, t, 0), !0;
 	}
 	get active() {
 		return this.parts.length;
 	}
-}, Ct = ["eyeBlinkLeft", "eyeBlinkRight"], wt = .4;
-function Tt(e) {
-	for (let t of Ct) delete e.bs[t];
+}, wt = ["eyeBlinkLeft", "eyeBlinkRight"], Tt = .4;
+function Et(e) {
+	for (let t of wt) delete e.bs[t];
 	delete e.pulse;
 	let t = e.bs.cheekSquintLeft ?? 0, n = e.bs.cheekSquintRight ?? 0;
-	Math.abs(t - n) > wt && (t > n ? e.bs.cheekSquintLeft = n + wt : e.bs.cheekSquintRight = t + wt), (e.bs.mouthShrugLower ?? 0) > .3 && (e.bs.mouthShrugLower = 0);
+	Math.abs(t - n) > Tt && (t > n ? e.bs.cheekSquintLeft = n + Tt : e.bs.cheekSquintRight = t + Tt), (e.bs.mouthShrugLower ?? 0) > .3 && (e.bs.mouthShrugLower = 0);
 }
-var Et = !1;
-function Dt() {
-	if (Et) return;
-	Et = !0;
+var Dt = !1;
+function Ot() {
+	if (Dt) return;
+	Dt = !0;
 	let e = /* @__PURE__ */ new Set();
-	for (let t of Object.values(G)) e.has(t) || (e.add(t), Tt(t));
-	for (let t of Object.values(K)) for (let n of t) e.has(n) || (e.add(n), Tt(n));
+	for (let t of Object.values(W)) e.has(t) || (e.add(t), Et(t));
+	for (let t of Object.values(G)) for (let n of t) e.has(n) || (e.add(n), Et(n));
+	kt();
+}
+function kt() {
+	let e = At();
+	if (e.length) throw Error(`puppet safety floor: ${e.slice(0, 5).join("; ")}`);
+}
+function At() {
+	let e = [], t = (t, n) => {
+		for (let r of wt) (n.bs[r] ?? 0) > 0 && e.push(`${t}: ${r}`);
+		n.pulse && e.push(`${t}: pulse`), Math.abs((n.bs.cheekSquintLeft ?? 0) - (n.bs.cheekSquintRight ?? 0)) > .40000000100000005 && e.push(`${t}: one-sided cheek`), (n.bs.mouthShrugLower ?? 0) > .3 && e.push(`${t}: pout`);
+	};
+	for (let [e, n] of Object.entries(W)) t(e, n);
+	for (let [e, n] of Object.entries(G)) n.forEach((n, r) => t(`${e}[${r}]`, n));
+	return e;
 }
 //#endregion
 //#region src/face-puppet/driver.ts
-var Ot = class {
+var jt = class {
 	x = 0;
 	v = 0;
 	last = -Infinity;
@@ -3774,14 +3794,14 @@ var Ot = class {
 		}
 		return this.x;
 	}
-}, kt = (e, t, n, r) => e + (1 - Math.exp(-n / r)) * (t - e), At = class {
+}, Mt = (e, t, n, r) => e + (1 - Math.exp(-n / r)) * (t - e), Nt = class {
 	policy;
-	visemes = new St();
+	visemes = new Ct();
 	behaviour;
-	comp = new Ke(.85);
-	exprs = new it(21);
-	listener = new at(3);
-	nod = new Ot();
+	comp = new qe(.85);
+	exprs = new at(21);
+	listener = new ot(3);
+	nod = new jt();
 	lip = null;
 	lipRate = 0;
 	win = /* @__PURE__ */ new Float32Array(1024);
@@ -3803,10 +3823,10 @@ var Ot = class {
 	calm = !1;
 	busyUntil = 0;
 	evalHead = null;
-	evalEmote(e, t, n, r = 30) {
+	evalEmote(e, t, n, r = 30, i = 1) {
 		this.exprs.emote(e, t / 1e3, {
 			hold: r,
-			intensity: 1,
+			intensity: i,
 			variant: n
 		});
 	}
@@ -3817,20 +3837,20 @@ var Ot = class {
 		}], e / 1e3);
 	}
 	constructor(e) {
-		Dt();
+		Ot();
 		let t = [
 			"b1",
 			"b2",
 			"b3",
 			"b4"
 		].includes(String(e.band)) ? e.band : "b2";
-		this.reduced = !!e.reducedMotion, this.behaviour = new Ve({
+		this.reduced = !!e.reducedMotion, this.behaviour = new He({
 			band: t,
 			seed: e.seed ?? 7,
 			faceStyle: { smile: e.smile ?? .7 },
 			reducedMotion: this.reduced,
 			gentle: e.gentle
-		}), this.policy = new lt(t);
+		}), this.policy = new ut(t);
 	}
 	setMotion(e) {
 		e.reduced !== void 0 && (this.reduced = e.reduced), this.behaviour.setMotion(e);
@@ -3878,10 +3898,10 @@ var Ot = class {
 		let n = performance.now(), r = e.nowMs / 1e3, i = this.lastT < 0 ? 1 / 60 : Math.max(0, Math.min(.25, r - this.lastT));
 		this.lastT = r, e.status !== this.status && (this.status = e.status, this.statusSince = r, this.spoke = !1);
 		let a = e.tap;
-		(!this.lip || a.buf && a.sampleRate !== this.lipRate) && (this.lipRate = a.buf ? a.sampleRate : 48e3, this.lip = new we(this.lipRate)), a.fresh && this.lip.reset();
-		let o = a.buf ? a.buf.subarray(a.buf.length - 1024) : Je(a.level, this.win), s = this.lip.step(o, r), c = this.visemes.at(e.nowMs, this.vis), l = s.speaking || c;
+		(!this.lip || a.buf && a.sampleRate !== this.lipRate) && (this.lipRate = a.buf ? a.sampleRate : 48e3, this.lip = new Te(this.lipRate)), a.fresh && this.lip.reset();
+		let o = a.buf ? a.buf.subarray(a.buf.length - 1024) : Ye(a.level, this.win), s = this.lip.step(o, r), c = this.visemes.at(e.nowMs, this.vis), l = s.speaking || c;
 		l && (this.spoke = this.spoke || r - this.statusSince > .3);
-		let u = Be({
+		let u = Ve({
 			status: e.status,
 			tapSpeaking: l,
 			silenceMs: c ? 0 : s.silenceMs,
@@ -3902,14 +3922,14 @@ var Ot = class {
 			let t = this.listener.update(r, i, u === "listening", e.childLevel);
 			p[0] += t.pitch * (this.reduced ? .3 : 1), f.mouthSmileLeft = (f.mouthSmileLeft ?? 0) + t.smile, f.mouthSmileRight = (f.mouthSmileRight ?? 0) + t.smile;
 		}
-		let h = Te(s), g = [
+		let h = Ee(s), g = [
 			p[0],
 			p[1],
 			p[2]
 		];
 		this.exprs.apply(r, i, f, p, m, h);
-		for (let e = 0; e < 3; e++) this.exprHead[e] = kt(this.exprHead[e], p[e] - g[e], i, .12), p[e] = g[e] + this.exprHead[e] * (this.reduced ? .3 : 1);
-		this.exprLean = kt(this.exprLean, this.exprs.lean, i, .15), this.poseLean = kt(this.poseLean, u === "listening" || u === "your_turn" ? this.poseLeanTarget : 0, i, .4);
+		for (let e = 0; e < 3; e++) this.exprHead[e] = Mt(this.exprHead[e], p[e] - g[e], i, .12), p[e] = g[e] + this.exprHead[e] * (this.reduced ? .3 : 1);
+		this.exprLean = Mt(this.exprLean, this.exprs.lean, i, .15), this.poseLean = Mt(this.poseLean, u === "listening" || u === "your_turn" ? this.poseLeanTarget : 0, i, .4);
 		let _ = this.comp.compose(f, h, i), v = a.buf ? "tap" : a.level > 0 ? "level" : "none";
 		if (c) {
 			let e = this.vis.jawOpen;
@@ -3927,25 +3947,25 @@ var Ot = class {
 			workMs: b
 		};
 	}
-}, jt = /* @__PURE__ */ new Set(), Z = {
+}, X = /* @__PURE__ */ new Set(), Z = {
 	emit(e) {
-		for (let t of [...jt]) try {
+		for (let t of [...X]) try {
 			t(e);
 		} catch (e) {
 			console.warn("face-puppet: a bus listener failed", e);
 		}
 	},
 	on(e) {
-		return jt.add(e), () => jt.delete(e);
+		return X.add(e), () => X.delete(e);
 	},
 	get listeners() {
-		return jt.size;
+		return X.size;
 	}
-}, Mt = "/face-puppet/r8/", Nt = [
+}, Pt = "/face-puppet/r8/", Ft = [
 	251.4 / 255,
 	229.4 / 255,
 	188.6 / 255
-], Pt = {
+], It = {
 	medium: [
 		60,
 		8,
@@ -3956,7 +3976,7 @@ var Ot = class {
 		70,
 		744
 	]
-}, Ft = {
+}, Lt = {
 	delight: {
 		emotion: "excited",
 		intensity: 2
@@ -3990,34 +4010,34 @@ var Ot = class {
 		emotion: "concerned",
 		intensity: 1
 	}
-}, It = /* @__PURE__ */ new Set(["delight", "playful"]);
-function Lt(e, t = "b2") {
+}, Rt = /* @__PURE__ */ new Set(["delight", "playful"]);
+function zt(e, t = "b2") {
 	if (!e) return null;
-	let n = Ft[e];
+	let n = Lt[e];
 	if (!n) return null;
 	let r = n.intensity;
-	return t === "b3" && It.has(e) && --r, t === "b4" && e !== "gentle_concern" && e !== "calm_steady" && --r, {
+	return t === "b3" && Rt.has(e) && --r, t === "b4" && e !== "gentle_concern" && e !== "calm_steady" && --r, {
 		emotion: n.emotion,
 		intensity: r >= 2 ? 2 : 1
 	};
 }
-var Rt = /* @__PURE__ */ new Set(), zt = {
+var Bt = /* @__PURE__ */ new Set(), Vt = {
 	emit(e) {
-		for (let t of [...Rt]) try {
+		for (let t of [...Bt]) try {
 			t(e);
 		} catch (e) {
 			console.warn("face: a cue listener failed", e);
 		}
 	},
 	on(e) {
-		return Rt.add(e), () => Rt.delete(e);
+		return Bt.add(e), () => Bt.delete(e);
 	}
 };
-function Bt(e, t) {
+function Ht(e, t) {
 	let n = e.x + e.w / 2, r = e.y + e.h * .42, i = t.x + t.w / 2, a = t.y + t.h / 2, o = Math.max(80, e.w), s = Math.atan2(i - n, o) * 180 / Math.PI, c = -Math.atan2(a - r, o) * 180 / Math.PI, l = (e, t, n) => Math.max(t, Math.min(n, e));
 	return [l(s, -25, 25), l(c, -25, 20)];
 }
-var Vt = {
+var Ut = {
 	tray: ["[data-testid=\"studio-stage\"]", "[data-testid=\"tray\"]"],
 	board: [
 		"[data-testid=\"studio-stage\"][data-kind=\"whiteboard\"]",
@@ -4026,8 +4046,8 @@ var Vt = {
 		"[data-testid=\"tray\"]"
 	]
 };
-function Ht(e, t) {
-	for (let n of Vt[e]) {
+function Wt(e, t) {
+	for (let n of Ut[e]) {
 		let e = t.querySelector(n);
 		if (e && (typeof e.getBoundingClientRect != "function" || e.getBoundingClientRect().width > 0)) return e;
 	}
@@ -4039,7 +4059,7 @@ var Q = (e, t) => {
 	if (!e.length) return 0;
 	let n = [...e].sort((e, t) => e - t);
 	return n[Math.min(n.length - 1, Math.floor(t * n.length))];
-}, Ut = class {
+}, Gt = class {
 	canvas;
 	driver;
 	host;
@@ -4069,14 +4089,14 @@ var Q = (e, t) => {
 	timers = /* @__PURE__ */ new Set();
 	t0 = performance.now();
 	constructor(e, t) {
-		this.host = e, this.o = t, this.dpr = Math.min(2, typeof devicePixelRatio == "number" ? devicePixelRatio : 1), this.driver = new At({
+		this.host = e, this.o = t, this.dpr = Math.min(2, typeof devicePixelRatio == "number" ? devicePixelRatio : 1), this.driver = new Nt({
 			band: t.band,
 			seed: t.seed,
 			reducedMotion: t.reducedMotion,
 			gentle: t.gentle
-		}), this.tap = new qe(t.sources);
+		}), this.tap = new Je(t.sources);
 		let n = document.createElement("canvas");
-		n.className = "fp-canvas", n.setAttribute("aria-hidden", "true"), n.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block", this.canvas = n, n.addEventListener("webglcontextlost", this.onLost, !1), n.addEventListener("webglcontextrestored", this.onRestored, !1);
+		n.className = "fp-canvas", n.setAttribute("aria-hidden", "true"), n.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block", this.canvas = n, n.addEventListener("webglcontextlost", this.onLost, !1), n.addEventListener("webglcontextrestored", this.onRestored, !1), this.subscribe();
 	}
 	emit(e) {
 		try {
@@ -4087,11 +4107,11 @@ var Q = (e, t) => {
 		let e = performance.now();
 		if (typeof WebGL2RenderingContext > "u") throw Error("no WebGL2");
 		this.host.appendChild(this.canvas);
-		let t = [...Pt[this.o.framing ?? "medium"]], n = he.load(this.canvas, this.o.base ?? Mt, {
+		let t = [...It[this.o.framing ?? "medium"]], n = ge.load(this.canvas, this.o.base ?? Pt, {
 			ext: "webp",
 			dpr: this.dpr,
 			view: t,
-			clear: Nt,
+			clear: Ft,
 			reducedMotion: this.o.reducedMotion
 		}), r = new Promise((e, t) => {
 			let n = window.setTimeout(() => t(/* @__PURE__ */ Error("puppet load timeout")), this.o.loadTimeoutMs ?? 8e3);
@@ -4104,7 +4124,7 @@ var Q = (e, t) => {
 		i.warm(), this.rig = i, this.emit({
 			type: "loaded",
 			ms: Math.round(performance.now() - e)
-		}), this.subscribe();
+		});
 	}
 	subscribe() {
 		this.offs.push(Z.on((e) => {
@@ -4115,20 +4135,20 @@ var Q = (e, t) => {
 				let n = e.cue;
 				n.kind === "pose" ? this.driver.pose(n.pose, t) : n.kind === "nod" && this.driver.nodCue(n.peakDeg, t);
 			}
-		})), this.offs.push(zt.on((e) => this.onCue(e)));
+		})), this.offs.push(Vt.on((e) => this.onCue(e)));
 	}
 	onCue(e) {
 		let t = (this.o.now ?? (() => performance.now()))();
 		if (e.kind === "affect") {
-			let n = Lt(e.display, this.o.band);
+			let n = zt(e.display, this.o.band);
 			n && this.driver.affect(n.emotion, n.intensity, t);
 		} else if (e.kind === "gaze") {
 			if (e.target === "child") return;
-			let t = Ht(e.target, document);
+			let t = Wt(e.target, document);
 			if (!t) return;
 			let n = this.host.getBoundingClientRect(), r = t.getBoundingClientRect();
 			if (!n.width || !r.width) return;
-			let [i, a] = Bt({
+			let [i, a] = Ht({
 				x: n.left,
 				y: n.top,
 				w: n.width,
@@ -4178,7 +4198,9 @@ var Q = (e, t) => {
 			status: this.status,
 			childLevel: this.childLevel
 		}, n), c = performance.now() - o - s.workMs, l = performance.now() - i;
-		if (this.lipSource = s.lipSource, this.work.push(l), this.rigMs.push(c), this.work.length > 120 && (this.work.shift(), this.rigMs.shift()), this.intervals.length > 120 && this.intervals.shift(), this.frames++, !this.revealed && this.frames > 2 && (s.state !== "speaking" || e - this.t0 > 2500) && (this.revealed = !0, this.canvas.style.opacity = "1", this.emit({
+		this.lipSource = s.lipSource, this.work.push(l), this.rigMs.push(c), this.work.length > 120 && (this.work.shift(), this.rigMs.shift()), this.intervals.length > 120 && this.intervals.shift(), this.frames++;
+		let u = (s.mouth.jawOpen ?? 0) < .12 && (s.mouth.viseme_aa ?? 0) < .5 && (s.mouth.viseme_O ?? 0) < .5;
+		if (!this.revealed && this.frames > 2 && (s.state !== "speaking" || u || e - this.t0 > 800) && (this.revealed = !0, this.canvas.style.opacity = "1", this.emit({
 			type: "reveal",
 			ms: Math.round(e - this.t0)
 		})), this.frames % 60 == 0) {
@@ -4250,12 +4272,12 @@ var Q = (e, t) => {
 	onRestored = () => {
 		if (this.disposed || this.losses > 1) return;
 		this.rig = null;
-		let e = [...Pt[this.o.framing ?? "medium"]];
-		he.load(this.canvas, this.o.base ?? Mt, {
+		let e = [...It[this.o.framing ?? "medium"]];
+		ge.load(this.canvas, this.o.base ?? Pt, {
 			ext: "webp",
 			dpr: this.dpr,
 			view: e,
-			clear: Nt,
+			clear: Ft,
 			reducedMotion: this.o.reducedMotion
 		}).then((e) => {
 			if (this.disposed) return e.dispose();
@@ -4301,8 +4323,8 @@ var Q = (e, t) => {
 		for (let e of this.timers) window.clearTimeout(e);
 		this.timers.clear(), this.tap.dispose(), this.canvas.removeEventListener("webglcontextlost", this.onLost), this.canvas.removeEventListener("webglcontextrestored", this.onRestored), this.rig?.dispose(), this.rig = null, this.canvas.remove();
 	}
-}, $ = new URLSearchParams(location.search), Wt = $.get("mode") || "rt", Gt = +($.get("px") || 720);
-async function Kt(e) {
+}, $ = new URLSearchParams(location.search), Kt = $.get("mode") || "rt", qt = +($.get("px") || 720);
+async function Jt(e) {
 	let [t, n] = await Promise.all([fetch(`/diya/${e}.pcm`).then((e) => e.arrayBuffer()), fetch(`/diya/${e}.json`).then((e) => e.json())]), r = new Int16Array(t), i = new Float32Array(r.length);
 	for (let e = 0; e < r.length; e++) i[e] = r[e] / 32768;
 	return {
@@ -4310,12 +4332,12 @@ async function Kt(e) {
 		meta: n
 	};
 }
-function qt() {
+function Yt() {
 	let e = document.createElement("div");
-	return e.id = "host", e.style.cssText = `position:relative;width:${Gt}px;height:${Gt}px;overflow:hidden;background:rgb(251,229,189)`, document.body.appendChild(e), e;
+	return e.id = "host", e.style.cssText = `position:relative;width:${qt}px;height:${qt}px;overflow:hidden;background:rgb(251,229,189)`, document.body.appendChild(e), e;
 }
-async function Jt() {
-	let e = qt(), t = new AudioContext({ sampleRate: 48e3 }), n = t.createAnalyser();
+async function Xt() {
+	let e = Yt(), t = new AudioContext({ sampleRate: 48e3 }), n = t.createAnalyser();
 	n.fftSize = 2048, n.connect(t.destination);
 	let r = {
 		get value() {
@@ -4324,7 +4346,7 @@ async function Jt() {
 		onTap(e) {
 			return e(n), () => e(null);
 		}
-	}, i = [], a = new Ut(e, {
+	}, i = [], a = new Gt(e, {
 		band: "b2",
 		sources: [r],
 		budgetMs: $.get("budget") ? +$.get("budget") : void 0,
@@ -4342,7 +4364,7 @@ async function Jt() {
 		stats: i
 	};
 	for (let e of o) {
-		let r = await Kt(e), i = t.createBuffer(1, r.pcm.length, 24e3);
+		let r = await Jt(e), i = t.createBuffer(1, r.pcm.length, 24e3);
 		i.copyToChannel(r.pcm, 0);
 		let o = t.createBufferSource();
 		o.buffer = i, o.connect(n), a.set({ status: "speaking" });
@@ -4374,8 +4396,8 @@ async function Jt() {
 	}
 	window.H.done = !0;
 }
-async function Yt() {
-	let e = qt(), t = null, n = 0, r = 0, i = {
+async function Zt() {
+	let e = Yt(), t = null, n = 0, r = 0, i = {
 		fftSize: 2048,
 		context: { sampleRate: 24e3 },
 		getFloatTimeDomainData(e) {
@@ -4394,7 +4416,7 @@ async function Yt() {
 		},
 		connect() {},
 		disconnect() {}
-	}, o = new Ut(e, {
+	}, o = new Gt(e, {
 		band: "b2",
 		sources: [{
 			value: 0,
@@ -4410,7 +4432,7 @@ async function Yt() {
 		ready: !0,
 		stage: o,
 		async line(e, r) {
-			return t = await Kt(e), n = r, Z.emit({
+			return t = await Jt(e), n = r, Z.emit({
 				kind: "visemes",
 				part: 0,
 				playAt: r,
@@ -4425,7 +4447,7 @@ async function Yt() {
 			o.set({ childLevel: e });
 		},
 		affect(e) {
-			zt.emit({
+			Vt.emit({
 				kind: "affect",
 				display: e,
 				seq: Math.random()
@@ -4488,10 +4510,10 @@ async function Yt() {
 	};
 	window.H = s;
 }
-async function Xt() {
-	await Jt();
+async function Qt() {
+	await Xt();
 }
-(Wt === "capture" ? Yt() : Wt === "idle" ? Xt() : Jt()).catch((e) => {
+(Kt === "capture" ? Zt() : Kt === "idle" ? Qt() : Xt()).catch((e) => {
 	window.H = { error: String(e && e.stack || e) }, document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${String(e)}</pre>`);
 });
 //#endregion

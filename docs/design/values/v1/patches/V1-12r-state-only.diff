@@ -1,0 +1,62 @@
+--- a/server/director/state.js	2026-10-05 10:57:22.815641213 +0000
++++ b/server/director/state.js	2026-10-05 10:57:22.817955836 +0000
+@@ -151,6 +151,10 @@
+     // reads (compact; set by the route from the ledger before each step), engine re-teach bookkeeping, and the
+     // vibe persona whose knobs compile into the VIBE row. Voice/vibe never enter a belief (CE8).
+     probeSess, pendingProbe: undefined, comp: comp ?? null, reteachCool: {}, armsUsed: [], failsPostRung3: {}, lastReteach: null, parked: [],
++    // V1.4 moving on (evals/mastery-calibration): per skill this lesson, the unaided first-try run, answers, best run;
++    // `fast` skills jump to their hardest item, `settled` skills are done for the lesson (shown they can do it),
++    // `parkedSkills` stop before wheel-spinning (10 tries without 3 right) and go to the engine's re-teach next lesson.
++    pace: { run: {}, tries: {}, best: {}, miss: {}, fast: [], settled: [], parkedSkills: [] },
+     persona: newPersonaState({ band, classLevel, medium: ctx.schoolMedium ?? "english" }), vibe: null, turnsSinceError: 99,
+   };
+ }
+@@ -349,7 +353,10 @@
+   // A practice set (W2-C #7) ends when its items have all been posed (or nothing is left to pose).
+   if (s.practiceSet) return s.practiceSet.posed.length >= s.practiceSet.of;
+   const allUnaided = kit.skills.every((sk) => (s.skills[sk.id]?.correctUnaided ?? 0) >= 1);
+-  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
++  // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
++  const P = s.pace;
++  const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
++  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
+ }
+ 
+ function poseNext(s, input, prefix, preferred) {
+@@ -412,8 +419,26 @@
+   return plan("reteach", SH.reteach({ ...m.remediation, again: false }), { skillId: item.skillId, representation: m.remediation.representation });
+ }
+ 
++/** V1.4 pace bookkeeping for one graded answer on a practice item (never a warm-up check, a faded step or a diagnostic). */
++export const PACE = Object.freeze({ fastP: 0.85, settleP: 0.9, settleRun: 2, parkTries: 7 });
++function notePace(s, item, right) {
++  if (!item?.skillId || item.fade || s.phase !== "practice" || String(item.id).startsWith("diag:")) return;
++  const P = (s.pace ??= { run: {}, tries: {}, best: {}, miss: {}, fast: [], settled: [], parkedSkills: [] });
++  const k = item.skillId, firstTry = s.hintLevel === 0;
++  P.tries[k] = (P.tries[k] ?? 0) + 1;
++  P.run[k] = right && firstTry ? (P.run[k] ?? 0) + 1 : right ? P.run[k] ?? 0 : 0;
++  P.best[k] = Math.max(P.best[k] ?? 0, P.run[k]);
++  P.miss[k] = right ? 0 : (P.miss[k] ?? 0) + 1;
++  const pK = s.skills[k]?.pKnown ?? 0;
++  if (right && firstTry && pK >= PACE.fastP && !P.fast.includes(k)) P.fast = [...P.fast, k];
++  if (P.run[k] >= PACE.settleRun && pK >= PACE.settleP && !P.settled.includes(k)) P.settled = [...P.settled, k];
++  if (!right && P.miss[k] >= 2) s.easier = true;                         // two misses in a row: the gentlest item next
++  if (P.tries[k] >= PACE.parkTries && P.best[k] < 3 && !P.parkedSkills.includes(k)) P.parkedSkills = [...P.parkedSkills, k];
++}
++
+ function afterCorrect(s, input, item) {
+   const { kit, cls } = input;
++  notePace(s, item, true);
+   const unaided = s.hintLevel === 0;
+   s.itemsDone.push(item.id); s.practiced += 1;
+   if (s.practiceSet && unaided && s.practiceSet.posed.includes(item.id)) s.practiceSet = { ...s.practiceSet, firstTry: s.practiceSet.firstTry + 1 };
+@@ -455,6 +480,9 @@
+ 
+ function afterMiss(s, input, item) {
+   const { kit, cls } = input;
++  notePace(s, item, false);
++  // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
++  if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) { s.skipped.push(item.id); return poseNext(s, input, "let's leave this one for now and come back to it with a different way next time"); }
+   const m = cls?.outcome === "misconception" ? (item.misconceptions ?? kit.misconceptions).find((x) => x.id === cls.misconceptionId) : null;
+   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
+   // P21: no 3-in-a-row in ~10 opportunities — a different approach, not more of the same.

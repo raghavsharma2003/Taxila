@@ -1,0 +1,136 @@
+{
+ "date": "2026-10-05",
+ "tag": "before",
+ "method": "blind forced-choice emotion read of single production-stage frames (512 px, SwiftShader), concern at product intensities",
+ "prompt": "This is one frame of an animated cartoon teacher in a learning app for 9-13 year olds. What emotion does her FACE read as, to a child looking at it? Pick exactly ONE label from: \"neutral\", \"warm\", \"caring-concern\" (soft, engaged: \"oh, are you okay?\"), \"sad\", \"disappointed\", \"angry-stern\" (irritated, displeased, cross), \"sceptical\", \"worried-anxious\", \"surprised\", \"other\". Then rate how unkind or stern it would feel to a child, 0 (not at all) to 3 (clearly cross). Reply JSON only: {\"label\":\"...\",\"second\":\"...\",\"stern\":n,\"why\":\"<= 20 words\"}",
+ "cells": {
+  "rest": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and open eyes make her look friendly and welcoming."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, bright eyes look friendly"
+   }
+  ],
+  "warm-b2": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and open eyes feel friendly and welcoming."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile and bright eyes look friendly"
+   }
+  ],
+  "concernA-grid": [
+   {
+    "model": "taxila-brain",
+    "label": "caring-concern",
+    "second": "worried-anxious",
+    "stern": 0,
+    "why": "Raised brows and a gently downturned mouth look softly concerned, not cross."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "disappointed",
+    "second": "worried-anxious",
+    "stern": 1,
+    "why": "Downturned mouth and wide eyes show mild disappointment"
+   }
+  ],
+  "concernA-b2i1": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and open eyes make her look friendly and approachable."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile and bright eyes look friendly"
+   }
+  ],
+  "concernA-b2i2": [
+   {
+    "model": "taxila-brain",
+    "label": "caring-concern",
+    "second": "worried-anxious",
+    "stern": 0,
+    "why": "Raised, uneven brows and a slight frown suggest gentle concern without anger or harshness."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "disappointed",
+    "second": "neutral",
+    "stern": 1,
+    "why": "Straight closed mouth and serious eyes look let down"
+   }
+  ],
+  "concernB-b2i1": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and direct eyes make her look friendly and approachable."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile and soft eyes convey friendliness"
+   }
+  ],
+  "concernC-b2i1": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and open eyes make her look friendly and welcoming."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile and soft eyes convey friendliness"
+   }
+  ],
+  "calm-steady": [
+   {
+    "model": "taxila-brain",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile, relaxed brows, and open eyes make her look friendly and approachable."
+   },
+   {
+    "model": "grok-4-20-reasoning",
+    "label": "warm",
+    "second": "neutral",
+    "stern": 0,
+    "why": "Gentle smile and soft eyes look friendly"
+   }
+  ]
+ }
+}

@@ -65,8 +65,15 @@ export function spokenNumber(raw) {
   return distinct.length === 1 ? distinct[0] : null;
 }
 
+const DISCRIM = /(?:^|[^\p{L}])(?:lakhs?|lacs?|crores?|karod|hazaa?r|thousands?|millions?|billions?|hundreds?|tens|ones|tenths?|hundredths?|thousandths?|halves|half|thirds?|quarters?|fourths?|a\.?\s?m\.?|p\.?\s?m\.?|bce|bc|ce|ad|th|st|nd|rd|century|centuries|january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|apr|jun|jul|aug|sept?|oct|nov|dec|east|west|north|south|clockwise|anticlockwise|anti-clockwise|left|right|up|down|more|less|fewer|greater|smaller|before|after|full|turns?|times)(?![\p{L}])|°\s*[ewns](?![\p{L}])/iu;
 /** A key that IS a number (an optional ₹ / Rs and a unit of up to three words around it): its value, else null. */
 export function plainNumberKey(answer) {
+  // review v1 (2026-10-05): a key whose words after the number change WHAT the number is ("8 a.m.", "320 BCE coin",
+  // "4 lakh", "3 hundreds", "16 tenths", "21 June", "82.5°E") is not a plain number: the V1-02 by-value path credited
+  // "8 p.m." for "8 a.m.", "320 CE" for "320 BCE", "3 tens" for "3 hundreds" and a bare "4" for "4 lakh". Those keys
+  // keep today's path (exact match, then the model).
+  const tail = String(answer ?? "").trim().replace(/^(?:₹|rs\.?)\s*/i, "").match(/\s*(?:[\p{L}°²³%][\p{L}°²³%.]*\s*){0,3}$/u)?.[0] ?? "";
+  if (DISCRIM.test(tail)) return null;
   const s = String(answer ?? "").trim().replace(/^(?:₹|rs\.?)\s*/i, "").replace(/\s*(?:[\p{L}°²³%][\p{L}°²³%.]*\s*){0,3}$/u, "").trim();
   if (!/^-?(?:\d{1,3}(?:,\d{2,3})+|\d+)(?:\.\d+)?$|^\d+\s*\/\s*\d+$|^\d+\s+\d+\s*\/\s*\d+$/.test(s)) return null;
   return spokenNumber(s);
@@ -161,4 +168,90 @@ export function selfCorrected(raw) {
   if (last < 0) return null;
   const before = numberPhrases(s.slice(0, last)), after = numberPhrases(s.slice(last));
   return before?.length && after?.length === 1 ? after[0] : null;
+}
+
+// ───────────── units next to a number (review v1, 2026-10-05) ─────────────
+// Grading a number key by value alone credited "5 dm" for "5 cm", "500 kg" for "500 g" and "8614 sq m" for "8614 m"
+// (evals/grading-truth num-wrong:unit-swap: 183 of 183 credited on the V1-02 tree). A unit is read ONLY right after a
+// number (a digit or a number word), so a stray "m" or "l" elsewhere in a sentence is never taken as a unit.
+const LEN = { mm: "mm", millimetre: "mm", millimeter: "mm", cm: "cm", centimetre: "cm", centimeter: "cm", dm: "dm", decimetre: "dm",
+  decimeter: "dm", m: "m", metre: "m", meter: "m", mtr: "m", km: "km", kilometre: "km", kilometer: "km" };
+const OTHER = { mg: "mg", milligram: "mg", g: "g", gm: "g", gram: "g", gramme: "g", kg: "kg", kilogram: "kg", kilo: "kg", ml: "ml", millilitre: "ml",
+  milliliter: "ml", l: "l", litre: "l", liter: "l", ltr: "l", s: "s", sec: "s", second: "s", min: "min", minute: "min", h: "h", hr: "h", hour: "h",
+  day: "day", week: "week", month: "month", year: "year", paise: "paise", rupee: "rs", rs: "rs" };
+const sing = (w) => [w, w.replace(/s$/, ""), w.replace(/es$/, "")].find((x) => x.length > 0 && (LEN[x] || OTHER[x])) ?? w;
+/** Canonical units that follow a number in `raw` ("sq cm", "cm", "kg", ...), in order. */
+export function unitsAfterNumbers(raw) {
+  const toks = String(raw ?? "").toLowerCase().replace(/(\d)([a-z²³])/g, "$1 $2").replace(/[²]/g, " ²").replace(/[³]/g, " ³").replace(/[^\p{L}\p{N}²³.\/-]+/gu, " ").split(/\s+/).filter(Boolean);
+  const out = [];
+  const isNum = (t) => /\d$/.test(t) || spokenNumber(t) != null;
+  for (let i = 1; i < toks.length; i++) {
+    if (!isNum(toks[i - 1])) continue;
+    let j = i, pre = "";
+    const w0 = toks[j].replace(/\.$/, "");
+    if (w0 === "sq" || w0 === "square") { pre = "sq "; j++; } else if (w0 === "cubic" || w0 === "cu") { pre = "cu "; j++; }
+    const w = sing(String(toks[j] ?? "").replace(/\.$/, ""));
+    const len = LEN[w], oth = OTHER[w];
+    if (len) { const post = toks[j + 1] === "²" ? "sq " : toks[j + 1] === "³" ? "cu " : ""; out.push((pre || post) + len); }
+    else if (oth && !pre) out.push(oth);
+  }
+  return out;
+}
+
+// ───────────── the words after the number (review v1, 2026-10-05) ─────────────
+// A count key ("3 edges", "12 books") was graded by value alone, so "3 faces" and "3 vertices" were credited for "3 edges"
+// and "5 sides" for "5 corners". Rule: every word the child says AFTER the number must be a filler or one of the key's own
+// words (singular, unit-canonical); otherwise the model reads it. A bare number ("3") keeps today's credit: the question
+// named the thing being counted.
+const FILL = new Set(("hai hain he h ho hoga hogi honge hota hoti hote tha thi ji didi di maam mam madam sir bhaiya bhaiyya teacher only hi toh to na " +
+  "haan han ha yes yeah bas ok okay is are its it answer and a an the total exactly um umm hmm uh please deg degree degrees each of " +
+  // correction and denial words are not a counted thing: a denial is caught by classifyFast's `denies`, a correction by selfCorrected
+  "nahi nahin nhi no not sorry matlab i mean wait").split(" "));
+const TEMP = { c: "°c", celsius: "°c", centigrade: "°c", f: "°f", fahrenheit: "°f" };
+const canonWord = (w) => { const x = sing(w); return LEN[x] ?? OTHER[x] ?? TEMP[x] ?? x.replace(/(?:ies)$/, "y").replace(/(?:es|s)$/, (m) => (x.length > 3 ? "" : m)); };
+const wordToks = (raw) => String(raw ?? "").toLowerCase().normalize("NFC").replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)))
+  .replace(/(\d)([a-z°²³])/g, "$1 $2").replace(/°/g, " deg ").replace(/[²]/g, " sq ").replace(/[³]/g, " cu ").replace(/[^\p{L}\p{N}.\/-]+/gu, " ")
+  .split(/\s+/).map((t) => t.replace(/^[.]+|[.]+$/g, "")).filter(Boolean);
+const isNumTok = (t) => /\d/.test(t) || wordNum(t) != null || t in SCALE || t in SPECIAL || t in PREFIX || t in DEN || SIGN.has(t) || t === "point" || OVER.has(t);
+/** Content words after the first number in `raw`, canonical. */
+function wordsAfterNumber(raw) {
+  const toks = wordToks(raw);
+  const i = toks.findIndex(isNumTok);
+  if (i < 0) return [];
+  return toks.slice(i + 1).filter((t) => !isNumTok(t) && !FILL.has(t)).map(canonWord);
+}
+/** Does the child's reply name only things the key names? true when nothing is said after the number. */
+export function tailAgrees(key, text) {
+  const kt = new Set(wordsAfterNumber(key)), ct = wordsAfterNumber(text);
+  return ct.every((w) => kt.has(w));
+}
+
+// ───────────── a key that STARTS with a number but is not a plain number (review v1, 2026-10-05) ─────────────
+// "8 a.m.", "9 crore downloads", "21 June": plainNumberKey refuses these (the words decide what the number is), so the
+// model reads them, and the model credited "-8 a.m.", "-9 crore downloads" and a bare "21" for "21 June"
+// (evals/grading-truth model leg). Two code checks the model cannot overrule:
+const leadOf = (key) => String(key ?? "").trim().replace(/^(?:₹|rs\.?)\s*/i, "").match(/^(-?\d[\d,]*(?:\.\d+)?)(?![\d\/])/)?.[1] ?? null;
+/** The reply's sign contradicts the key's leading number ("-8 a.m." for "8 a.m."): never the key. */
+export function signConflict(key, text) {
+  const lead = leadOf(key);
+  if (lead == null) return false;
+  const ph = numberPhrases(text);
+  if (!ph || !ph.length) return false;
+  const keyNeg = lead.startsWith("-");
+  return keyNeg ? ph.every((v) => v > 0) : ph.some((v) => v < 0);
+}
+/** The reply is only the key's leading number, and the key's words decide what it is ("21" for "21 June"): the decisive
+ * word, else null. A question that itself names the word ("How many hundreds...?") makes the bare number complete. */
+export function bareOfDecisive(key, text, prompt = "") {
+  const lead = leadOf(key);
+  if (lead == null || plainNumberKey(key) != null) return null;
+  const tail = String(key).trim().replace(/^(?:₹|rs\.?)\s*/i, "").slice(String(key).trim().replace(/^(?:₹|rs\.?)\s*/i, "").indexOf(lead) + lead.length);
+  const m = tail.match(DISCRIM);
+  if (!m) return null;
+  const word = m[0].replace(/^[^\p{L}°]+/u, "").toLowerCase();
+  if (wordsAfterNumber(text).length) return null;
+  const v = spokenNumber(text);
+  if (v == null || Math.abs(v - Number(lead.replace(/,/g, ""))) > 1e-9) return null;
+  if (word.length > 2 && String(prompt).toLowerCase().includes(word.replace(/s$/, ""))) return null;
+  return word;
 }

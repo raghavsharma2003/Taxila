@@ -54,10 +54,13 @@ const VA_DEV = /व/u;
  *  ("R" retroflex, "D" dental, one letter per stop in reading order; th/dh and geminates are one stop, n before k/g is
  *  not a stop). Small, honest list: a word not here keeps the dental shape, the commoner Hindi stop and the safe default. */
 const RETRO_ROMAN: Record<string, string> = {
+  // Review v4 (2026-10-05): a nasal before a retroflex stop is the retroflex ण (homorganic: ghanta, anda, danda, jhanda
+  // are "RR"/"RRR", not "DR"); ढूंढ (dhoondh) starts and ends with ढ ("RDR" was "DR", which curled the nasal); गंदा
+  // (ganda, "dirty") is dental द ("DD", was "DR").
   baanta: "DR", baant: "DR", baantte: "DR", baantna: "DRD", thoda: "DR", thodi: "DR", thode: "DR", dabba: "R", dibba: "R",
-  ghanta: "DR", ghante: "DR", tukda: "RR", tukde: "RR", tukdon: "RRD", ladka: "R", ladki: "R", bada: "R", badi: "R", bade: "R",
-  ped: "R", pedh: "R", dar: "R", dhoondh: "DR", dhundh: "DR", pattern: "RD", chhota: "R", chhoti: "R", chhote: "R", mota: "R",
-  moti: "R", gaadi: "R", ganda: "DR", anda: "DR", danda: "RDR", jhanda: "DR", pahad: "R", sadak: "R", ude: "R", ud: "R", tota: "DD",
+  ghanta: "RR", ghante: "RR", tukda: "RR", tukde: "RR", tukdon: "RRD", ladka: "R", ladki: "R", bada: "R", badi: "R", bade: "R",
+  ped: "R", pedh: "R", dar: "R", dhoondh: "RDR", dhundh: "RDR", pattern: "RD", chhota: "R", chhoti: "R", chhote: "R", mota: "R",
+  moti: "R", gaadi: "R", ganda: "DD", anda: "RR", danda: "RRR", jhanda: "RR", pahad: "R", sadak: "R", ude: "R", ud: "R", tota: "DD",
 };
 
 /** The t/d/n stops of one Roman word in reading order, with their retroflex flags (lexicon, else all dental). */
@@ -82,6 +85,7 @@ function devStops(w: string): boolean[] {
     if (RETRO_DEV.test(c)) out.push(true);
     else if (DENTAL_DEV.test(c)) out.push(false);
     else if (c === "ं" && DENTAL_DEV.test(ch[i + 1] ?? "")) out.push(false);
+    else if (c === "ं" && RETRO_DEV.test(ch[i + 1] ?? "")) out.push(true); // homorganic ण before ट/ड (ठंडा), Review v4
   }
   return out;
 }
@@ -97,7 +101,7 @@ export function wordFlags(text: string): { stops: boolean[]; retroflex: number; 
 
 /**
  * The tongue flag of every alveolar/dental/retroflex stop the TEXT predicts, in reading order (true = retroflex curl).
- * Used when a part came without word boundaries: Azure's word events cost ~480 ms of first audio together with visemes
+ * Used when a part came without word boundaries: Azure's word events cost a median +378 ms of first audio together with visemes (bimodal, n = 8, eval proxy)
  * (evals/face-puppet/out/ttfb-warm.json), so the first part of a reply asks for visemes only; the list is applied only
  * when its length equals Azure's id-19 count (resolveVisemes). Accuracy: evals/face-puppet/retro-align.mjs.
  */
@@ -116,7 +120,14 @@ export interface TimedViseme { ms: number; id: number; target: MouthTarget }
  */
 export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
   const out: TimedViseme[] = [];
-  const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0 }));
+  const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0, n19: 0 }));
+  const wordOf = (ms: number) => flags.find((x) => ms >= x.ms - 10 && ms < x.ms + x.durMs + 10);
+  // Review v4 (2026-10-05): a word's k-th stop letter is put on its k-th id-19 event ONLY when the word holds exactly as
+  // many id-19 events as the text has stops. Measured on the 24-line battery (evals/face-puppet/retro-words.mjs): Azure's
+  // Hinglish ids put extra id-19 events in words (Roman "ch"/"chh" onsets, a geminate read as two, a word-start event
+  // that belongs to the previous phone), and the ungated mapping drew 4 of its 10 curls on the wrong sound (bada, dhoondh,
+  // chhoti, chhota). A refused word draws every stop as the dental tip-up, the same default as a refused viseme-only part.
+  for (const v of visemes) if (v.id === 19) { const w = wordOf(v.ms); if (w) w.n19++; }
   // no word events: the text's stop list, consumed in order by the id-19 events, ONLY when its length equals Azure's id-19
   // count (else the order cannot be trusted: on the battery a blind mapping put 7 curls on dentals for 4 right ones,
   // evals/face-puppet/out/retro-align.json). A refused mapping draws every stop as the dental tip-up (the commoner stop).
@@ -131,11 +142,11 @@ export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }
     }
     const base = AZURE_TO_CONTRACT[v.id] ?? AZURE_TO_CONTRACT[0];
     let target: MouthTarget = base;
-    const w = flags.find((x) => v.ms >= x.ms - 10 && v.ms < x.ms + x.durMs + 10);
+    const w = wordOf(v.ms);
     if (w) {
       if (v.id === 19) {
         // the word's k-th stop takes the k-th letter's place: retroflex curls (the tip is back, not at the teeth)
-        if (w.f.stops[w.k++] === true) target = { v: "viseme_DD", w: 1, tongue: { tongueCurl: 0.9, tongueTipUp: 0 } };
+        if (w.f.stops[w.k++] === true && w.n19 === w.f.stops.length) target = { v: "viseme_DD", w: 1, tongue: { tongueCurl: 0.9, tongueTipUp: 0 } };
       } else if (v.id === 18 && w.f.va) target = { v: "viseme_FF", w: 0.6 };
     }
     out.push({ ms: v.ms, id: v.id, target });

@@ -36,6 +36,19 @@ test("Hindi word rules: retroflex words curl, dentals tip up, व is a light lab
   assert.equal(r[6].target.w, 0.6, "व is lighter than v");
 });
 
+test("word-timed parts: a curl is drawn only when the word holds as many id-19 events as stop letters (Review v4)", () => {
+  // chhota: Azure puts an id-19 on the chh onset as well as on the ट (evals/face-puppet/out/retro-words.json): 2 events
+  // for 1 stop letter, so the k-th mapping would curl the onset. It must draw both as dentals instead.
+  const vis = [{ ms: 0, id: 0 }, { ms: 15, id: 16 }, { ms: 77, id: 19 }, { ms: 138, id: 7 }, { ms: 323, id: 19 }, { ms: 384, id: 1 }];
+  const r = resolveVisemes(vis, [{ ms: 0, durMs: 430, text: "chhota" }]);
+  assert.ok(!r.some((x) => x.target.tongue?.tongueCurl), "no curl on a count-mismatched word");
+  // dhoondh (ढूंढ): ढ + nasal + ढ, 3 events for 3 stops: both ढ curl, the nasal does not
+  const d = resolveVisemes([{ ms: 15, id: 19 }, { ms: 138, id: 12 }, { ms: 262, id: 19 }, { ms: 323, id: 19 }], [{ ms: 0, durMs: 490, text: "dhoondh" }]);
+  assert.deepEqual(d.filter((x) => x.id === 19).map((x) => !!x.target.tongue?.tongueCurl), [true, false, true]);
+  assert.deepEqual(wordFlags("ganda").stops, [false, false]); // गंदा is dental
+  assert.deepEqual(wordFlags("ठंडा").stops, [true, true, true]); // ठ, then anusvara before ड is the retroflex nasal, ड
+});
+
 test("viseme-only parts: the text stop list is used only when its count matches Azure's", () => {
   assert.deepEqual(stopFlagsFromText("thoda tota"), [false, true, false, false]);
   const vis = [{ ms: 0, id: 19 }, { ms: 100, id: 19 }, { ms: 200, id: 19 }, { ms: 300, id: 19 }];

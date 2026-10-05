@@ -157,12 +157,18 @@ function checkMessages(t, game, explainer, keys) {
 
 // ── stages ──
 function feedbackOf(v) { return v.fellBack ? `the spec was rejected and replaced by the default (${v.repairs.join("; ").slice(0, 600)})` : v.repairs.join("; ").slice(0, 800); }
+function kitIdsOf(t) { return [t.topicId, ...(t.misconceptions ?? []).map((m) => m.id), ...(t.items ?? []).map((i) => i.id)]; }
+function unknownIds(t, spec) { const ok = new Set(kitIdsOf(t)), out = []; JSON.stringify(spec ?? null, (k, v) => { if ((k === "targets" || k === "src") && typeof v === "string" && !ok.has(v)) out.push(v); return v; }); return [...new Set(out)]; }
 async function authorSpec(t, arch, messagesFor, tag) {
   let feedback = "", best = null, attempts = 0;
   for (let k = 0; k < 3; k++) {
     attempts++;
     let raw; try { raw = await call(AUTHOR, messagesFor(feedback), { maxTokens: 16000, effort: k === 0 ? "medium" : "low" }, `${tag}:${t.topicId}`); } catch (e) { feedback = `your output was not usable JSON (${String(e.message).slice(0, 120)})`; continue; }
-    const v = validateAny(arch, raw);
+    const v0 = validateAny(arch, raw);
+    // Cited ids are checked by predicate, not trusted to the prompt's "use the id exactly" (review v3 2026-10-05: 3 unknown
+    // ids shipped in 2 of 20 topic files, one of them passed by the model cross-check). An unknown id makes the spec unusable.
+    const bad = unknownIds(t, v0.spec);
+    const v = bad.length ? { ...v0, fellBack: true, repairs: [...v0.repairs, ...bad.map((id) => `unknown kit id "${id}" (use one of: ${kitIdsOf(t).join(", ")})`)] } : v0;
     if (!v.fellBack && (!best || v.repairs.length < best.repairs.length)) best = { spec: v.spec, repairs: v.repairs };
     if (!v.fellBack && v.repairs.length === 0) break;
     feedback = feedbackOf(v);

@@ -88,7 +88,9 @@ await withTestAccount(async ({ api, child: first }) => {
     if (!ended(stop.r)) {
       const chips = stop.r.ui?.chips ?? [];
       if (after === "confirm") {
-        const chip = chips.find((c) => STOP_CHIP.test(c.label) || /stop|end/.test(c.id));
+        // the stop CHOICE: its id is stop:end ("stop:continue" also contains "stop" and is the keep-going chip, which this
+        // used to click: 9/9 owner-3 confirm failures on 2026-10-05 were the harness pressing "Keep going")
+        const chip = chips.find((c) => c.id === "stop:end") ?? chips.find((c) => STOP_CHIP.test(c.label) && !GO_CHIP.test(c.label) && !/continue/.test(c.id));
         const r2 = chip ? await L.turn(chip.label, { kind: "stop", body: { chipId: chip.id } }) : await L.turn(persona.lang === "english" ? "yes, stop for today" : "haan, aaj ke liye bas", { kind: "stop" });
         rec.confirm = { via: chip ? `chip ${chip.id}` : "words", ended: ended(r2.r), reply: r2.r.teacherReply };
         ok(ended(r2.r), `${tag}: the explicit confirmation ends the lesson that turn (${chip ? `chip "${chip.label}"` : "words"}) — end:${!!r2.r.end} move ${r2.r.move?.kind}`);

@@ -62,3 +62,40 @@ V1-10/11/12 newly fail 6 tests that encode the old rule:
   uses a 20 h check.
 
 That these fail is the point of the change. The tests must be rewritten to the V1.3 rule, never the rule rolled back.
+
+---
+
+## Review v1 (2026-10-05, ~10:20-11:15Z): apply THIS order on the integrated tree
+
+The table above was measured on 08:00-08:45Z copies. On the tree as it stood at ~10:20Z (Wave 2 + Day-0 owner-truth
+01-10 merged), three of the patches above do not apply, and V1-02 as written breaks the model leg. Use this series
+instead (verified: applied in this order to a fresh copy of the integrated tree, it reproduces the reviewed tree byte for
+byte):
+
+1. `V1-01-engine-recheck-real-shape.diff` (unchanged)
+2. `V1-02r-classify-rebased-on-integrated-tree.diff` (replaces V1-02: the import hunk failed against W2-E's `requestOf` import)
+3. `V1-03-placement-one-number-reader.diff`, `V1-04-studio-frame-stamps-item.diff`, `V1-06-comprehension-rkey-numbers-negation.diff` (unchanged)
+4. `V1-10-ledger-secure-needs-2-days-and-new-item.diff` (unchanged)
+5. `src/server/learner/checks.js` → `server/learner/checks.js` (the new-file part of V1-11), then
+   `V1-11r-12r-items-rebased-on-integrated-tree.diff` (replaces the items.js hunks of BOTH V1-11 and V1-12: RS-6's
+   `buildF0Queue` must skip the reserve too)
+6. `V1-11b-lesson-start-uses-checks.diff` (unchanged), `V1-12r-state-only.diff` (the state.js part of V1-12)
+7. `V1-02c-review-units-words-apostrophe-model-scope.diff` (review fixes, below)
+8. `V1-04b-review-sequence-honours-item.diff` and `V1-04c-review-sequence-seam-data-item.diff` (below)
+
+What the review patches fix (all measured with `evals/grading-truth/run.mjs`, seeds 7/13/29, SYNTHETIC answers):
+
+| defect in V1 as built | evidence | fix |
+|---|---|---|
+| **V1-02 crashes every model call on the integrated tree.** W2-E moved the model call into `classifyModel()`; V1-02's `fast.numericMismatch` became a free variable, so each call threw `fast is not defined`, the answer earned `no_evidence`, and the model's `wants_to_stop` flag was lost ("didi ab mera mann nahi hai" → stop flag false). | tests/classify.test.mjs "calls taxila-fast…" (2 calls, not 1) and "model flags merge in…" fail on the V1 tree; pass after V1-02c | `fast` is passed into `classifyModel` |
+| **By-value grading credits the right number in the wrong unit.** "5 dm" for "5 cm", "24 sq m" for "24 m", "500 kg" for "500 g" | 183/183 unit-swap cases credited on the V1 tree | unit read after a number; a different unit defers to the model and the model may not call it the key (`unit_mismatch`) |
+| **By-value grading credits a different counted thing or a different meaning.** "8 p.m." for "8 a.m." (the question asks a.m. or p.m.), "320 CE" for "320 BCE coin", "3 faces" for "3 edges", "3 tens" for "3 hundreds", "21 December" for "21 June", "24 °F" for "24 °C", bare "4" for "4 lakh". Today's tree sends all of these to the model; V1-02 made them code-credited. The battery could not see this: its oracle reads no key with words after the number, so 446 such keys were only probed as text. | new battery family `numnoun:*` (oracle-side word lists): V1 as built 13+ false credits per seed; 0 after | keys whose words decide what the number is are not plain numbers (`DISCRIM`); for count keys every word after the number must be a filler or the key's own word (`tailAgrees`); a sign the key does not have is never the key (`signConflict`); a bare leading number of such a key is at most partial (`bareOfDecisive`) |
+| **Apostrophe placement credited.** `norm()` drops apostrophes, so "soldiers'" matched "soldier's" | `text-wrong:apostrophe-moved` | exact match must put apostrophes in the same place |
+| **Studio sequence ignores the item the frame names.** | `--studio-stamp all`: sequence wrong tries still told right | V1-04b |
+| **V1-04 cannot stamp sequence_steps at all.** The runtime stamps the first `[data-item]`; only shade_fraction and number_line_jump declare that seam. | `--studio-stamp seam` (what V1-04 really delivers): 2-6 wrong tries told "right" per seed, all sequence_steps | V1-04c adds the seam line. NOT measured end to end: needs regenerated builds and the QA player to check it |
+
+Tests these patches break and that the build report did not list (beyond learner-kt 146-150 and comprehension 18):
+- `tests/owner-truth-guards.test.mjs` F1 (asserts patch 01's flat-shape recheck; superseded by V1-01: rewrite on `parseModuleToHost → toModuleEvent` events) and F5 (asserts `multiPartKey`; superseded by the parts data);
+- `tests/lesson-truth.test.mjs` G-SAY-1 fails once V1-11's items.js holds the reserve item out of practice: the fixture
+  reaches a different practice item and the "screen" guard is not triggered. Not diagnosed further: re-target the
+  fixture to an item with no chips and no module, then confirm the guard still fires.

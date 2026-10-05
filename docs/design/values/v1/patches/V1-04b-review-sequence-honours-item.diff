@@ -1,0 +1,12 @@
+--- a/server/studio/grade.js	2026-10-05 10:57:12.716879963 +0000
++++ b/server/studio/grade.js	2026-10-05 10:57:12.718671319 +0000
+@@ -62,6 +62,9 @@
+   const pick = (v, hint) => {
+     if (kind === "cards") return typeof v?.card === "string" ? String(v.card).slice(0, 24) : "?";
+     if (kind === "sequence") {
++      // V1-04b (review v1): the frame names the slot on screen (V1-04 stamps data-item); honour it, as every other kind
++      // does. Without this a card that belongs in an already-filled slot is graded "right" against that closed slot.
++      if (typeof hint?.itemId === "string" && items.includes(hint.itemId)) return hint.itemId;
+       const i = (params.order ?? []).indexOf(v?.key);
+       if (i >= 0 && closed.has(`pos${i}`)) return `pos${i}`;
+       return items.find((id) => !closed.has(id)) ?? "?";

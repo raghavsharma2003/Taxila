@@ -1,0 +1,2020 @@
+{
+ "rv-main": {
+  "meta": {
+   "label": "rv-main",
+   "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2/main",
+   "children": 240,
+   "lessons": 12,
+   "seed": 11,
+   "family": "both",
+   "subjects": [
+    "maths"
+   ],
+   "date": "2026-10-05T10:38:33.766Z",
+   "turns": 74938,
+   "lessonsRun": 2880,
+   "warmupFrom": "routes/lesson.js warmupItemsFor (replicated)"
+  },
+  "firstTry": {
+   "model": {
+    "n": 28272,
+    "ece": 0.0826,
+    "brier": 0.2388,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 2,
+      "meanPred": 0.186,
+      "observed": 0
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 338,
+      "meanPred": 0.273,
+      "observed": 0.367
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 4938,
+      "meanPred": 0.36,
+      "observed": 0.498
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 9605,
+      "meanPred": 0.445,
+      "observed": 0.545
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 5358,
+      "meanPred": 0.545,
+      "observed": 0.599
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 4252,
+      "meanPred": 0.657,
+      "observed": 0.69
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 3779,
+      "meanPred": 0.724,
+      "observed": 0.786
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0656,
+    0.0954
+   ],
+   "oracle": {
+    "n": 28272,
+    "ece": 0.0065,
+    "brier": 0.1379,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 71,
+      "meanPred": 0.047,
+      "observed": 0.07
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 6073,
+      "meanPred": 0.128,
+      "observed": 0.125
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1571,
+      "meanPred": 0.25,
+      "observed": 0.28
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1736,
+      "meanPred": 0.356,
+      "observed": 0.354
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1614,
+      "meanPred": 0.441,
+      "observed": 0.449
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1397,
+      "meanPred": 0.551,
+      "observed": 0.56
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1630,
+      "meanPred": 0.652,
+      "observed": 0.658
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2049,
+      "meanPred": 0.752,
+      "observed": 0.769
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 2839,
+      "meanPred": 0.853,
+      "observed": 0.858
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 9292,
+      "meanPred": 0.92,
+      "observed": 0.917
+     }
+    ]
+   },
+   "model_A": 0.064,
+   "model_B": 0.1015,
+   "maxPred": 0.7512,
+   "meanPred": 0.516,
+   "observed": 0.599
+  },
+  "delayedCheck": {
+   "model": {
+    "n": 1646,
+    "ece": 0.0388,
+    "brier": 0.2289,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1,
+      "meanPred": 0.366,
+      "observed": 0
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 11,
+      "meanPred": 0.474,
+      "observed": 0.273
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 106,
+      "meanPred": 0.554,
+      "observed": 0.5
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 797,
+      "meanPred": 0.662,
+      "observed": 0.659
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 731,
+      "meanPred": 0.722,
+      "observed": 0.65
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0222,
+    0.0826
+   ],
+   "oracle": {
+    "n": 1646,
+    "ece": 0.0222,
+    "brier": 0.1616,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 141,
+      "meanPred": 0.14,
+      "observed": 0.121
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 109,
+      "meanPred": 0.247,
+      "observed": 0.266
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 82,
+      "meanPred": 0.342,
+      "observed": 0.354
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 117,
+      "meanPred": 0.452,
+      "observed": 0.385
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 132,
+      "meanPred": 0.55,
+      "observed": 0.538
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 178,
+      "meanPred": 0.652,
+      "observed": 0.629
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 262,
+      "meanPred": 0.75,
+      "observed": 0.763
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 369,
+      "meanPred": 0.854,
+      "observed": 0.875
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 256,
+      "meanPred": 0.921,
+      "observed": 0.898
+     }
+    ]
+   },
+   "model_A": 0.2037,
+   "model_B": 0.1293,
+   "maxPred": 0.7455,
+   "meanPred": 0.68,
+   "observed": 0.642
+  },
+  "recalibrated": {
+   "method": "isotonic map pred -> P(correct), fitted on children with id%4 in {0,1}, scored on id%4 in {2,3} (held-out; both families on each side)",
+   "heldOutFirstTry": 0.0267,
+   "heldOutFirstTryBefore": 0.0891,
+   "heldOutCheck": 0.0931,
+   "heldOutCheckBefore": 0.0482,
+   "nTrain": 14116,
+   "nTest": 14156,
+   "nTestChecks": 925
+  },
+  "falseMastery": {
+   "learned_today": {
+    "n": 1352,
+    "fm50": 0.0444,
+    "fm50CI": [
+     0.0346,
+     0.0567
+    ],
+    "fm70": 0.1368,
+    "fm50at7d": 0.5274,
+    "byPersona": {
+     "average": {
+      "n": 539,
+      "fm50": 0.0093
+     },
+     "forgetter": {
+      "n": 189,
+      "fm50": 0.0106
+     },
+     "weak": {
+      "n": 169,
+      "fm50": 0.1775
+     },
+     "shallow": {
+      "n": 30,
+      "fm50": 0.7333
+     },
+     "misconception": {
+      "n": 41,
+      "fm50": 0.0244
+     },
+     "strong": {
+      "n": 384,
+      "fm50": 0
+     }
+    }
+   },
+   "mastered": {
+    "n": 1055,
+    "fm50": 0.0739,
+    "fm50CI": [
+     0.0596,
+     0.0913
+    ],
+    "fm70": 0.1962,
+    "fm50at7d": 0.3062,
+    "byPersona": {
+     "average": {
+      "n": 429,
+      "fm50": 0.0163
+     },
+     "forgetter": {
+      "n": 129,
+      "fm50": 0.1318
+     },
+     "weak": {
+      "n": 125,
+      "fm50": 0.28
+     },
+     "shallow": {
+      "n": 22,
+      "fm50": 0.7273
+     },
+     "strong": {
+      "n": 319,
+      "fm50": 0
+     },
+     "misconception": {
+      "n": 31,
+      "fm50": 0.0968
+     }
+    }
+   },
+   "durable": {
+    "n": 1,
+    "fm50": 1,
+    "fm50CI": [
+     0.2065,
+     1
+    ],
+    "fm70": 1,
+    "fm50at7d": 1,
+    "byPersona": {
+     "average": {
+      "n": 1,
+      "fm50": 1
+     }
+    }
+   }
+  },
+  "policy": {
+   "skillSessions": 8700,
+   "boredom": 0.1638,
+   "boredomCI": [
+    0.1562,
+    0.1717
+   ],
+   "overloadInSession": 0.0489,
+   "overloadAcross": 0.0624,
+   "skillsAcross": 8700,
+   "byPersona": {
+    "average": {
+     "n": 2902,
+     "boredom": 0.1854,
+     "overload": 0.0186
+    },
+    "forgetter": {
+     "n": 979,
+     "boredom": 0.1675,
+     "overload": 0.0096
+    },
+    "weak": {
+     "n": 2031,
+     "boredom": 0.0995,
+     "overload": 0.1497
+    },
+    "shallow": {
+     "n": 758,
+     "boredom": 0.0264,
+     "overload": 0.072
+    },
+    "misconception": {
+     "n": 509,
+     "boredom": 0.053,
+     "overload": 0.0602
+    },
+    "strong": {
+     "n": 1521,
+     "boredom": 0.3116,
+     "overload": 0.0015
+    }
+   }
+  },
+  "ledgerChecks": {
+   "n": 2121,
+   "newItem": 0.4234,
+   "delayGE2d": 0.6803,
+   "firstTryPass": 0.6417,
+   "ece": 0.0374,
+   "kinds": {
+    "retrieval": 2121
+   },
+   "passedTrueNewForm": 0.8
+  },
+  "certRules": {
+   "onePass": {
+    "n": 1056,
+    "fm50": 0.0739,
+    "fm50CI": [
+     0.0596,
+     0.0912
+    ],
+    "meanTrueNewForm": 0.805
+   },
+   "onePassNovel": {
+    "n": 640,
+    "fm50": 0.05,
+    "fm50CI": [
+     0.0356,
+     0.0697
+    ],
+    "meanTrueNewForm": 0.819
+   },
+   "twoPasses": {
+    "n": 281,
+    "fm50": 0.0925,
+    "fm50CI": [
+     0.0639,
+     0.1321
+    ],
+    "meanTrueNewForm": 0.784
+   },
+   "twoPassesNovel": {
+    "n": 0,
+    "fm50": null,
+    "fm50CI": null,
+    "meanTrueNewForm": null
+   }
+  },
+  "checks": {
+   "n": 1646,
+   "newItem": 0.5456,
+   "delayGE2d": 0.5917,
+   "medianDelay": 2,
+   "accuracy": 0.6416,
+   "kinds": {
+    "retrieval": 1646
+   }
+  }
+ },
+ "rv-v1": {
+  "meta": {
+   "label": "rv-v1",
+   "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2/v1",
+   "children": 240,
+   "lessons": 12,
+   "seed": 11,
+   "family": "both",
+   "subjects": [
+    "maths"
+   ],
+   "date": "2026-10-05T10:53:11.095Z",
+   "turns": 71081,
+   "lessonsRun": 2880,
+   "warmupFrom": "server/learner/checks.js"
+  },
+  "firstTry": {
+   "model": {
+    "n": 26045,
+    "ece": 0.0954,
+    "brier": 0.2461,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 4,
+      "meanPred": 0.19,
+      "observed": 0.25
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 440,
+      "meanPred": 0.274,
+      "observed": 0.386
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 5502,
+      "meanPred": 0.36,
+      "observed": 0.509
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 9775,
+      "meanPred": 0.445,
+      "observed": 0.565
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 4187,
+      "meanPred": 0.547,
+      "observed": 0.6
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 3826,
+      "meanPred": 0.653,
+      "observed": 0.706
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2311,
+      "meanPred": 0.72,
+      "observed": 0.727
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0787,
+    0.1119
+   ],
+   "oracle": {
+    "n": 26045,
+    "ece": 0.0056,
+    "brier": 0.1382,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 76,
+      "meanPred": 0.046,
+      "observed": 0.026
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 5745,
+      "meanPred": 0.127,
+      "observed": 0.125
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1328,
+      "meanPred": 0.252,
+      "observed": 0.26
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1673,
+      "meanPred": 0.357,
+      "observed": 0.357
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1477,
+      "meanPred": 0.441,
+      "observed": 0.431
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1324,
+      "meanPred": 0.551,
+      "observed": 0.568
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1517,
+      "meanPred": 0.651,
+      "observed": 0.625
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 1811,
+      "meanPred": 0.751,
+      "observed": 0.753
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 2382,
+      "meanPred": 0.853,
+      "observed": 0.859
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 8712,
+      "meanPred": 0.92,
+      "observed": 0.916
+     }
+    ]
+   },
+   "model_A": 0.083,
+   "model_B": 0.115,
+   "maxPred": 0.7512,
+   "meanPred": 0.495,
+   "observed": 0.591
+  },
+  "delayedCheck": {
+   "model": {
+    "n": 1327,
+    "ece": 0.1326,
+    "brier": 0.2677,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 11,
+      "meanPred": 0.485,
+      "observed": 0.545
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 109,
+      "meanPred": 0.569,
+      "observed": 0.596
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 695,
+      "meanPred": 0.648,
+      "observed": 0.535
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 512,
+      "meanPred": 0.717,
+      "observed": 0.533
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.1094,
+    0.1745
+   ],
+   "oracle": {
+    "n": 1327,
+    "ece": 0.0367,
+    "brier": 0.2021,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 111,
+      "meanPred": 0.149,
+      "observed": 0.099
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 96,
+      "meanPred": 0.252,
+      "observed": 0.25
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 134,
+      "meanPred": 0.352,
+      "observed": 0.396
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 161,
+      "meanPred": 0.451,
+      "observed": 0.422
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 196,
+      "meanPred": 0.552,
+      "observed": 0.577
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 216,
+      "meanPred": 0.65,
+      "observed": 0.551
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 200,
+      "meanPred": 0.748,
+      "observed": 0.73
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 165,
+      "meanPred": 0.853,
+      "observed": 0.836
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 48,
+      "meanPred": 0.916,
+      "observed": 0.917
+     }
+    ]
+   },
+   "model_A": 0.2316,
+   "model_B": 0.0581,
+   "maxPred": 0.7408,
+   "meanPred": 0.667,
+   "observed": 0.54
+  },
+  "recalibrated": {
+   "method": "isotonic map pred -> P(correct), fitted on children with id%4 in {0,1}, scored on id%4 in {2,3} (held-out; both families on each side)",
+   "heldOutFirstTry": 0.0274,
+   "heldOutFirstTryBefore": 0.1038,
+   "heldOutCheck": 0.1785,
+   "heldOutCheckBefore": 0.1503,
+   "nTrain": 12943,
+   "nTest": 13102,
+   "nTestChecks": 700
+  },
+  "falseMastery": {
+   "learned_today": {
+    "n": 1252,
+    "fm50": 0.0599,
+    "fm50CI": [
+     0.0481,
+     0.0744
+    ],
+    "fm70": 0.1725,
+    "fm50at7d": 0.5375,
+    "byPersona": {
+     "average": {
+      "n": 474,
+      "fm50": 0.0211
+     },
+     "forgetter": {
+      "n": 171,
+      "fm50": 0.0117
+     },
+     "weak": {
+      "n": 166,
+      "fm50": 0.2651
+     },
+     "shallow": {
+      "n": 29,
+      "fm50": 0.6207
+     },
+     "misconception": {
+      "n": 50,
+      "fm50": 0.02
+     },
+     "strong": {
+      "n": 362,
+      "fm50": 0
+     }
+    }
+   },
+   "mastered": {
+    "n": 666,
+    "fm50": 0.0766,
+    "fm50CI": [
+     0.0587,
+     0.0993
+    ],
+    "fm70": 0.2252,
+    "fm50at7d": 0.2748,
+    "byPersona": {
+     "average": {
+      "n": 249,
+      "fm50": 0.0281
+     },
+     "forgetter": {
+      "n": 67,
+      "fm50": 0.1493
+     },
+     "weak": {
+      "n": 75,
+      "fm50": 0.2933
+     },
+     "shallow": {
+      "n": 19,
+      "fm50": 0.5789
+     },
+     "strong": {
+      "n": 227,
+      "fm50": 0
+     },
+     "misconception": {
+      "n": 29,
+      "fm50": 0.0345
+     }
+    }
+   },
+   "durable": {
+    "n": 0,
+    "fm50": null,
+    "fm50CI": null,
+    "fm70": null,
+    "fm50at7d": null,
+    "byPersona": {}
+   }
+  },
+  "policy": {
+   "skillSessions": 8700,
+   "boredom": 0.1546,
+   "boredomCI": [
+    0.1472,
+    0.1623
+   ],
+   "overloadInSession": 0.0299,
+   "overloadAcross": 0.0371,
+   "skillsAcross": 8700,
+   "byPersona": {
+    "average": {
+     "n": 2902,
+     "boredom": 0.1626,
+     "overload": 0.0105
+    },
+    "forgetter": {
+     "n": 979,
+     "boredom": 0.1471,
+     "overload": 0.0117
+    },
+    "weak": {
+     "n": 2031,
+     "boredom": 0.1014,
+     "overload": 0.0833
+    },
+    "shallow": {
+     "n": 758,
+     "boredom": 0.0501,
+     "overload": 0.0391
+    },
+    "misconception": {
+     "n": 509,
+     "boredom": 0.053,
+     "overload": 0.0446
+    },
+    "strong": {
+     "n": 1521,
+     "boredom": 0.3011,
+     "overload": 0.0043
+    }
+   }
+  },
+  "ledgerChecks": {
+   "n": 1369,
+   "newItem": 1,
+   "delayGE2d": 1,
+   "firstTryPass": 0.55,
+   "ece": 0.1213,
+   "kinds": {
+    "near_transfer": 738,
+    "practice": 550,
+    "retrieval": 81
+   },
+   "passedTrueNewForm": 0.791
+  },
+  "certRules": {
+   "onePass": {
+    "n": 667,
+    "fm50": 0.078,
+    "fm50CI": [
+     0.0599,
+     0.1008
+    ],
+    "meanTrueNewForm": 0.795
+   },
+   "onePassNovel": {
+    "n": 667,
+    "fm50": 0.078,
+    "fm50CI": [
+     0.0599,
+     0.1008
+    ],
+    "meanTrueNewForm": 0.795
+   },
+   "twoPasses": {
+    "n": 83,
+    "fm50": 0.0964,
+    "fm50CI": [
+     0.0497,
+     0.1788
+    ],
+    "meanTrueNewForm": 0.77
+   },
+   "twoPassesNovel": {
+    "n": 83,
+    "fm50": 0.0964,
+    "fm50CI": [
+     0.0497,
+     0.1788
+    ],
+    "meanTrueNewForm": 0.77
+   }
+  },
+  "checks": {
+   "n": 1327,
+   "newItem": 1,
+   "delayGE2d": 0.9397,
+   "medianDelay": 3,
+   "accuracy": 0.5396,
+   "kinds": {
+    "retrieval": 1327
+   }
+  }
+ },
+ "rv-main-s12": {
+  "meta": {
+   "label": "rv-main-s12",
+   "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2/main",
+   "children": 240,
+   "lessons": 12,
+   "seed": 12,
+   "family": "both",
+   "subjects": [
+    "maths"
+   ],
+   "date": "2026-10-05T10:56:24.655Z",
+   "turns": 75128,
+   "lessonsRun": 2880,
+   "warmupFrom": "routes/lesson.js warmupItemsFor (replicated)"
+  },
+  "firstTry": {
+   "model": {
+    "n": 28227,
+    "ece": 0.0807,
+    "brier": 0.2396,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 4,
+      "meanPred": 0.188,
+      "observed": 0.75
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 341,
+      "meanPred": 0.274,
+      "observed": 0.352
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 4905,
+      "meanPred": 0.36,
+      "observed": 0.499
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 9677,
+      "meanPred": 0.445,
+      "observed": 0.544
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 5350,
+      "meanPred": 0.545,
+      "observed": 0.604
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 4287,
+      "meanPred": 0.657,
+      "observed": 0.678
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 3663,
+      "meanPred": 0.725,
+      "observed": 0.779
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0656,
+    0.0931
+   ],
+   "oracle": {
+    "n": 28227,
+    "ece": 0.0037,
+    "brier": 0.1399,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 102,
+      "meanPred": 0.048,
+      "observed": 0.039
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 5718,
+      "meanPred": 0.128,
+      "observed": 0.125
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1628,
+      "meanPred": 0.25,
+      "observed": 0.244
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1863,
+      "meanPred": 0.355,
+      "observed": 0.37
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1773,
+      "meanPred": 0.44,
+      "observed": 0.435
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1451,
+      "meanPred": 0.551,
+      "observed": 0.55
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1711,
+      "meanPred": 0.652,
+      "observed": 0.66
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2105,
+      "meanPred": 0.75,
+      "observed": 0.756
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 2644,
+      "meanPred": 0.852,
+      "observed": 0.848
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 9232,
+      "meanPred": 0.92,
+      "observed": 0.919
+     }
+    ]
+   },
+   "model_A": 0.0784,
+   "model_B": 0.0829,
+   "maxPred": 0.7512,
+   "meanPred": 0.515,
+   "observed": 0.596
+  },
+  "delayedCheck": {
+   "model": {
+    "n": 1605,
+    "ece": 0.0383,
+    "brier": 0.2313,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 14,
+      "meanPred": 0.479,
+      "observed": 0.5
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 108,
+      "meanPred": 0.558,
+      "observed": 0.546
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 790,
+      "meanPred": 0.662,
+      "observed": 0.657
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 693,
+      "meanPred": 0.722,
+      "observed": 0.641
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0239,
+    0.0838
+   ],
+   "oracle": {
+    "n": 1605,
+    "ece": 0.0173,
+    "brier": 0.1773,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 77,
+      "meanPred": 0.146,
+      "observed": 0.169
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 83,
+      "meanPred": 0.251,
+      "observed": 0.253
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 111,
+      "meanPred": 0.347,
+      "observed": 0.324
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 126,
+      "meanPred": 0.453,
+      "observed": 0.413
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 162,
+      "meanPred": 0.548,
+      "observed": 0.525
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 231,
+      "meanPred": 0.655,
+      "observed": 0.623
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 267,
+      "meanPred": 0.751,
+      "observed": 0.742
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 322,
+      "meanPred": 0.854,
+      "observed": 0.842
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 226,
+      "meanPred": 0.92,
+      "observed": 0.925
+     }
+    ]
+   },
+   "model_A": 0.1782,
+   "model_B": 0.1224,
+   "maxPred": 0.7459,
+   "meanPred": 0.679,
+   "observed": 0.641
+  },
+  "recalibrated": {
+   "method": "isotonic map pred -> P(correct), fitted on children with id%4 in {0,1}, scored on id%4 in {2,3} (held-out; both families on each side)",
+   "heldOutFirstTry": 0.0638,
+   "heldOutFirstTryBefore": 0.111,
+   "heldOutCheck": 0.0565,
+   "heldOutCheckBefore": 0.0409,
+   "nTrain": 14105,
+   "nTest": 14122,
+   "nTestChecks": 907
+  },
+  "falseMastery": {
+   "learned_today": {
+    "n": 1295,
+    "fm50": 0.0494,
+    "fm50CI": [
+     0.0389,
+     0.0626
+    ],
+    "fm70": 0.1405,
+    "fm50at7d": 0.5544,
+    "byPersona": {
+     "shallow": {
+      "n": 43,
+      "fm50": 0.5581
+     },
+     "misconception": {
+      "n": 47,
+      "fm50": 0
+     },
+     "weak": {
+      "n": 130,
+      "fm50": 0.2385
+     },
+     "average": {
+      "n": 579,
+      "fm50": 0.0138
+     },
+     "strong": {
+      "n": 379,
+      "fm50": 0
+     },
+     "forgetter": {
+      "n": 117,
+      "fm50": 0.0085
+     }
+    }
+   },
+   "mastered": {
+    "n": 1026,
+    "fm50": 0.0819,
+    "fm50CI": [
+     0.0666,
+     0.1002
+    ],
+    "fm70": 0.2125,
+    "fm50at7d": 0.3567,
+    "byPersona": {
+     "shallow": {
+      "n": 42,
+      "fm50": 0.5952
+     },
+     "misconception": {
+      "n": 37,
+      "fm50": 0
+     },
+     "weak": {
+      "n": 100,
+      "fm50": 0.37
+     },
+     "average": {
+      "n": 460,
+      "fm50": 0.0239
+     },
+     "strong": {
+      "n": 298,
+      "fm50": 0
+     },
+     "forgetter": {
+      "n": 89,
+      "fm50": 0.1236
+     }
+    }
+   },
+   "durable": {
+    "n": 1,
+    "fm50": 0,
+    "fm50CI": [
+     0,
+     0.7935
+    ],
+    "fm70": 0,
+    "fm50at7d": 0,
+    "byPersona": {
+     "forgetter": {
+      "n": 1,
+      "fm50": 0
+     }
+    }
+   }
+  },
+  "policy": {
+   "skillSessions": 8700,
+   "boredom": 0.1672,
+   "boredomCI": [
+    0.1595,
+    0.1752
+   ],
+   "overloadInSession": 0.0527,
+   "overloadAcross": 0.066,
+   "skillsAcross": 8700,
+   "byPersona": {
+    "shallow": {
+     "n": 976,
+     "boredom": 0.0277,
+     "overload": 0.078
+    },
+    "misconception": {
+     "n": 651,
+     "boredom": 0.0445,
+     "overload": 0.0779
+    },
+    "weak": {
+     "n": 1812,
+     "boredom": 0.0927,
+     "overload": 0.1554
+    },
+    "average": {
+     "n": 3086,
+     "boredom": 0.1999,
+     "overload": 0.0212
+    },
+    "strong": {
+     "n": 1449,
+     "boredom": 0.3547,
+     "overload": 0.0041
+    },
+    "forgetter": {
+     "n": 726,
+     "boredom": 0.1377,
+     "overload": 0.0108
+    }
+   }
+  },
+  "ledgerChecks": {
+   "n": 2085,
+   "newItem": 0.3942,
+   "delayGE2d": 0.6854,
+   "firstTryPass": 0.6312,
+   "ece": 0.0466,
+   "kinds": {
+    "retrieval": 2085
+   },
+   "passedTrueNewForm": 0.794
+  },
+  "certRules": {
+   "onePass": {
+    "n": 1029,
+    "fm50": 0.0826,
+    "fm50CI": [
+     0.0673,
+     0.101
+    ],
+    "meanTrueNewForm": 0.803
+   },
+   "onePassNovel": {
+    "n": 572,
+    "fm50": 0.0734,
+    "fm50CI": [
+     0.0548,
+     0.0978
+    ],
+    "meanTrueNewForm": 0.809
+   },
+   "twoPasses": {
+    "n": 255,
+    "fm50": 0.1333,
+    "fm50CI": [
+     0.097,
+     0.1805
+    ],
+    "meanTrueNewForm": 0.765
+   },
+   "twoPassesNovel": {
+    "n": 0,
+    "fm50": null,
+    "fm50CI": null,
+    "meanTrueNewForm": null
+   }
+  },
+  "checks": {
+   "n": 1605,
+   "newItem": 0.5121,
+   "delayGE2d": 0.5975,
+   "medianDelay": 2,
+   "accuracy": 0.6411,
+   "kinds": {
+    "retrieval": 1605
+   }
+  }
+ },
+ "rv-v1-s12": {
+  "meta": {
+   "label": "rv-v1-s12",
+   "root": "/tmp/claude-0/-home-user/ecee9fc1-62f9-5f67-a47d-69ca79d9981a/scratchpad/r2/v1",
+   "children": 240,
+   "lessons": 12,
+   "seed": 12,
+   "family": "both",
+   "subjects": [
+    "maths"
+   ],
+   "date": "2026-10-05T10:56:17.736Z",
+   "turns": 71068,
+   "lessonsRun": 2880,
+   "warmupFrom": "server/learner/checks.js"
+  },
+  "firstTry": {
+   "model": {
+    "n": 26061,
+    "ece": 0.1022,
+    "brier": 0.2464,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 2,
+      "meanPred": 0.198,
+      "observed": 0
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 395,
+      "meanPred": 0.274,
+      "observed": 0.451
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 5586,
+      "meanPred": 0.361,
+      "observed": 0.515
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 9772,
+      "meanPred": 0.445,
+      "observed": 0.568
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 4236,
+      "meanPred": 0.546,
+      "observed": 0.605
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 3821,
+      "meanPred": 0.653,
+      "observed": 0.706
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 2249,
+      "meanPred": 0.719,
+      "observed": 0.754
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0879,
+    0.1138
+   ],
+   "oracle": {
+    "n": 26061,
+    "ece": 0.0092,
+    "brier": 0.1416,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 123,
+      "meanPred": 0.05,
+      "observed": 0.041
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 5487,
+      "meanPred": 0.128,
+      "observed": 0.138
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 1424,
+      "meanPred": 0.25,
+      "observed": 0.257
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 1688,
+      "meanPred": 0.356,
+      "observed": 0.384
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 1533,
+      "meanPred": 0.441,
+      "observed": 0.457
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 1401,
+      "meanPred": 0.55,
+      "observed": 0.547
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 1591,
+      "meanPred": 0.651,
+      "observed": 0.622
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 1816,
+      "meanPred": 0.752,
+      "observed": 0.759
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 2344,
+      "meanPred": 0.853,
+      "observed": 0.861
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 8654,
+      "meanPred": 0.92,
+      "observed": 0.917
+     }
+    ]
+   },
+   "model_A": 0.1007,
+   "model_B": 0.115,
+   "maxPred": 0.7511,
+   "meanPred": 0.495,
+   "observed": 0.597
+  },
+  "delayedCheck": {
+   "model": {
+    "n": 1291,
+    "ece": 0.0899,
+    "brier": 0.2516,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 11,
+      "meanPred": 0.488,
+      "observed": 0.364
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 109,
+      "meanPred": 0.567,
+      "observed": 0.541
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 660,
+      "meanPred": 0.649,
+      "observed": 0.565
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 511,
+      "meanPred": 0.716,
+      "observed": 0.605
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 0,
+      "meanPred": null,
+      "observed": null
+     }
+    ]
+   },
+   "modelCI": [
+    0.0568,
+    0.1181
+   ],
+   "oracle": {
+    "n": 1291,
+    "ece": 0.0428,
+    "brier": 0.2125,
+    "curve": [
+     {
+      "bin": "0.0-0.1",
+      "n": 3,
+      "meanPred": 0.087,
+      "observed": 0
+     },
+     {
+      "bin": "0.1-0.2",
+      "n": 50,
+      "meanPred": 0.158,
+      "observed": 0.2
+     },
+     {
+      "bin": "0.2-0.3",
+      "n": 86,
+      "meanPred": 0.25,
+      "observed": 0.302
+     },
+     {
+      "bin": "0.3-0.4",
+      "n": 139,
+      "meanPred": 0.355,
+      "observed": 0.374
+     },
+     {
+      "bin": "0.4-0.5",
+      "n": 165,
+      "meanPred": 0.451,
+      "observed": 0.539
+     },
+     {
+      "bin": "0.5-0.6",
+      "n": 213,
+      "meanPred": 0.551,
+      "observed": 0.535
+     },
+     {
+      "bin": "0.6-0.7",
+      "n": 232,
+      "meanPred": 0.647,
+      "observed": 0.578
+     },
+     {
+      "bin": "0.7-0.8",
+      "n": 213,
+      "meanPred": 0.747,
+      "observed": 0.714
+     },
+     {
+      "bin": "0.8-0.9",
+      "n": 149,
+      "meanPred": 0.847,
+      "observed": 0.872
+     },
+     {
+      "bin": "0.9-1.0",
+      "n": 41,
+      "meanPred": 0.914,
+      "observed": 0.927
+     }
+    ]
+   },
+   "model_A": 0.1403,
+   "model_B": 0.0525,
+   "maxPred": 0.739,
+   "meanPred": 0.667,
+   "observed": 0.577
+  },
+  "recalibrated": {
+   "method": "isotonic map pred -> P(correct), fitted on children with id%4 in {0,1}, scored on id%4 in {2,3} (held-out; both families on each side)",
+   "heldOutFirstTry": 0.0553,
+   "heldOutFirstTryBefore": 0.1278,
+   "heldOutCheck": 0.1207,
+   "heldOutCheckBefore": 0.0799,
+   "nTrain": 13092,
+   "nTest": 12969,
+   "nTestChecks": 678
+  },
+  "falseMastery": {
+   "learned_today": {
+    "n": 1255,
+    "fm50": 0.0677,
+    "fm50CI": [
+     0.0551,
+     0.083
+    ],
+    "fm70": 0.1928,
+    "fm50at7d": 0.5649,
+    "byPersona": {
+     "shallow": {
+      "n": 45,
+      "fm50": 0.6444
+     },
+     "misconception": {
+      "n": 53,
+      "fm50": 0.0189
+     },
+     "weak": {
+      "n": 164,
+      "fm50": 0.2561
+     },
+     "average": {
+      "n": 527,
+      "fm50": 0.0209
+     },
+     "strong": {
+      "n": 329,
+      "fm50": 0
+     },
+     "forgetter": {
+      "n": 137,
+      "fm50": 0.0146
+     }
+    }
+   },
+   "mastered": {
+    "n": 696,
+    "fm50": 0.0819,
+    "fm50CI": [
+     0.0637,
+     0.1046
+    ],
+    "fm70": 0.2227,
+    "fm50at7d": 0.3017,
+    "byPersona": {
+     "shallow": {
+      "n": 28,
+      "fm50": 0.6429
+     },
+     "misconception": {
+      "n": 29,
+      "fm50": 0.0345
+     },
+     "weak": {
+      "n": 77,
+      "fm50": 0.3506
+     },
+     "average": {
+      "n": 310,
+      "fm50": 0.0226
+     },
+     "strong": {
+      "n": 199,
+      "fm50": 0
+     },
+     "forgetter": {
+      "n": 53,
+      "fm50": 0.0755
+     }
+    }
+   },
+   "durable": {
+    "n": 0,
+    "fm50": null,
+    "fm50CI": null,
+    "fm70": null,
+    "fm50at7d": null,
+    "byPersona": {}
+   }
+  },
+  "policy": {
+   "skillSessions": 8700,
+   "boredom": 0.1529,
+   "boredomCI": [
+    0.1455,
+    0.1606
+   ],
+   "overloadInSession": 0.0293,
+   "overloadAcross": 0.0355,
+   "skillsAcross": 8700,
+   "byPersona": {
+    "shallow": {
+     "n": 976,
+     "boredom": 0.0564,
+     "overload": 0.0371
+    },
+    "misconception": {
+     "n": 651,
+     "boredom": 0.0568,
+     "overload": 0.0529
+    },
+    "weak": {
+     "n": 1812,
+     "boredom": 0.0806,
+     "overload": 0.0815
+    },
+    "average": {
+     "n": 3086,
+     "boredom": 0.1785,
+     "overload": 0.0117
+    },
+    "strong": {
+     "n": 1449,
+     "boredom": 0.3147,
+     "overload": 0.0023
+    },
+    "forgetter": {
+     "n": 726,
+     "boredom": 0.1171,
+     "overload": 0.0068
+    }
+   }
+  },
+  "ledgerChecks": {
+   "n": 1334,
+   "newItem": 1,
+   "delayGE2d": 1,
+   "firstTryPass": 0.5832,
+   "ece": 0.0872,
+   "kinds": {
+    "near_transfer": 755,
+    "practice": 513,
+    "retrieval": 66
+   },
+   "passedTrueNewForm": 0.795
+  },
+  "certRules": {
+   "onePass": {
+    "n": 698,
+    "fm50": 0.0817,
+    "fm50CI": [
+     0.0636,
+     0.1043
+    ],
+    "meanTrueNewForm": 0.799
+   },
+   "onePassNovel": {
+    "n": 698,
+    "fm50": 0.0817,
+    "fm50CI": [
+     0.0636,
+     0.1043
+    ],
+    "meanTrueNewForm": 0.799
+   },
+   "twoPasses": {
+    "n": 78,
+    "fm50": 0.1282,
+    "fm50CI": [
+     0.0712,
+     0.2202
+    ],
+    "meanTrueNewForm": 0.764
+   },
+   "twoPassesNovel": {
+    "n": 78,
+    "fm50": 0.1282,
+    "fm50CI": [
+     0.0712,
+     0.2202
+    ],
+    "meanTrueNewForm": 0.764
+   }
+  },
+  "checks": {
+   "n": 1291,
+   "newItem": 1,
+   "delayGE2d": 0.9419,
+   "medianDelay": 3,
+   "accuracy": 0.5771,
+   "kinds": {
+    "retrieval": 1291
+   }
+  }
+ }
+}

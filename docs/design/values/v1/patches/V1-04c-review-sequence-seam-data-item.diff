@@ -1,0 +1,10 @@
+--- a/server/studio/archetypes/sequence_steps.json	2026-10-05 10:57:40.509256146 +0000
++++ b/server/studio/archetypes/sequence_steps.json	2026-10-05 10:57:45.678550382 +0000
+@@ -8,6 +8,7 @@
+   "stringsKeys": ["title", "instr", "right", "wrong", "done", "$shown"],
+   "seam": [
+     "each step card: data-step=\"<key>\" (its words on it); when placed, data-placed=\"<position from 1>\"",
++    "the ONE slot the child is filling now: data-item=\"pos<position from 0>\" (exactly one in the document; it moves as slots fill)",
+     "the cards are shown in the order of Studio.params.shown until the child places them"
+   ],
+   "brief": [

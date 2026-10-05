@@ -93,8 +93,8 @@ export class PuppetDriver {
   /** Eval-only: a head offset added after everything (the judge grid's ±20° turn cell). Never set by product code. */
   evalHead: [number, number, number] | null = null;
   /** Eval-only: emote a judged preset directly (the judge grid's surprise / playful cells, which no product affect maps to). */
-  evalEmote(name: string, nowMs: number, variant?: number, hold = 30): void {
-    this.exprs.emote(name, nowMs / 1000, { hold, intensity: 1, variant });
+  evalEmote(name: string, nowMs: number, variant?: number, hold = 30, intensity = 1): void {
+    this.exprs.emote(name, nowMs / 1000, { hold, intensity, variant });
   }
   evalRelease(nowMs: number): void {
     this.run([{ op: "release", why: "eval" }], nowMs / 1000);
