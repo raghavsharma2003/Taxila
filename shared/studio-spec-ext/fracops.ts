@@ -12,7 +12,7 @@ const FO_STRINGS = { round: "Round", done: "right", cols: "columns", rows: "rows
 const Fr = z.tuple([z.number().int().min(0).max(24), z.number().int().min(1).max(24)]);
 const FoRound = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("orchard"), title: z.string().min(1).max(22), sub: z.string().max(40), a: Fr, b: Fr, ...TargetsField }),
-  z.object({ mode: z.literal("scoop"), title: z.string().min(1).max(22), sub: z.string().max(40), whole: Fr, part: Fr, unit: z.string().min(1).max(10), ...TargetsField }),
+  z.object({ mode: z.literal("scoop"), title: z.string().min(1).max(22), sub: z.string().max(40), whole: Fr, part: Fr, unit: z.string().min(1).max(10), dec: z.boolean().optional(), ...TargetsField }),
   z.object({ mode: z.literal("join"), title: z.string().min(1).max(22), sub: z.string().max(40), a: Fr, b: Fr, op: z.enum(["+", "-"]), ...TargetsField }),
 ]);
 export type FoRoundT = z.infer<typeof FoRound>;
@@ -22,13 +22,16 @@ export type F = [number, number];
 export const fmul = (x: F, y: F): F => { const n = x[0] * y[0], d = x[1] * y[1], g = gcdN(n, d); return [n / g, d / g]; };
 export const fdiv = (x: F, y: F): number => (x[0] * y[1]) / (x[1] * y[0]);
 export const fadd = (x: F, y: F, sgn = 1): F => { const d = lcmN(x[1], y[1]), n = x[0] * (d / x[1]) + sgn * y[0] * (d / y[1]), g = gcdN(Math.abs(n), d); return [n / g, d / g]; };
+/** terminating-decimal display (c7 ch12 dividing decimals): only when the denominator divides 1000 */
+export const decOk = (x: F) => 1000 % x[1] === 0;
+export const fdec = (x: F) => String(+(x[0] / x[1]).toFixed(3));
 export const feq = (x: F, y: F) => x[0] * y[1] === y[0] * x[1];
 export const fstr = (x: F) => (x[1] === 1 ? String(x[0]) : x[0] > x[1] && x[1] > 1 ? `${Math.floor(x[0] / x[1])} ${x[0] % x[1]}/${x[1]}` : `${x[0]}/${x[1]}`);
 
 const foDefault: FracOpsSpec = {
   archetype: "fraction-ops@1", skills: ["c7-maths-ch08-t01", "c7-maths-ch08-t02", "c6-maths-ch07-t05"], lang: "en", strings: { ...FO_STRINGS }, title: "Fraction Works",
   rounds: [
-    { mode: "orchard", title: "Orchard", sub: "harvest 2/3 of 3/4 of the field", a: [2, 3], b: [3, 4], targets: "c7-maths-ch08-t01-m1" },
+    { mode: "orchard", title: "Orchard", sub: "harvest 2/3 of 3/4 of the field", a: [2, 3], b: [3, 4], targets: "c7-maths-ch08-t01-m-mult-bigger" },
     { mode: "scoop", title: "Scoops", sub: "how many 1/4-cup scoops in 3 cups?", whole: [3, 1], part: [1, 4], unit: "cups" },
     { mode: "join", title: "Join the bars", sub: "1/3 + 1/4", a: [1, 3], b: [1, 4], op: "+" },
   ],
@@ -42,7 +45,7 @@ function repairFo(raw: Record<string, unknown>, r: string[]): FracOpsSpec | null
     const head = { title: reqStr(x.title, 22, "round.title", r) ?? "Fractions", sub: typeof x.sub === "string" && x.sub.length <= 40 && !MARKUP.test(x.sub) ? x.sub : "", ...targets(x.targets, r) };
     const mode = oneOf(x.mode, ["orchard", "scoop", "join"] as const, "orchard", "mode", r);
     if (mode === "orchard") { const a = fr(x.a, r, "a"), b = fr(x.b, r, "b"); if (!a || !b || a[0] === 0 || b[0] === 0 || a[0] > a[1] || b[0] > b[1] || a[1] > 12 || b[1] > 12) { r.push("orchard:proper-fractions-up-to-twelfths"); continue; } rounds.push({ mode, ...head, a, b }); }
-    else if (mode === "scoop") { const w = fr(x.whole, r, "whole"), p = fr(x.part, r, "part"); if (!w || !p || p[0] === 0 || w[0] === 0) continue; const q = fdiv(w, p); if (!Number.isInteger(q) || q < 2 || q > 24) { r.push("scoop:needs-whole-number-of-scoops-2-24"); continue; } rounds.push({ mode, ...head, whole: w, part: p, unit: reqStr(x.unit, 10, "unit", r) ?? "cups" }); }
+    else if (mode === "scoop") { const w = fr(x.whole, r, "whole"), p = fr(x.part, r, "part"); if (!w || !p || p[0] === 0 || w[0] === 0) continue; const q = fdiv(w, p); if (!Number.isInteger(q) || q < 2 || q > 24) { r.push("scoop:needs-whole-number-of-scoops-2-24"); continue; } const dec = x.dec === true && decOk(w) && decOk(p); if (x.dec === true && !dec) r.push("scoop:not-a-terminating-decimal"); rounds.push({ mode, ...head, whole: w, part: p, unit: reqStr(x.unit, 10, "unit", r) ?? "cups", ...(dec ? { dec } : {}) }); }
     else { const a = fr(x.a, r, "a"), b = fr(x.b, r, "b"), op = oneOf(x.op, ["+", "-"] as const, "+", "op", r); if (!a || !b || lcmN(a[1], b[1]) > 24) { r.push("join:denominators"); continue; } const res = fadd(a, b, op === "+" ? 1 : -1); if (res[0] < 0 || res[0] / res[1] > 2) { r.push("join:result-range"); continue; } rounds.push({ mode, ...head, a, b, op }); }
   }
   if (!rounds.length) return null;

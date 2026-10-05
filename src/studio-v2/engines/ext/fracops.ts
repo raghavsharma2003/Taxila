@@ -2,7 +2,7 @@
 // field's columns and rows and how many of each to shade; the overlap is what you harvest (a/b of c/d). Scoops: scoop
 // a measure into a container until it is full; the count is the quotient. Join: re-cut two bars into a number of equal
 // parts — only a common multiple makes the cuts line up — then pour. The host grades the construction exactly.
-import { fadd, fdiv, feq, fmul, fstr, type F, type FoRoundT, type FracOpsSpec } from "../../../../shared/studio-spec-ext/fracops.ts";
+import { fadd, fdec, fdiv, feq, fmul, fstr, type F, type FoRoundT, type FracOpsSpec } from "../../../../shared/studio-spec-ext/fracops.ts";
 import { C, W, H } from "../../core/tokens.ts";
 import { clamp, ease, hexA, rng } from "../../core/math.ts";
 import { magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
@@ -93,12 +93,12 @@ function create(api: EngineApi, spec: FracOpsSpec): EngineInstance {
       const wholes = r.whole[0] / r.whole[1];
       for (let k = 1; k < total; k++) { const y = jy + jh - (k / total) * jh; ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 26, y); ctx.stroke(); }
       for (let u = 1; u <= Math.floor(wholes); u++) { const y = jy + jh - (u / wholes) * jh; ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(jx, y); ctx.lineTo(jx + 50, y); ctx.stroke(); api.text(ctx, `${u}`, jx - 16, y, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "right", baseline: "middle" }); }
-      api.text(ctx, `${fstr(r.whole)} ${r.unit}`, jx + jw / 2, jy - 26, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
+      api.text(ctx, `${r.dec ? fdec(r.whole) : fstr(r.whole)} ${r.unit}`, jx + jw / 2, jy - 26, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       ctx.save(); ctx.fillStyle = done ? "rgba(255,255,255,.04)" : "rgba(22,26,36,.95)"; roundRect(ctx, 560, 300, 220, 100, 20); ctx.fill(); ctx.strokeStyle = done ? C.line : C.volt; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
-      api.text(ctx, `${T.scoop} ${fstr(r.part)}`, 670, 352, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
+      api.text(ctx, `${T.scoop} ${r.dec ? fdec(r.part) : fstr(r.part)}`, 670, 352, { font: "display", size: 40, weight: 800, align: "center", baseline: "middle" });
       if (g.pourT > 0) { ctx.fillStyle = hexA(C.sun, 0.8); ctx.fillRect(jx + jw / 2 - 6, jy - 60 + (1 - g.pourT * 2) * 0, 12, 60); }
       pill(api, ctx, `${g.scoops} ${T.scoops}`, 670, 250, { color: done ? (ok ? C.mint : C.amber) : C.ink, size: 40 });
-      if (done && !ok) pill(api, ctx, `${fstr(r.whole)} ÷ ${fstr(r.part)} = ${total}`, 670, 460, { color: C.ion, size: 38 });
+      if (done && !ok) pill(api, ctx, `${r.dec ? fdec(r.whole) : fstr(r.whole)} ÷ ${r.dec ? fdec(r.part) : fstr(r.part)} = ${total}`, 670, 460, { color: C.ion, size: 38 });
     } else {
       const n = g.parts, sgn = r.op === "+" ? 1 : -1, res = fadd(r.a, r.b, sgn);
       api.text(ctx, fstr(r.a), 100, 255, { font: "display", size: 44, weight: 800, align: "center", baseline: "middle" });

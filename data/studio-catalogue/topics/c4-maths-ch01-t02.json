@@ -1,0 +1,1449 @@
+{
+ "topicId": "c4-maths-ch01-t02",
+ "title": "Right angles and circles",
+ "chapter": "Shapes Around Us",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "geo-forge@1",
+  "hint": "challenges: angle (right angle), perpendicular lines, polygon builds on the pin board; circle = equidistant pins"
+ },
+ "game": {
+  "archetype": "geo-forge@1",
+  "spec": {
+   "archetype": "geo-forge@1",
+   "skills": [
+    "c4-maths-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "built",
+    "check": "CHECK",
+    "undo": "UNDO",
+    "coach": "Tap pins to place corners; tap the first pin to close",
+    "runDone": "Blueprints done",
+    "perimeter": "perimeter",
+    "area": "area",
+    "units": "units",
+    "sq": "sq units",
+    "polygon": "sides",
+    "sticks": "Pick three sticks",
+    "rigid": "Brace it: it must not wobble",
+    "parallel": "Through the dot, parallel to the line",
+    "perpendicular": "Through the dot, at right angles",
+    "equidistant": "Place a pin the same distance from each dot",
+    "angle": "Make an angle of",
+    "right": "right-angled triangle",
+    "isosceles": "isosceles triangle",
+    "scalene": "scalene triangle",
+    "obtuse": "obtuse-angled triangle",
+    "acute": "acute-angled triangle",
+    "square": "square",
+    "rectangle": "rectangle",
+    "parallelogram": "parallelogram",
+    "rhombus": "rhombus",
+    "trapezium": "trapezium",
+    "kite": "kite",
+    "any": "shape",
+    "triangle": "triangle",
+    "make": "Make a",
+    "withArea": "with area",
+    "withPerim": "with perimeter",
+    "noTriangle": "Pick three that CANNOT close",
+    "wobbles": "WOBBLES",
+    "holds": "HOLDS",
+    "closes": "CLOSES",
+    "gap": "GAP",
+    "time": "time"
+   },
+   "title": "Right Angles and Circles",
+   "rounds": [
+    {
+     "title": "Right through a point",
+     "sub": "make two lines meet like a book corner",
+     "time": 60,
+     "challenges": [
+      {
+       "kind": "perpendicular",
+       "line": [
+        [
+         2,
+         1
+        ],
+        [
+         8,
+         1
+        ]
+       ],
+       "through": [
+        5,
+        4
+       ]
+      }
+     ],
+     "targets": "c4-maths-ch01-t02-m-arm-length"
+    },
+    {
+     "title": "Draw a true circle",
+     "sub": "",
+     "time": 75,
+     "challenges": [
+      {
+       "kind": "equidistant",
+       "points": [
+        [
+         3,
+         3
+        ],
+        [
+         7,
+         3
+        ],
+        [
+         5,
+         1
+        ]
+       ]
+      }
+     ],
+     "targets": "c4-maths-ch01-t02-m-round-is-circle"
+    }
+   ]
+  },
+  "repairs": [
+   "challenge:infeasible",
+   "round:challenges"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch01-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Right angles and circles",
+   "accent": "mint",
+   "targets": "c4-maths-ch01-t02-m-arm-length",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title1",
+       "type": "title",
+       "text": "Right angles"
+      },
+      {
+       "id": "book",
+       "type": "node",
+       "text": "Book corner",
+       "sub": "square corner",
+       "glyph": "book",
+       "color": "mint"
+      },
+      {
+       "id": "tester",
+       "type": "node",
+       "text": "Folded paper",
+       "sub": "corner tester",
+       "color": "sun"
+      },
+      {
+       "id": "fit",
+       "type": "arrow",
+       "from": "tester",
+       "to": "book",
+       "text": "fits exactly"
+      },
+      {
+       "id": "myth1",
+       "type": "myth",
+       "text": "Longer arms make a bigger angle"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "title2",
+       "type": "title",
+       "text": "Check the shape"
+      },
+      {
+       "id": "square",
+       "type": "angle",
+       "deg": 90,
+       "rot": 35,
+       "x": 260,
+       "y": 330,
+       "r": 100
+      },
+      {
+       "id": "turn",
+       "type": "label",
+       "text": "Turned corner",
+       "x": 170,
+       "y": 210,
+       "color": "ion"
+      },
+      {
+       "id": "centre",
+       "type": "node",
+       "text": "Centre",
+       "sub": "still point",
+       "color": "amber"
+      },
+      {
+       "id": "edge",
+       "type": "node",
+       "text": "Circle edge",
+       "sub": "same distance",
+       "glyph": "compass",
+       "color": "amber"
+      },
+      {
+       "id": "radius",
+       "type": "arrow",
+       "from": "centre",
+       "to": "edge",
+       "text": "tight string"
+      },
+      {
+       "id": "long",
+       "type": "label",
+       "text": "Long arms",
+       "x": 610,
+       "y": 260,
+       "color": "sun"
+      },
+      {
+       "id": "short",
+       "type": "label",
+       "text": "Short arms",
+       "x": 610,
+       "y": 390,
+       "color": "sun"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Same angle",
+       "x": 760,
+       "y": 325,
+       "color": "mint"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A book corner is a square corner. We call this a right angle.",
+    "L2": "Fold a paper twice to make a square-corner tester, then place it on the corner.",
+    "L3": "If the tester fits exactly, the corner is a right angle. The arms can be short or long.",
+    "L4": "MYTH: longer arms make a bigger angle. Not true: an angle is how wide the arms open, not their length.",
+    "L5": "Turning a shape does not change its angles. A tilted square corner is still a right angle.",
+    "L6": "In a circle, every point on the edge is the same distance from the centre.",
+    "L7": "Hold one end of a string at the centre and keep it tight while the other end moves around.",
+    "L8": "Now check: two square corners with different arm lengths are what size compared with each other?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A book corner is a square corner. We call this a right angle.",
+     "dur": 3.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Fold a paper twice to make a square-corner tester, then place it on the corner.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L3": {
+     "text": "If the tester fits exactly, the corner is a right angle. The arms can be short or long.",
+     "dur": 4.4,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L4": {
+     "text": "MYTH: longer arms make a bigger angle. Not true: an angle is how wide the arms open, not their length.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Turning a shape does not change its angles. A tilted square corner is still a right angle.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L6": {
+     "text": "In a circle, every point on the edge is the same distance from the centre.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Hold one end of a string at the centre and keep it tight while the other end moves around.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check: two square corners with different arm lengths are what size compared with each other?",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.2,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "title1"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "book"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "tester"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "fit",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "tester"
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 1,
+       "target": "book"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth1"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth1"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "square"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.6,
+       "target": "turn"
+      },
+      {
+       "at": 1.3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "square"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "centre"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 0.7,
+       "target": "edge"
+      },
+      {
+       "at": 1.3,
+       "do": "show",
+       "dur": 0.8,
+       "target": "radius"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1.2,
+       "target": "radius",
+       "to": 1
+      },
+      {
+       "at": 1.2,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "centre"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "long",
+        "short",
+        "same"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which statement is correct about these two square corners?",
+    "options": [
+     "long",
+     "short",
+     "same"
+    ],
+    "answer": "same",
+    "src": "c4-maths-ch01-t02-i03"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 37
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "book",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         150,
+         120
+        ],
+        [
+         350,
+         120
+        ],
+        [
+         350,
+         320
+        ],
+        [
+         150,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "corner",
+       "op": "highlight",
+       "startMs": 1200,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "target": "book",
+       "style": "circle"
+      },
+      {
+       "id": "sq",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        250,
+        365
+       ],
+       "text": "square corner",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ra",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        550,
+        220
+       ],
+       "text": "right angle",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "paper",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        90
+       ],
+       "w": 230,
+       "h": 230
+      },
+      {
+       "id": "fold1",
+       "op": "line",
+       "startMs": 1000,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        205,
+        90
+       ],
+       "to": [
+        205,
+        320
+       ]
+      },
+      {
+       "id": "fold2",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        90,
+        205
+       ],
+       "to": [
+        320,
+        205
+       ]
+      },
+      {
+       "id": "tester",
+       "op": "polygon",
+       "startMs": 3000,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         120
+        ],
+        [
+         500,
+         300
+        ],
+        [
+         680,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "place",
+       "op": "arrow",
+       "startMs": 4300,
+       "endMs": 5200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        210
+       ],
+       "to": [
+        500,
+        210
+       ]
+      },
+      {
+       "id": "corner2",
+       "op": "label",
+       "startMs": 5300,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        545,
+        330
+       ],
+       "text": "square corner",
+       "to": [
+        500,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2800,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        250,
+        390
+       ],
+       "text": "fits exactly",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arm1",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        300
+       ],
+       "to": [
+        480,
+        170
+       ]
+      },
+      {
+       "id": "arm2",
+       "op": "line",
+       "startMs": 4100,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        300
+       ],
+       "to": [
+        700,
+        300
+       ]
+      },
+      {
+       "id": "short",
+       "op": "line",
+       "startMs": 5300,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        300,
+        245
+       ]
+      },
+      {
+       "id": "long",
+       "op": "line",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        300
+       ],
+       "to": [
+        420,
+        300
+       ]
+      },
+      {
+       "id": "arms",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 8000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "short or long",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        70
+       ],
+       "text": "MYTH",
+       "size": "l"
+      },
+      {
+       "id": "longarms",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        180,
+        150
+       ]
+      },
+      {
+       "id": "longarm2",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        420,
+        300
+       ]
+      },
+      {
+       "id": "nottrue",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        380
+       ],
+       "text": "Not true",
+       "size": "m"
+      },
+      {
+       "id": "wide2",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        520,
+        170
+       ],
+       "text": "how wide",
+       "size": "m"
+      },
+      {
+       "id": "open",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        480,
+        260
+       ],
+       "to": [
+        620,
+        210
+       ]
+      },
+      {
+       "id": "length",
+       "op": "text",
+       "startMs": 7600,
+       "endMs": 8700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        370
+       ],
+       "text": "not length",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "tiltedsq",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         270,
+         120
+        ],
+        [
+         430,
+         180
+        ],
+        [
+         370,
+         340
+        ],
+        [
+         210,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 1700,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        150
+       ],
+       "to": [
+        570,
+        210
+       ],
+       "bend": 1
+      },
+      {
+       "id": "corner3",
+       "op": "highlight",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "target": "tiltedsq",
+       "style": "circle"
+      },
+      {
+       "id": "tilted",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "tilted square corner",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ra2",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        600,
+        290
+       ],
+       "text": "right angle",
+       "size": "m"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "circle",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 150
+      },
+      {
+       "id": "centre",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 6,
+       "fill": "accent"
+      },
+      {
+       "id": "radius",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        550,
+        250
+       ]
+      },
+      {
+       "id": "edge",
+       "op": "circle",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        550,
+        250
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        455
+       ],
+       "text": "same distance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "centrelabel",
+       "op": "label",
+       "startMs": 5200,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        235
+       ],
+       "text": "centre",
+       "target": "centre"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "string",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        610,
+        250
+       ]
+      },
+      {
+       "id": "hold",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "mark",
+       "weight": 2,
+       "c": [
+        400,
+        250
+       ],
+       "r": 12
+      },
+      {
+       "id": "tight",
+       "op": "highlight",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "good",
+       "weight": 2,
+       "target": "string",
+       "style": "underline"
+      },
+      {
+       "id": "move",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 4600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        610,
+        250
+       ],
+       "to": [
+        500,
+        120
+       ],
+       "bend": 1
+      },
+      {
+       "id": "string2",
+       "op": "line",
+       "startMs": 4600,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        250
+       ],
+       "to": [
+        500,
+        120
+       ]
+      },
+      {
+       "id": "edge2",
+       "op": "circle",
+       "startMs": 5800,
+       "endMs": 6300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        120
+       ],
+       "r": 8,
+       "fill": "accent"
+      },
+      {
+       "id": "around",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "moves around",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch01-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "cornerA",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         120,
+         320
+        ],
+        [
+         120,
+         180
+        ],
+        [
+         260,
+         180
+        ]
+       ]
+      },
+      {
+       "id": "cornerB",
+       "op": "polygon",
+       "startMs": 1100,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         480,
+         320
+        ],
+        [
+         480,
+         100
+        ],
+        [
+         700,
+         320
+        ]
+       ]
+      },
+      {
+       "id": "markA",
+       "op": "highlight",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "cornerA",
+       "style": "circle"
+      },
+      {
+       "id": "markB",
+       "op": "highlight",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 2,
+       "target": "cornerB",
+       "style": "circle"
+      },
+      {
+       "id": "compare",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "same size",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "qa",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        190,
+        440
+       ],
+       "text": "right angle",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "{\"kind\":\"perpendicular\",\"line\":[[2,1],[8,1]],\"through\":[5,4]}",
+   "prompt": "perpendicular"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "{\"kind\":\"equidistant\",\"points\":[[3,3],[7,3],[5,1]]}",
+   "prompt": "equidistant"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

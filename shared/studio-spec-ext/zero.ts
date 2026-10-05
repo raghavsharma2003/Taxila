@@ -22,7 +22,7 @@ const zpDefault: ZeroSpec = {
   archetype: "zero-pair@1", skills: ["c6-maths-ch10-t03", "c7-maths-ch10-t01"], lang: "en", strings: { ...ZP_STRINGS }, title: "Zero Pair Lab",
   rounds: [
     { mode: "make", title: "Make −3", sub: "use at least 7 tokens", target: -3, minTokens: 7, speed: 1 },
-    { mode: "subtract", title: "2 − (−3)", sub: "no negatives to take? add zero pairs", start: 2, take: -3, targets: "c6-maths-ch10-t03-m1" },
+    { mode: "subtract", title: "2 − (−3)", sub: "no negatives to take? add zero pairs", start: 2, take: -3, targets: "c6-maths-ch10-t03-m-subtract-smaller" },
     { mode: "groups", title: "3 × (−2)", sub: "three groups of −2", k: 3, m: -2, share: false },
   ],
 };

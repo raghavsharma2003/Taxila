@@ -1,0 +1,2406 @@
+{
+ "topicId": "c7-sst-ch05-t01",
+ "title": "The Rise of Empires",
+ "chapter": "The Rise of Empires",
+ "subject": "sst",
+ "class": 7,
+ "topicType": "T3",
+ "plan": {
+  "game": "era-drop@1",
+  "hint": "place / century / order modes with BCE and CE dates from the kit"
+ },
+ "game": {
+  "archetype": "era-drop@1",
+  "spec": {
+   "archetype": "era-drop@1",
+   "skills": [
+    "c7-sst-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "landed": "landed",
+    "precision": "precision",
+    "coach": "Drag the dock along the timeline",
+    "first": "Which came first?",
+    "runDone": "Timeline complete",
+    "offBy": "off by",
+    "years": "years",
+    "exact": "SPOT ON",
+    "century": "century",
+    "bce": "BCE",
+    "ce": "CE",
+    "earlier": "EARLIER"
+   },
+   "title": "Mauryan time dock",
+   "axis": {
+    "min": -400,
+    "max": -200
+   },
+   "rounds": [
+    {
+     "mode": "place",
+     "title": "Drop the dates",
+     "sub": "BCE years count down toward 1 CE",
+     "ticks": 50,
+     "speed": 0.8,
+     "tol": 8,
+     "items": [
+      {
+       "text": "Alexander reaches NW",
+       "value": -326,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "Bindusara becomes king",
+       "value": -297,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "The Kalinga war",
+       "value": -261,
+       "src": "c7-sst-ch05-t01-i03"
+      }
+     ]
+    },
+    {
+     "mode": "century",
+     "title": "Find the century",
+     "sub": "Place each event in its BCE century",
+     "ticks": 40,
+     "speed": 0.95,
+     "tol": 25,
+     "items": [
+      {
+       "text": "Alexander reaches NW",
+       "value": -326,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "Bindusara becomes king",
+       "value": -297,
+       "src": "c7-sst-ch05-t01-i03"
+      },
+      {
+       "text": "The Kalinga war",
+       "value": -261,
+       "src": "c7-sst-ch05-t01-i03"
+      }
+     ]
+    },
+    {
+     "mode": "order",
+     "title": "Which came first?",
+     "sub": "For BCE, the bigger number came earlier",
+     "ticks": 0,
+     "speed": 1.05,
+     "tol": 2,
+     "items": [
+      {
+       "text": "The Kalinga war",
+       "value": -261
+      },
+      {
+       "text": "Chandragupta founds empire",
+       "value": -321
+      },
+      {
+       "text": "Alexander reaches NW",
+       "value": -326
+      },
+      {
+       "text": "Bindusara becomes king",
+       "value": -297
+      }
+     ],
+     "targets": "c7-sst-ch05-t01-m2"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-sst-ch05-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "From Magadha to Mauryas",
+   "accent": "amber",
+   "targets": "c7-sst-ch05-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "From Magadha to Mauryas"
+      },
+      {
+       "id": "magadha",
+       "type": "node",
+       "text": "Magadha",
+       "glyph": "map",
+       "color": "amber"
+      },
+      {
+       "id": "power",
+       "type": "node",
+       "text": "Power",
+       "sub": "resources + rulers",
+       "glyph": "crown",
+       "color": "sun"
+      },
+      {
+       "id": "rise",
+       "type": "arrow",
+       "from": "magadha",
+       "to": "power",
+       "text": "grew stronger"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "land",
+       "type": "node",
+       "text": "Fertile plains",
+       "sub": "food surplus",
+       "glyph": "wheat",
+       "color": "mint"
+      },
+      {
+       "id": "rivers",
+       "type": "node",
+       "text": "Ganga + Son",
+       "sub": "transport, defence",
+       "glyph": "river",
+       "color": "ion"
+      },
+      {
+       "id": "iron",
+       "type": "node",
+       "text": "Iron ore",
+       "sub": "tools, weapons",
+       "glyph": "pick",
+       "color": "sci"
+      },
+      {
+       "id": "elephants",
+       "type": "node",
+       "text": "Forests",
+       "sub": "army elephants",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "rulers",
+       "type": "node",
+       "text": "Ambitious rulers",
+       "sub": "leadership",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "land",
+       "to": "rulers",
+       "text": "supported"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "rivers",
+       "to": "rulers",
+       "text": "protected"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "iron",
+       "to": "rulers",
+       "text": "equipped"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "elephants",
+       "to": "rulers",
+       "text": "strengthened"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "chandra",
+       "type": "node",
+       "text": "Chandragupta",
+       "sub": "founded empire",
+       "glyph": "crown",
+       "color": "amber"
+      },
+      {
+       "id": "chanakya",
+       "type": "node",
+       "text": "Chanakya",
+       "sub": "guided him",
+       "glyph": "scroll",
+       "color": "sci"
+      },
+      {
+       "id": "state",
+       "type": "node",
+       "text": "Mauryan state",
+       "glyph": "map",
+       "color": "ion"
+      },
+      {
+       "id": "army",
+       "type": "node",
+       "text": "Army + spies",
+       "sub": "kept control",
+       "glyph": "shield",
+       "color": "volt"
+      },
+      {
+       "id": "ashoka",
+       "type": "node",
+       "text": "Ashoka",
+       "sub": "after Kalinga",
+       "glyph": "pillar",
+       "color": "sun"
+      },
+      {
+       "id": "dhamma",
+       "type": "node",
+       "text": "Dhamma",
+       "sub": "peace + respect",
+       "glyph": "balance",
+       "color": "mint"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Dhamma was a forced new religion"
+      },
+      {
+       "id": "b1",
+       "type": "arrow",
+       "from": "chanakya",
+       "to": "chandra",
+       "text": "advised"
+      },
+      {
+       "id": "b2",
+       "type": "arrow",
+       "from": "chandra",
+       "to": "state",
+       "text": "founded"
+      },
+      {
+       "id": "b3",
+       "type": "arrow",
+       "from": "state",
+       "to": "army",
+       "text": "managed"
+      },
+      {
+       "id": "b4",
+       "type": "arrow",
+       "from": "ashoka",
+       "to": "dhamma",
+       "text": "promoted"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "alex",
+       "type": "label",
+       "text": "Alexander 326 BCE"
+      },
+      {
+       "id": "found",
+       "type": "label",
+       "text": "Chandragupta c.321 BCE"
+      },
+      {
+       "id": "bindu",
+       "type": "label",
+       "text": "Bindusara c.297 BCE"
+      },
+      {
+       "id": "kalinga",
+       "type": "label",
+       "text": "Kalinga c.261 BCE"
+      },
+      {
+       "id": "line",
+       "type": "arrow",
+       "from": "alex",
+       "to": "found",
+       "text": "earlier"
+      },
+      {
+       "id": "line2",
+       "type": "arrow",
+       "from": "found",
+       "to": "bindu",
+       "text": "then"
+      },
+      {
+       "id": "line3",
+       "type": "arrow",
+       "from": "bindu",
+       "to": "kalinga",
+       "text": "then"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Magadha became powerful because geography, resources and ambitious rulers worked together.",
+    "L2": "Fertile Ganga plains produced food, rivers helped transport and defence, iron made strong tools and weapons, and forests supplied elephants for the army.",
+    "L3": "Chandragupta Maurya, guided by Chanakya, defeated the Nandas around 321 BCE and founded the Mauryan empire.",
+    "L4": "From Pataliputra, the empire was governed through provinces, officials, tax collectors, a large army and spies.",
+    "L5": "The order is Alexander, Chandragupta, Bindusara, then the Kalinga war.",
+    "L6": "After the bloody Kalinga war, Ashoka promoted dhamma: non-violence, respect, tolerance and kindness. Dhamma was not a new religion forced on everyone.",
+    "L7": "Ashoka spread these ideas in edicts carved on rocks and pillars. Historians treat them as the ruler's point of view, not as complete truth.",
+    "L8": "So resources helped Magadha rise, organisation held the empire together, and Ashoka changed his way of ruling after Kalinga."
+   },
+   "narration": {
+    "L1": {
+     "text": "Magadha became powerful because geography, resources and ambitious rulers worked together.",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Fertile Ganga plains produced food, rivers helped transport and defence, iron made strong tools and weapons, and forests supplied elephants for the army.",
+     "dur": 7.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Chandragupta Maurya, guided by Chanakya, defeated the Nandas around 321 BCE and founded the Mauryan empire.",
+     "dur": 5.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "From Pataliputra, the empire was governed through provinces, officials, tax collectors, a large army and spies.",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The order is Alexander, Chandragupta, Bindusara, then the Kalinga war.",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "After the bloody Kalinga war, Ashoka promoted dhamma: non-violence, respect, tolerance and kindness. Dhamma was not a new religion forced on everyone.",
+     "dur": 7.1,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Ashoka spread these ideas in edicts carved on rocks and pillars. Historians treat them as the ruler's point of view, not as complete truth.",
+     "dur": 6.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "So resources helped Magadha rise, organisation held the empire together, and Ashoka changed his way of ruling after Kalinga.",
+     "dur": 5.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "magadha"
+      },
+      {
+       "at": 1.2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "power"
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "rise",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "land",
+        "rivers",
+        "iron",
+        "elephants"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rulers"
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3",
+        "a4"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "chanakya"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "chandra"
+      },
+      {
+       "at": 1.1,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "b1",
+       "to": 1
+      },
+      {
+       "at": 1.7,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b2",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "state"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.7,
+       "target": "army"
+      },
+      {
+       "at": 1.2,
+       "do": "flow",
+       "dur": 0.8,
+       "target": "b3",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "alex",
+        "found",
+        "bindu",
+        "kalinga"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "line",
+        "line2",
+        "line3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ashoka"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 1.3,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      },
+      {
+       "at": 1.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": "dhamma"
+      },
+      {
+       "at": 2.3,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "b4",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "dhamma"
+      },
+      {
+       "at": 0.7,
+       "do": "focus",
+       "dur": 0.8,
+       "target": "state"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "order",
+    "prompt": "Put these events in order from earliest to latest.",
+    "items": [
+     "alex",
+     "found",
+     "bindu",
+     "kalinga"
+    ],
+    "src": "c7-sst-ch05-t01-i03"
+   }
+  },
+  "repairs": [
+   "string:magadha.sub",
+   "string:state.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast",
+  "seconds": 49
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "g1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "Magadha",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "g2",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "g3",
+       "op": "circle",
+       "startMs": 1000,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "g4",
+       "op": "circle",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        620,
+        220
+       ],
+       "r": 75
+      },
+      {
+       "id": "l1",
+       "op": "label",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        320
+       ],
+       "text": "geography",
+       "target": "g2"
+      },
+      {
+       "id": "l2",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        320
+       ],
+       "text": "resources",
+       "target": "g3"
+      },
+      {
+       "id": "l3",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        320
+       ],
+       "text": "rulers",
+       "target": "g4"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        220
+       ],
+       "to": [
+        350,
+        420
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        220
+       ],
+       "to": [
+        400,
+        420
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        620,
+        220
+       ],
+       "to": [
+        450,
+        420
+       ]
+      },
+      {
+       "id": "out",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        460
+       ],
+       "text": "powerful",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "plain",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        70,
+        170
+       ],
+       "to": [
+        730,
+        170
+       ]
+      },
+      {
+       "id": "river",
+       "op": "stroke",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         80,
+         250
+        ],
+        [
+         180,
+         230
+        ],
+        [
+         280,
+         250
+        ],
+        [
+         380,
+         230
+        ],
+        [
+         480,
+         250
+        ],
+        [
+         580,
+         230
+        ],
+        [
+         720,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "food",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        160,
+        125
+       ],
+       "text": "food",
+       "size": "m"
+      },
+      {
+       "id": "transport",
+       "op": "label",
+       "startMs": 2200,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        420,
+        285
+       ],
+       "text": "transport",
+       "to": [
+        420,
+        240
+       ]
+      },
+      {
+       "id": "defence",
+       "op": "label",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        590,
+        285
+       ],
+       "text": "defence",
+       "to": [
+        590,
+        240
+       ]
+      },
+      {
+       "id": "iron",
+       "op": "polygon",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         105,
+         380
+        ],
+        [
+         145,
+         350
+        ],
+        [
+         190,
+         375
+        ],
+        [
+         165,
+         420
+        ],
+        [
+         115,
+         415
+        ]
+       ]
+      },
+      {
+       "id": "ironlabel",
+       "op": "label",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        145,
+        455
+       ],
+       "text": "iron",
+       "target": "iron"
+      },
+      {
+       "id": "tools",
+       "op": "line",
+       "startMs": 4400,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        260,
+        390
+       ],
+       "to": [
+        340,
+        330
+       ]
+      },
+      {
+       "id": "weapon",
+       "op": "line",
+       "startMs": 4800,
+       "endMs": 5300,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        340,
+        330
+       ],
+       "to": [
+        380,
+        370
+       ]
+      },
+      {
+       "id": "forest",
+       "op": "stroke",
+       "startMs": 5300,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         500,
+         410
+        ],
+        [
+         500,
+         330
+        ],
+        [
+         465,
+         370
+        ],
+        [
+         535,
+         370
+        ],
+        [
+         500,
+         330
+        ],
+        [
+         500,
+         410
+        ]
+       ]
+      },
+      {
+       "id": "elephant",
+       "op": "ellipse",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        650,
+        380
+       ],
+       "rx": 65,
+       "ry": 38
+      },
+      {
+       "id": "army",
+       "op": "label",
+       "startMs": 6800,
+       "endMs": 7300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        455
+       ],
+       "text": "army",
+       "target": "elephant"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "nanda",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        170
+       ],
+       "w": 180,
+       "h": 100
+      },
+      {
+       "id": "nl",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        225
+       ],
+       "text": "Nandas",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "c1",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        220
+       ],
+       "to": [
+        390,
+        220
+       ]
+      },
+      {
+       "id": "date",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        160
+       ],
+       "text": "321 BCE",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "chan",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        470,
+        150
+       ],
+       "r": 45
+      },
+      {
+       "id": "chl",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        470,
+        155
+       ],
+       "text": "Chanakya",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "guide",
+       "op": "arrow",
+       "startMs": 3200,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        200
+       ],
+       "to": [
+        520,
+        280
+       ]
+      },
+      {
+       "id": "chandra",
+       "op": "circle",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        340
+       ],
+       "r": 60
+      },
+      {
+       "id": "clabel",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "Chandragupta",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "found",
+       "op": "arrow",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        340
+       ],
+       "to": [
+        650,
+        340
+       ]
+      },
+      {
+       "id": "empire",
+       "op": "rect",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        600,
+        280
+       ],
+       "w": 150,
+       "h": 110
+      },
+      {
+       "id": "elabel",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        675,
+        340
+       ],
+       "text": "Mauryan empire",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "capital",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        300,
+        45
+       ],
+       "w": 200,
+       "h": 70
+      },
+      {
+       "id": "caplabel",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        85
+       ],
+       "text": "Pataliputra",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prov1",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        190
+       ],
+       "w": 150,
+       "h": 75
+      },
+      {
+       "id": "prov2",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        325,
+        190
+       ],
+       "w": 150,
+       "h": 75
+      },
+      {
+       "id": "prov3",
+       "op": "rect",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        560,
+        190
+       ],
+       "w": 150,
+       "h": 75
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        115
+       ],
+       "to": [
+        165,
+        190
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        115
+       ],
+       "to": [
+        400,
+        190
+       ]
+      },
+      {
+       "id": "a3",
+       "op": "arrow",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        115
+       ],
+       "to": [
+        635,
+        190
+       ]
+      },
+      {
+       "id": "official",
+       "op": "text",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        140,
+        350
+       ],
+       "text": "officials",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tax",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        300,
+        350
+       ],
+       "text": "tax collectors",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "army2",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        485,
+        350
+       ],
+       "text": "large army",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "spies",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 4900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        350
+       ],
+       "text": "spies",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "line",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        250
+       ],
+       "to": [
+        700,
+        250
+       ]
+      },
+      {
+       "id": "p1",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        190
+       ],
+       "text": "Alexander",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p2",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        330,
+        190
+       ],
+       "text": "Chandragupta",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p3",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        500,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        500,
+        190
+       ],
+       "text": "Bindusara",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "p4",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        670,
+        250
+       ],
+       "r": 18
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        670,
+        190
+       ],
+       "text": "Kalinga war",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "battle",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "points": [
+        [
+         90,
+         170
+        ],
+        [
+         220,
+         130
+        ],
+        [
+         350,
+         170
+        ],
+        [
+         300,
+         245
+        ],
+        [
+         150,
+         245
+        ]
+       ]
+      },
+      {
+       "id": "war",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        220,
+        205
+       ],
+       "text": "Kalinga war",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ashoka",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 52
+      },
+      {
+       "id": "alabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "Ashoka",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "turn",
+       "op": "arrow",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        350,
+        170
+       ],
+       "to": [
+        455,
+        170
+       ]
+      },
+      {
+       "id": "dhamma",
+       "op": "rect",
+       "startMs": 3400,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        515,
+        110
+       ],
+       "w": 190,
+       "h": 120
+      },
+      {
+       "id": "dlabel",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 4900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        610,
+        155
+       ],
+       "text": "dhamma",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "non",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        270
+       ],
+       "text": "non-violence",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "respect",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        170,
+        350
+       ],
+       "text": "respect",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "tolerance",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        350
+       ],
+       "text": "tolerance",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "kindness",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        350
+       ],
+       "text": "kindness",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "religion",
+       "op": "text",
+       "startMs": 7300,
+       "endMs": 8300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "not a new religion",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 10813,
+     "ops": [
+      {
+       "id": "rock",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         100,
+         390
+        ],
+        [
+         130,
+         180
+        ],
+        [
+         210,
+         180
+        ],
+        [
+         240,
+         390
+        ]
+       ]
+      },
+      {
+       "id": "pillar",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        340,
+        170
+       ],
+       "w": 75,
+       "h": 220
+      },
+      {
+       "id": "cap",
+       "op": "ellipse",
+       "startMs": 1400,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        378,
+        160
+       ],
+       "rx": 70,
+       "ry": 25
+      },
+      {
+       "id": "edict1",
+       "op": "stroke",
+       "startMs": 1900,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         125,
+         250
+        ],
+        [
+         205,
+         250
+        ]
+       ]
+      },
+      {
+       "id": "edict2",
+       "op": "stroke",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         125,
+         280
+        ],
+        [
+         205,
+         280
+        ]
+       ]
+      },
+      {
+       "id": "edict3",
+       "op": "stroke",
+       "startMs": 2500,
+       "endMs": 2900,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         355,
+         240
+        ],
+        [
+         400,
+         240
+        ]
+       ]
+      },
+      {
+       "id": "spread",
+       "op": "arrow",
+       "startMs": 2900,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        250,
+        300
+       ],
+       "to": [
+        330,
+        300
+       ]
+      },
+      {
+       "id": "view",
+       "op": "text",
+       "startMs": 3600,
+       "endMs": 4400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        610,
+        210
+       ],
+       "text": "ruler's view",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notfull",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        300
+       ],
+       "text": "not complete truth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lens",
+       "op": "circle",
+       "startMs": 5800,
+       "endMs": 6400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        610,
+        390
+       ],
+       "r": 45
+      },
+      {
+       "id": "hist",
+       "op": "text",
+       "startMs": 6400,
+       "endMs": 7100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        610,
+        395
+       ],
+       "text": "historians",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-sst-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "res",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        150,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "org",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "change",
+       "op": "circle",
+       "startMs": 1200,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        170
+       ],
+       "r": 70
+      },
+      {
+       "id": "rlabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        175
+       ],
+       "text": "resources",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "olabel",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        175
+       ],
+       "text": "organisation",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "chlabel",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        650,
+        175
+       ],
+       "text": "Ashoka",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "a1",
+       "op": "arrow",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        220,
+        170
+       ],
+       "to": [
+        330,
+        170
+       ]
+      },
+      {
+       "id": "a2",
+       "op": "arrow",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        470,
+        170
+       ],
+       "to": [
+        580,
+        170
+       ]
+      },
+      {
+       "id": "rise",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        150,
+        330
+       ],
+       "text": "Magadha rise",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hold",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        330
+       ],
+       "text": "empire together",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 5300,
+       "endMs": 6200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        650,
+        330
+       ],
+       "text": "new ruling way",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "concl",
+       "op": "arrow",
+       "startMs": 6500,
+       "endMs": 7300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        400,
+        390
+       ],
+       "to": [
+        400,
+        450
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "326 BCE",
+   "prompt": "Alexander reaches NW",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "321 BCE",
+   "prompt": "Chandragupta founds empire",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "297 BCE",
+   "prompt": "Bindusara becomes king",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "261 BCE",
+   "prompt": "The Kalinga war",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "4th century BCE",
+   "prompt": "Alexander reaches NW",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "4th century BCE",
+   "prompt": "Chandragupta founds empire",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "3rd century BCE",
+   "prompt": "Bindusara becomes king",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "3rd century BCE",
+   "prompt": "The Kalinga war",
+   "src": "c7-sst-ch05-t01-i03"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "Chandragupta founds empire",
+   "prompt": "earlier: The Kalinga war (261 BCE) vs Chandragupta founds empire (321 BCE)"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "Alexander reaches NW",
+   "prompt": "earlier: Alexander reaches NW (326 BCE) vs Bindusara becomes king (297 BCE)"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

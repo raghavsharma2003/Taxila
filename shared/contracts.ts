@@ -190,6 +190,20 @@ export interface TurnRequest {
    * planned for the child's last answer was never voiced, the cascade voices it on this turn.
    */
   laneResume?: boolean;
+  /**
+   * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
+   * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
+   * safeguards even if `childText` now reads clean (OR semantics; safety-robust 2026-10-05).
+   */
+  duplex?: {
+    transcriptHash: string;
+    genId?: string | null;
+    safetyPending?: { kind: "self_harm" | "abuse" | "fear" | null; source: "predicate" | "model_note" | null } | null;
+    superseded?: string[];
+    heardUpTo?: { chars: number; words: number; ms: number } | null;
+    cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
+    engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
+  };
 }
 /**
  * One child utterance's voice features, computed on the device (src/voice/tracker.ts UtteranceFeatures).

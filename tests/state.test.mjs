@@ -25,7 +25,8 @@ test("start: greet, then hook → explain → worked example → its faded step 
   while (!r.move.itemId) { r = turn(r, NE); kinds.push(r.move.kind); }
   assert.deepEqual(kinds, ["hook", "explain", "worked_example", "practice"]);
   assert.match(r.move.itemId, /^fade:\d+$/, "the first item is the worked example's faded step");
-  assert.match(r.state.queue[1], /^diag:/, "a spoken diagnostic is second in line");
+  // Day 0 (rs6 01-content-f0): the spoken diagnostic is in line, third or later (never item 1 or 2)
+  assert.ok(r.state.queue.findIndex((id) => /^diag:/.test(id)) >= 2, "a spoken diagnostic is third or later in line");
 });
 
 test("experienced learner attempts first (expertise reversal): no worked example, F8 first item", () => {

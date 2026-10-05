@@ -192,9 +192,12 @@ const LANGUAGE = {
   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written), common English words allowed. If they switch to English or Hinglish, follow them.",
   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
 };
-function languageRule(language, ageBand) {
+/** The child ASKED for this language (director/requests.js, OWNER TEST item 4, F12): it holds whatever they reply in. */
+const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple English" };
+function languageRule(language, ageBand, pinned = false) {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
-  return `LANGUAGE: ${LANGUAGE[language] ?? LANGUAGE.hinglish} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
+  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.` : LANGUAGE[language] ?? LANGUAGE.hinglish;
+  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
 }
 
 const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
@@ -295,7 +298,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
     { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
-    { id: "language", parts: [{ text: languageRule(input.language, ageBand), drop: null }] },
+    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is

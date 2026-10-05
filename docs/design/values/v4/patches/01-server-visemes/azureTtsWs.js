@@ -21,7 +21,12 @@ export const WS_PCM_FORMAT = "raw-24khz-16bit-mono-pcm";
 /** Sockets kept per region (one per concurrently synthesising part: LOOKAHEAD 2 + the playing part). */
 export const POOL_MAX = 3;
 /** An idle socket is closed after this long (Azure drops idle ones; a stale socket costs a failed first part). */
-export const IDLE_MS = 45_000;
+export const IDLE_MS = Number(process.env.TAXILA_DHD_WS_IDLE_MS) || 45_000;
+/** Review v4 (2026-10-05): while a region was used in the last KEEP_WARM_MS, one open socket is kept ready. Without it a
+ *  child turn longer than IDLE_MS (a worked problem, a game) or a barge-in that aborts the in-flight parts closes every
+ *  socket, and the next reply's part 0 pays the TLS + upgrade handshake (1.1-1.8 s through the eval proxy; unmeasured on
+ *  the India lane). An idle socket is still rotated every IDLE_MS (Azure drops stale ones), but replaced, not dropped. */
+export const KEEP_WARM_MS = 10 * 60_000;
 
 function frame(opcode, payload) {
   const mask = crypto.randomBytes(4), n = payload.length;
@@ -44,7 +49,7 @@ function connect(host) {
 }
 
 class TtsSocket {
-  constructor(region, key) { this.region = region; this.key = key; this.sock = null; this.buf = Buffer.alloc(0); this.turn = null; this.configured = false; this.idle = null; this.reserved = false; }
+  constructor(region, key) { this.region = region; this.key = key; this.sock = null; this.buf = Buffer.alloc(0); this.turn = null; this.configured = false; this.idle = null; this.reserved = false; this.dead = false; }
   get busy() { return !!this.turn || this.reserved; }
   async open(timeoutMs) {
     const host = `${this.region}.tts.speech.microsoft.com`;
@@ -78,7 +83,7 @@ class TtsSocket {
     this.sock = sock;
     this.configured = false;
   }
-  fail(err) { const T = this.turn; this.turn = null; this.sock = null; T?.fail(err); }
+  fail(err) { const T = this.turn; this.turn = null; this.sock = null; this.dead = true; clearTimeout(this.idle); T?.fail(err); keepWarm(this.region, this.key); }
   pump() {
     for (;;) {
       const b = this.buf;
@@ -110,8 +115,8 @@ class TtsSocket {
       }
     }
   }
-  armIdle() { clearTimeout(this.idle); this.idle = setTimeout(() => this.close(), IDLE_MS); this.idle.unref?.(); }
-  close() { clearTimeout(this.idle); try { this.sock?.write(frame(8, Buffer.alloc(0))); this.sock?.end(); } catch { /* gone */ } this.sock = null; }
+  armIdle() { clearTimeout(this.idle); this.idle = setTimeout(() => { this.close(); keepWarm(this.region, this.key); }, IDLE_MS); this.idle.unref?.(); }
+  close() { clearTimeout(this.idle); this.dead = true; try { this.sock?.write(frame(8, Buffer.alloc(0))); this.sock?.end(); } catch { /* gone */ } this.sock = null; }
   /** Start one synthesis on this (open) socket. `turn` receives audio(chunk), marks({visemes, words}), end(), fail(err). */
   start(ssml, { visemes, words }, turn) {
     clearTimeout(this.idle);
@@ -128,17 +133,35 @@ class TtsSocket {
 }
 
 const pools = new Map(); // region → TtsSocket[]
+const lastUse = new Map(); // region → Date.now() of the last synthesis started
+/** Keep one open, free socket in a recently used region (background; never throws, never exceeds POOL_MAX). */
+const warmTried = new Map(); // region → Date.now() of the last background open (throttle: Azure down must not spin)
+export const WARM_RETRY_MS = 5000;
+function keepWarm(region, key) {
+  const now = Date.now();
+  if (!key || now - (lastUse.get(region) ?? -Infinity) > KEEP_WARM_MS) return;
+  if (now - (warmTried.get(region) ?? -Infinity) < WARM_RETRY_MS) return;
+  const pool = pools.get(region) ?? [];
+  // a free open socket, or one being opened (sock not yet set, not dead, not reserved), already covers the next part
+  if (pool.some((s) => !s.dead && !s.turn && (s.sock ? !s.reserved : true))) return;
+  if (pool.filter((s) => !s.dead).length >= POOL_MAX) return;
+  warmTried.set(region, now);
+  const t = setTimeout(() => { acquire(region, key, 4000).then((s) => { s.reserved = false; s.armIdle(); }).catch(() => {}); }, 0);
+  t.unref?.();
+}
 async function acquire(region, key, timeoutMs) {
   let pool = pools.get(region);
   if (!pool) pools.set(region, (pool = []));
-  for (let i = pool.length - 1; i >= 0; i--) if (!pool[i].sock) pool.splice(i, 1);
+  // drop DEAD sockets only: a socket still opening has no `sock` yet and must stay in the pool (a concurrent acquire
+  // used to splice it out, so it served one part and was never reused)
+  for (let i = pool.length - 1; i >= 0; i--) if (pool[i].dead) pool.splice(i, 1);
   // reserved synchronously: two parts starting in the same tick must never share a socket (one turn per socket)
   const free = pool.find((s) => !s.busy && s.sock);
   if (free) { free.reserved = true; return free; }
   const s = new TtsSocket(region, key);
   s.reserved = true;
   if (pool.length < POOL_MAX) pool.push(s);
-  try { await s.open(timeoutMs); } catch (e) { pool.splice(pool.indexOf(s), 1); throw e; }
+  try { await s.open(timeoutMs); } catch (e) { s.dead = true; const k = pool.indexOf(s); if (k >= 0) pool.splice(k, 1); throw e; }
   return s;
 }
 
@@ -146,6 +169,9 @@ async function acquire(region, key, timeoutMs) {
 export async function prewarmDhdWs(env = process.env) {
   const c = speechConfig(env);
   if (!c) return false;
+  lastUse.set(c.region, Date.now());
+  const pool = pools.get(c.region) ?? [];
+  if (pool.some((s) => !s.dead && s.sock && !s.busy)) return true; // already warm: never open a second idle socket
   try { const s = await acquire(c.region, c.key, 4000); s.reserved = false; s.armIdle(); return true; } catch { return false; }
 }
 
@@ -157,12 +183,16 @@ export async function prewarmDhdWs(env = process.env) {
  * @param {string} ssml
  * @param {{ signal?: AbortSignal, timeoutMs?: number, headerTimeoutMs?: number, words?: boolean, env?: NodeJS.ProcessEnv }} [o]
  */
+/** Tests only: the region's pool, as plain facts. */
+export const __pool = (region) => (pools.get(region) ?? []).map((s) => ({ open: !!s.sock, dead: s.dead, busy: s.busy }));
+
 export async function dhdStreamWs(ssml, { signal, timeoutMs = 15_000, headerTimeoutMs = 4000, words = false, env = process.env } = {}) {
   const c = speechConfig(env);
   if (!c) throw new AzureError("azure speech not configured (AZURE_SPEECH_REGION / AZURE_SPEECH_KEY)", 0, "config");
   const voice = voiceOf(ssml), t0 = performance.now();
   if (signal?.aborted) throw new AzureError(`dhd_ws ${voice} aborted`, 0, "aborted");
   let sock;
+  lastUse.set(c.region, Date.now());
   try { sock = await acquire(c.region, c.key, headerTimeoutMs); } catch (e) { log("dhd_ws", voice, "connect_failed", Math.round(performance.now() - t0)); throw e instanceof AzureError ? e : new AzureError(`dhd_ws ${voice} connect: ${e?.message || e}`, 0, "network"); }
   const q = [], marks = { visemes: [], words: [], subs: new Set(), onMarks(fn) { if (this.visemes.length || this.words.length) fn({ visemes: [...this.visemes], words: [...this.words] }); this.subs.add(fn); return () => this.subs.delete(fn); } };
   let wake = null, done = false, error = null, first = null;

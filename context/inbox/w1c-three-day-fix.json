@@ -1,0 +1,28 @@
+{
+ "nodes": [
+  {
+   "id": "rj-w1c-script-child-cannot-fill-fade",
+   "kind": "rejection",
+   "title": "Root cause of the W2 w1c-three-day regression (22/22 at W1, 16/22 at W2 integration): the TEST's scripted child, not the product. tests/prod/_w1c.mjs replyFor looked items up in the kit JSON only; W2-C's faded step is `fade:<i>` (built from kit.workedExample.fadedVersion, not a kit item), so the 'can do it, cannot say why' child shrugged 'pata nahi' at it. The product then ran its correct stuck path (break, re-pose, 4 hints, break) for 8 of the 18 day-0 turns, the teach-back that gave the generative (b) pass in W1 was never reached, the day-0 skill stayed 'practising' (anchor null) and dueForChecks correctly had nothing due at +1 day. The opener selection, ledger promotion and dueForChecks are unchanged since 9242020 (no diff in server/learner/live.js or server/learner/kt/ledger.js). Same child at 9242020: 9 graded + teach-back, s1 learned_today, due at +1 day",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w1c-script-child-fills-fade",
+   "kind": "decision",
+   "title": "tests/prod/_w1c.mjs fadeItemOf: the scripted child fills `fade:<i>` with the text the blank replaces, read from the kit JSON (independent of the grader's code); tests/w1c-delayed-order.test.mjs pins it equal to fading.js fadeItem's key on every class 4-7 maths kit, and pins that a due C31 delayed check is the opening move before any teach step at every guidance level (worked, faded, probe, attempt). Product not changed: when a skill is due the opener leads (+3 days held through the regression). Reversal: a product change that makes a guided (worked/faded) day count toward learned_today differently, or a faded step that becomes a kit item with its own id",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w1c-three-day-fix-2026-10-05",
+   "kind": "measurement",
+   "title": "w1c-three-day, local server on the Neon test branch, n=1 run each: before 16/22 (+1 day opener none, pendingProbe none; day 0 3 graded); after 22/22 (+1 day opener asks the day-0 item as C31; day 0 s1 learned_today, n 8, pL 0.988, due at +1 day). A/B day-0 trace with the same script: 9242020 = s1 learned_today; integrated tree with the old script = s1 practising (anchor null), due +1d []; integrated tree with fade-aware script = s1 learned_today. Unit: tests/w1c-delayed-order.test.mjs 6/6, and a mutation (phase 'teach' for the worked path) fails it. 2026-10-05",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  { "src": "rj-w1c-script-child-cannot-fill-fade", "rel": "supersedes", "dst": "rj-w2int-three-day-c31-plus1" },
+  { "src": "rj-w1c-script-child-cannot-fill-fade", "rel": "caused_by", "dst": "w2c-guidance-ladder-fading" },
+  { "src": "w1c-script-child-fills-fade", "rel": "part_of", "dst": "w1c-three-day-local" },
+  { "src": "m-w1c-three-day-fix-2026-10-05", "rel": "part_of", "dst": "w1c-script-child-fills-fade" }
+ ]
+}

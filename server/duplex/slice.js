@@ -78,6 +78,17 @@ export class DuplexSlice {
     return { safety: s, intent, textHash: view.textHash, changed };
   }
 
+  /**
+   * The Director's model distress read on the committed turn (classify's flag / distressCheck), routed here by
+   * server/brain/turn.js through duplex/registry.js (safety-robust 2026-10-05). Sticky like a predicate hit; a trip
+   * cancels speculative drafts and build intents exactly as a predicate hit on a partial does.
+   */
+  modelNote(kind, t) {
+    const s = this.safety.modelNote(kind === "self_harm" || kind === "abuse" || kind === "fear" ? kind : null, t);
+    if (s.tripped) { this.spec.onSafety(t); this.builds.onSafety(); }
+    return s;
+  }
+
   /** A device PrepareHint (with the stable text it keys on and the code-built uptake). */
   prepare(t, hint, words) {
     this.spec.onPrepare(t, hint, words);

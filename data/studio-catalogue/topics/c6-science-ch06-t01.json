@@ -1,0 +1,1966 @@
+{
+ "topicId": "c6-science-ch06-t01",
+ "title": "Properties of materials",
+ "chapter": "Materials Around Us",
+ "subject": "science",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "sort-storm@1",
+  "hint": "tools torch / tank / tester / magnet: properties of materials (byProp)"
+ },
+ "game": {
+  "archetype": "sort-storm@1",
+  "spec": {
+   "archetype": "sort-storm@1",
+   "skills": [
+    "c6-science-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Test it, then drag it into a bin",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Protein test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
+   },
+   "title": "Test materials on the belt",
+   "rounds": [
+    {
+     "title": "Light test",
+     "sub": "See how much light gets through",
+     "byProp": "light",
+     "bins": [
+      {
+       "id": "transparent",
+       "label": "Clear view",
+       "glyph": "sun"
+      },
+      {
+       "id": "translucent",
+       "label": "Some view",
+       "glyph": "cloud"
+      },
+      {
+       "id": "opaque",
+       "label": "No view",
+       "glyph": "moon"
+      }
+     ],
+     "tools": [
+      "torch"
+     ],
+     "items": [
+      {
+       "id": "glass",
+       "text": "Clear glass",
+       "glyph": "mirror",
+       "bin": "transparent",
+       "props": {
+        "light": "transparent"
+       },
+       "src": "c6-science-ch06-t01-i01"
+      },
+      {
+       "id": "water",
+       "text": "Clean water",
+       "glyph": "drop",
+       "bin": "transparent",
+       "props": {
+        "light": "transparent"
+       },
+       "src": "c6-science-ch06-t01-i01"
+      },
+      {
+       "id": "butter",
+       "text": "Butter paper",
+       "glyph": "scroll",
+       "bin": "translucent",
+       "props": {
+        "light": "translucent"
+       },
+       "src": "c6-science-ch06-t01-i01"
+      },
+      {
+       "id": "frosted",
+       "text": "Frosted glass",
+       "glyph": "mirror",
+       "bin": "translucent",
+       "props": {
+        "light": "translucent"
+       },
+       "src": "c6-science-ch06-t01-i08"
+      },
+      {
+       "id": "wood",
+       "text": "Wooden board",
+       "glyph": "tree",
+       "bin": "opaque",
+       "props": {
+        "light": "opaque"
+       },
+       "src": "c6-science-ch06-t01-i01"
+      },
+      {
+       "id": "steel",
+       "text": "Steel plate",
+       "glyph": "plate",
+       "bin": "opaque",
+       "props": {
+        "light": "opaque"
+       },
+       "src": "c6-science-ch06-t01-i01"
+      }
+     ],
+     "speed": 0.95
+    },
+    {
+     "title": "Water test",
+     "sub": "Check what stays up or goes down",
+     "byProp": "floats",
+     "bins": [
+      {
+       "id": "yes",
+       "label": "Stays up",
+       "glyph": "wave"
+      },
+      {
+       "id": "no",
+       "label": "Goes down",
+       "glyph": "drop"
+      }
+     ],
+     "tools": [
+      "tank"
+     ],
+     "items": [
+      {
+       "id": "log",
+       "text": "Big wooden log",
+       "glyph": "tree",
+       "bin": "yes",
+       "props": {
+        "floats": "yes"
+       },
+       "src": "c6-science-ch06-t01-i04"
+      },
+      {
+       "id": "nail",
+       "text": "Small iron nail",
+       "glyph": "pen",
+       "bin": "no",
+       "props": {
+        "floats": "no"
+       },
+       "src": "c6-science-ch06-t01-i04"
+      },
+      {
+       "id": "ball",
+       "text": "Plastic ball",
+       "bin": "yes",
+       "props": {
+        "floats": "yes"
+       },
+       "src": "c6-science-ch06-t01-i04"
+      },
+      {
+       "id": "stone",
+       "text": "Stone",
+       "glyph": "mountain",
+       "bin": "no",
+       "props": {
+        "floats": "no"
+       },
+       "src": "c6-science-ch06-t01-i04"
+      },
+      {
+       "id": "katori",
+       "text": "Steel katori",
+       "bin": "yes",
+       "props": {
+        "floats": "yes"
+       },
+       "src": "c6-science-ch06-t01-i05"
+      },
+      {
+       "id": "filled",
+       "text": "Filled katori",
+       "bin": "no",
+       "props": {
+        "floats": "no"
+       },
+       "src": "c6-science-ch06-t01-i05"
+      }
+     ],
+     "speed": 0.88
+    },
+    {
+     "title": "Water mixing test",
+     "sub": "Do not trust looks; test each sample",
+     "bins": [
+      {
+       "id": "dissolves",
+       "label": "Mixes in",
+       "glyph": "drop"
+      },
+      {
+       "id": "separate",
+       "label": "Stays separate",
+       "glyph": "wave"
+      }
+     ],
+     "tools": [],
+     "items": [
+      {
+       "id": "salt",
+       "text": "Salt",
+       "glyph": "spark",
+       "bin": "dissolves",
+       "src": "c6-science-ch06-t01-i03"
+      },
+      {
+       "id": "sugar",
+       "text": "Sugar",
+       "glyph": "seed",
+       "bin": "dissolves",
+       "src": "c6-science-ch06-t01-i03"
+      },
+      {
+       "id": "sand",
+       "text": "White sand",
+       "glyph": "mountain",
+       "bin": "separate",
+       "src": "c6-science-ch06-t01-i11"
+      },
+      {
+       "id": "chalk",
+       "text": "Chalk powder",
+       "glyph": "spark",
+       "bin": "separate",
+       "src": "c6-science-ch06-t01-i03"
+      },
+      {
+       "id": "oil",
+       "text": "Cooking oil",
+       "glyph": "drop",
+       "bin": "separate",
+       "src": "c6-science-ch06-t01-i03"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c6-science-ch06-t01-m1"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-science-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Correct",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "BUSTED",
+    "order": "Tap in order"
+   },
+   "title": "Test the material",
+   "accent": "sci",
+   "targets": "c6-science-ch06-t01-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Test the material"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Same look means same properties"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "wood",
+       "type": "node",
+       "text": "Wooden stick",
+       "sub": "sample",
+       "color": "sci"
+      },
+      {
+       "id": "look",
+       "type": "node",
+       "text": "Appearance",
+       "sub": "look and shine",
+       "glyph": "eye",
+       "color": "amber"
+      },
+      {
+       "id": "hard",
+       "type": "node",
+       "text": "Hardness",
+       "sub": "press or scratch",
+       "glyph": "hand",
+       "color": "ion"
+      },
+      {
+       "id": "light",
+       "type": "node",
+       "text": "Transparency",
+       "sub": "hold to light",
+       "glyph": "bulb",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "wood",
+       "to": "look",
+       "text": "observe"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "look",
+       "to": "hard",
+       "text": "test"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "hard",
+       "to": "light",
+       "text": "test"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "window",
+       "type": "node",
+       "text": "Wooden stick",
+       "sub": "no light through",
+       "glyph": "tree",
+       "color": "sci"
+      },
+      {
+       "id": "opaque",
+       "type": "label",
+       "text": "Opaque",
+       "x": 420,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "shine",
+       "type": "label",
+       "text": "Dull, not shiny",
+       "x": 420,
+       "y": 360,
+       "color": "amber"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "window",
+       "to": "opaque",
+       "text": "shows"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "water",
+       "type": "node",
+       "text": "Water test",
+       "sub": "stir and place",
+       "glyph": "jug",
+       "color": "ion"
+      },
+      {
+       "id": "nsol",
+       "type": "node",
+       "text": "No dissolve",
+       "sub": "stays whole",
+       "glyph": "beaker",
+       "color": "sci"
+      },
+      {
+       "id": "float",
+       "type": "node",
+       "text": "Floats",
+       "sub": "in water",
+       "glyph": "wave",
+       "color": "mint"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "water",
+       "to": "nsol",
+       "text": "stir"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "nsol",
+       "to": "float",
+       "text": "place"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "glass",
+       "type": "node",
+       "text": "Clear glass",
+       "glyph": "mirror",
+       "color": "ion"
+      },
+      {
+       "id": "paper",
+       "type": "node",
+       "text": "Butter paper",
+       "glyph": "scroll",
+       "color": "amber"
+      },
+      {
+       "id": "board",
+       "type": "node",
+       "text": "Wooden board",
+       "glyph": "tree",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Materials can look different, but we learn about them by observing and testing their properties.",
+    "L2": "A common mistake is thinking that materials that look alike must have the same properties.",
+    "L3": "Let us test a wooden ice-cream stick. It is dull, not shiny, and it is fairly hard.",
+    "L4": "Hold it up to a light. No light comes through, so the stick is opaque.",
+    "L5": "Now stir it in water. It does not dissolve.",
+    "L6": "Place it in water. The wooden stick floats.",
+    "L7": "So one sample can be tested for lustre, hardness, transparency, solubility, and floating or sinking.",
+    "L8": "Do not guess from appearance. Tap the material that is opaque."
+   },
+   "narration": {
+    "L1": {
+     "text": "Materials can look different, but we learn about them by observing and testing their properties.",
+     "dur": 7.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A common mistake is thinking that materials that look alike must have the same properties.",
+     "dur": 7.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Let us test a wooden ice-cream stick. It is dull, not shiny, and it is fairly hard.",
+     "dur": 7.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Hold it up to a light. No light comes through, so the stick is opaque.",
+     "dur": 7.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Now stir it in water. It does not dissolve.",
+     "dur": 6.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "Place it in water. The wooden stick floats.",
+     "dur": 6.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "So one sample can be tested for lustre, hardness, transparency, solubility, and floating or sinking.",
+     "dur": 8,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Do not guess from appearance. Tap the material that is opaque.",
+     "dur": 6.5,
+     "lead": 0.2,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "wood",
+        "look"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a1",
+       "to": 1
+      },
+      {
+       "at": 4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "hard"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "window"
+      },
+      {
+       "at": 2,
+       "do": "show",
+       "dur": 0.7,
+       "target": "opaque"
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "opaque"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "water"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a5",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "nsol"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "float"
+      },
+      {
+       "at": 2,
+       "do": "flow",
+       "dur": 0.7,
+       "target": "a6",
+       "to": 1
+      },
+      {
+       "at": 3,
+       "do": "highlight",
+       "dur": 1,
+       "target": "float"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "look",
+        "hard",
+        "light"
+       ]
+      },
+      {
+       "at": 2,
+       "do": "camera",
+       "dur": 2,
+       "zoom": 1.05
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "prompt",
+        "glass",
+        "paper",
+        "board"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the material that is opaque.",
+    "options": [
+     "glass",
+     "paper",
+     "board"
+    ],
+    "answer": "board",
+    "src": "c6-science-ch06-t01-i01"
+   }
+  },
+  "repairs": [
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast",
+  "seconds": 61
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "mat1",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        75
+       ],
+       "text": "materials",
+       "size": "l"
+      },
+      {
+       "id": "mat2",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        130
+       ],
+       "w": 150,
+       "h": 90,
+       "round": 10
+      },
+      {
+       "id": "mat3",
+       "op": "circle",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        175
+       ],
+       "r": 48
+      },
+      {
+       "id": "obs",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        155,
+        300
+       ],
+       "text": "observing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "test",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        615,
+        300
+       ],
+       "text": "testing",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "aobs",
+       "op": "arrow",
+       "startMs": 4200,
+       "endMs": 5000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        230,
+        220
+       ],
+       "to": [
+        300,
+        270
+       ]
+      },
+      {
+       "id": "atest",
+       "op": "arrow",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        220
+       ],
+       "to": [
+        500,
+        270
+       ]
+      },
+      {
+       "id": "props",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        400
+       ],
+       "text": "properties",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "alike",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        155,
+        85
+       ],
+       "text": "look alike",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        615,
+        85
+       ],
+       "text": "same properties",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sugar",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        145,
+        190
+       ],
+       "text": "sugar",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sand",
+       "op": "text",
+       "startMs": 1800,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        635,
+        190
+       ],
+       "text": "sand",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "sugbox",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        75,
+        225
+       ],
+       "w": 140,
+       "h": 70
+      },
+      {
+       "id": "sanbox",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        565,
+        225
+       ],
+       "w": 140,
+       "h": 70
+      },
+      {
+       "id": "diss",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        145,
+        355
+       ],
+       "text": "dissolves",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "nodiss",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        635,
+        355
+       ],
+       "text": "does not dissolve",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 5800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        290,
+        100
+       ],
+       "to": [
+        510,
+        100
+       ]
+      },
+      {
+       "id": "test2",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 6983,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        450
+       ],
+       "text": "test",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "stick",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        180
+       ],
+       "w": 300,
+       "h": 42,
+       "round": 8
+      },
+      {
+       "id": "wood",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        260
+       ],
+       "text": "wooden stick",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "lustre",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        100
+       ],
+       "text": "lustre",
+       "size": "m"
+      },
+      {
+       "id": "dull",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        155
+       ],
+       "text": "dull",
+       "size": "m"
+      },
+      {
+       "id": "shine",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        540,
+        210
+       ],
+       "text": "not shiny",
+       "size": "m"
+      },
+      {
+       "id": "hard",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        540,
+        300
+       ],
+       "text": "hardness",
+       "size": "m"
+      },
+      {
+       "id": "fair",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        540,
+        355
+       ],
+       "text": "fairly hard",
+       "size": "m"
+      },
+      {
+       "id": "nail",
+       "op": "stroke",
+       "startMs": 5400,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "points": [
+        [
+         160,
+         120
+        ],
+        [
+         180,
+         100
+        ],
+        [
+         205,
+         120
+        ]
+       ]
+      },
+      {
+       "id": "barely",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7834,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "barely dents",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "light",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        160
+       ],
+       "r": 38,
+       "fill": "accent"
+      },
+      {
+       "id": "rays",
+       "op": "line",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        170,
+        160
+       ],
+       "to": [
+        270,
+        160
+       ]
+      },
+      {
+       "id": "hold",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        100
+       ],
+       "text": "light",
+       "size": "m"
+      },
+      {
+       "id": "stick4",
+       "op": "rect",
+       "startMs": 1400,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        125
+       ],
+       "w": 260,
+       "h": 70
+      },
+      {
+       "id": "blocked",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 2800,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        580,
+        120
+       ],
+       "to": [
+        580,
+        210
+       ]
+      },
+      {
+       "id": "no",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        650,
+        165
+       ],
+       "text": "no light",
+       "size": "m"
+      },
+      {
+       "id": "opaque",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        340
+       ],
+       "text": "opaque",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "def",
+       "op": "text",
+       "startMs": 5000,
+       "endMs": 6983,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        420
+       ],
+       "text": "no light comes through",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "water5",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        300
+       ],
+       "rx": 180,
+       "ry": 70
+      },
+      {
+       "id": "stick5",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        260
+       ],
+       "w": 280,
+       "h": 28,
+       "round": 6
+      },
+      {
+       "id": "stir",
+       "op": "arrow",
+       "startMs": 1300,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        580,
+        180
+       ],
+       "to": [
+        470,
+        270
+       ],
+       "bend": 1
+      },
+      {
+       "id": "dissolve",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "does not dissolve",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "water6",
+       "op": "ellipse",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        330
+       ],
+       "rx": 220,
+       "ry": 85
+      },
+      {
+       "id": "stick6",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        265
+       ],
+       "w": 210,
+       "h": 28,
+       "round": 6
+      },
+      {
+       "id": "float",
+       "op": "arrow",
+       "startMs": 1500,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        405,
+        350
+       ],
+       "to": [
+        405,
+        220
+       ]
+      },
+      {
+       "id": "floats",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        150
+       ],
+       "text": "floats",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "prophead",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        60
+       ],
+       "text": "properties",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lust",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        160
+       ],
+       "text": "lustre",
+       "size": "m"
+      },
+      {
+       "id": "hardness7",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        160
+       ],
+       "text": "hardness",
+       "size": "m"
+      },
+      {
+       "id": "trans",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        560,
+        160
+       ],
+       "text": "transparency",
+       "size": "m"
+      },
+      {
+       "id": "sol",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        170,
+        300
+       ],
+       "text": "solubility",
+       "size": "m"
+      },
+      {
+       "id": "float7",
+       "op": "text",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        500,
+        300
+       ],
+       "text": "floats or sinks",
+       "size": "m"
+      },
+      {
+       "id": "check1",
+       "op": "circle",
+       "startMs": 3900,
+       "endMs": 4600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        130,
+        155
+       ],
+       "r": 62
+      },
+      {
+       "id": "check2",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        350,
+        155
+       ],
+       "r": 72
+      },
+      {
+       "id": "check3",
+       "op": "circle",
+       "startMs": 4300,
+       "endMs": 5100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        650,
+        155
+       ],
+       "r": 100
+      },
+      {
+       "id": "check4",
+       "op": "circle",
+       "startMs": 4500,
+       "endMs": 5300,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        295
+       ],
+       "r": 75
+      },
+      {
+       "id": "check5",
+       "op": "circle",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        590,
+        295
+       ],
+       "r": 105
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-science-ch06-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "guess",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "appearance",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        300,
+        35
+       ],
+       "to": [
+        500,
+        105
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        500,
+        35
+       ],
+       "to": [
+        300,
+        105
+       ]
+      },
+      {
+       "id": "tap",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2300,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        180
+       ],
+       "text": "tap",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "opaque8",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        280,
+        250
+       ],
+       "w": 240,
+       "h": 90,
+       "round": 8
+      },
+      {
+       "id": "opaqueLabel",
+       "op": "text",
+       "startMs": 3200,
+       "endMs": 4100,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "opaque",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "target",
+       "op": "circle",
+       "startMs": 4100,
+       "endMs": 5281,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        295
+       ],
+       "r": 125
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast"
+ },
+ "keys": [
+  {
+   "itemId": "r1:glass",
+   "key": "Clear view",
+   "prompt": "Clear glass → which of [Clear view | Some view | No view] props {\"light\":\"transparent\"}",
+   "src": "c6-science-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:water",
+   "key": "Clear view",
+   "prompt": "Clean water → which of [Clear view | Some view | No view] props {\"light\":\"transparent\"}",
+   "src": "c6-science-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:butter",
+   "key": "Some view",
+   "prompt": "Butter paper → which of [Clear view | Some view | No view] props {\"light\":\"translucent\"}",
+   "src": "c6-science-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:frosted",
+   "key": "Some view",
+   "prompt": "Frosted glass → which of [Clear view | Some view | No view] props {\"light\":\"translucent\"}",
+   "src": "c6-science-ch06-t01-i08"
+  },
+  {
+   "itemId": "r1:wood",
+   "key": "No view",
+   "prompt": "Wooden board → which of [Clear view | Some view | No view] props {\"light\":\"opaque\"}",
+   "src": "c6-science-ch06-t01-i01"
+  },
+  {
+   "itemId": "r1:steel",
+   "key": "No view",
+   "prompt": "Steel plate → which of [Clear view | Some view | No view] props {\"light\":\"opaque\"}",
+   "src": "c6-science-ch06-t01-i01"
+  },
+  {
+   "itemId": "r2:log",
+   "key": "Stays up",
+   "prompt": "Big wooden log → which of [Stays up | Goes down] props {\"floats\":\"yes\"}",
+   "src": "c6-science-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:nail",
+   "key": "Goes down",
+   "prompt": "Small iron nail → which of [Stays up | Goes down] props {\"floats\":\"no\"}",
+   "src": "c6-science-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:ball",
+   "key": "Stays up",
+   "prompt": "Plastic ball → which of [Stays up | Goes down] props {\"floats\":\"yes\"}",
+   "src": "c6-science-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:stone",
+   "key": "Goes down",
+   "prompt": "Stone → which of [Stays up | Goes down] props {\"floats\":\"no\"}",
+   "src": "c6-science-ch06-t01-i04"
+  },
+  {
+   "itemId": "r2:katori",
+   "key": "Stays up",
+   "prompt": "Steel katori → which of [Stays up | Goes down] props {\"floats\":\"yes\"}",
+   "src": "c6-science-ch06-t01-i05"
+  },
+  {
+   "itemId": "r2:filled",
+   "key": "Goes down",
+   "prompt": "Filled katori → which of [Stays up | Goes down] props {\"floats\":\"no\"}",
+   "src": "c6-science-ch06-t01-i05"
+  },
+  {
+   "itemId": "r3:salt",
+   "key": "Mixes in",
+   "prompt": "Salt → which of [Mixes in | Stays separate]",
+   "src": "c6-science-ch06-t01-i03"
+  },
+  {
+   "itemId": "r3:sugar",
+   "key": "Mixes in",
+   "prompt": "Sugar → which of [Mixes in | Stays separate]",
+   "src": "c6-science-ch06-t01-i03"
+  },
+  {
+   "itemId": "r3:sand",
+   "key": "Stays separate",
+   "prompt": "White sand → which of [Mixes in | Stays separate]",
+   "src": "c6-science-ch06-t01-i11"
+  },
+  {
+   "itemId": "r3:chalk",
+   "key": "Stays separate",
+   "prompt": "Chalk powder → which of [Mixes in | Stays separate]",
+   "src": "c6-science-ch06-t01-i03"
+  },
+  {
+   "itemId": "r3:oil",
+   "key": "Stays separate",
+   "prompt": "Cooking oil → which of [Mixes in | Stays separate]",
+   "src": "c6-science-ch06-t01-i03"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

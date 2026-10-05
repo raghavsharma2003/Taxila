@@ -36,7 +36,7 @@ const dkDefault: DukaanSpec = {
       { items: [{ name: "Cricket ball", price: 23500, qty: 1 }, { name: "Water bottle", price: 18900, qty: 1 }] } ] },
     { mode: "change", title: "Give change", sub: "how much comes back?", coins: true, speed: 0.9, customers: [
       { items: [{ name: "Kite", price: 3500, qty: 3 }], pays: 20000 }, { items: [{ name: "Sandals", price: 34900, qty: 1 }], pays: 50000 } ] },
-    { mode: "pack", title: "Pack the crates", sub: "what happens to the extras?", speed: 0.9, targets: "c5-maths-ch09-t02-m1", jobs: [
+    { mode: "pack", title: "Pack the crates", sub: "what happens to the extras?", speed: 0.9, targets: "c5-maths-ch09-t02-m-always-drop", jobs: [
       { thing: "mangoes", n: 75, per: 12, need: "all" }, { thing: "eggs", n: 100, per: 12, need: "full" } ] },
   ],
 };

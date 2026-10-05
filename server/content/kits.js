@@ -93,6 +93,10 @@ export function normalizeKit(raw, { topicId, verified }) {
         answer: str(it.answer),
         acceptable: [...new Set(strArr(it.acceptable))].filter((a) => a.length <= ACCEPTABLE_CHARS).slice(0, ACCEPTABLE_MAX), hints: strArr(it.hints).slice(0, 4),
         ...(misIds.has(str(it.targetsMisconception)) ? { targetsMisconception: str(it.targetsMisconception) } : {}),
+        // RS-6 F1: the grade-equivalent (ability.js scale) and demand, when the item was re-levelled or rater-calibrated;
+        // director/items.js itemGE() falls back to the difficulty proxy without them.
+        ...(Number.isFinite(Number(it.ge)) && it.ge !== null && it.ge !== "" ? { ge: Number(it.ge) } : {}),
+        ...(["recall", "apply", "reason", "transfer"].includes(it.demand) ? { demand: it.demand } : {}),
         ...(it.verified ? { verified: it.verified } : {}),
       };
       item.hints = item.hints.map((h, rung) => {

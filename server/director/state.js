@@ -199,7 +199,7 @@ const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind
 
 /** Chip labels are UI chrome: English in every lesson language (owner directive; PRODUCT-DESIGN-V2 §0.10, §5.3). */
 function chipLabels() {
-  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today" };
+  return { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" };
 }
 const optionChips = (item) => (item?.diagnostic && item.options.length <= 4
   ? item.options.map((o, i) => ({ id: `opt:${i}`, label: o.text.slice(0, 40) })) : undefined);
@@ -391,7 +391,9 @@ function practice(s, input, item) {
     s.itemsDone.push(item.id);
     return poseNext(s, input, "now a similar one for them", isomorphicFor(s, kit, item));
   }
-  if (s.lastMove?.kind === "break") return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
+  // after a break (or a stop check-in) the question comes back fresh — unless the child simply answered it, which is graded
+  // (owner-truth patch 07)
+  if (s.lastMove?.kind === "break" && !["right", "wrong"].includes(verdict(cls))) return plan(moveKindFor(item), SH.pose({ item, prefix: "back to the question, fresh" }), { item, probe: probeFor(item), chips: optionChips(item) });
   if (s.pendingWhy === item.id) return afterWhy(s, input, item);
   const v = verdict(cls);
   const engine = engineReteach(s, input, item, v);
@@ -611,7 +613,8 @@ function helpMove(s, input, item, help) {
     }
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
     // teaching turn only through the Help menu, and a help that re-said the same step would hold them there for good.
-    const prefix = help === "slower" ? SH.SLOWER : "they asked for help: simpler words, one concrete example";
+    const prefix = help === "slower" ? SH.SLOWER : help === "story" ? SH.STORY_ASKED : help === "example" ? SH.EXAMPLE_ASKED
+      : help === "another" ? SH.ANOTHER_ASKED : "they asked for help: simpler words, one concrete example";
     if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
     if (s.phase === "teach") return teach(s, input, prefix);
     return poseNext(s, input, prefix);
@@ -630,12 +633,66 @@ function helpMove(s, input, item, help) {
       if (chips) return plan(moveKindFor(item), SH.showChoices(), { item, probe: probeFor(item), chips });
       return decideAs(s, input, item, "stuck"); // nothing to offer: a hint rung instead
     }
-    case "why": case "another": case "how": {
+    case "why": case "another": case "how": case "example": case "story": {
       s.hintLevel = Math.min(3, s.hintLevel + 1); // help spends a rung (the answer then counts "with help"), never the assertion
       const we = help === "how" ? kit.workedExample : null;
-      return plan("reteach", SH.helpExplain({ how: help === "how" }), { item, content: we ? workedContent(we, 1, 1) : [] });
+      return plan("reteach", SH.helpExplain({ how: help === "how", example: help === "example", story: help === "story" }), { item, content: we ? workedContent(we, 1, 1) : [] });
     }
     default: return decideAs(s, input, item, "stuck"); // "hint"
+  }
+}
+
+/**
+ * Back to where the lesson was, after a check-in, a break or a side chat: the question on the table again, else the next
+ * teaching step or question. Never evidence, never a hint rung. (owner-truth patch 07)
+ */
+function resume(s, input, item, prefix) {
+  if (item) return plan(moveKindFor(item), SH.pose({ item, prefix }), { item, probe: probeFor(item), chips: optionChips(item) });
+  if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
+  if (s.phase === "teach") return teach(s, input, prefix);
+  if (s.phase === "practice") return poseNext(s, input, prefix);
+  if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
+  return toWrap(s, {});
+}
+
+/** The skill the lesson is on now (for a teaching move with no item on the table). */
+const currentSkillId = (s, kit, item) => item?.skillId ?? s.lastMove?.skillId ?? s.introduced?.at(-1) ?? kit.skills[0]?.id;
+
+/**
+ * The child's request in words → this turn's move (OWNER TEST items 4-5; director/requests.js). null = no move of its own
+ * (the phase decides). Stop and goodbye never reach here: W2-I's stop gate in decide() owns them.
+ */
+function requestMove(s, input, item, req, labels) {
+  const kit = input.kit;
+  switch (req.type) {
+    case "break": return plan("break", SH.stretch(), { request: "break" });
+    case "change_topic":
+      s.sidebar = { asked: s.turn };
+      return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
+    case "topic": {
+      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
+      if (!subject) return null;
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.topicAsked({ subject }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "topic" });
+      return plan("reteach", SH.topicAsked({ subject, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "topic" });
+    }
+    case "language": {
+      // the lesson's language from now on (compile.js reads ctx.lang every turn; langPinned keeps it when they reply in another)
+      s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
+      return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
+    }
+    case "another": case "example": case "story": case "slower": {
+      const p = helpMove(s, input, item, req.type);
+      return p && { ...p, request: req.type };
+    }
+    case "visual": {
+      // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
+      // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
+      // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
+      if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
+      return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual" });
+    }
+    default: return null;
   }
 }
 
@@ -675,7 +732,7 @@ function teachback(s, input) {
 
 function toWrap(s, { prefix, stopping = false }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
-  s.stopAsked = undefined;
+  s.stopAsked = undefined; s.sidebar = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
@@ -687,7 +744,9 @@ function decide(s, input, item) {
   const flags = cls?.flags ?? {};
   const labels = chipLabels();
   // 1. Safety before anything else — the predicate or the classifier, either one.
-  if (flags.distress) { s.safeguard = { calm: 0, asked: false }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // `kind`: what raised it (the predicate's family, or model / content_filter / relational_floor) — only the wording of a
+  // fallback line reads it (brain/say.js fallbackReply, F10); the hold itself is the same for every trigger.
+  if (flags.distress) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   if (s.safeguard) {
     // RELATIONAL-OS I-7 / AT-B6 (AT-B1 first run: 9/10 goodbyes right after a disclosure ended at once): a goodbye during
     // the safeguard gets ONE check-in before release when the relational policy asks for it; the stop chip always ends it
@@ -724,12 +783,34 @@ function decide(s, input, item) {
   if (chipId === "stop:end") return toWrap(s, { stopping: true });
   if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
-    if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
+    if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
     s.stopAsked = s.turn;
     return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] });
   }
-  if (chipId === "stop:continue") s.stopAsked = undefined;
+  // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
+  // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
+  const req = cls?.request ?? null;
+  if (chipId === "stop:continue" || req?.type === "continue") {
+    s.stopAsked = undefined; s.sidebar = undefined;
+    return resume(s, input, item, "they chose to keep going: straight back in, warmly, no fuss");
+  }
+  if (req && s.phase === "teachback" && req.type !== "break") {
+    // teaching the protégé: a language switch holds from now on; any other request re-asks the teach-back more simply
+    if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
+    const p = helpMove(s, input, item, req.type === "language" ? "slower" : "another");
+    return { ...p, request: req.type };
+  }
+  if (req && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) {
+    const p = requestMove(s, input, item, req, labels);
+    if (p) return p;
+  }
+  // a side chat the child asked for (change_topic → what they want to talk about): one real turn on it, then the lesson
+  if (s.sidebar && s.turn - s.sidebar.asked === 1 && !cls?.help && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    s.sidebar = undefined;
+    return plan("break", SH.sideChat(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "side_chat" });
+  }
+  s.sidebar = undefined;
   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
   // 3. Choices offered by a break.
@@ -863,6 +944,15 @@ export function step(prev, input) {
   // activity on screen.
   if (!reacting || p.content) s.lastContent = p.content ?? [];
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
+  // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
+  if (p.request) move.request = p.request;
+  if (p.visual) {
+    move.visual = p.visual;
+    // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
+    // text drawing, never "I can't draw", never "you draw it" (F16, the owner's session)
+    move.shape = join(move.shape, s.module?.id ? SH.VISUAL_ON_STAGE : SH.VISUAL_NOT_YET);
+    s.lastMove = move;
+  }
   const ui = uiFor(s, p, move, item, input.kit);
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.

@@ -1,0 +1,438 @@
+{
+ "topicId": "c4-maths-ch03-t02",
+ "title": "Number patterns",
+ "chapter": "Pattern Around Us",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T5",
+ "plan": {
+  "game": "rule-machine@1",
+  "hint": "seq and build modes: number patterns and growing patterns"
+ },
+ "game": {
+  "archetype": "rule-machine@1",
+  "spec": {
+   "archetype": "rule-machine@1",
+   "skills": [
+    "c4-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
+   },
+   "title": "Pattern Machine",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Downward orders",
+     "sub": "make every number fit",
+     "rule": [
+      "-10"
+     ],
+     "inputs": [
+      50,
+      45,
+      40,
+      35
+     ],
+     "tiles": [
+      "-10",
+      "+10",
+      "-5",
+      "×2"
+     ],
+     "targets": "c4-maths-ch03-t02-m-only-increase"
+    },
+    {
+     "mode": "seq",
+     "title": "Joined triangles",
+     "sub": "find sticks at a later step",
+     "pattern": "sticks-triangles",
+     "rule": [
+      "×2",
+      "+1"
+     ],
+     "tiles": [
+      "×2",
+      "+1",
+      "+2",
+      "×3"
+     ],
+     "ask": 4,
+     "targets": "c4-maths-ch03-t02-m-first-step-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch03-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Find the pattern rule",
+   "accent": "ion",
+   "targets": "c4-maths-ch03-t02-m-first-step-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Find the pattern rule"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Use only the first step"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "n7",
+       "type": "node",
+       "text": "7",
+       "sub": "start",
+       "color": "ion"
+      },
+      {
+       "id": "n12",
+       "type": "node",
+       "text": "12",
+       "sub": "next",
+       "color": "ion"
+      },
+      {
+       "id": "n17",
+       "type": "node",
+       "text": "17",
+       "sub": "next",
+       "color": "ion"
+      },
+      {
+       "id": "n22",
+       "type": "node",
+       "text": "22",
+       "sub": "last",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "n7",
+       "to": "n12",
+       "text": "+5"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "n12",
+       "to": "n17",
+       "text": "+5"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "n17",
+       "to": "n22",
+       "text": "+5"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "rule",
+       "type": "label",
+       "text": "Rule: add 5",
+       "x": 180,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "n27",
+       "type": "node",
+       "text": "27",
+       "sub": "next",
+       "glyph": "spark",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "down",
+       "type": "node",
+       "text": "50, 45, 40",
+       "sub": "goes down",
+       "color": "amber"
+      },
+      {
+       "id": "cal",
+       "type": "node",
+       "text": "3, 10, 17",
+       "sub": "calendar",
+       "color": "sci"
+      },
+      {
+       "id": "week",
+       "type": "label",
+       "text": "down a column: +7",
+       "x": 180,
+       "y": 300,
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "opt14",
+       "type": "label",
+       "text": "14",
+       "x": 180,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "opt27",
+       "type": "label",
+       "text": "27",
+       "x": 400,
+       "y": 300,
+       "color": "mint"
+      },
+      {
+       "id": "opt30",
+       "type": "label",
+       "text": "30",
+       "x": 620,
+       "y": 300,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A number pattern follows a rule from one number to the next.",
+    "L2": "Do not use only the first step. Find the change at every step and check it.",
+    "L3": "In 7, 12, 17, 22, every step adds 5.",
+    "L4": "So the rule is add 5. Apply it to 22: the next number is 27.",
+    "L5": "Patterns can also go down. For example, 50, 45, 40 goes down by 5 each time.",
+    "L6": "Some steps change regularly. On a calendar, moving down one column adds 7 days.",
+    "L7": "Now use the checked rule to choose the next number."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "n7",
+        "n12",
+        "n17",
+        "n22"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rule"
+      },
+      {
+       "at": 0.6,
+       "do": "show",
+       "dur": 0.7,
+       "target": "n27"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "down"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "down"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cal",
+        "week"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "week"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt14",
+        "opt27",
+        "opt30"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number comes next in 7, 12, 17, 22?",
+    "options": [
+     "opt14",
+     "opt27",
+     "opt30"
+    ],
+    "answer": "opt27",
+    "src": "c4-maths-ch03-t02-i01"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "glyph",
+   "arrow:dangling",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 45
+ }
+}

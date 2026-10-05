@@ -1,0 +1,26 @@
+--- a/src/studio/kit/runtime.ts
++++ b/src/studio/kit/runtime.ts
+@@ -68,7 +68,11 @@
+     if (s.length > 512) j = null;
+     if (pending > 4) return;
+     pending++;
+-    send({ type: "answer", value: j });
++    // the item ON SCREEN, read from the seam (data-item, required by every multi-item archetype): the host grades the
++    // answer against the item the child saw, never against its own pointer (VALUES-100 V1.1, evals/grading-truth:
++    // without it a wrong try that equals an earlier item's answer was told "right")
++    var shown = null; try { var el = document.querySelector("[data-item]"); shown = el ? String(el.getAttribute("data-item") || "").slice(0, 24) || null : null; } catch (e) {}
++    send(shown ? { type: "answer", value: j, itemId: shown } : { type: "answer", value: j });
+   },
+   onVerdict: function (cb) { if (typeof cb === "function" && cbs.length < 8) cbs.push(cb); },
+   event: function (n, d) { var now = Date.now(); if (now - evT > 1000) { evT = now; evN = 0; } if (++evN > 10) return; var s = ""; try { s = JSON.stringify(d || {}); } catch (e) {} if (s.length > 1024) return; send({ type: "event", name: String(n).slice(0, 32) }); },
+--- a/src/studio/StudioFrame.tsx
++++ b/src/studio/StudioFrame.tsx
+@@ -72,7 +72,7 @@
+           case "event": emit.current({ type: "interaction", name: String(msg.name ?? "").slice(0, 32) }); break;
+           case "answer": {
+             emit.current({ type: "answer", value: msg.value });
+-            const r = await answerRef.current(msg.value);
++            const r = await answerRef.current(msg.value, typeof msg.itemId === "string" && msg.itemId ? { itemId: msg.itemId.slice(0, 24) } : undefined);
+             // no verdict (network): the build simply waits, as a child's teacher would
+             if (r && !dead) ch.port1.postMessage({ type: "verdict", correct: !!r.correct });
+             break;

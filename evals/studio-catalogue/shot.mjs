@@ -20,7 +20,7 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e.message).slice(0, 300)));
 page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 300)); });
-const q = `?engine=${encodeURIComponent(id)}&seed=7&sound=off${topic ? `&topic=${topic}&slot=${slot}` : ""}${opt("--mut", null) ? `&mut=${opt("--mut")}` : ""}${opt("--fixture", null) ? `&fixture=${opt("--fixture")}` : ""}`;
+const q = `?engine=${encodeURIComponent(id)}&seed=${opt("--seed", "7")}&sound=off${topic ? `&topic=${topic}&slot=${slot}` : ""}${opt("--mut", null) ? `&mut=${opt("--mut")}` : ""}${opt("--fixture", null) ? `&fixture=${opt("--fixture")}` : ""}`;
 await page.goto(base + q);
 await waitReady(page, 15000);
 const t0 = Date.now();

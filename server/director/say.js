@@ -21,13 +21,22 @@ const PRAISE_OPEN = lead([
   "zabardast", "awesome", "excellent", "brilliant", "super", "ekdam\\s+(?:sahi|theek)", "theek\\s+(?:kaha|bataya)", "haan\\s+ji,?\\s+(?:sahi|bilkul)",
   "सही", "बिल्कुल", "शाबाश", "बहुत\\s+(?:अच्छा|बढ़िया)",
 ].join("|"));
+/** A tick or praise emoji anywhere in the turn reads as "right" (F3, evals/owner-truth: "✅ …" on a not_yet answer). */
+const PRAISE_EMOJI = /[\u2705\u2714\u2611\u{1F44D}\u{1F44F}\u{1F389}\u{1F31F}\u2B50\u{1F4AF}\u{1F3C6}\u{1F947}]/u;
 const AGREE_OPEN = lead(["haan(?:\\s+ji)?", "ha+n", "yes", "yep", "hmm\\s+haan", "हाँ", "हां"].join("|"));
 /** Praise of the answer anywhere in the turn. */
 const PRAISE_ANY = new RegExp([
   `(?:aapka|tumhara|tera|your|yeh|ye|that|this|it)\\s+(?:answer|jawab|uttar)?\\s*(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct|right|theek)(?:\\s+(?:hai|tha|is|was))?(?![\\p{L}]|\\s+(?:nahi|nahin|not|hai\\s+kya|kya))`,
   `(?:aapne|tumne|you)\\s+(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:kaha|bataya|socha|pakda|nikala|got|said|found)`,
   `you\\s+got\\s+it`, `that(?:'?s|\\s+is)\\s+(?:right|correct)`, `sahi\\s+jawab(?!\\s+(?:kya|kaun|kaunsa|hoga))`,
+  // F5 (evals/owner-truth s17 t17: "sahi likhi" on a pasted, irrelevant reply): the written / picked / joined forms
+  `(?:aapne|tumne|you)\\s+(?:\\p{L}+\\s+){0,3}?(?:bilkul\\s+|ekdam\\s+)?(?:sahi|correct(?:ly)?|right)\\s+(?:likha|likhi|likhe|chuna|chuni|joda|jodi|pehchana|pehchaana|wrote|picked|chose|matched)`,
 ].join("|"), "iu");
+/**
+ * A "you made a mistake" statement anywhere in a turn after a RIGHT answer (F2, evals/owner-truth: "yahan galti hui",
+ * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
+ */
+const DENY_ANY = /\b(?:(?:yahan|yaha|isme|ismein|is\s+mein|thodi|chhoti|ek)\s+galti\s+(?:hui|ho\s+gayi|ho\s+gai|hai|kar\s+di)|galti\s+(?:ho\s+gayi|ho\s+gai|kar\s+di|kar\s+di\s+hai)|step\s+(?:toot|tut|chhoot|chhut|reh)\s+gaya|you\s+made\s+a\s+mistake|that'?s\s+(?:wrong|not\s+right|incorrect)|(?:aapka|tumhara|your)\s+(?:answer|jawab)\s+(?:galat|wrong|sahi\s+nahi))\b(?!\s+(?:nahi|nahin|not))/iu;
 /** A "not right" opening, after an answer the classifier marked correct. */
 const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incorrect", "nope", "oops", "almost", "lagbhag", "thoda\\s+(?:sa\\s+)?galat",
   "nahi,?\\s+(?:ye|yeh)\\s+(?:sahi|theek)", "गलत"].join("|"));
@@ -39,7 +48,9 @@ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incor
  * @param {{ outcome?: string } | null | undefined} cls  @param {{ mode: string }} target
  */
 export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
-  if (!cls || !target || target.mode === "none" || moduleOnly) return "ungraded";
+  if (!cls || !target || moduleOnly) return "ungraded";
+  // no keyed item, but the child wrote an answer-shaped reply (F5): "attempt" — no "you got it right" for it
+  if (target.mode === "none") return childText && !childAsks(childText) && !cls.request && String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
   if (cls.outcome === "correct") return "correct";
   if (cls.outcome === "partial") return "partial";
   if (cls.outcome === "incorrect" || cls.outcome === "misconception") return "not_yet";
@@ -75,9 +86,11 @@ export const withoutEffortPraise = (text) => String(text ?? "").replace(EFFORT, 
 export function praiseProblem(text, verdict) {
   const t = withoutEffortPraise(text).trim();
   if (!t || verdict === "ungraded") return null;
-  if (verdict === "correct") return DENY_OPEN.test(t) ? "contradicts" : null;
+  if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
+  // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
+  if (verdict === "attempt") return PRAISE_ANY.test(t) ? "praise" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.
-  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t)) return "praise";
+  if (PRAISE_OPEN.test(t) || PRAISE_ANY.test(t) || PRAISE_EMOJI.test(t)) return "praise";
   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
   return null;
 }
@@ -88,7 +101,7 @@ const OPENER = /^\s*(?:[\p{L}]+\s*[,—-]\s*)?(?:bilkul(?:\s+sahi)?|sahi(?:\s+ha
 export function stripPraise(text) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
   const praising = (x) => { const y = withoutEffortPraise(x).trim(); return PRAISE_ANY.test(y) || PRAISE_OPEN.test(y) || AGREE_OPEN.test(y); };
-  let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").trim();
+  let out = sentences.filter((x) => /[?？]/.test(x) || !praising(x)).join("").replace(new RegExp(PRAISE_EMOJI.source, "gu"), "").trim();
   for (let i = 0; i < 3 && OPENER.test(out); i++) out = out.replace(OPENER, "");
   return out ? out[0].toUpperCase() + out.slice(1) : "";
 }
@@ -208,7 +221,31 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  */
 export function endOnAsk(reply, askFull) {
   const a = normQ(askFull);
-  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && a.includes(normQ(x))));
+  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
+  return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
+}
+
+/**
+ * F20 (evals/owner-truth s15 t8): a draft sentence that QUOTES part of the question ("…; ab socho: Tarbooz A ke 3 tukde
+ * kiye: ek bada aur do chhote.") was kept because the ask does not contain the WHOLE sentence, then the full question was
+ * appended, and the child read the same words twice. A run of this many words in common is the question again.
+ */
+export const SHARED_RUN_MIN = 5;
+/** The longest run of consecutive words two texts share (normalised). Pure; exported for tests. */
+export function sharedRun(x, y) {
+  const a = normQ(x).split(" ").filter(Boolean), b = normQ(y).split(" ").filter(Boolean);
+  let best = 0;
+  for (let i = 0; i < a.length; i++) for (let j = 0; j < b.length; j++) {
+    let k = 0;
+    while (i + k < a.length && j + k < b.length && a[i + k] === b[j + k]) k++;
+    if (k > best) best = k;
+  }
+  return best;
+}
+/** `lead` then the question, with every lead sentence that repeats (part of) the question dropped (F20). Pure. */
+export function joinAsk(lead, askFull) {
+  const a = normQ(askFull);
+  const kept = sentencesOf(lead).filter((x) => !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
   return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
 }
 
@@ -220,7 +257,7 @@ export function lastQuestionOnly(reply) {
 }
 
 // ── wrap language only on a wrap move (personalisation 13: "Aaj ke liye bas itna." in a probe turn, mid-lesson) ──
-const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?)\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
+const WRAP_WORDS = /\b(?:aaj\s+ke\s+liye\s+(?:bas\s+)?(?:itna|itni|yahin|ye(?:h)?\s+hi)|aaj\s+(?:ka\s+)?(?:lesson|class|session)\s+(?:khatam|khatm|poora|pura|yahin)|that'?s\s+(?:all|it)\s+for\s+today|see\s+you\s+(?:next\s+time|tomorrow|soon|later)|(?:phir|kal|jaldi)\s+milte\s+hain|good\s*bye|bye[\s-]*bye|alvida|we(?:'re|\s+are)\s+done\s+for\s+today|let'?s\s+stop\s+(?:here|for\s+today)|(?:we'?ll|we\s+will|let'?s)\s+stop\s+(?:here|now)|yahin\s+(?:rok|ruk|stop|khatam|band)\s*(?:te|dete|kar\s*te|karte|lete|jaate)?\s*(?:hain|hai)|lesson\s+(?:yahin\s+)?(?:khatam|khatm)\s+(?:karte|kar\s+dete)\s+hain|yahin\s+(?:rok|rokte|roke|stop|khatam|khatm|band)\b(?:\s+(?:dete|karte|kar\s+dete|kar\s+lete)\s+hain)?)\b|आज\s+के\s+लिए\s+(?:बस\s+)?इतना|फिर\s+मिलते\s+हैं/iu;
 /** Does a line close the lesson (a goodbye, "that's all for today")? Only a wrap move may say that. */
 export const wrapsUp = (text) => WRAP_WORDS.test(String(text ?? ""));
 /** The line without its closing sentences. */

@@ -17,5 +17,13 @@ import { zeroDef } from "./zero.ts";
 import { mapDef } from "./map.ts";
 import { motionDef } from "./motion.ts";
 import { lifeDef } from "./life.ts";
+import { heatDef } from "./heat.ts";
+import { skyDef } from "./sky.ts";
+import { rayDef } from "./ray.ts";
+import { landDef } from "./land.ts";
+import { townDef } from "./town.ts";
+import { solidDef } from "./solid.ts";
+import { patternDef } from "./pattern.ts";
+import { fieldDef } from "./field.ts";
 
-export const EXT_GAMES: ExtSpecDef<never>[] = [railDef, beatDef, eraDef, sortDef, fairDef, dukaanDef, instrumentDef, sieveDef, ruleDef, geoDef, mirrorDef, pictoDef, fracOpsDef, zeroDef, mapDef, motionDef, lifeDef] as unknown as ExtSpecDef<never>[];
+export const EXT_GAMES: ExtSpecDef<never>[] = [railDef, beatDef, eraDef, sortDef, fairDef, dukaanDef, instrumentDef, sieveDef, ruleDef, geoDef, mirrorDef, pictoDef, fracOpsDef, zeroDef, mapDef, motionDef, lifeDef, heatDef, skyDef, rayDef, landDef, townDef, solidDef, patternDef, fieldDef] as unknown as ExtSpecDef<never>[];

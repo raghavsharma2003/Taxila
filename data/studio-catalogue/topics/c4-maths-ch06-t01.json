@@ -1,0 +1,108 @@
+{
+ "topicId": "c4-maths-ch06-t01",
+ "title": "Centimetres and metres",
+ "chapter": "Measuring Length",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "instrument@1",
+  "hint": "cut mode (cm and m)"
+ },
+ "game": {
+  "archetype": "instrument@1",
+  "spec": {
+   "archetype": "instrument@1",
+   "skills": [
+    "c4-maths-ch06-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "measured": "measured",
+    "precision": "precision",
+    "hold": "Hold to pour",
+    "release": "Release",
+    "cut": "Tap to cut",
+    "set": "Set",
+    "am": "a.m.",
+    "pm": "p.m.",
+    "tapAt": "Tap when it reads",
+    "runDone": "Bench clear",
+    "offBy": "off by",
+    "exact": "EXACT",
+    "after": "after",
+    "minutes": "min",
+    "balanced": "BALANCED",
+    "heavy": "parcel heavier",
+    "light": "weights heavier"
+   },
+   "title": "Measure and Cut",
+   "rounds": [
+    {
+     "mode": "cut",
+     "title": "Cut a small strip",
+     "sub": "use centimetres for small things",
+     "items": [
+      {
+       "target": 12,
+       "show": "cm"
+      },
+      {
+       "target": 9,
+       "show": "cm"
+      }
+     ],
+     "scaleMax": 30,
+     "minor": 1,
+     "tol": 1,
+     "speed": 1,
+     "targets": "c4-maths-ch06-t01-m-edge-start"
+    },
+    {
+     "mode": "cut",
+     "title": "Cut past one metre",
+     "sub": "read metres and centimetres",
+     "items": [
+      {
+       "target": 105,
+       "show": "m+cm"
+      },
+      {
+       "target": 150,
+       "show": "m+cm"
+      }
+     ],
+     "scaleMax": 200,
+     "minor": 5,
+     "tol": 2,
+     "speed": 0.9,
+     "targets": "c4-maths-ch06-t01-m-concat-units"
+    },
+    {
+     "mode": "cut",
+     "title": "Measure a long border",
+     "sub": "use metres for a big length",
+     "items": [
+      {
+       "target": 240,
+       "show": "m"
+      },
+      {
+       "target": 300,
+       "show": "m"
+      }
+     ],
+     "scaleMax": 400,
+     "minor": 10,
+     "tol": 5,
+     "speed": 0.8,
+     "targets": "c4-maths-ch06-t01-m-is-10cm"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast-bg"
+ }
+}

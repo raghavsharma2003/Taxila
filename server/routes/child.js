@@ -45,7 +45,10 @@ export const DONE_MIN_MINUTES = 5;
  * PURE. Does an ended lesson count as today's lesson? Only when the child did something the classifier graded
  * (state.did) or it ran DONE_MIN_MINUTES; an abandoned zero-turn lesson (closed by lesson start) never does.
  */
-export const countsAsDone = (state) => !state?.abandoned
+// OWNER TEST 2026-10-04 item 3 (evals/owner-truth F7, patch 07): a lesson the CHILD stopped before the plan's own wrap
+// (director/state.js toWrap stoppedEarly) never shuts the day — one "bas" used to cost a child every lesson until
+// tomorrow ("today's lesson is done", 409). The parent's controls (hours, daily minutes) still decide every start.
+export const countsAsDone = (state) => !state?.abandoned && !state?.stoppedEarly
   // W2 integration: only a Learn sitting is "today's lesson" (STUDENT-FLOW §4.2 done row: Practice and Ask are what a
   // done day still offers, so they never use up the day; a Practice first must not refuse the lesson with 409).
   && (state?.ctx?.purpose ?? "lesson") === "lesson"

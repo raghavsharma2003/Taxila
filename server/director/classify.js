@@ -5,9 +5,10 @@
 // when the bytes cannot decide.
 import { chat, DEPLOY, isReasoningFamily, isContentFilter } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
-import { scanSafety, wantsToStop, scrubPii } from "./safety.js";
+import { scanSafety, wantsToStop, scrubPii, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
+import { requestOf, FLOW_REQUESTS } from "./requests.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
 // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
@@ -68,6 +69,15 @@ export const CONFIDENCE_MIN = 0.5;
 export const TEACHBACK_PASS = 0.6;
 
 const OPEN_KINDS = new Set(["why", "teachback"]);
+/**
+ * A key with two or more parts ("the ones decide: 47 is bigger", "solid, liquid and gas", "it melts because heat…"): a
+ * reply with only one part is `partial`, never the key (F5, evals/owner-truth: 2 of 3 parts was labelled key, since the
+ * rubric offered only key / other_wrong and said "even with extra words"). Pure; exported for tests.
+ */
+export function multiPartKey(answer) {
+  const parts = String(answer ?? "").split(/\s*(?:[,;:]|\band\b|\bbecause\b|\bso\b|\bkyunki\b|\baur\b|\bisliye\b)\s*/i).map((x) => x.trim()).filter((x) => x.split(/\s+/).length >= 1 && /[\p{L}\p{N}]/u.test(x));
+  return parts.length >= 2 && String(answer).trim().split(/\s+/).length >= 3;
+}
 
 /**
  * What the next utterance is classified against. `ideas` are the kit's key ideas: the key for a "why?"
@@ -91,7 +101,7 @@ export function targetFor(s, kit, item) {
   if (s.pendingWhy === item.id) return { mode: "why", item, ideas, misconceptions: mis };
   // "Show me choices" tiles offered for THIS item (state.js offerChoices): a tap on one is graded in code.
   const offered = s.offered?.itemId === item.id && Array.isArray(s.offered.options) ? s.offered.options : undefined;
-  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind),
+  return { mode: "item", item, key: item.answer, also: item.acceptable || [], ideas, misconceptions: mis, options: item.options, open: OPEN_KINDS.has(item.kind) || multiPartKey(item.answer),
     ...(offered ? { offered } : {}) };
 }
 
@@ -135,7 +145,7 @@ function systemPrompt(target, classLevel) {
     "The child may speak Hindi, English or Hinglish, in Roman or Devanagari script. Number words count (aadha = 1/2, ek tihai = 1/3, teen = 3, 'teen wala' = the one with 3). Transcripts come from speech recognition and can have small errors.",
     "If what the teacher last said asked a DIFFERENT question from the one listed, and the reply answers that other question, label it no_attempt: it is not evidence about the listed question.",
     "distress: true ONLY for signs the child is unsafe, hurt, abused, frightened, very sad, or may harm themself — never for ordinary frustration with a question.",
-    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a request to change topic, explain differently, go slower or take a break). off_topic: the reply is about something unrelated to the lesson.",
+    "asks_for_answer: they ask to be told the answer. wants_to_stop: they say they want to stop or leave now (NOT a request to change topic, explain differently, go slower, see a picture or take a break). off_topic: the reply is about something unrelated to the lesson.",
   ];
   if (target.mode === "none" && target.misconceptions.length) {
     base.push("belief: if the reply expresses one of the listed wrong beliefs (in any words or language), its tag; otherwise none.");
@@ -147,9 +157,11 @@ function systemPrompt(target, classLevel) {
       "match rules:",
       target.mode === "why"
         ? "- key: the reply gives a REASON that matches ANY of the KEY IDEAS, in any words or language (a child's simple version counts). A bare answer, a fraction's name or a repeat of the question is not a reason: other_wrong."
-        : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
+        : target.open
+          ? "- key: the reply gives ALL of the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one."
+          : "- key: the reply gives the KEY (any wording, language or equivalent form), even with extra words. If they give two answers, label the final one.",
       "- mN: the reply's answer or reason is what misconception mN predicts.",
-      target.open ? "- partial: part of the key idea is there but not all of it." : "",
+      target.open ? "- partial: part of the key is there but not all of it (one part of a key with several parts)." : "",
       "- other_wrong: any other attempted answer.",
       "- dont_know: says they don't know or are unsure, with no answer.",
       "- no_attempt: not an answer to this question (greeting, chit-chat, a question back, unrelated talk).",
@@ -404,7 +416,21 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   }
   if (!text) return done("no_evidence", "empty");
   if (safety.distress) return done("no_evidence", "predicate");
-  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true };
+  // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
+  // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
+  // distress read (the floor's backup is never skipped), and classify() then applies the request over the model's flags.
+  const request = !chipId && !moduleAnswer ? requestOf(text) : null;
+  if (request?.whole && !FLOW_REQUESTS.has(request.type)) {
+    flags.wantsToStop = false;
+    return done("no_evidence", "request", { request });
+  }
+  if (request?.whole) flags.wantsToStop = true;
+  if (!typed && typeof asrConfidence === "number" && asrConfidence < ASR_MIN) return { result: null, flags, text, lowAsr: true, ...(request?.whole ? { request } : {}) };
+  // safety-robust (2026-10-05): a token in another script is the transcriber hallucinating (CRITIQUE §2 B1: 5/90 real
+  // segments came back Japanese / Telugu / Korean / Bengali). It is never content: the turn is no evidence (the Director
+  // re-asks, as for a low-confidence transcript) and the model distress read runs on the readable rest (classify lowAsr).
+  if (!typed && readability(text).unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
+  if (request?.whole) return { result: null, flags, text, request };
   const other = target.mode === "item" && askedOther(heard, target.item, lang);
   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
   // It answers neither question, so it is no evidence — never the item's key matched by accident (audit #13).
@@ -429,6 +455,24 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
 }
 
 /**
+ * safety-robust (2026-10-05): does a turn the BYTES decided still need the model's distress read? The read is OR-ed into
+ * the predicate and never subtracts, so it runs on every committed child turn with words, except where the words are
+ * machine-decided (a chip tap, a help button), already distress, or say nothing beyond the decision itself (an exact key,
+ * a bare number, a two-word "pata nahi"). Before this, a lexical don't-know / "just tell me" of up to 4 / 8 words and any
+ * turn that rode on a module answer skipped the model entirely: "pata nahi, main mr jaungi" (a garble the predicate cannot
+ * read) got neither. A child's steering request decided in bytes (owner-truth patch 07, source "request") is read too.
+ * Exported for tests.
+ */
+export function needsModelDistressRead(result, text) {
+  if (!result || result.flags?.distress) return false;
+  if (["chip", "help", "empty", "predicate"].includes(result.source)) return false;
+  const words = String(text ?? "").split(/\s+/).filter((w) => /\p{L}/u.test(w));
+  if (result.source === "exact" || result.source === "echo") return words.length >= 3;
+  if (result.source === "lexical") return words.length >= 3;
+  return words.length >= 1;
+}
+
+/**
  * Classify one child turn.
  * `heard` is what the teacher last said: it lets the classifier refuse evidence for a question nobody asked.
  * @param {{ target: ReturnType<typeof targetFor>, childText: string, asrConfidence?: number, typed?: boolean,
@@ -438,16 +482,34 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
  */
 export async function classify(args) {
-  const { target, heard, classLevel, trace } = args;
+  const { target, classLevel, trace } = args;
   const fast = classifyFast(args);
-  if (fast.result) return fast.result;
-  const { flags, text } = fast;
-  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra });
+  if (fast.result) {
+    if (!needsModelDistressRead(fast.result, fast.text)) return fast.result;
+    const d = await distressCheck(fast.text, classLevel, trace);
+    return d ? { ...fast.result, flags: { ...fast.result.flags, distress: true, distressKind: fast.result.flags.distressKind ?? "model" } } : fast.result;
+  }
+  const { flags, text, request } = fast;
+  const done = (outcome, source, extra = {}) => ({ outcome, confidence: 1, source, flags, ...extra, ...(request ? { request } : {}) });
   if (fast.lowAsr) {
-    flags.distress = flags.distress || await distressCheck(text, classLevel, trace);
+    // an unreadable turn: the model reads what CAN be read (another script's hallucination is noise to it too)
+    const readable = fast.unreadable ? readability(text).readable : "";
+    flags.distress = flags.distress || await distressCheck(readable || text, classLevel, trace);
     if (flags.distress) flags.distressKind ??= "model";
     return done("no_evidence", "asr");
   }
+  // A stop / goodbye in words: the model reads it for distress only (the floor's backup); the request decides the stop,
+  // and the words are never graded (a "bas" labelled other_wrong was a wrong answer on the record).
+  if (request) {
+    const r = await classifyModel(args, target, text, flags, trace, done);
+    return { ...r, outcome: "no_evidence", confidence: 1, flags: { ...r.flags, wantsToStop: true }, request };
+  }
+  return classifyModel(args, target, text, flags, trace, done);
+}
+
+/** The model call of classify() (with its content-filter fail-closed path and its fallback deployment). */
+async function classifyModel(args, target, text, flags, trace, done) {
+  const { heard, classLevel } = args;
 
   const messages = [
     { role: "system", content: systemPrompt(target, classLevel) },

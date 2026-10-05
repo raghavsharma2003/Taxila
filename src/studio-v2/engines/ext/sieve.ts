@@ -25,7 +25,7 @@ function create(api: EngineApi, spec: SieveSpec): EngineInstance {
   const task = taskPill(api);
   const hud = api.hud([{ key: "round", label: T.round }, { key: "calls", label: T.slashed }, { key: "combo", label: T.combo }]);
   const rd = (): SvRoundT => spec.rounds[Math.max(0, flow.round)];
-  const ruleText = (r: SvRoundT) => r.rule === "multiple" ? `${T.multipleOf} ${r.a}` : r.rule === "common" ? `${T.commonOf} ${r.a} ${T.and} ${r.b}` : r.rule === "factor" ? `${T.factorOf} ${r.a}` : r.rule === "divisible" ? `${T.divisibleBy} ${r.a}` : r.rule === "coprime" ? `${T.coprimeWith} ${r.a}` : (T as Record<string, string>)[r.rule] ?? r.rule;
+  const ruleText = (r: SvRoundT) => r.rule === "multiple" ? `${T.multipleOf} ${r.a}` : r.rule === "common" ? `${T.commonOf} ${r.a} ${T.and} ${r.b}` : r.rule === "factor" ? `${T.factorOf} ${r.a}` : r.rule === "cfactor" ? `${T.cfactorOf} ${r.a} ${T.and} ${r.b}` : r.rule === "divisible" ? `${T.divisibleBy} ${r.a}` : r.rule === "coprime" ? `${T.coprimeWith} ${r.a}` : (T as Record<string, string>)[r.rule] ?? r.rule;
   const flow = new RoundFlow(api, spec.rounds.length, {
     onRound(k) { const r = spec.rounds[k]; g.stream = sieveStream(r); g.next = 0; g.spawnT = 0.4; g.crs = []; g.speedK = r.speed; g.roundR = 0; g.roundN = 0; api.event("round_start", { round: k + 1, rule: r.rule, a: r.a ?? null, b: r.b ?? null }); sfx.blip({ f: 220, f2: 440, dur: 0.3, type: "triangle", gain: 0.12 }); },
     onEnd(k) { api.event("round_end", { round: k + 1, right: g.roundR, of: g.roundN }); },

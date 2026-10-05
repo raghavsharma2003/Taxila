@@ -1,0 +1,1744 @@
+{
+ "topicId": "c6-hindi-ch05-t01",
+ "title": "रहीम के दोहे",
+ "chapter": "रहीम के दोहे",
+ "subject": "hindi",
+ "class": 6,
+ "topicType": "T1",
+ "plan": {
+  "game": "beat-line@1",
+  "hint": "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)"
+ },
+ "game": {
+  "archetype": "beat-line@1",
+  "spec": {
+   "archetype": "beat-line@1",
+   "skills": [
+    "c6-hindi-ch05-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "round": "दौर",
+    "onBeat": "ताल पर",
+    "combo": "लगातार ताल",
+    "tap": "ताल पर थपकी दें",
+    "catch": "तुक पकड़ें",
+    "mark": "लघु या गुरु?",
+    "short": "लघु",
+    "long": "गुरु",
+    "practice": "अभ्यास पंक्ति",
+    "runDone": "कविता पूरी हुई",
+    "perfect": "सही ताल",
+    "early": "जल्दी",
+    "late": "देर से",
+    "meter": "मात्रा"
+   },
+   "title": "रहीम के दोहे",
+   "bpm": 76,
+   "lines": [
+    {
+     "text": "मीठी बोली बोलिए, मन को दे जो चैन।",
+     "beats": [
+      0,
+      2,
+      4,
+      6
+     ],
+     "own": true
+    },
+    {
+     "text": "तरुवर फल नहीं खात हैं, सरवर पियत न पान।",
+     "beats": [
+      0,
+      2,
+      5,
+      8
+     ],
+     "own": true
+    },
+    {
+     "text": "रहिमन धागा प्रेम का, मत तोरो चटकाय।",
+     "beats": [
+      0,
+      2,
+      4
+     ],
+     "own": true
+    },
+    {
+     "text": "टूटे से फिर ना जुड़े, जुड़े गाँठ पड़ जाय।",
+     "beats": [
+      0,
+      2,
+      5,
+      8
+     ],
+     "own": true
+    }
+   ],
+   "rounds": [
+    {
+     "mode": "beat",
+     "title": "ताल पर थपकी",
+     "sub": "दोहे की पंक्तियों की ताल पकड़ें",
+     "lines": [
+      0,
+      1
+     ]
+    },
+    {
+     "mode": "rhyme",
+     "title": "तुक पकड़ो",
+     "sub": "पंक्ति के अंत की तुक चुनें",
+     "items": [
+      {
+       "cue": "दोहे में कितनी पंक्तियाँ होती हैं?",
+       "options": [
+        "दो",
+        "तीन",
+        "चार"
+       ],
+       "answer": "दो",
+       "src": "c6-hindi-ch05-t01-i01"
+      },
+      {
+       "cue": "पंक्ति के अंत में मिलने वाली ध्वनि को क्या कहते हैं?",
+       "options": [
+        "तुक",
+        "यति",
+        "मात्रा"
+       ],
+       "answer": "तुक"
+      },
+      {
+       "cue": "‘तरुवर’ का आज की हिंदी में सही शब्द चुनें।",
+       "options": [
+        "पेड़",
+        "तलवार",
+        "तालाब"
+       ],
+       "answer": "पेड़",
+       "src": "c6-hindi-ch05-t01-i03"
+      },
+      {
+       "cue": "‘सरवर’ का आज की हिंदी में सही अर्थ चुनें।",
+       "options": [
+        "तालाब",
+        "पेड़",
+        "धागा"
+       ],
+       "answer": "तालाब",
+       "src": "c6-hindi-ch05-t01-i04"
+      }
+     ],
+     "targets": "c6-hindi-ch05-t01-m-doha-four-lines"
+    },
+    {
+     "mode": "matra",
+     "title": "मात्रा भरें",
+     "sub": "हर खंड की मात्राएँ लघु या गुरु करें",
+     "lines": [
+      0,
+      2
+     ]
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-hindi-ch05-t01"
+   ],
+   "lang": "hi",
+   "strings": {
+    "again": "फिर दिखाएँ",
+    "yourTurn": "अब आपकी बारी",
+    "check": "जाँचें",
+    "right": "सही",
+    "look": "फिर देखें",
+    "myth": "भ्रम",
+    "busted": "गलत बात",
+    "order": "क्रम में दबाएँ"
+   },
+   "title": "रहीम के दोहे",
+   "accent": "amber",
+   "targets": "c6-hindi-ch05-t01-m-doha-four-lines",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "रहीम के दोहे"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "दोहे में चार पंक्तियाँ होती हैं"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "doha",
+       "type": "node",
+       "text": "दोहा",
+       "sub": "सीख भरी कविता",
+       "glyph": "book",
+       "color": "amber"
+      },
+      {
+       "id": "line1",
+       "type": "node",
+       "text": "पहली पंक्ति",
+       "sub": "दो चरण",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "line2",
+       "type": "node",
+       "text": "दूसरी पंक्ति",
+       "sub": "दो चरण",
+       "glyph": "note",
+       "color": "ion"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "doha",
+       "to": "line1",
+       "text": "दो पंक्तियाँ"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "doha",
+       "to": "line2",
+       "text": "दो पंक्तियाँ"
+      },
+      {
+       "id": "meter",
+       "type": "bar",
+       "parts": 24,
+       "shaded": 13,
+       "text": "13 + 11 मात्रा"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "tree",
+       "type": "node",
+       "text": "पेड़",
+       "sub": "फल दूसरों के लिए",
+       "glyph": "tree",
+       "color": "mint"
+      },
+      {
+       "id": "pond",
+       "type": "node",
+       "text": "तालाब",
+       "sub": "पानी दूसरों के लिए",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "help",
+       "type": "node",
+       "text": "परोपकार",
+       "sub": "दूसरों की भलाई",
+       "glyph": "group",
+       "color": "sun"
+      },
+      {
+       "id": "small",
+       "type": "node",
+       "text": "सुई",
+       "sub": "अपना महत्व",
+       "glyph": "ruler",
+       "color": "volt"
+      },
+      {
+       "id": "opt1",
+       "type": "node",
+       "text": "दो पंक्तियाँ",
+       "sub": "दोहा",
+       "glyph": "book",
+       "color": "amber"
+      },
+      {
+       "id": "opt2",
+       "type": "node",
+       "text": "तीन पंक्तियाँ",
+       "sub": "दोहा",
+       "glyph": "book",
+       "color": "ion"
+      },
+      {
+       "id": "opt3",
+       "type": "node",
+       "text": "चार पंक्तियाँ",
+       "sub": "दोहा",
+       "glyph": "book",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "रहीम के दोहे छोटी कविताएँ हैं, जिनमें जीवन की सीख छिपी होती है।",
+    "L2": "पहले एक भ्रम दूर करें: दोहे में चार पंक्तियाँ नहीं होतीं।",
+    "L3": "दोहा दो पंक्तियों का होता है, और हर पंक्ति के दो चरण होते हैं।",
+    "L4": "हर पंक्ति में बीच का विराम तेरहवीं मात्रा के बाद आता है। इसके बाद ग्यारह मात्राएँ होती हैं।",
+    "L5": "पंक्ति के अंत में तुक मिलती है, इसलिए दोहा सुनने में लयबद्ध लगता है।",
+    "L6": "पेड़ फल और तालाब पानी अपने लिए नहीं रखते। अच्छे लोग अपनी चीज़ें दूसरों की भलाई के लिए लगाते हैं।",
+    "L7": "रहीम यह भी कहते हैं कि छोटी चीज़ को बेकार मत समझो। जहाँ सुई काम आती है, वहाँ तलवार नहीं आ सकती।",
+    "L8": "अब बताइए: दोहे में कितनी पंक्तियाँ होती हैं?"
+   },
+   "narration": {
+    "L1": {
+     "text": "रहीम के दोहे छोटी कविताएँ हैं, जिनमें जीवन की सीख छिपी होती है।",
+     "dur": 4.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "पहले एक भ्रम दूर करें: दोहे में चार पंक्तियाँ नहीं होतीं।",
+     "dur": 3.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "दोहा दो पंक्तियों का होता है, और हर पंक्ति के दो चरण होते हैं।",
+     "dur": 4.1,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "हर पंक्ति में बीच का विराम तेरहवीं मात्रा के बाद आता है। इसके बाद ग्यारह मात्राएँ होती हैं।",
+     "dur": 5.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "पंक्ति के अंत में तुक मिलती है, इसलिए दोहा सुनने में लयबद्ध लगता है।",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "पेड़ फल और तालाब पानी अपने लिए नहीं रखते। अच्छे लोग अपनी चीज़ें दूसरों की भलाई के लिए लगाते हैं।",
+     "dur": 6.2,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "रहीम यह भी कहते हैं कि छोटी चीज़ को बेकार मत समझो। जहाँ सुई काम आती है, वहाँ तलवार नहीं आ सकती।",
+     "dur": 5.8,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "अब बताइए: दोहे में कितनी पंक्तियाँ होती हैं?",
+     "dur": 2.8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 1.2,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "doha",
+        "line1",
+        "line2",
+        "a1",
+        "a2"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "meter"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "meter"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "line1",
+        "line2"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tree",
+        "pond",
+        "help"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "help"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "small"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": "small"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "सही उत्तर चुनिए: दोहे में कितनी पंक्तियाँ होती हैं?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c6-hindi-ch05-t01-i01"
+   }
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast",
+  "seconds": 41
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "book",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        270,
+        120
+       ],
+       "w": 260,
+       "h": 250,
+       "round": 12
+      },
+      {
+       "id": "spine",
+       "op": "line",
+       "startMs": 500,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        370
+       ]
+      },
+      {
+       "id": "rahim",
+       "op": "text",
+       "startMs": 1000,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        170
+       ],
+       "text": "रहीम",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dohe",
+       "op": "text",
+       "startMs": 1700,
+       "endMs": 2400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        220
+       ],
+       "text": "दोहे",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "lesson",
+       "op": "text",
+       "startMs": 2400,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        275
+       ],
+       "text": "जीवन की सीख",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "line1",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        315,
+        315
+       ],
+       "to": [
+        485,
+        315
+       ]
+      },
+      {
+       "id": "line2",
+       "op": "line",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "from": [
+        315,
+        335
+       ],
+       "to": [
+        485,
+        335
+       ]
+      },
+      {
+       "id": "spark1",
+       "op": "stroke",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         180
+        ],
+        [
+         230,
+         195
+        ],
+        [
+         220,
+         210
+        ]
+       ]
+      },
+      {
+       "id": "spark2",
+       "op": "stroke",
+       "startMs": 4900,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 2,
+       "points": [
+        [
+         580,
+         180
+        ],
+        [
+         570,
+         195
+        ],
+        [
+         580,
+         210
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "wrong",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        150
+       ],
+       "text": "चार पंक्तियाँ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "cross1",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        130,
+        105
+       ],
+       "to": [
+        370,
+        190
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        370,
+        105
+       ],
+       "to": [
+        130,
+        190
+       ]
+      },
+      {
+       "id": "right",
+       "op": "text",
+       "startMs": 2300,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        560,
+        150
+       ],
+       "text": "दो पंक्तियाँ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "check1",
+       "op": "line",
+       "startMs": 3200,
+       "endMs": 3700,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        470,
+        155
+       ],
+       "to": [
+        525,
+        205
+       ]
+      },
+      {
+       "id": "check2",
+       "op": "line",
+       "startMs": 3700,
+       "endMs": 4300,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        525,
+        205
+       ],
+       "to": [
+        625,
+        100
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "lone",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "दोहा",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "row1a",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        130
+       ],
+       "w": 250,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "row1b",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        130
+       ],
+       "w": 250,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "row2a",
+       "op": "rect",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        285
+       ],
+       "w": 250,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "row2b",
+       "op": "rect",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        430,
+        285
+       ],
+       "w": 250,
+       "h": 75,
+       "round": 8
+      },
+      {
+       "id": "p1",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        245,
+        170
+       ],
+       "text": "पंक्ति 1",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p2",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        555,
+        170
+       ],
+       "text": "चरण",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p3",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        245,
+        325
+       ],
+       "text": "पंक्ति 2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "p4",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 4900,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        555,
+        325
+       ],
+       "text": "चरण",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "count",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "13",
+         "+",
+         "11",
+         "=",
+         "24"
+        ]
+       ]
+      },
+      {
+       "id": "pause",
+       "op": "text",
+       "startMs": 1500,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "विराम",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flow",
+       "op": "line",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        180,
+        150
+       ],
+       "to": [
+        620,
+        150
+       ]
+      },
+      {
+       "id": "first",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        250,
+        210
+       ],
+       "text": "13 मात्राएँ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "second",
+       "op": "text",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        550,
+        210
+       ],
+       "text": "11 मात्राएँ",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "divider",
+       "op": "line",
+       "startMs": 4700,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "total",
+       "op": "numwork",
+       "startMs": 5400,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        220,
+        330
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "13",
+         "+",
+         "11",
+         "=",
+         "24",
+         "मात्रा"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "verse1",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        150
+       ],
+       "to": [
+        680,
+        150
+       ]
+      },
+      {
+       "id": "verse2",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        120,
+        300
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "end1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        150
+       ],
+       "r": 18
+      },
+      {
+       "id": "end2",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        680,
+        300
+       ],
+       "r": 18
+      },
+      {
+       "id": "rhyme",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        680,
+        390
+       ],
+       "text": "तुक",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "join1",
+       "op": "arrow",
+       "startMs": 3600,
+       "endMs": 4300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        680,
+        150
+       ],
+       "to": [
+        680,
+        270
+       ]
+      },
+      {
+       "id": "rhythm",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "लयबद्ध",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "tree",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        190,
+        350
+       ],
+       "to": [
+        190,
+        170
+       ]
+      },
+      {
+       "id": "crown",
+       "op": "circle",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "good",
+       "weight": 2,
+       "c": [
+        190,
+        140
+       ],
+       "r": 75
+      },
+      {
+       "id": "fruit",
+       "op": "circle",
+       "startMs": 1400,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        150,
+        125
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "fruit2",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        220,
+        155
+       ],
+       "r": 12,
+       "fill": "accent"
+      },
+      {
+       "id": "pond",
+       "op": "ellipse",
+       "startMs": 2300,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        560,
+        350
+       ],
+       "rx": 150,
+       "ry": 45
+      },
+      {
+       "id": "water",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3600,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        560,
+        350
+       ],
+       "text": "पानी",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "arrow1",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        240,
+        160
+       ],
+       "to": [
+        390,
+        290
+       ]
+      },
+      {
+       "id": "arrow2",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5200,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        470,
+        290
+       ],
+       "to": [
+        330,
+        390
+       ]
+      },
+      {
+       "id": "goodpeople",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        455
+       ],
+       "text": "अच्छे लोग",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "benefit",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        95
+       ],
+       "text": "दूसरों की भलाई",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9962,
+     "ops": [
+      {
+       "id": "small",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        200,
+        80
+       ],
+       "text": "छोटी चीज़",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "needle",
+       "op": "line",
+       "startMs": 900,
+       "endMs": 1600,
+       "ink": "good",
+       "weight": 3,
+       "from": [
+        130,
+        230
+       ],
+       "to": [
+        330,
+        130
+       ]
+      },
+      {
+       "id": "needlepoint",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        130
+       ],
+       "to": [
+        300,
+        130
+       ]
+      },
+      {
+       "id": "needlelabel",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        230,
+        275
+       ],
+       "text": "सुई",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "sword",
+       "op": "line",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 3,
+       "from": [
+        500,
+        120
+       ],
+       "to": [
+        680,
+        300
+       ]
+      },
+      {
+       "id": "handle",
+       "op": "line",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        480,
+        100
+       ],
+       "to": [
+        550,
+        170
+       ]
+      },
+      {
+       "id": "swordlabel",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        590,
+        350
+       ],
+       "text": "तलवार",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "contrast",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        430
+       ],
+       "text": "काम आती है",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrow",
+       "op": "arrow",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        330,
+        130
+       ],
+       "to": [
+        500,
+        130
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-hindi-ch05-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4004,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        100
+       ],
+       "text": "कितनी पंक्तियाँ?",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answerbox",
+       "op": "rect",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        250,
+        180
+       ],
+       "w": 300,
+       "h": 150,
+       "round": 12
+      },
+      {
+       "id": "two",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        400,
+        255
+       ],
+       "text": "दो",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "answer",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        385
+       ],
+       "text": "पंक्तियाँ",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast"
+ },
+ "keys": [
+  {
+   "itemId": "b0:*",
+   "key": "मीठी · बोलिए, · को · जो",
+   "prompt": "stressed words in: मीठी बोली बोलिए, मन को दे जो चैन।"
+  },
+  {
+   "itemId": "b1:*",
+   "key": "तरुवर · नहीं · सरवर · पान।",
+   "prompt": "stressed words in: तरुवर फल नहीं खात हैं, सरवर पियत न पान।"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "दो",
+   "prompt": "दोहे में कितनी पंक्तियाँ होती हैं? [दो / तीन / चार]",
+   "src": "c6-hindi-ch05-t01-i01"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "तुक",
+   "prompt": "पंक्ति के अंत में मिलने वाली ध्वनि को क्या कहते हैं? [तुक / यति / मात्रा]"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "पेड़",
+   "prompt": "‘तरुवर’ का आज की हिंदी में सही शब्द चुनें। [पेड़ / तलवार / तालाब]",
+   "src": "c6-hindi-ch05-t01-i03"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "तालाब",
+   "prompt": "‘सरवर’ का आज की हिंदी में सही अर्थ चुनें। [तालाब / पेड़ / धागा]",
+   "src": "c6-hindi-ch05-t01-i04"
+  },
+  {
+   "itemId": "m0:*",
+   "key": "22222121122221",
+   "prompt": "मात्रा: मीठी बोली बोलिए, मन को दे जो चैन।"
+  },
+  {
+   "itemId": "m2:*",
+   "key": "11112221211221121",
+   "prompt": "मात्रा: रहिमन धागा प्रेम का, मत तोरो चटकाय।"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

@@ -7,9 +7,9 @@
 import { z } from "zod";
 import { EnvelopeExt, MARKUP, TargetsField, UNGRADED, arr, envelope, factorsOf, gcdN, isObj, isPalindrome, isPrime, lcg, num, oneOf, reqStr, strings, stringsSchema, targets, type ExtSpecDef, type Graded } from "./common.ts";
 
-export const RULES = ["prime", "composite", "even", "odd", "multiple", "common", "factor", "divisible", "coprime", "square", "palindrome"] as const;
+export const RULES = ["prime", "composite", "even", "odd", "multiple", "common", "factor", "cfactor", "divisible", "coprime", "square", "palindrome"] as const;
 export type Rule = typeof RULES[number];
-const SV_STRINGS = { round: "Round", slashed: "right calls", combo: "combo", coach: "Swipe the numbers that fit the rule", runDone: "Storm over", prime: "prime", composite: "composite", even: "even", odd: "odd", multipleOf: "multiples of", commonOf: "common multiples of", factorOf: "factors of", divisibleBy: "divisible by", coprimeWith: "co-prime with", square: "square numbers", palindrome: "palindromes", slipped: "slipped", wrongCut: "not this one", and: "and" };
+const SV_STRINGS = { round: "Round", slashed: "right calls", combo: "combo", coach: "Swipe the numbers that fit the rule", runDone: "Storm over", prime: "prime", composite: "composite", even: "even", odd: "odd", multipleOf: "multiples of", commonOf: "common multiples of", factorOf: "factors of", cfactorOf: "common factors of", divisibleBy: "divisible by", coprimeWith: "co-prime with", square: "square numbers", palindrome: "palindromes", slipped: "slipped", wrongCut: "not this one", and: "and" };
 const SvRound = z.object({
   rule: z.enum(RULES), a: z.number().int().min(2).max(99).optional(), b: z.number().int().min(2).max(99).optional(),
   title: z.string().min(1).max(22), sub: z.string().max(40), lo: z.number().int().min(0).max(9999), hi: z.number().int().min(1).max(9999),
@@ -28,6 +28,7 @@ export function fits(rd: Pick<SvRoundT, "rule" | "a" | "b">, n: number): boolean
     case "multiple": return n > 0 && n % (rd.a ?? 2) === 0;
     case "common": return n > 0 && n % (rd.a ?? 2) === 0 && n % (rd.b ?? 3) === 0;
     case "factor": return n > 0 && (rd.a ?? 12) % n === 0;
+    case "cfactor": return n > 0 && (rd.a ?? 12) % n === 0 && (rd.b ?? 18) % n === 0;
     case "divisible": return n % (rd.a ?? 3) === 0;
     case "coprime": return n > 0 && gcdN(n, rd.a ?? 12) === 1;
     case "square": return Number.isInteger(Math.sqrt(n));
@@ -54,6 +55,7 @@ export function proof(rd: SvRoundT, n: number): string {
   if (rd.rule === "multiple" || rd.rule === "divisible") { const a = rd.a ?? 2; return n % a === 0 ? `${a} × ${n / a}` : `÷${a} leaves ${n % a}`; }
   if (rd.rule === "common") { const a = rd.a ?? 2, b = rd.b ?? 3; return `÷${a}: ${n % a} · ÷${b}: ${n % b}`; }
   if (rd.rule === "factor") { const a = rd.a ?? 12; return a % n === 0 ? `${n} × ${a / n} = ${a}` : `${a} ÷ ${n} leaves ${a % n}`; }
+  if (rd.rule === "cfactor") { const a = rd.a ?? 12, b = rd.b ?? 18; return `${a} ÷ ${n}: ${a % n} · ${b} ÷ ${n}: ${b % n}`; }
   if (rd.rule === "coprime") return `HCF(${n}, ${rd.a ?? 12}) = ${gcdN(n, rd.a ?? 12)}`;
   if (rd.rule === "square") { const s = Math.floor(Math.sqrt(n)); return s * s === n ? `${s} × ${s}` : `${s}² = ${s * s}`; }
   return String(n).split("").reverse().join("");
@@ -72,12 +74,13 @@ function repairSieve(raw: Record<string, unknown>, r: string[]): SieveSpec | nul
   for (const x of arr(raw.rounds, "rounds", r).slice(0, 4)) {
     if (!isObj(x)) { r.push("round"); continue; }
     const rule = oneOf(x.rule, RULES, "prime", "rule", r);
-    const needA = ["multiple", "common", "factor", "divisible", "coprime"].includes(rule), needB = rule === "common";
-    const a = needA ? num(x.a, 2, 99, rule === "factor" ? 24 : 3, "a", r, true) : undefined, b = needB ? num(x.b, 2, 99, 4, "b", r, true) : undefined;
+    const needA = ["multiple", "common", "factor", "cfactor", "divisible", "coprime"].includes(rule), needB = rule === "common" || rule === "cfactor";
+    const a = needA ? num(x.a, 2, 99, rule === "factor" || rule === "cfactor" ? 24 : 3, "a", r, true) : undefined, b = needB ? num(x.b, 2, 99, rule === "cfactor" ? 36 : 4, "b", r, true) : undefined;
     if (needB && a === b) { r.push("common:a=b"); continue; }
     let lo = num(x.lo, 0, 9999, 1, "lo", r, true), hi = num(x.hi, 1, 9999, 60, "hi", r, true);
     if (hi <= lo) { r.push("range"); [lo, hi] = [Math.min(lo, hi), Math.max(lo, hi) + 10]; }
     if (rule === "factor") { lo = Math.max(1, lo); hi = Math.min(hi, a ?? 24); }
+    if (rule === "cfactor") { lo = Math.max(1, lo); hi = Math.min(hi, Math.min(a ?? 24, b ?? 36)); }
     if (hi - lo < 6) { r.push("range:narrow"); continue; }
     const rd: SvRoundT = { rule, ...(a !== undefined ? { a } : {}), ...(b !== undefined ? { b } : {}), title: reqStr(x.title, 22, "round.title", r) ?? "Storm", sub: typeof x.sub === "string" && x.sub.length <= 40 && !MARKUP.test(x.sub) ? x.sub : "",
       lo, hi, count: num(x.count, 6, 24, 14, "count", r, true), hitRate: num(x.hitRate, 0.25, 0.6, 0.4, "hitRate", r), seed: num(x.seed, 1, 99999, 7, "seed", r, true), speed: num(x.speed, 0.6, 1.5, 1, "speed", r), ...targets(x.targets, r) };
@@ -97,7 +100,7 @@ function gradeSieve(spec: SieveSpec, itemId: string, value: unknown): Graded {
   return { verdict: value === want ? "right" : "wrong", truth: want, detail: proof(rd, n) };
 }
 function keysSieve(spec: SieveSpec) {
-  return spec.rounds.flatMap((rd, k) => sieveStream(rd).map((n, i) => ({ itemId: `r${k + 1}:${i}`, key: fits(rd, n) ? "slash" : "pass", prompt: `${n}: ${rd.rule}${rd.a ? " " + rd.a : ""}${rd.b ? " " + rd.b : ""}` })));
+  return spec.rounds.flatMap((rd, k) => sieveStream(rd).map((n, i) => ({ itemId: `r${k + 1}:${i}`, key: fits(rd, n) ? "fits the rule (slash it)" : "does not fit (let it fall)", prompt: `is ${n} ${rd.rule}${rd.a ? " " + rd.a : ""}${rd.b ? " " + rd.b : ""}?` })));
 }
 export const sieveDef: ExtSpecDef<SieveSpec> = {
   archetype: "sieve-storm@1", title: "Sieve Storm", kind: "game", subjects: ["maths"],

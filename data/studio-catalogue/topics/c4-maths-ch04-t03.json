@@ -1,0 +1,121 @@
+{
+ "topicId": "c4-maths-ch04-t03",
+ "title": "Nearest hundred and thousand",
+ "chapter": "Thousands Around Us",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T4",
+ "plan": {
+  "game": "dukaan@1",
+  "hint": "estimate mode (round to the nearest 10/100/1000 before deciding)"
+ },
+ "game": {
+  "archetype": "dukaan@1",
+  "spec": {
+   "archetype": "dukaan@1",
+   "skills": [
+    "c4-maths-ch04-t03"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "served": "served",
+    "patience": "patience",
+    "bill": "Bill",
+    "pays": "Pays",
+    "change": "Change",
+    "pack": "Pack",
+    "crates": "crates",
+    "left": "left over",
+    "enough": "Enough",
+    "notEnough": "Not enough",
+    "budget": "Has",
+    "coach": "Tap notes and coins to put them on the counter",
+    "runDone": "Shop closed",
+    "exact": "EXACT",
+    "short": "short by",
+    "over": "over by",
+    "carry": "carry them all",
+    "full": "full crates to sell",
+    "each": "each",
+    "inLast": "in the last"
+   },
+   "title": "Dukaan Rush",
+   "rounds": [
+    {
+     "mode": "pay",
+     "title": "Build the bill",
+     "sub": "Use an exact amount",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Pencils",
+         "price": 150,
+         "qty": 4
+        },
+        {
+         "name": "Eraser",
+         "price": 50,
+         "qty": 2
+        }
+       ]
+      },
+      {
+       "items": [
+        {
+         "name": "Lunch box",
+         "price": 850,
+         "qty": 1
+        },
+        {
+         "name": "Water bottle",
+         "price": 650,
+         "qty": 1
+        }
+       ]
+      }
+     ],
+     "coins": true,
+     "speed": 1
+    },
+    {
+     "mode": "change",
+     "title": "Give back change",
+     "sub": "Round first to estimate",
+     "customers": [
+      {
+       "items": [
+        {
+         "name": "Cricket bat",
+         "price": 1450,
+         "qty": 1
+        }
+       ],
+       "pays": 2000
+      },
+      {
+       "items": [
+        {
+         "name": "Kite",
+         "price": 350,
+         "qty": 3
+        }
+       ],
+       "pays": 2000
+      }
+     ],
+     "coins": true,
+     "speed": 1.1
+    }
+   ]
+  },
+  "repairs": [
+   "price:not-payable",
+   "price:not-payable",
+   "round:customers"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg"
+ }
+}

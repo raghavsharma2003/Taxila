@@ -1,0 +1,495 @@
+{
+ "topicId": "c4-maths-ch01-t01",
+ "title": "Faces, edges and corners of 3D shapes",
+ "chapter": "Shapes Around Us",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "solid-view@1",
+  "hint": "count mode: corners, edges, faces of cube / cuboid / prism / pyramid (one round each feature)"
+ },
+ "game": {
+  "archetype": "solid-view@1",
+  "spec": {
+   "archetype": "solid-view@1",
+   "skills": [
+    "c4-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "corners": "corners",
+    "edges": "edges",
+    "faces": "faces",
+    "marked": "marked",
+    "turn": "Drag to turn it",
+    "top": "top",
+    "front": "front",
+    "side": "side",
+    "target": "views to match",
+    "yours": "yours",
+    "plan": "tap a cell to stack",
+    "runDone": "Studio closed",
+    "cube": "cube",
+    "cuboid": "cuboid",
+    "triangularPrism": "triangular prism",
+    "squarePyramid": "square pyramid",
+    "tetrahedron": "triangular pyramid",
+    "pentagonalPrism": "pentagonal prism",
+    "hexagonalPrism": "hexagonal prism"
+   },
+   "title": "Solid Studio",
+   "rounds": [
+    {
+     "mode": "count",
+     "title": "Corner hunt",
+     "sub": "mark every corner of the cube",
+     "solid": "cube",
+     "feature": "corners"
+    },
+    {
+     "mode": "count",
+     "title": "Edge hunt",
+     "sub": "mark every edge of the cuboid",
+     "solid": "cuboid",
+     "feature": "edges",
+     "targets": "c4-maths-ch01-t01-m-edges-corners"
+    },
+    {
+     "mode": "count",
+     "title": "Pyramid faces",
+     "sub": "mark every face of the pyramid",
+     "solid": "squarePyramid",
+     "feature": "faces"
+    },
+    {
+     "mode": "count",
+     "title": "Hidden faces",
+     "sub": "turn the cuboid and mark all faces",
+     "solid": "cuboid",
+     "feature": "faces",
+     "targets": "c4-maths-ch01-t01-m-visible-only"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch01-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Faces, edges and corners",
+   "accent": "ion",
+   "targets": "c4-maths-ch01-t01-m-visible-only",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Faces, edges and corners"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Only count the faces you can see"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "cube",
+       "type": "node",
+       "text": "Cube",
+       "sub": "3D shape",
+       "color": "ion"
+      },
+      {
+       "id": "face",
+       "type": "node",
+       "text": "Face",
+       "sub": "flat surface",
+       "glyph": "plate",
+       "color": "mint"
+      },
+      {
+       "id": "edge",
+       "type": "node",
+       "text": "Edge",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "corner",
+       "type": "node",
+       "text": "Corner",
+       "glyph": "spark",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "cube",
+       "to": "face",
+       "text": "has"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "cube",
+       "to": "edge",
+       "text": "has"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "cube",
+       "to": "corner",
+       "text": "has"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "split",
+     "els": [
+      {
+       "id": "cube2",
+       "type": "node",
+       "text": "Cube",
+       "sub": "same counts",
+       "color": "ion"
+      },
+      {
+       "id": "cuboid",
+       "type": "node",
+       "text": "Cuboid",
+       "sub": "same counts",
+       "color": "sci"
+      },
+      {
+       "id": "counts",
+       "type": "bars",
+       "values": [
+        6,
+        12,
+        8
+       ],
+       "labels": [
+        "faces",
+        "edges",
+        "corners"
+       ],
+       "unit": "parts"
+      },
+      {
+       "id": "opt6",
+       "type": "label",
+       "text": "6 faces",
+       "x": 100,
+       "y": 480,
+       "color": "mint"
+      },
+      {
+       "id": "opt12",
+       "type": "label",
+       "text": "12 edges",
+       "x": 350,
+       "y": 480,
+       "color": "amber"
+      },
+      {
+       "id": "opt8",
+       "type": "label",
+       "text": "8 corners",
+       "x": 620,
+       "y": 480,
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A face is flat. An edge is where two faces meet, and a corner is where edges meet.",
+    "L2": "Here is a common mistake: count only the faces visible in the picture. That misses hidden faces.",
+    "L3": "Count a solid in pairs: top and bottom, front and back, left and right.",
+    "L4": "So a cube has six faces, even when a picture shows only some of them.",
+    "L5": "For edges, count four around the top, four around the bottom, and four standing up. That makes twelve.",
+    "L6": "For corners, count four on top and four at the bottom. That makes eight.",
+    "L7": "A cuboid may have faces of different sizes, but it still has six faces, twelve edges and eight corners.",
+    "L8": "Now check your understanding: choose the complete count for a cube."
+   },
+   "narration": {
+    "L1": {
+     "text": "A face is flat. An edge is where two faces meet, and a corner is where edges meet.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is a common mistake: count only the faces visible in the picture. That misses hidden faces.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "Count a solid in pairs: top and bottom, front and back, left and right.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So a cube has six faces, even when a picture shows only some of them.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "For edges, count four around the top, four around the bottom, and four standing up. That makes twelve.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "For corners, count four on top and four at the bottom. That makes eight.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "A cuboid may have faces of different sizes, but it still has six faces, twelve edges and eight corners.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check your understanding: choose the complete count for a cube.",
+     "dur": 7.5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "cube",
+        "face",
+        "edge",
+        "corner"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 2,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cube"
+      },
+      {
+       "at": 1,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "a1",
+        "a2",
+        "a3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "counts"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1,
+       "target": "cube2"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "opt12"
+      },
+      {
+       "at": 1,
+       "do": "count",
+       "dur": 1.2,
+       "target": "counts",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "opt8"
+      },
+      {
+       "at": 1,
+       "do": "count",
+       "dur": 1.2,
+       "target": "counts",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "cuboid"
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 1.2,
+       "target": [
+        "cube2",
+        "cuboid",
+        "counts"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which set gives the complete count for a cube?",
+    "options": [
+     "opt6",
+     "opt12",
+     "opt8"
+    ],
+    "answer": "opt6",
+    "src": "c4-maths-ch01-t01-i13"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:edge.sub",
+   "string:corner.sub",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 64
+ }
+}

@@ -1,0 +1,186 @@
+// The topic → archetype plan for VALUES-100 V3 (every class 4-7 topic in data/kits gets one real-time game or
+// simulation and one scene explainer). Hand-assigned by reading each topic's title, skills and expectations; the
+// authoring pipeline (author.mjs) fills the spec for the assigned archetype from the topic's kit slice. `hint` steers
+// the author toward the modes that carry the topic's act; it is not shown to children.
+// RS4 archetypes (shared/studio-spec.ts) are reused where their outcomes already list the topic or the act fits.
+// c7-science-ch06-* (Adolescence) is EXCLUDED by the child-safety floor: no generated game or animation.
+
+const P = {};
+const add = (arch, hint, ...topics) => { for (const t of topics) P[t] = { game: arch, hint }; };
+
+// ── maths ──
+add("solid-view@1", "count mode: corners, edges, faces of cube / cuboid / prism / pyramid (one round each feature)", "c4-maths-ch01-t01");
+add("solid-view@1", "build mode: 3 rounds of block models (3x3 base, heights 0-2) whose top/front/side views must be matched", "c4-maths-ch02-t01");
+add("geo-forge@1", "challenges: angle (right angle), perpendicular lines, polygon builds on the pin board; circle = equidistant pins", "c4-maths-ch01-t02");
+add("geo-forge@1", "polygon and area builds on the grid: shapes with a given number of sides / squares", "c4-maths-ch01-t03", "c5-maths-ch07-t01");
+add("map-route@1", "route mode on a grid map with landmarks (compass steering), then a turns round", "c4-maths-ch02-t02", "c5-maths-ch14-t01", "c4-evs-ch02-t01");
+add("map-route@1", "scale mode: distances between places with a km-per-square scale (and one thread round on a winding road)", "c5-maths-ch14-t02", "c5-maths-ch05-t02", "c6-science-ch03-t04");
+add("map-route@1", "thread mode: lay a thread along winding roads/rivers and convert with the scale (measuring curved lines)", "c6-science-ch05-t02");
+add("map-route@1", "route mode: a safe route to school that avoids hazards (blocks = busy road, open drain, construction)", "c5-evs-ch04-t02");
+add("map-route@1", "globe mode: pins at latitudes/longitudes (equator, tropics, India's extent); one region round", "c6-sst-ch01-t01");
+add("map-route@1", "region mode: fly to continents and oceans; a globe round for the equator", "c6-sst-ch02-t01");
+add("sieve-storm@1", "rules even / odd (parity rounds with large numbers in a later round)", "c4-maths-ch03-t01", "c7-maths-ch06-t01");
+add("sieve-storm@1", "rules multiple and common (multiples and common multiples)", "c4-maths-ch09-t01", "c5-maths-ch13-t01", "c7-maths-ch11-t02");
+add("sieve-storm@1", "rule factor (factors of a number), then cfactor", "c5-maths-ch13-t02");
+add("sieve-storm@1", "rules common / cfactor (common factors and common multiples)", "c6-maths-ch05-t01", "c7-maths-ch11-t03");
+add("sieve-storm@1", "rules prime / composite", "c6-maths-ch05-t02", "c6-maths-ch05-t04");
+add("sieve-storm@1", "rule coprime (co-prime with a), contrast rounds", "c6-maths-ch05-t03");
+add("sieve-storm@1", "rule divisible (divisibility by 2, 3, 4, 5, 9, 10)", "c6-maths-ch05-t05");
+add("sieve-storm@1", "rule cfactor (common factors of a and b: the highest one is the HCF)", "c7-maths-ch11-t01");
+add("sieve-storm@1", "rules palindrome and square; digit properties", "c6-maths-ch03-t02");
+add("rule-machine@1", "seq and build modes: number patterns and growing patterns", "c4-maths-ch03-t02", "c5-maths-ch07-t02", "c6-maths-ch01-t01", "c6-maths-ch01-t02", "c6-maths-ch01-t03", "c6-maths-ch01-t04", "c7-maths-ch04-t03");
+add("rule-machine@1", "explore mode (Collatz / reverse-and-add) plus a seq round", "c6-maths-ch03-t03", "c6-maths-ch03-t01");
+add("rule-machine@1", "build mode: product patterns (×10, ×100, doubling and halving)", "c7-maths-ch01-t03", "c5-maths-ch06-t02");
+add("rule-machine@1", "build and brackets modes: writing expressions for situations, order of evaluation", "c7-maths-ch02-t01", "c7-maths-ch02-t02");
+add("rule-machine@1", "build mode with letter rules (x → 3x + 2), evaluate at inputs; inverse round", "c7-maths-ch04-t01", "c7-maths-ch04-t02");
+add("rule-machine@1", "inverse mode: undo the operations (find the mistake by running it backwards)", "c7-maths-ch15-t03");
+add("vault-heist@1", "place-value vault codes (Indian system)", "c4-maths-ch04-t01", "c5-maths-ch01-t01", "c7-maths-ch01-t01");
+add("line-runner@1", "number line gates: comparing and ordering", "c4-maths-ch04-t02", "c6-maths-ch10-t02", "c7-maths-ch03-t03");
+add("dukaan@1", "estimate mode (round to the nearest 10/100/1000 before deciding)", "c4-maths-ch04-t03", "c4-maths-ch07-t02", "c5-maths-ch01-t02", "c5-maths-ch04-t02", "c6-maths-ch03-t04", "c7-maths-ch01-t02");
+add("dukaan@1", "pay and change modes with larger amounts", "c4-maths-ch07-t01", "c4-maths-ch10-t01", "c5-maths-ch04-t01");
+add("dukaan@1", "pay mode with quantity x price (multiplication by 10s and larger numbers)", "c4-maths-ch13-t01", "c5-maths-ch06-t01");
+add("dukaan@1", "pack mode: crates of k (full / all, remainders)", "c4-maths-ch09-t02", "c4-maths-ch13-t02", "c5-maths-ch09-t01", "c5-maths-ch09-t02");
+add("dukaan@1", "pay and change with paise (decimals in money); one estimate round", "c7-maths-ch03-t04", "c7-maths-ch12-t01");
+add("slice-at@1", "fraction slices: equal shares and fractional units", "c4-maths-ch05-t01", "c6-maths-ch07-t01");
+add("fraction-ops@1", "scoop mode with fractions of a litre / kg (how many 1/4-litre scoops fill 2 litres); join round", "c4-maths-ch05-t02");
+add("fraction-ops@1", "join mode: re-cut bars into parts that line up (equivalent fractions, add and subtract)", "c5-maths-ch02-t03", "c6-maths-ch07-t05");
+add("fraction-ops@1", "orchard mode (fraction of a fraction)", "c7-maths-ch08-t01");
+add("fraction-ops@1", "scoop mode (division as measuring)", "c7-maths-ch08-t02");
+add("fraction-ops@1", "mix orchard, scoop and join rounds in word-problem settings", "c7-maths-ch08-t03");
+add("fraction-ops@1", "scoop mode with dec: true (0.5 m pieces from 3.5 m; 0.25 l cups)", "c7-maths-ch12-t02");
+add("catch-on-line@1", "Landfall: fractions on the number line", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch07-t02", "c6-maths-ch07-t03", "c6-maths-ch07-t04");
+add("angle-cannon@1", "turret angles: turns, types, measuring", "c5-maths-ch03-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04");
+add("instrument@1", "cut mode (cm and m)", "c4-maths-ch06-t01", "c6-science-ch05-t01");
+add("instrument@1", "cut mode with km+m and m+cm targets", "c5-maths-ch05-t01");
+add("instrument@1", "weigh mode (g and kg)", "c4-maths-ch08-t01", "c5-maths-ch08-t01");
+add("instrument@1", "pour mode (ml and l)", "c4-maths-ch08-t02", "c5-maths-ch08-t02");
+add("instrument@1", "clock mode: time to 5 minutes, a.m./p.m., elapsed time ('after')", "c4-maths-ch12-t01", "c4-maths-ch12-t02", "c5-maths-ch12-t01");
+add("instrument@1", "cut and weigh modes with decimal targets (tenths, hundredths)", "c7-maths-ch03-t01", "c7-maths-ch03-t02");
+add("instrument@1", "thermo mode including temperatures below zero", "c6-maths-ch10-t01");
+add("instrument@1", "thermo mode: clinical (35-42 °C, 0.1 steps) and laboratory thermometers", "c6-science-ch07-t01", "c6-science-ch07-t02");
+add("geo-forge@1", "perimeter challenges (distance around)", "c4-maths-ch06-t02");
+add("area-claim@1", "Plot: area by squares, perimeter, same area different shapes", "c5-maths-ch11-t01", "c5-maths-ch11-t02", "c5-maths-ch11-t03", "c6-maths-ch06-t01", "c6-maths-ch06-t02");
+add("geo-forge@1", "area challenges with shape triangle", "c6-maths-ch06-t03");
+add("geo-forge@1", "equidistant challenges (circle points, perpendicular bisector)", "c6-maths-ch08-t01", "c6-maths-ch08-t03", "c7-maths-ch14-t01");
+add("geo-forge@1", "quad challenges: square, rectangle, parallelogram", "c6-maths-ch08-t02");
+add("geo-forge@1", "parallel and perpendicular challenges; angle challenges", "c7-maths-ch05-t01", "c7-maths-ch05-t02", "c7-maths-ch05-t03");
+add("geo-forge@1", "sticks challenges (can three sticks close a triangle?) and triangle builds", "c7-maths-ch07-t01", "c7-maths-ch09-t02");
+add("geo-forge@1", "perpendicular challenges (altitude from a vertex)", "c7-maths-ch07-t02");
+add("geo-forge@1", "triangle challenges by type (scalene, isosceles, equilateral, right, obtuse)", "c7-maths-ch07-t03", "c7-maths-ch09-t03");
+add("sort-storm@1", "classify by description cards: line segment / ray / line (no tools)", "c6-maths-ch02-t01");
+add("mirror-paint@1", "lines mode then complete mode", "c4-maths-ch11-t01", "c6-maths-ch09-t01");
+add("mirror-paint@1", "complete mode (rangoli halves)", "c4-maths-ch11-t02", "c5-maths-ch10-t02");
+add("mirror-paint@1", "turn mode (orders of rotational symmetry 1, 2, 4)", "c5-maths-ch10-t01", "c6-maths-ch09-t02");
+add("mirror-paint@1", "twin mode (turn and flip to fit)", "c7-maths-ch09-t01");
+add("pictograph@1", "claims mode on real counts (comparing)", "c4-maths-ch10-t02", "c7-maths-ch13-t01");
+add("pictograph@1", "tally then picto modes", "c4-maths-ch14-t01", "c6-maths-ch04-t01");
+add("pictograph@1", "picto mode with a scale (one symbol = k, half symbols)", "c5-maths-ch15-t01", "c6-maths-ch04-t02");
+add("pictograph@1", "bars mode with a scale; claims round including a misleading axis", "c4-maths-ch14-t02", "c7-maths-ch13-t03");
+add("data-rush@1", "Traffic Census: bar graph from counts / representative values", "c5-maths-ch15-t02", "c6-maths-ch04-t03", "c7-maths-ch13-t02");
+add("zero-pair@1", "make and subtract modes (token model)", "c6-maths-ch10-t03");
+add("zero-pair@1", "groups mode (k groups of m, m may be negative)", "c7-maths-ch10-t01");
+add("zero-pair@1", "groups mode with share: true (dividing integers)", "c7-maths-ch10-t02");
+add("pattern-lab@1", "magic mode (3x3 magic squares, row/column sums)", "c7-maths-ch06-t02");
+add("pattern-lab@1", "rhythm mode (Virahanka numbers for 3, 4, 5, 6 beats)", "c7-maths-ch06-t03");
+add("pattern-lab@1", "cipher mode (letters for digits in sums)", "c7-maths-ch06-t04");
+add("pattern-lab@1", "tile mode (regular polygons round a point; 1, 2 and 3 kinds)", "c7-maths-ch14-t02");
+add("balance-beam@1", "Tilt: forming and solving equations", "c7-maths-ch15-t01", "c7-maths-ch15-t02");
+add("motion-lab@1", "race mode with ask: time (comparing timings in seconds)", "c5-maths-ch12-t02");
+
+// ── science ──
+add("fair-test@1", "predict and conclude rounds on a simple model (curd or drying); observe-question-predict-test", "c6-science-ch01-t01", "c7-science-ch01-t01");
+add("fair-test@1", "design round (change one thing only) then conclude", "c6-science-ch01-t02");
+add("sort-storm@1", "bins herb / shrub / tree by stem and height cards", "c6-science-ch02-t01");
+add("sort-storm@1", "bins by leaf venation and root type (reticulate → taproot, parallel → fibrous)", "c6-science-ch02-t02");
+add("food-web@1", "Balance the Forest: habitats and who eats whom; remove a species and watch", "c6-science-ch02-t03", "c6-science-ch02-t04", "c4-evs-ch03-t02", "c5-evs-ch10-t01");
+add("sort-storm@1", "tools iodine / paper / biuret: sort foods by starch, fat, protein (byProp)", "c6-science-ch03-t01", "c6-science-ch03-t02");
+add("sort-storm@1", "bins: deficiency disease ↔ missing nutrient; millets and balanced plate", "c6-science-ch03-t03", "c4-evs-ch05-t01");
+add("sort-storm@1", "tool magnet: magnetic and non-magnetic materials (byProp)", "c6-science-ch04-t01");
+add("field-lab@1", "poles rounds (left, right, middle) and a label round", "c6-science-ch04-t02");
+add("field-lab@1", "compass rounds (turned maps, stray magnet) and one label round", "c6-science-ch04-t03");
+add("sort-storm@1", "bins: linear / circular / periodic (oscillatory) motion cards", "c6-science-ch05-t03");
+add("sort-storm@1", "tools torch / tank / tester / magnet: properties of materials (byProp)", "c6-science-ch06-t01", "c6-science-ch06-t02");
+add("phase-shift@1", "Phase Shift: states of water, evaporation and condensation, factors", "c6-science-ch08-t01", "c6-science-ch08-t02", "c6-science-ch08-t03", "c5-evs-ch01-t01", "c7-science-ch07-t04");
+add("heat-lab@1", "separate mode: handpick, winnow, sieve (grain, husk, stones, flour)", "c6-science-ch09-t01");
+add("heat-lab@1", "separate mode: water, filter, evaporate (sand, salt, chalk, sugar)", "c6-science-ch09-t02");
+add("sort-storm@1", "bins living / non-living by characteristics", "c6-science-ch10-t01");
+add("fair-test@1", "germination model: design (water / air / warmth), predict, conclude", "c6-science-ch10-t02");
+add("story-rail@1", "sequence mode: stages of a plant and an animal life cycle (frog / butterfly / mosquito)", "c6-science-ch10-t03");
+add("sort-storm@1", "bins renewable / non-renewable; natural resources and their uses", "c6-science-ch11-t01", "c6-science-ch11-t02");
+add("sky-lab@1", "stars mode: still (Pole Star), pointer and join (Saptarishi, Cassiopeia)", "c6-science-ch12-t01");
+add("sort-storm@1", "bins inner rocky planets / outer giant planets / not a planet (Moon, Sun, Pluto)", "c6-science-ch12-t02");
+add("sort-storm@1", "bins star / planet / moon / galaxy (Milky Way, Sun, Earth, Andromeda ...)", "c6-science-ch12-t03");
+add("era-drop@1", "place and order modes: discoveries and inventions by people across the world (dates from the kit)", "c7-science-ch01-t02");
+add("sort-storm@1", "tools turmeric / litmus / rose: acidic, basic, neutral (byProp)", "c7-science-ch02-t01");
+add("fair-test@1", "drip mode (neutralisation with an indicator) and predict rounds", "c7-science-ch02-t02");
+add("circuit-bench@1", "Circuit Lab: closed circuits, switches, conductors", "c7-science-ch03-t01", "c7-science-ch03-t02", "c7-science-ch03-t03");
+add("sort-storm@1", "tools tester / magnet / flame: metals and non-metals (byProp); uses", "c7-science-ch04-t01", "c7-science-ch04-t03");
+add("fair-test@1", "rusting model: design (air, water) and conclude", "c7-science-ch04-t02");
+add("sort-storm@1", "bins physical / chemical change (new substance formed?)", "c7-science-ch05-t01");
+add("fair-test@1", "rusting and combustion models", "c7-science-ch05-t02");
+add("story-rail@1", "cause mode: weathering and erosion chains (wind, water, temperature)", "c7-science-ch05-t03");
+add("heat-lab@1", "conduct mode (wax-pin race), then a radiate round", "c7-science-ch07-t01");
+add("heat-lab@1", "breeze mode (day and night hours)", "c7-science-ch07-t02");
+add("heat-lab@1", "radiate mode (keep cool / keep warm)", "c7-science-ch07-t03");
+add("motion-lab@1", "pendulum mode (period targets; mass knob)", "c7-science-ch08-t01");
+add("motion-lab@1", "race mode (speed, time, distance asks; m/s and km/h)", "c7-science-ch08-t02");
+add("motion-lab@1", "drive mode (uniform and non-uniform graphs)", "c7-science-ch08-t03");
+add("life-lab@1", "gut mode (starch, protein, fat meals)", "c7-science-ch09-t01");
+add("sort-storm@1", "bins by mode of feeding (scraping, sucking, chewing, filter feeding, engulfing)", "c7-science-ch09-t02");
+add("life-lab@1", "breath mode (rest, walk, run)", "c7-science-ch09-t03");
+add("life-lab@1", "leaf mode (light and CO2 levels; goals)", "c7-science-ch10-t01", "c7-science-ch10-t02");
+add("life-lab@1", "leaf mode with transport: true", "c7-science-ch10-t03");
+add("shadow-play@1", "Shadow Play: luminous/opaque/translucent and shadow formation", "c7-science-ch11-t01", "c7-science-ch11-t02", "c4-evs-ch10-t01");
+add("ray-lab@1", "angle mode then mirror mode", "c7-science-ch11-t03");
+add("ray-lab@1", "mirror mode periscope (walls) and pinhole mode", "c7-science-ch11-t04");
+add("sky-lab@1", "daynight mode (sunrise, noon, sunset, midnight in Indian and world cities)", "c7-science-ch12-t01", "c5-evs-ch09-t01");
+add("sky-lab@1", "season mode (longest, shortest, equal, summer north/south)", "c7-science-ch12-t02", "c5-evs-ch09-t02");
+add("sky-lab@1", "eclipse mode (solar and lunar, with and without nodes)", "c7-science-ch12-t03");
+
+// ── EVS ──
+add("town-lab@1", "council mode: a community deciding together what to fund", "c4-evs-ch01-t01", "c5-evs-ch10-t02");
+add("era-drop@1", "order mode: ways of communicating through time (drum, letter, telegram, phone, video call)", "c4-evs-ch01-t02");
+add("town-lab@1", "savings mode (piggy bank vs bank, monthly saving to a goal)", "c4-evs-ch02-t02");
+add("sort-storm@1", "bins by what you observe (leaf shape, body covering, legs)", "c4-evs-ch03-t01");
+add("story-rail@1", "cause mode: traditional practices and what they protect", "c4-evs-ch04-t01", "c5-evs-ch06-t02");
+add("sort-storm@1", "bins: plants we use for food / medicine / fibre / wood", "c4-evs-ch04-t02");
+add("sort-storm@1", "bins: everyday food vs sometimes food; tastes", "c4-evs-ch05-t02");
+add("story-rail@1", "cause mode: sleep, play, feelings and what helps", "c4-evs-ch06-t01");
+add("story-rail@1", "sequence mode: farm to plate journey", "c4-evs-ch06-t02");
+add("fair-test@1", "float model: predict and design", "c4-evs-ch07-t01");
+add("motion-lab@1", "race mode: toys that move (how far in how long); drive round", "c4-evs-ch07-t02");
+add("story-rail@1", "sequence mode: making and recycling paper", "c4-evs-ch08-t01");
+add("sort-storm@1", "bins natural / human-made materials", "c4-evs-ch08-t02");
+add("land-lab@1", "rain mode (coast, hills, rain shadow) and flood mode", "c4-evs-ch09-t01", "c5-evs-ch06-t01", "c7-sst-ch01-t01", "c7-sst-ch03-t01");
+add("sort-storm@1", "bins: houses suited to hot-dry / cold / rainy / coastal lands", "c4-evs-ch09-t02");
+add("sky-lab@1", "phase mode (new, crescent, quarter, gibbous, full)", "c4-evs-ch10-t02");
+add("story-rail@1", "cause mode: water for living things (plants, animals, people)", "c5-evs-ch01-t02");
+add("land-lab@1", "river mode then flood mode", "c5-evs-ch02-t01", "c5-evs-ch02-t02", "c6-sst-ch03-t01");
+add("fair-test@1", "spoilage model: predict and design (warmth, moisture, covering)", "c5-evs-ch03-t01", "c5-evs-ch03-t02");
+add("sort-storm@1", "bins: waste sorting (wet, dry, hazardous) and safe/unsafe", "c5-evs-ch04-t01");
+add("sort-storm@1", "bins: dance / music / language families of India (no political map)", "c5-evs-ch05-t01");
+add("era-drop@1", "place and order: national symbols and Republic dates (1947, 1950)", "c5-evs-ch05-t02");
+add("sort-storm@1", "bins by energy source (muscle, fuel, electricity, sun, wind)", "c5-evs-ch07-t01");
+add("sort-storm@1", "bins: saves energy / wastes energy", "c5-evs-ch07-t02");
+add("story-rail@1", "sequence mode: fibre to fabric", "c5-evs-ch08-t01");
+add("story-rail@1", "sequence mode: stitching and caring for clothes", "c5-evs-ch08-t02");
+
+// ── SST ──
+add("era-drop@1", "place / century / order modes with BCE and CE dates from the kit", "c6-sst-ch04-t01", "c6-sst-ch05-t01", "c6-sst-ch06-t01", "c6-sst-ch07-t01", "c7-sst-ch04-t01", "c7-sst-ch05-t01", "c7-sst-ch06-t01", "c7-sst-ch07-t01", "c7-sst-ch15-t01", "c7-sst-ch16-t01", "c7-sst-ch10-t01");
+add("sort-storm@1", "bins: festivals / languages / foods shared across regions (unity in diversity)", "c6-sst-ch08-t01", "c7-sst-ch17-t01");
+add("story-rail@1", "cause and who modes: roles in a family and a community", "c6-sst-ch09-t01");
+add("town-lab@1", "council mode: gram sabha / panchayat / ward decisions within a budget", "c6-sst-ch10-t01", "c6-sst-ch11-t01", "c6-sst-ch12-t01", "c7-sst-ch18-t01", "c7-sst-ch19-t01");
+add("town-lab@1", "market mode (value of work, earning) and barter round", "c6-sst-ch13-t01", "c6-sst-ch14-t01");
+add("land-lab@1", "rain mode (monsoon winds, Western Ghats) with wet/dry places", "c7-sst-ch02-t01");
+add("story-rail@1", "cause mode: why the land becomes sacred (rivers, mountains, groves)", "c7-sst-ch08-t01");
+add("sort-storm@1", "bins: monarchy / democracy / theocracy / oligarchy features", "c7-sst-ch09-t01");
+add("town-lab@1", "barter mode then barter with money", "c7-sst-ch11-t01");
+add("town-lab@1", "market mode (pricing live as customers decide)", "c7-sst-ch12-t01");
+add("story-rail@1", "sequence and cause modes: the story of Indian farming", "c7-sst-ch13-t01");
+add("story-rail@1", "cause mode: India and her neighbours (shared rivers, trade, culture) — no political maps", "c7-sst-ch14-t01");
+add("town-lab@1", "savings mode (bank interest) and a loan-vs-save round", "c7-sst-ch20-t01");
+
+// ── English and Hindi: poems (kit topicType T1) ride Poem Beat; prose rides Story Rail (set in author.mjs) ──
+export const PLAN = P;
+export const LANG_GAME = { T1: { game: "beat-line@1", hint: "beat and rhyme rounds (Hindi: matra round on a doha/chaupai line)" }, other: { game: "story-rail@1", hint: "sequence, cause and who modes from the lesson's events and speakers" } };
+export const EXCLUDED = /^c7-science-ch06-/;

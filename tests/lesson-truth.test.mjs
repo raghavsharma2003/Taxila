@@ -267,7 +267,8 @@ test("summary: cards come from the graded turns — verified right answers first
   const item = findItem(s, K, s.activeItemId);
   L.noteDid(s, { cls: cls("incorrect"), target, activeItem: item, kit: K, childText: "1/3", hintLevel: 0, seq: 7, leaked: false });
   L.noteDid(s, { cls: cls("correct"), target, activeItem: item, kit: K, childText: "aadha", hintLevel: 1, seq: 9, leaked: false });
-  const other = K.items.find((i) => i.id === "i9");
+  // a second practice item that is not the one on the table (content F0 may open on i9)
+  const other = K.items.find((i) => i.id === (item.id === "i9" ? "i1" : "i9"));
   L.noteDid(s, { cls: cls("correct"), target, activeItem: other, kit: K, childText: "ek tihai", hintLevel: 0, seq: 11, leaked: false });
   L.noteDid(s, { cls: NE, target, activeItem: other, kit: K, childText: "umm", hintLevel: 0, seq: 12, leaked: false });
   const sum = lessonSummary(s, { topic: getTopic(K.topicId), teacher: CHARACTERS.asha });

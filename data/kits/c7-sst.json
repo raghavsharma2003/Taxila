@@ -183,7 +183,9 @@
      "verified": {
       "solverAnswer": "Himalayas, Northern Plains, Thar Desert, Peninsular Plateau, Coastal Plains, Islands",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch01-t01-i02",
@@ -489,6 +491,135 @@
       "agrees": true,
       "note": "Lapse rate ~6.5 C/km; 'roughly 6 C per 1,000 m' is fine for class 7."
      }
+    },
+    {
+     "id": "c7-sst-ch01-t01-rl-o1",
+     "skillId": "c7-sst-ch01-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A school atlas marks a dry region in western Rajasthan, near India’s border with Pakistan. Which major physical region is marked?",
+     "prompt_hi": "School atlas mein western Rajasthan mein, Pakistan border ke paas, ek sookha kshetra dikhaya hai. Yeh kaunsa bada physical region hai?",
+     "answer": "Thar Desert",
+     "acceptable": [
+      "Thar",
+      "the Thar",
+      "Thar registan",
+      "थार मरुस्थल"
+     ],
+     "hints": [
+      "Which physical region lies along western Rajasthan?",
+      "Use both the location and the dry conditions.",
+      "The marked region is the ___ Desert.",
+      "Thar Desert: it lies in western Rajasthan near the Pakistan border."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Thar Desert (or the Great Indian Desert)",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch01-t01-rl-o2",
+     "skillId": "c7-sst-ch01-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "A map shows a narrow strip of low land between the Arabian Sea and the Western Ghats near Kochi. Which major physical region does this strip belong to?",
+     "prompt_hi": "Kochi ke paas map mein Arabian Sea aur Western Ghats ke beech neeche zameen ki patli patti hai. Yeh kaunse bade physical region ka hissa hai?",
+     "answer": "Coastal Plains",
+     "acceptable": [
+      "Western Coastal Plain",
+      "Western Coastal Plains",
+      "coastal plain",
+      "tatiya maidan"
+     ],
+     "hints": [
+      "What kind of land lies between hills and the sea?",
+      "Focus on the strip’s position, not the nearby hills.",
+      "This strip belongs to the ___ Plains.",
+      "Coastal Plains: they include low land beside the sea."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "The Coastal Plains",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch01-t01-rl-h1",
+     "skillId": "c7-sst-ch01-t01-s2",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Two sites have different ground: Site A has deep soil deposited by rivers; Site B has old, hard rock beneath thinner soil. Which site is more likely in the Northern Plains: A or B?",
+     "prompt_hi": "Do jagahon ki zameen alag hai: Site A par nadiyon ki jama ki hui gehri mitti hai; Site B par patli mitti ke neeche purani, sakht chattan hai. Northern Plains mein kaunsi site hone ki zyada sambhavna hai—A ya B?",
+     "answer": "Site A",
+     "acceptable": [
+      "A",
+      "site A",
+      "pehli site"
+     ],
+     "hints": [
+      "What builds up soil across broad river plains?",
+      "Compare river deposits with old rock.",
+      "The plains match Site ___ because rivers deposit soil there.",
+      "Site A: rivers have deposited its deep soil."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Site A",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch01-t01-rl-h3",
+     "skillId": "c7-sst-ch01-t01-s4",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "Your town is on a rocky plateau where rainwater runs off quickly. A cousin lives on a flat river plain. Which place is more likely to need tanks to store rainwater for farming: your town or your cousin’s? Why?",
+     "prompt_hi": "Tumhara town pathrile plateau par hai, jahan baarish ka paani jaldi beh jaata hai. Tumhara cousin samtal nadi-maidan mein rehta hai. Kheti ke liye rainwater store karne ko tanks ki zyada zaroorat kahan hogi—tumhare town mein ya cousin ke yahan? Kyun?",
+     "answer": "My town, because rainwater runs off its rocky plateau quickly.",
+     "acceptable": [
+      "My town; water runs off quickly.",
+      "The plateau town, because it retains less rainwater.",
+      "Mere town mein, kyunki paani jaldi beh jaata hai."
+     ],
+     "hints": [
+      "Which place loses rainfall from its surface faster?",
+      "Stored water helps where rainfall does not stay available.",
+      "___ needs tanks because its rainwater ___.",
+      "Your town: rainwater runs off the rocky plateau quickly."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "transfer",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Your town, because rainwater runs off quickly on the rocky plateau.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Equivalent answers",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -710,7 +841,9 @@
      "verified": {
       "solverAnswer": "Weather = short-term state of atmosphere; climate = long-term (~30 yr) average",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch02-t01-i02",
@@ -1011,6 +1144,161 @@
       "solverAnswer": "Humidity = water vapour in air; rainfall = water falling; humid day without rain possible",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch02-t01-rl-o1",
+     "skillId": "c7-sst-ch02-t01-s1",
+     "kind": "contrast",
+     "difficulty": 3,
+     "prompt_en": "A school in Ladakh records snow on one October day. Its records show that October has usually been dry for the past 30 years. Which statement describes climate: the snowy day or the 30-year record?",
+     "prompt_hi": "Ladakh ke ek school mein October ke ek din barf padi. Records dikhate hain ki pichhle 30 saalon mein October aam taur par sookha raha hai. Climate kaun sa batata hai: barf wala din ya 30 saal ka record?",
+     "answer": "The 30-year record",
+     "acceptable": [
+      "30-year record",
+      "long-term record",
+      "30 saal ka record"
+     ],
+     "hints": [
+      "Which statement covers many Octobers?",
+      "Climate describes the usual pattern over a long period.",
+      "To identify climate, choose the statement based on ___.",
+      "The 30-year record; climate describes a long-term pattern."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "The 30-year record",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch02-t01-rl-o2",
+     "skillId": "c7-sst-ch02-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "Before an outdoor school concert, the organisers want to measure how much water vapour is in the air. Which instrument should they use: a hygrometer or a barometer?",
+     "prompt_hi": "Outdoor school concert se pehle organisers hawa mein water vapour ki matra naapna chahte hain. Kaunsa instrument use karein: hygrometer ya barometer?",
+     "answer": "Hygrometer",
+     "acceptable": [
+      "a hygrometer",
+      "hygrometer se"
+     ],
+     "hints": [
+      "Which weather element describes water vapour in air?",
+      "One option measures humidity; the other measures air pressure.",
+      "The instrument for humidity is ___.",
+      "Hygrometer; it measures humidity, or water vapour in air."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "A hygrometer",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch02-t01-rl-h1",
+     "skillId": "c7-sst-ch02-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A Bengaluru weather station needs both wind speed and wind direction for its report. Name the two instruments in that order.",
+     "prompt_hi": "Bengaluru weather station ko report ke liye wind speed aur wind direction dono naapne hain. Isi order mein dono instruments ke naam batao.",
+     "answer": "Anemometer and wind vane",
+     "acceptable": [
+      "anemometer, wind vane",
+      "anemometer aur wind vane"
+     ],
+     "hints": [
+      "Are speed and direction measured by the same instrument?",
+      "Think of one instrument for speed and another for direction.",
+      "For speed use ___; for direction use ___.",
+      "Anemometer and wind vane; they measure speed and direction respectively."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Anemometer and wind vane",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch02-t01-rl-h2",
+     "skillId": "c7-sst-ch02-t01-s3",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "At noon, a sunlit cricket ground is hotter than a nearby shaded park. Air pressure is lower above the ground. Why might wind blow from the park towards the ground?",
+     "prompt_hi": "Dopahar mein dhoop wala cricket ground paas ke shaded park se zyada garam hai. Ground ke upar air pressure kam hai. Hawa park se ground ki taraf kyun chal sakti hai?",
+     "answer": "Air moves from higher pressure over the cooler park towards lower pressure over the hotter ground.",
+     "acceptable": [
+      "wind moves from high to low pressure",
+      "park ka pressure zyada hai, isliye hawa kam pressure wale ground ki taraf chalegi"
+     ],
+     "hints": [
+      "Which place has the lower air pressure?",
+      "Wind moves between places with different air pressures.",
+      "Air moves from ___ pressure towards ___ pressure.",
+      "Wind moves from higher pressure over the park to lower pressure over the ground."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Wind blows from cooler high pressure to hotter low pressure.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Identical pressure logic",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch02-t01-rl-h3",
+     "skillId": "c7-sst-ch02-t01-s4",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "IMD forecasts thunderstorms with lightning from 4–6 pm in your district. Your school match starts at 4:30 pm on an open field. Choose: play as planned, or postpone and move indoors?",
+     "prompt_hi": "IMD ne tumhare district mein 4–6 pm thunderstorm aur lightning forecast ki hai. School match 4:30 pm ko open field mein shuru hoga. Chuno: planned match khelo, ya postpone karke indoors jao?",
+     "answer": "Postpone and move indoors",
+     "acceptable": [
+      "postpone and go indoors",
+      "match postpone karo aur andar jao",
+      "move indoors and postpone the match"
+     ],
+     "hints": [
+      "Does the match overlap with the forecast?",
+      "Lightning makes open fields unsafe.",
+      "Because the match overlaps with lightning, choose ___.",
+      "Postpone and move indoors; lightning makes the open field unsafe."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "transfer",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Postpone and move indoors",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -1231,7 +1519,9 @@
      "verified": {
       "solverAnswer": "Latitude, altitude, distance from sea, relief (also winds/ocean currents)",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch03-t01-i02",
@@ -1508,6 +1798,165 @@
       "solverAnswer": "Open: land heats -> low pressure -> moist sea winds -> rise and rain -> reverses in winter",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch03-t01-rl-o1",
+     "skillId": "c7-sst-ch03-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "Jaipur and Chennai are both hot in summer. Which city is likely to have a bigger difference between summer and winter temperatures: Jaipur or Chennai? Name the climate factor responsible.",
+     "prompt_hi": "Jaipur aur Chennai dono mein garmi hoti hai. Summer aur winter ke temperature mein zyada antar kis shehar mein hoga—Jaipur ya Chennai? Iska climate factor bhi batao.",
+     "answer": "Jaipur; distance from the sea",
+     "acceptable": [
+      "Jaipur, because it is farther from the sea",
+      "Jaipur; samundar se doori"
+     ],
+     "hints": [
+      "Which city is beside the sea?",
+      "The sea reduces seasonal temperature extremes nearby.",
+      "The inland city is ___; the factor is ___.",
+      "Jaipur; its distance from the sea allows greater seasonal temperature differences."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Jaipur; distance from the sea",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch03-t01-rl-o2",
+     "skillId": "c7-sst-ch03-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "In June, land over India heats faster than the nearby ocean. Do the rain-bearing winds generally blow from the ocean towards land, or from land towards the ocean?",
+     "prompt_hi": "June mein Bharat ki zameen paas ke samundar se jaldi garam hoti hai. Baarish laane wali hawa aam taur par samundar se zameen ki taraf chalegi ya zameen se samundar ki taraf?",
+     "answer": "From the ocean towards land",
+     "acceptable": [
+      "ocean to land",
+      "sea to land",
+      "samundar se zameen ki taraf"
+     ],
+     "hints": [
+      "Which surface heats faster in June?",
+      "Warmer land draws in air from a cooler area.",
+      "The rain-bearing winds move from ___ towards ___.",
+      "From ocean towards land; heated land draws in moist sea air."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "from the ocean towards land",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch03-t01-rl-h1",
+     "skillId": "c7-sst-ch03-t01-s2",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A weather report says Chennai may receive rain in November, after the main south-west monsoon has withdrawn. Which seasonal winds can bring this rain, and where do they pick up moisture?",
+     "prompt_hi": "Weather report kehta hai ki main south-west monsoon lautne ke baad bhi November mein Chennai mein baarish ho sakti hai. Kaunsi mausami havaayein yeh baarish laati hain, aur nami kahan se leti hain?",
+     "answer": "Retreating north-east monsoon winds; from the Bay of Bengal",
+     "acceptable": [
+      "north-east monsoon; Bay of Bengal",
+      "retreating monsoon; Bay of Bengal",
+      "uttar-purvi monsoon; Bengal ki Khadi"
+     ],
+     "hints": [
+      "Which monsoon phase occurs after the summer rains?",
+      "Consider the winds crossing water before reaching India's south-east coast.",
+      "The winds are ___; they collect moisture over ___.",
+      "Retreating north-east monsoon winds; they collect moisture over the Bay of Bengal."
+     ],
+     "ge": 7,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "North-east monsoon winds; Bay of Bengal",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Matching response",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch03-t01-rl-h2",
+     "skillId": "c7-sst-ch03-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A rainfall chart shows City A: June–September 900 mm, October–December 80 mm; City B: June–September 90 mm, October–December 600 mm. Which city is more likely on India's south-east coast: A or B?",
+     "prompt_hi": "Rainfall chart mein City A ko June–September 900 mm aur October–December 80 mm baarish milti hai. City B ko inhi periods mein 90 mm aur 600 mm milti hai. Bharat ke south-east coast par kaunsa shehar zyada sambhavit hai—A ya B?",
+     "answer": "City B",
+     "acceptable": [
+      "B",
+      "shehar B"
+     ],
+     "hints": [
+      "In which months does each city receive most rain?",
+      "India's south-east coast gets substantial rain later in the year.",
+      "Match the later rainy period to City ___.",
+      "City B; its rainfall peaks in October–December."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "B",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch03-t01-rl-h3",
+     "skillId": "c7-sst-ch03-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A village in Maharashtra usually sows rain-fed crops when monsoon rains begin. Now the rains often start late. Why could sowing on the old date reduce the harvest?",
+     "prompt_hi": "Maharashtra ka ek gaon monsoon shuru hone par baarish par nirbhar faslein bota hai. Ab baarish aksar der se aati hai. Purani tareekh par hi buaai karne se fasal kam kyon ho sakti hai?",
+     "answer": "Seeds or young plants may not get enough water to germinate and grow",
+     "acceptable": [
+      "seeds may dry out without rain",
+      "seedlings may die from lack of water",
+      "paani na milne se beej ya naye paudhe kharab ho sakte hain"
+     ],
+     "hints": [
+      "What do newly sown seeds need?",
+      "Think about the gap between sowing and the first rain.",
+      "Without timely rain, the seeds or young plants may ___.",
+      "They may dry out; delayed rain leaves seeds or young plants without water."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Seeds may not get enough rain to germinate and grow.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Equivalent meaning",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -1727,7 +2176,9 @@
      "verified": {
       "solverAnswer": "6th century BCE (~600 BCE)",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch04-t01-i02",
@@ -2002,6 +2453,163 @@
       "solverAnswer": "Walls for defence; taxes for army, officials, forts",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch04-t01-rl-o1",
+     "skillId": "c7-sst-ch04-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum label dates a fort wall to 480 BCE and a coin to 420 BCE. Which is older: the fort wall or the coin?",
+     "prompt_hi": "Museum ke label par fort ki deewar 480 BCE aur sikka 420 BCE ka hai. Kaun purana hai: fort ki deewar ya sikka?",
+     "answer": "Fort wall",
+     "acceptable": [
+      "the wall",
+      "fort ki deewar",
+      "deewar"
+     ],
+     "hints": [
+      "Which way do BCE dates move as time goes forward?",
+      "On a BCE timeline, compare which date comes first.",
+      "The earlier BCE date belongs to the ___.",
+      "Fort wall: 480 BCE comes before 420 BCE."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "the fort wall",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch04-t01-rl-o2",
+     "skillId": "c7-sst-ch04-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A history display describes a settled territory named after the people living there, with villages and farmland. Is it describing a janapada or a coin?",
+     "prompt_hi": "History display mein ek base hue kshetra ka zikr hai, jiska naam wahan ke logon se juda tha aur jahan gaon aur kheti thi. Yeh janapada hai ya sikka?",
+     "answer": "Janapada",
+     "acceptable": [
+      "a janapada",
+      "janapad"
+     ],
+     "hints": [
+      "Is the description of a territory or an object?",
+      "Think about what a group of people called its settled land.",
+      "A settled territory of a people is a ___.",
+      "Janapada: it was a settled territory associated with its people."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "a janapada",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch04-t01-rl-h1",
+     "skillId": "c7-sst-ch04-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A school timeline marks a city founded in 510 BCE and a ruler's reign beginning in 350 BCE. How many years before the reign was the city founded?",
+     "prompt_hi": "School timeline par ek shehar ki sthapna 510 BCE aur ek raja ke shasan ki shuruaat 350 BCE likhi hai. Shasan shuru hone se kitne saal pehle shehar basa?",
+     "answer": "160 years",
+     "acceptable": [
+      "160",
+      "one hundred sixty years",
+      "ek sau saath saal"
+     ],
+     "hints": [
+      "Which event came first on the BCE timeline?",
+      "For two BCE dates, find the gap between the numbers.",
+      "The time gap is ___ − ___ years.",
+      "160 years: subtract 350 from 510."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "160 years",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch04-t01-rl-h2",
+     "skillId": "c7-sst-ch04-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "In State A, a raja makes major decisions. In State B, an assembly of leading members discusses them. Which state is closer to a gana-sangha: A or B?",
+     "prompt_hi": "State A mein bade faisle raja leta hai. State B mein pramukh sadasyon ki sabha un par charcha karti hai. Gana-sangha ke zyada kareeb kaunsa hai: A ya B?",
+     "answer": "State B",
+     "acceptable": [
+      "B",
+      "state B",
+      "B wala state"
+     ],
+     "hints": [
+      "Who takes part in decisions in each state?",
+      "Focus on the difference between one ruler and an assembly.",
+      "The state with assembly discussions is ___.",
+      "State B: gana-sanghas made decisions through assemblies."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "B",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch04-t01-rl-h3",
+     "skillId": "c7-sst-ch04-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "Excavators find many coins and craft workshops in an early Ganga-plains city. Why do these finds suggest that not everyone there grew their own food?",
+     "prompt_hi": "Ganga ke maidan ke ek purane shehar mein khudai se bahut se sikke aur karigaron ki workshops mili hain. Inse kyun lagta hai ki wahan har koi apna khana khud nahi ugata tha?",
+     "answer": "Some people worked as craftspeople and traded for food.",
+     "acceptable": [
+      "Craftspeople could exchange goods for food",
+      "Some residents made goods and bought food",
+      "Kuch log samaan banakar ya bechkar khana lete the"
+     ],
+     "hints": [
+      "What work might happen in the workshops?",
+      "Coins suggest people could exchange goods instead of producing everything themselves.",
+      "Some residents made goods and obtained food through ___.",
+      "Some made crafts and traded for food; coins support evidence of exchange."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Coins and workshops show specialised non-farming occupations and trade.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both convey trade/specialization implies not all farmed",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -2220,7 +2828,9 @@
      "verified": {
       "solverAnswer": "Fertile land, rivers, iron ore, elephants from forests (also able rulers)",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch05-t01-i02",
@@ -2495,6 +3105,163 @@
       "solverAnswer": "Ashoka's own claim/view; cross-check with other evidence",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch05-t01-rl-o1",
+     "skillId": "c7-sst-ch05-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A ruler in ancient Magadha could obtain iron from nearby regions. Which plan would help him expand his kingdom: make stronger farming tools and weapons, or build wooden boats only?",
+     "prompt_hi": "Prachin Magadha ke raja ko aas-paas se loha mil sakta tha. Rajya badhane mein kaunsi yojana madad karti: mazboot kheti ke auzaar aur hathiyaar banana, ya sirf lakdi ki naav banana?",
+     "answer": "Make stronger farming tools and weapons",
+     "acceptable": [
+      "stronger tools and weapons",
+      "mazboot auzaar aur hathiyaar"
+     ],
+     "hints": [
+      "How could this metal help both fields and soldiers?",
+      "Think about growing more food and equipping an army.",
+      "The useful plan helps farmers with ___ and soldiers with ___.",
+      "Make stronger farming tools and weapons; both supported expansion."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Make stronger farming tools and weapons",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch05-t01-rl-o2",
+     "skillId": "c7-sst-ch05-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum labels two Mauryan rulers: Bindusara ruled before Ashoka. Whose reign came earlier on a BCE timeline: Bindusara’s or Ashoka’s?",
+     "prompt_hi": "Museum mein do Maurya shasakon ke label hain: Bindusara ne Ashoka se pehle shasan kiya. BCE timeline par kiska shasan pehle aayega: Bindusara ka ya Ashoka ka?",
+     "answer": "Bindusara’s",
+     "acceptable": [
+      "Bindusara",
+      "Bindusara ka"
+     ],
+     "hints": [
+      "What does the label say about their order?",
+      "Place the earlier ruler first on the timeline.",
+      "The first reign belongs to ___.",
+      "Bindusara’s; the label says he ruled before Ashoka."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Bindusara’s",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch05-t01-rl-h1",
+     "skillId": "c7-sst-ch05-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A history game marks Chandragupta’s accession at 321 BCE and the Kalinga war at 261 BCE. How many years passed between these events?",
+     "prompt_hi": "History game mein Chandragupta ke gaddi par aane ka saal 321 BCE aur Kalinga yuddh ka saal 261 BCE hai. In dono ghatnaon ke beech kitne saal guzre?",
+     "answer": "60 years",
+     "acceptable": [
+      "60",
+      "sixty years",
+      "saath saal"
+     ],
+     "hints": [
+      "Which date comes earlier in BCE?",
+      "For elapsed years here, find the difference between the dates.",
+      "Elapsed years = ___ − ___.",
+      "60 years; subtract 261 from 321."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "60 years",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch05-t01-rl-h2",
+     "skillId": "c7-sst-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "A Mauryan official in a distant province sends reports to the capital. Why would appointing such officials help an emperor govern a large empire? Answer in one short phrase.",
+     "prompt_hi": "Door ke prant mein ek Maurya adhikari rajdhani ko report bhejta hai. Aise adhikari niyukt karne se samrat ko bade samrajya par shasan karne mein kyun madad milti? Ek chhote vakyansh mein batao.",
+     "answer": "They helped monitor and administer distant regions",
+     "acceptable": [
+      "to monitor distant provinces",
+      "door ke pranton par nazar rakhne aur prashasan chalane ke liye"
+     ],
+     "hints": [
+      "Can one ruler personally oversee every distant place?",
+      "Consider who carries out orders and reports local problems.",
+      "Officials help the ruler ___ distant regions.",
+      "They monitored and administered distant regions on the emperor’s behalf."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Enables control and communication across vast distances",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both indicate monitoring/admin control of distant areas",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch05-t01-rl-h3",
+     "skillId": "c7-sst-ch05-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "An Ashokan rock edict urges people to respect other religious groups. Why is this evidence for Ashoka’s dhamma rather than proof that everyone obeyed him? Give the key distinction.",
+     "prompt_hi": "Ashoka ka ek shilalekh logon se doosre dharmik samoohon ka samman karne ko kehta hai. Yeh Ashoka ke dhamma ka saboot hai, lekin sabke maanne ka saboot kyun nahi? Mukhya farq batao.",
+     "answer": "An edict records Ashoka’s message, not everyone’s behaviour",
+     "acceptable": [
+      "It shows what Ashoka urged, not what all people did",
+      "shilalekh Ashoka ka sandesh dikhata hai, sabka vyavahar nahi"
+     ],
+     "hints": [
+      "Whose words does the inscription preserve?",
+      "Separate a ruler’s instruction from people’s actions.",
+      "The edict tells us what was ___, not what everyone ___.",
+      "It records Ashoka’s message, not everyone’s behaviour."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Edict shows his policy, not universal obedience",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both distinguish edict as policy, not proof of obedience",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -2715,7 +3482,9 @@
      "verified": {
       "solverAnswer": "c. 185 BCE; Shungas",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch06-t01-i02",
@@ -2990,6 +3759,163 @@
       "solverAnswer": "Monks with merchants on trade routes; Kushana (Kanishka) patronage",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch06-t01-rl-o1",
+     "skillId": "c7-sst-ch06-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum timeline places a Shunga coin at 150 BCE and a Kushana coin at 100 CE. Which coin belongs earlier on the timeline?",
+     "prompt_hi": "Museum ki timeline par ek Shunga sikka 150 BCE ka hai aur ek Kushana sikka 100 CE ka. Timeline par kaunsa sikka pehle aayega?",
+     "answer": "Shunga coin",
+     "acceptable": [
+      "Shunga",
+      "Shunga sikka"
+     ],
+     "hints": [
+      "Which date falls before the start of CE?",
+      "BCE dates come before CE dates on a timeline.",
+      "The earlier coin is the ___ coin.",
+      "Shunga coin: 150 BCE comes before 100 CE."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Shunga coin",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch06-t01-rl-o2",
+     "skillId": "c7-sst-ch06-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "A school map labels the Deccan plateau and the far south of the peninsula. Where would you place the Satavahana kingdom: the Deccan plateau or the far south?",
+     "prompt_hi": "School map par Deccan plateau aur peninsula ka bilkul dakshini hissa dikhaya hai. Satavahana rajya kahan mark karoge: Deccan plateau ya bilkul dakshin?",
+     "answer": "Deccan plateau",
+     "acceptable": [
+      "Deccan",
+      "Dakhan ka pathar",
+      "Deccan plateau par"
+     ],
+     "hints": [
+      "Which region lay mainly between northern and southern kingdoms?",
+      "Locate the kingdom in peninsular India, not at its southern tip.",
+      "Mark the Satavahanas on the ___ area.",
+      "Deccan plateau: it was the Satavahanas’ main region."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Deccan plateau",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch06-t01-rl-h1",
+     "skillId": "c7-sst-ch06-t01-s2",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "A merchant sailing from a south Indian port to Rome plans to use the seasonal monsoon winds. Why might these winds help trade: they allow a more direct sea crossing, or they make ships carry more cargo?",
+     "prompt_hi": "Dakshin Bharat ke port se Rome jaane wala vyapari mausami monsoon hawaon ka istemal karega. Trade mein ye kaise madad karengi: samundar ka zyada seedha raasta milega, ya jahaz zyada samaan utha payega?",
+     "answer": "They allow a more direct sea crossing",
+     "acceptable": [
+      "More direct sea crossing",
+      "Seedha samundari raasta",
+      "A more direct route"
+     ],
+     "hints": [
+      "What could predictable winds change about a ship’s route?",
+      "Think about direction of travel, not the ship’s capacity.",
+      "The winds help by making the route more ___.",
+      "A more direct sea crossing: seasonal winds helped sailors plan the route."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "They allow a more direct sea crossing",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch06-t01-rl-h2",
+     "skillId": "c7-sst-ch06-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Roman coins are found at a south Indian port, but no Roman government inscription is found there. Which claim do the coins support better: Romans traded there, or Romans ruled there?",
+     "prompt_hi": "Dakshin Bharat ke ek port par Roman sikke mile, lekin Roman sarkar ka koi inscription nahi mila. Sikke kis baat ko behtar support karte hain: Romans ne wahan trade kiya, ya Romans ne wahan raaj kiya?",
+     "answer": "Romans traded there",
+     "acceptable": [
+      "Trade with Romans",
+      "Roman vyapar hua",
+      "Romans ne wahan trade kiya"
+     ],
+     "hints": [
+      "Can a coin travel without its ruler taking control?",
+      "Objects can arrive through exchange; rule needs stronger evidence.",
+      "The coins better support the claim that Romans ___.",
+      "Romans traded there: coins alone do not prove political rule."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Romans traded there",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch06-t01-rl-h3",
+     "skillId": "c7-sst-ch06-t01-s4",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "An exhibition pairs poems about Tamil rulers, battles and everyday life with Buddha sculptures showing features of Greek and Indian art. Name the literary tradition and the sculpture style, in that order.",
+     "prompt_hi": "Ek exhibition mein Tamil rulers, ladaiyon aur rozmarra ki zindagi par kavitaayein hain; saath mein Greek aur Indian art ki features wali Buddha sculptures hain. Pehle literary tradition, phir sculpture style ka naam batao.",
+     "answer": "Sangam literature; Gandhara art",
+     "acceptable": [
+      "Sangam poems; Gandhara style",
+      "Sangam; Gandhara",
+      "Sangam sahitya; Gandhara kala"
+     ],
+     "hints": [
+      "What names identify these two kinds of cultural evidence?",
+      "Match the Tamil poems and mixed-influence sculptures separately.",
+      "The poems are ___ literature; the sculptures show ___ art.",
+      "Sangam literature; Gandhara art: each matches the description given."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Sangam literature and Gandhara style",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both name Sangam literature and Gandhara style",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -3210,7 +4136,9 @@
      "verified": {
       "solverAnswer": "Chandragupta I, c. 320 CE",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch07-t01-i02",
@@ -3526,6 +4454,164 @@
       "agrees": true,
       "note": "Fixed: Ajanta's later paintings were made under the Vakatakas (Gupta contemporaries), not the Guptas; qualified the example."
      }
+    },
+    {
+     "id": "c7-sst-ch07-t01-rl-o1",
+     "skillId": "c7-sst-ch07-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum label says a coin was issued by Samudragupta. Another coin is labelled Chandragupta I. Which ruler’s coin belongs earlier on a CE timeline: Samudragupta’s or Chandragupta I’s?",
+     "prompt_hi": "Museum mein ek sikka Samudragupta ka hai aur doosra Chandragupta I ka. CE timeline par kiska sikka pehle aayega: Samudragupta ka ya Chandragupta I ka?",
+     "answer": "Chandragupta I’s",
+     "acceptable": [
+      "Chandragupta I",
+      "Chandragupta the First",
+      "Chandragupta pehle ka"
+     ],
+     "hints": [
+      "Which of these rulers came to power first?",
+      "Think of the order in which Gupta rulers succeeded one another.",
+      "The earlier ruler was Chandragupta ___.",
+      "Chandragupta I’s coin comes earlier; he ruled before Samudragupta."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Chandragupta I’s",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch07-t01-rl-o2",
+     "skillId": "c7-sst-ch07-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "A news report shows an ancient iron pillar in Delhi that has resisted heavy rusting for centuries. Does it mainly show Gupta-period skill in metallurgy or astronomy?",
+     "prompt_hi": "News report mein Delhi ka ek pracheen lohe ka stambh hai jo sadiyon se zyada zang se bacha hai. Yeh Gupta kaal ki kis kala ko dikhata hai: metallurgy ya astronomy?",
+     "answer": "Metallurgy",
+     "acceptable": [
+      "metalworking",
+      "dhaatu vigyan",
+      "lohe par kaam karne ki kala"
+     ],
+     "hints": [
+      "What material is the pillar made from?",
+      "Focus on the skill needed to make durable objects from that material.",
+      "Making such a pillar shows skill in ___.",
+      "Metallurgy; the pillar shows advanced knowledge of working with iron."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "metallurgy",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch07-t01-rl-h1",
+     "skillId": "c7-sst-ch07-t01-s2",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "At sunset, a student says, “The stars will cross the sky tonight because they all move around Earth.” According to Aryabhata’s explanation, which movement chiefly makes the stars appear to cross the sky: Earth’s rotation or Earth’s revolution around the Sun?",
+     "prompt_hi": "Sunset par ek student kehta hai, “Taare raat mein aasmaan paar karte hain kyunki ve Dharti ke chakkar lagate hain.” Aryabhata ke mutabik yeh dikhne ka mukhya kaaran kya hai: Dharti ka ghoomna ya Suraj ke chakkar lagana?",
+     "answer": "Earth’s rotation",
+     "acceptable": [
+      "rotation of Earth",
+      "Dharti ka apni dhuri par ghoomna",
+      "Earth spinning on its axis"
+     ],
+     "hints": [
+      "Does the apparent movement require every star to circle Earth?",
+      "Consider a movement of the observer’s own planet.",
+      "The apparent crossing is chiefly caused by Earth’s ___.",
+      "Earth’s rotation; a turning Earth makes distant stars appear to move."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Earth’s rotation",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch07-t01-rl-h2",
+     "skillId": "c7-sst-ch07-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "A school exhibition has two sections: Sanskrit plays and Buddhist learning centres. Where should Kalidasa’s works go: Sanskrit plays or Buddhist learning centres?",
+     "prompt_hi": "School exhibition mein do sections hain: Sanskrit natak aur Bauddh shiksha kendra. Kalidasa ki rachnayein kahan jayengi: Sanskrit natak mein ya Bauddh shiksha kendra mein?",
+     "answer": "Sanskrit plays",
+     "acceptable": [
+      "Sanskrit drama",
+      "Sanskrit natak",
+      "plays"
+     ],
+     "hints": [
+      "Was Kalidasa known for writing or running a learning centre?",
+      "Match the person’s creative work to the exhibition section.",
+      "Kalidasa’s works belong with ___.",
+      "Sanskrit plays; Kalidasa was a Sanskrit poet and playwright."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Sanskrit plays",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch07-t01-rl-h3",
+     "skillId": "c7-sst-ch07-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A Gupta court record praises wealthy patrons and outstanding art. A farmer’s account mentions heavy taxes. Why is the court record alone insufficient to claim this was a “golden age” for everyone?",
+     "prompt_hi": "Gupta darbar ka record ameer sanrakshakon aur behtareen kala ki tareef karta hai. Ek kisan ka vivaran bhaari karon ka zikr karta hai. Sirf darbar ke record se ise sabke liye ‘golden age’ kyun nahi keh sakte?",
+     "answer": "It shows the court’s viewpoint, not everyone’s experience.",
+     "acceptable": [
+      "Court records do not show how all people lived",
+      "Kisanon jaise logon ka anubhav alag ho sakta tha",
+      "Elite achievements do not prove everyone prospered"
+     ],
+     "hints": [
+      "Whose experiences does a court record mainly describe?",
+      "Compare the lives of patrons with those paying taxes.",
+      "The record cannot speak for ___ people’s experiences.",
+      "It shows the court’s viewpoint, not everyone’s experience; farmers could face hardship."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "The court record reflects only elite life, not common people’s hardships.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both note elite bias ignores common hardships",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -3744,7 +4830,9 @@
      "verified": {
       "solverAnswer": "Rivers, mountains, sacred groves (lakes, caves, trees)",
       "agrees": true
-     }
+     },
+     "ge": 6.25,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch08-t01-i02",
@@ -4038,6 +5126,102 @@
       "agrees": true,
       "note": "Duplicates diagnostic m3 verbatim; harmless but redundant."
      }
+    },
+    {
+     "id": "c7-sst-ch08-t01-rl-o2",
+     "skillId": "c7-sst-ch08-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A school map marks Sarnath, near Varanasi in Uttar Pradesh, where the Buddha gave his first teaching. Which tradition would a pilgrim chiefly associate with this site: Buddhism or Jainism?",
+     "prompt_hi": "School map par Uttar Pradesh mein Varanasi ke paas Sarnath dikhaya hai, jahaan Buddha ne pehla updesh diya tha. Yatri is jagah ko mukhya roop se kis parampara se jodega: Buddhism ya Jainism?",
+     "answer": "Buddhism",
+     "acceptable": [
+      "Buddhist tradition",
+      "Bauddh dharm",
+      "Bauddh parampara"
+     ],
+     "hints": [
+      "Whose first teaching happened there?",
+      "Connect the named teacher with a tradition.",
+      "This teaching belongs to the ___ tradition.",
+      "Buddhism: Sarnath is associated with the Buddha’s first teaching."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Buddhism",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch08-t01-rl-h1",
+     "skillId": "c7-sst-ch08-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A travel club plans to visit the Golden Temple in Amritsar and the Basilica of Bom Jesus in Goa. Which pairing is correct: Sikhism–Christianity or Christianity–Sikhism, in that order?",
+     "prompt_hi": "Travel club Amritsar ke Golden Temple aur Goa ki Basilica of Bom Jesus jaayega. Isi kram mein kaunsi jodi sahi hai: Sikhism–Christianity ya Christianity–Sikhism?",
+     "answer": "Sikhism–Christianity",
+     "acceptable": [
+      "Sikhism and Christianity",
+      "Sikh dharm aur Christianity",
+      "Sikh–Christian"
+     ],
+     "hints": [
+      "Which community worships at the Golden Temple?",
+      "Identify each site before choosing the ordered pair.",
+      "Golden Temple: ___; Basilica: ___.",
+      "Sikhism–Christianity: the Golden Temple is a gurdwara; the Basilica is a church."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Sikhism–Christianity",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch08-t01-rl-h2",
+     "skillId": "c7-sst-ch08-t01-s3",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "Pilgrims from Tamil Nadu and Rajasthan meet at a pilgrimage site, share meals and stories, then return home. How could such journeys connect distant regions? Answer in one short phrase.",
+     "prompt_hi": "Tamil Nadu aur Rajasthan ke yatri ek teerth-sthal par milte hain, saath khaate aur kahaaniyaan baantte hain, phir ghar lautte hain. Aisi yatraayein door ke kshetron ko kaise jod sakti hain? Ek chhote phrase mein batao.",
+     "answer": "By exchanging ideas and customs",
+     "acceptable": [
+      "sharing ideas and customs",
+      "sharing stories and traditions",
+      "vichaar aur reeti-rivaaj baantkar"
+     ],
+     "hints": [
+      "What might travellers take home besides souvenirs?",
+      "Think about what meeting people from elsewhere lets them share.",
+      "Regions connect when pilgrims exchange ___ and ___.",
+      "By exchanging ideas and customs: pilgrims carry what they learn home."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "By fostering shared culture and exchange of ideas",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both describe idea/custom exchange linking regions",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -4258,7 +5442,9 @@
      "verified": {
       "solverAnswer": "Make rules, keep order/defence, settle disputes, provide services",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch09-t01-i02",
@@ -4528,6 +5714,130 @@
       "solverAnswer": "Constitution protects fundamental rights; courts strike down violations",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch09-t01-rl-o2",
+     "skillId": "c7-sst-ch09-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "In a country, the queen is head of state, but an elected parliament makes laws and limits her powers. Is this an absolute monarchy or a constitutional monarchy?",
+     "prompt_hi": "Ek desh mein rani head of state hain, lekin chunī hui parliament kanoon banati hai aur unki powers limit karti hai. Yeh absolute monarchy hai ya constitutional monarchy?",
+     "answer": "Constitutional monarchy",
+     "acceptable": [
+      "a constitutional monarchy",
+      "samvaidhanik rajtantra"
+     ],
+     "hints": [
+      "Can the queen make laws on her own?",
+      "Focus on whether the monarch’s powers have limits.",
+      "A monarchy with limited royal powers is called a ___ monarchy.",
+      "Constitutional monarchy; elected representatives make laws and limit royal power."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Constitutional monarchy.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch09-t01-rl-h1",
+     "skillId": "c7-sst-ch09-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A country has elections, but only five wealthy families may stand as candidates or approve new laws. Which form best describes who holds power: democracy, oligarchy or theocracy?",
+     "prompt_hi": "Ek desh mein elections hote hain, lekin sirf paanch ameer parivaar candidates ban sakte hain ya naye kanoon approve kar sakte hain. Power kiske paas hai—democracy, oligarchy ya theocracy?",
+     "answer": "Oligarchy",
+     "acceptable": [
+      "an oligarchy",
+      "alpatantra"
+     ],
+     "hints": [
+      "Who is allowed to become a ruler?",
+      "Look past the elections to the small group controlling decisions.",
+      "Rule by a small, restricted group is called ___.",
+      "Oligarchy; power remains with a few families despite elections."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Oligarchy.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch09-t01-rl-h2",
+     "skillId": "c7-sst-ch09-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Two cities elect mayors. In City A, an independent council can investigate and remove its mayor. In City B, the mayor has abolished the council. In which city can the mayor still be held accountable between elections?",
+     "prompt_hi": "Do shehron mein mayor chune jaate hain. City A mein independent council mayor ki jaanch karke unhe hata sakti hai. City B mein mayor ne council hata di. Elections ke beech kis city ka mayor jawabdeh reh sakta hai?",
+     "answer": "City A",
+     "acceptable": [
+      "A",
+      "City A, because its council can investigate and remove the mayor"
+     ],
+     "hints": [
+      "What happens if either mayor misuses power?",
+      "Compare who can question or remove the mayor after an election.",
+      "The city with an independent council is City ___.",
+      "City A; its council can investigate and remove the mayor."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "City A.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch09-t01-rl-h3",
+     "skillId": "c7-sst-ch09-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A school council votes to cancel only Class 7B’s library period. Class 7B was not allowed to speak before the vote. Why is the vote alone not enough to make this a democratic decision?",
+     "prompt_hi": "School council vote karke sirf Class 7B ka library period cancel karti hai. Vote se pehle 7B ko apni baat kehne nahi di gayi. Sirf vote is faisle ko democratic kyun nahi banata?",
+     "answer": "Those affected must have a chance to be heard, not just be outvoted",
+     "acceptable": [
+      "Class 7B should be heard before the decision",
+      "Voting alone is not enough; affected students need a voice",
+      "jinka period cancel ho raha hai, unki baat bhi suni jaani chahiye"
+     ],
+     "hints": [
+      "Who loses something because of this decision?",
+      "A fair vote also needs space for affected people’s views.",
+      "Before voting, the council should let ___ speak.",
+      "Class 7B must be heard; voting alone does not ensure fairness."
+     ],
+     "ge": 7,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Because participation and voice are needed for democracy, not just voting.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both stress voice/participation beyond mere voting",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -4744,7 +6054,9 @@
      "verified": {
       "solverAnswer": "Rulebook that sets up and limits government, lists rights and duties",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch10-t01-i02",
@@ -5036,6 +6348,165 @@
       "solverAnswer": "So it reflects and protects all of India's diverse people",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch10-t01-rl-o1",
+     "skillId": "c7-sst-ch10-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A state government says it can ban any newspaper that criticises it. Which should limit this power: the Constitution or the government's own announcement?",
+     "prompt_hi": "Ek state government kehti hai ki uski aalochana karne wala koi bhi newspaper ban kar sakti hai. Is power par seema kiski honi chahiye: Samvidhan ki ya government ki apni announcement ki?",
+     "answer": "The Constitution",
+     "acceptable": [
+      "Constitution",
+      "Samvidhan",
+      "Bharat ka Samvidhan"
+     ],
+     "hints": [
+      "Can a government set the only limit on its own power?",
+      "Think of rules that even a government must follow.",
+      "The higher set of rules is the ___.",
+      "The Constitution: it sets limits on government power."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "The Constitution.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch10-t01-rl-o2",
+     "skillId": "c7-sst-ch10-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "For a school timeline, Meera has two labels: ‘Constitution adopted’ and ‘Constitution came into force’. Which label belongs on 26 January 1950?",
+     "prompt_hi": "School timeline ke liye Meera ke paas do labels hain: ‘Samvidhan apnaya gaya’ aur ‘Samvidhan lagu hua’. 26 January 1950 par kaunsa label lagega?",
+     "answer": "Constitution came into force",
+     "acceptable": [
+      "came into force",
+      "became effective",
+      "Samvidhan lagu hua",
+      "lagu hua"
+     ],
+     "hints": [
+      "Does this date mark approval or the start of operation?",
+      "Republic Day marks when the new constitutional system began operating.",
+      "The timeline label is ‘Constitution ___’.",
+      "Constitution came into force: the new system began operating that day."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "recall",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Constitution came into force.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch10-t01-rl-h1",
+     "skillId": "c7-sst-ch10-t01-s1",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A minister claims that winning an election lets the government ignore citizens’ rights until the next election. Why does a constitution prevent this? Answer with one key idea.",
+     "prompt_hi": "Ek minister kehta hai ki election jeetne ke baad government agle election tak nagrikon ke adhikaar nazarandaaz kar sakti hai. Samvidhan aisa kyun rokta hai? Ek mukhya baat batao.",
+     "answer": "It limits government power even between elections and protects citizens’ rights.",
+     "acceptable": [
+      "Government must follow constitutional limits and respect rights",
+      "Samvidhan sarkaar ki power seemit karta hai aur adhikaar bachata hai"
+     ],
+     "hints": [
+      "Does winning an election remove every limit on power?",
+      "Think about rules that continue between elections.",
+      "Even an elected government must ___ citizens’ rights.",
+      "It limits government power and protects rights, including between elections."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "It sets permanent limits to protect rights regardless of elections.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Answers convey same key idea",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch10-t01-rl-h2",
+     "skillId": "c7-sst-ch10-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "At a school event, students of every religion may use the same hall, but one group is told it cannot hold its prayer meeting there. Which Preamble ideal is most directly challenged: secularism or sovereignty?",
+     "prompt_hi": "School event mein har dharm ke students hall use kar sakte hain, lekin ek group ko wahaan prayer meeting karne se roka jaata hai. Preamble ka kaunsa ideal seedhe taur par toot raha hai: secularism ya sovereignty?",
+     "answer": "Secularism",
+     "acceptable": [
+      "secular",
+      "dharmnirpekshta",
+      "dharmanirpekshta"
+     ],
+     "hints": [
+      "Is the issue about religion or independence from other countries?",
+      "Look for equal treatment of different religious groups.",
+      "The relevant Preamble ideal is ___.",
+      "Secularism: the group is treated differently because of religion."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Secularism.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch10-t01-rl-h3",
+     "skillId": "c7-sst-ch10-t01-s4",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "Parliament passes a law, and a citizen argues it violates a Fundamental Right. Which organ decides whether the law follows the Constitution: Legislature, Executive or Judiciary?",
+     "prompt_hi": "Sansad ek kaanoon paas karti hai, aur ek nagrik kehta hai ki yeh Fundamental Right todta hai. Kaunsa ang tay karega ki kaanoon Samvidhan ke anusaar hai: Legislature, Executive ya Judiciary?",
+     "answer": "Judiciary",
+     "acceptable": [
+      "the judiciary",
+      "courts",
+      "nyaypalika",
+      "adaalat"
+     ],
+     "hints": [
+      "Who settles a dispute about whether a law is valid?",
+      "Making a law and checking it are different jobs.",
+      "The organ that checks the law is the ___.",
+      "Judiciary: courts can examine whether a law follows the Constitution."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Judiciary.",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -5255,7 +6726,9 @@
      "verified": {
       "solverAnswer": "Exchanging goods/services directly without money",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch11-t01-i02",
@@ -5525,6 +6998,164 @@
       "solverAnswer": "Open: barter problems -> three functions -> trust",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch11-t01-rl-o1",
+     "skillId": "c7-sst-ch11-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "At a school fair, Aditi offers a cricket bat for a badminton racket. Kabir has a racket but wants a football, not a bat. Which barter problem stops their exchange: double coincidence of wants or difficulty storing goods?",
+     "prompt_hi": "School fair mein Aditi cricket bat ke badle badminton racket chahti hai. Kabir ke paas racket hai, par use bat nahi, football chahiye. Exchange ko kaunsi barter problem rok rahi hai: double coincidence of wants ya saamaan store karne ki dikkat?",
+     "answer": "Double coincidence of wants",
+     "acceptable": [
+      "double coincidence",
+      "dono ko ek-doosre ka saamaan nahi chahiye"
+     ],
+     "hints": [
+      "Do both students want what the other offers?",
+      "For direct barter, each person must want the other's item.",
+      "Their wants do not match; this problem is called ___.",
+      "Double coincidence of wants: Kabir does not want Aditi's bat."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "double coincidence of wants",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch11-t01-rl-o2",
+     "skillId": "c7-sst-ch11-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum label says people once used grain for payments; later they used stamped silver pieces. Which form of money came later: commodity money or metal coins?",
+     "prompt_hi": "Museum ke label par likha hai ki pehle log payment ke liye anaaj, aur baad mein mohar lage chandi ke tukde istemal karte the. Baad mein kaunsa money aaya: commodity money ya metal coins?",
+     "answer": "Metal coins",
+     "acceptable": [
+      "coins",
+      "sikke",
+      "dhaatu ke sikke"
+     ],
+     "hints": [
+      "Which payment item is described as coming later?",
+      "Grain is a useful good; stamped silver is a made payment object.",
+      "Stamped silver pieces are a form of ___.",
+      "Metal coins came later; the stamped silver pieces are coins."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "metal coins",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch11-t01-rl-h1",
+     "skillId": "c7-sst-ch11-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "Meera's grandmother paid with paper notes. Meera pays by UPI, which transfers money between bank accounts. Which came later in this sequence: bank money or digital payments?",
+     "prompt_hi": "Meera ki dadi paper notes se payment karti thi. Meera UPI se pay karti hai, jisme bank accounts ke beech paisa transfer hota hai. Is sequence mein baad mein kya aaya: bank money ya digital payments?",
+     "answer": "Digital payments",
+     "acceptable": [
+      "digital payment",
+      "UPI payments",
+      "UPI",
+      "digital bhugtan"
+     ],
+     "hints": [
+      "Which option describes the way Meera pays?",
+      "Separate the money held in an account from the payment method.",
+      "The later payment method in this sequence is ___.",
+      "Digital payments came later; UPI transfers bank money electronically."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "digital payments",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch11-t01-rl-h2",
+     "skillId": "c7-sst-ch11-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Two shops price the same headphones at ₹800 and ₹950. Rohan uses these prices to compare them before buying. Which function of money helps him compare: medium of exchange, measure of value, or store of value?",
+     "prompt_hi": "Do shops mein wahi headphones ₹800 aur ₹950 ke hain. Rohan kharidne se pehle prices compare karta hai. Money ka kaunsa function comparison mein madad karta hai: medium of exchange, measure of value ya store of value?",
+     "answer": "Measure of value",
+     "acceptable": [
+      "common measure of value",
+      "value measure",
+      "moolya maapne ka saadhan"
+     ],
+     "hints": [
+      "Is Rohan paying now, saving, or comparing prices?",
+      "One unit lets different sellers' prices be compared.",
+      "When prices help compare worth, money acts as a ___.",
+      "Measure of value: rupee prices make the headphones' costs comparable."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "measure of value",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch11-t01-rl-h3",
+     "skillId": "c7-sst-ch11-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A message claiming to be from a bank asks Sana for her UPI PIN to receive a refund. Should she share it or refuse? Give the key reason.",
+     "prompt_hi": "Bank se hone ka daava karne wala message Sana se refund paane ke liye UPI PIN maangta hai. Kya use PIN share karna chahiye ya mana karna chahiye? Mukhya wajah batao.",
+     "answer": "Refuse; a UPI PIN authorises payments, not refunds.",
+     "acceptable": [
+      "refuse, because the PIN is used to send money",
+      "mana kare; PIN se payment approve hoti hai",
+      "do not share the PIN; receiving a refund needs no UPI PIN"
+     ],
+     "hints": [
+      "What could someone do if they knew her PIN?",
+      "Think about when an app asks for a PIN.",
+      "She should ___ because the PIN authorises ___.",
+      "Refuse: a UPI PIN authorises payments, not incoming refunds."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Refuse. Banks never ask for UPI PIN; sharing it risks fraud.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both advise refuse for same core reason",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -5744,7 +7375,9 @@
      "verified": {
       "solverAnswer": "Weekly haat, neighbourhood shop, mandi, mall, online",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch12-t01-i02",
@@ -6037,6 +7670,166 @@
       "agrees": true,
       "note": "Duplicates diagnostic m2 verbatim; harmless but redundant."
      }
+    },
+    {
+     "id": "c7-sst-ch12-t01-rl-o1",
+     "skillId": "c7-sst-ch12-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A school needs 200 identical notebooks. A seller offers large cartons to shopkeepers, who then sell notebooks one by one. Is this seller operating in a wholesale market or a neighbourhood retail shop?",
+     "prompt_hi": "School ko 200 ek jaise notebooks chahiye. Ek seller dukandaaron ko bade cartons bechta hai; dukandaar notebooks ek-ek karke bechte hain. Seller wholesale market mein hai ya neighbourhood retail shop mein?",
+     "answer": "Wholesale market",
+     "acceptable": [
+      "wholesale",
+      "thok bazaar",
+      "thok market"
+     ],
+     "hints": [
+      "Who usually buys from this seller?",
+      "Compare selling in bulk with selling individual items to users.",
+      "Cartons sold to shopkeepers suggest a ___ market.",
+      "Wholesale market: it sells in bulk to shopkeepers."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "wholesale market",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch12-t01-rl-o2",
+     "skillId": "c7-sst-ch12-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "Meera wants to compare vegetable prices from several sellers who set up stalls in her area every Tuesday. Which fits best: a weekly haat, a mall, or a wholesale mandi?",
+     "prompt_hi": "Meera apne area mein har Tuesday lagne wale kai sellers ke stalls par sabziyon ke daam compare karna chahti hai. Kaunsa sahi hai: weekly haat, mall, ya wholesale mandi?",
+     "answer": "Weekly haat",
+     "acceptable": [
+      "haat",
+      "saptahik bazaar",
+      "weekly market"
+     ],
+     "hints": [
+      "How often do these stalls appear?",
+      "Focus on the market's schedule and its temporary stalls.",
+      "Stalls set up on one fixed day suggest a ___ market.",
+      "Weekly haat: its stalls gather on a particular day each week."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "a weekly haat",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch12-t01-rl-h1",
+     "skillId": "c7-sst-ch12-t01-s2",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "A rice farmer sells sacks to a wholesaler. A grocery shop buys sacks from the wholesaler and sells 1 kg packets to families. In this chain, who is the retailer?",
+     "prompt_hi": "Ek rice farmer wholesaler ko boriyan bechta hai. Grocery shop wholesaler se boriyan lekar families ko 1 kg ke packets bechti hai. Is chain mein retailer kaun hai?",
+     "answer": "The grocery shop",
+     "acceptable": [
+      "grocery shop",
+      "shop",
+      "kirana shop",
+      "kirana dukaan"
+     ],
+     "hints": [
+      "Who sells directly to the families?",
+      "A retailer sells goods to the final consumer.",
+      "In this chain, the retailer is the ___.",
+      "The grocery shop: it sells packets directly to families."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "the grocery shop",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch12-t01-rl-h2",
+     "skillId": "c7-sst-ch12-t01-s3",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "Two cricket matches raise demand for team jerseys. Shops have the same stock as last week and cannot restock yet. Compared with last week, are jersey prices likely to rise, fall, or stay the same?",
+     "prompt_hi": "Do cricket matches se team jerseys ki demand badh gayi. Shops ke paas pichhle hafte jitna hi stock hai aur abhi naya stock nahi aa sakta. Pichhle hafte ke comparison mein prices badhenge, girenge, ya same rahenge?",
+     "answer": "Rise",
+     "acceptable": [
+      "increase",
+      "go up",
+      "badhenge",
+      "upar jayenge"
+     ],
+     "hints": [
+      "What changed: the number of buyers or the stock?",
+      "More buyers are competing for the same limited stock.",
+      "With demand higher and supply unchanged, prices tend to ___.",
+      "Rise: more buyers want jerseys, but available stock has not increased."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "rise",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch12-t01-rl-h3",
+     "skillId": "c7-sst-ch12-t01-s4",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "An online order arrives with a damaged charger. Its box shows MRP ₹499; the seller charged ₹499 but sent no bill. For requesting a replacement, which matters more as proof of purchase: the MRP label or an order receipt?",
+     "prompt_hi": "Online mangaya charger damaged aaya. Box par MRP ₹499 hai; seller ne ₹499 liye, par bill nahi bheja. Replacement maangne ke liye purchase proof ke taur par kya zyada useful hai: MRP label ya order receipt?",
+     "answer": "An order receipt",
+     "acceptable": [
+      "order receipt",
+      "receipt",
+      "purchase receipt",
+      "order confirmation",
+      "bill",
+      "invoice"
+     ],
+     "hints": [
+      "Which item connects this purchase to the seller?",
+      "An MRP label states a price, not who bought the item.",
+      "To show that you bought it, use the ___.",
+      "An order receipt: it records the purchase and helps support a replacement request."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "an order receipt",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -6253,7 +8046,9 @@
      "verified": {
       "solverAnswer": "Mehrgarh, c. 7000 BCE, wheat and barley",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch13-t01-i02",
@@ -6545,6 +8340,129 @@
       "solverAnswer": "Open: Mehrgarh -> Harappa -> irrigation -> Green Revolution -> problem/solution",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch13-t01-rl-o1",
+     "skillId": "c7-sst-ch13-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A school exhibition has two cards: ‘Farmers grew crops at Mehrgarh’ and ‘Farmers grew cotton in Harappan settlements’. Which card belongs earlier on the timeline?",
+     "prompt_hi": "School exhibition mein do cards hain: ‘Mehrgarh mein kheti hoti thi’ aur ‘Harappan bastiyon mein kapaas ugti thi’. Timeline par kaunsa card pehle aayega?",
+     "answer": "Farmers grew crops at Mehrgarh",
+     "acceptable": [
+      "Mehrgarh",
+      "the Mehrgarh card",
+      "Mehrgarh wala card"
+     ],
+     "hints": [
+      "Which settlement marks an earlier stage of farming?",
+      "Place the two farming periods in historical order.",
+      "The earlier card is about ___.",
+      "Mehrgarh comes first; farming there predates Harappan settlements."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Farmers grew crops at Mehrgarh",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch13-t01-rl-o2",
+     "skillId": "c7-sst-ch13-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A Pune farm sows maize in June, when monsoon rains begin. Is this a kharif, rabi or zaid crop?",
+     "prompt_hi": "Pune ke ek khet mein June mein, monsoon shuru hote hi, makka boya jaata hai. Yeh kharif, rabi ya zaid fasal hai?",
+     "answer": "Kharif",
+     "acceptable": [
+      "kharif crop",
+      "kharif fasal"
+     ],
+     "hints": [
+      "Which crop season begins with the monsoon?",
+      "Match the sowing time to rainfall, not harvest time.",
+      "Monsoon-time sowing places it in the ___ season.",
+      "Kharif; these crops are sown around the start of the monsoon."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "kharif",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch13-t01-rl-h1",
+     "skillId": "c7-sst-ch13-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A school garden in Jaipur has two empty plots. The caretaker can sow one crop in November and another in April. Which pairing fits the seasons: wheat then watermelon, or watermelon then wheat?",
+     "prompt_hi": "Jaipur ke school garden mein do khaali plots hain. Caretaker ek fasal November mein aur doosri April mein bo sakta hai. Seasons ke hisaab se kya sahi hai: pehle gehun phir tarbooz, ya pehle tarbooz phir gehun?",
+     "answer": "Wheat then watermelon",
+     "acceptable": [
+      "gehun phir tarbooz",
+      "wheat in November and watermelon in April"
+     ],
+     "hints": [
+      "Which month falls in the cool growing season?",
+      "The summer crop follows the winter crop.",
+      "November: ___; April: ___.",
+      "Wheat then watermelon; wheat is rabi, while watermelon grows in zaid."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "wheat then watermelon",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch13-t01-rl-h3",
+     "skillId": "c7-sst-ch13-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A village’s wells are falling because farmers pump groundwater for water-intensive crops every year. Why could switching some fields to millets help: millets need less water, or millets need more fertiliser?",
+     "prompt_hi": "Ek gaon ke kuon ka paani neeche ja raha hai kyunki kisaan har saal zyada paani maangne wali faslon ke liye groundwater pump karte hain. Kuch kheton mein millets ugane se kyun madad milegi: millets ko kam paani chahiye, ya zyada fertiliser?",
+     "answer": "Millets need less water",
+     "acceptable": [
+      "less water",
+      "millets use less water",
+      "millets ko kam paani chahiye",
+      "kam paani"
+     ],
+     "hints": [
+      "Which option would reduce demand on the wells?",
+      "Think about the crop’s water requirement.",
+      "Switching crops helps because millets need ___ water.",
+      "Millets need less water, reducing the need to pump groundwater."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "millets need less water",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -6764,7 +8682,9 @@
       "solverAnswer": "Pakistan, Afghanistan, China, Nepal, Bhutan, Bangladesh, Myanmar",
       "agrees": true,
       "note": "Afghanistan listed as a land neighbour reflects India's official/NCERT position (via PoK/Gilgit-Baltistan); kept as textbook-aligned."
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch14-t01-i02",
@@ -7056,6 +8976,104 @@
       "solverAnswer": "Open: land, river, culture example each",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch14-t01-rl-h1",
+     "skillId": "c7-sst-ch14-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "The Ganga enters Bangladesh, where its main channel is called the Padma. After joining other rivers, its waters reach which sea: the Arabian Sea or the Bay of Bengal?",
+     "prompt_hi": "Ganga Bangladesh mein jaati hai, jahan uski main dhara Padma kehlati hai. Doosri nadiyon se milne ke baad iska paani kahan pahunchta hai: Arabian Sea ya Bay of Bengal?",
+     "answer": "Bay of Bengal",
+     "acceptable": [
+      "the Bay of Bengal",
+      "Bengal ki Khadi",
+      "बंगाल की खाड़ी"
+     ],
+     "hints": [
+      "On which side of India is Bangladesh's coast?",
+      "Follow the river towards Bangladesh's coastline.",
+      "The waters reach the ___ beside Bangladesh.",
+      "Bay of Bengal: the joined rivers flow towards Bangladesh's coast."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "the Bay of Bengal",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch14-t01-rl-h2",
+     "skillId": "c7-sst-ch14-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "A Chennai student and a student from Jaffna in Sri Lanka both speak Tamil at home. Is this a shared cultural link or a shared land border?",
+     "prompt_hi": "Chennai aur Sri Lanka ke Jaffna ke students dono ghar par Tamil bolte hain. Yeh shared cultural link hai ya shared land border?",
+     "answer": "Shared cultural link",
+     "acceptable": [
+      "cultural link",
+      "shared culture",
+      "saanskritik sambandh",
+      "सांस्कृतिक संबंध"
+     ],
+     "hints": [
+      "What do the two students have in common?",
+      "Language can connect people across countries.",
+      "Speaking Tamil in both places shows a shared ___.",
+      "Shared cultural link: people in both places speak Tamil."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "a shared cultural link",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch14-t01-rl-h3",
+     "skillId": "c7-sst-ch14-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A river rises in Nepal and flows through villages in India. After very heavy rain upstream, why should Nepal quickly share river-level warnings with India? Answer with the key benefit.",
+     "prompt_hi": "Ek nadi Nepal se nikal kar Bharat ke gaonon se guzarti hai. Upar bahut tez baarish ke baad Nepal ko Bharat ke saath river-level warning jaldi kyun share karni chahiye? Mukhya fayda batao.",
+     "answer": "So downstream villages can prepare for possible floods.",
+     "acceptable": [
+      "to warn villages about floods",
+      "so people can prepare for flooding",
+      "baadh se bachne ki taiyari ke liye",
+      "बाढ़ से बचने की तैयारी के लिए"
+     ],
+     "hints": [
+      "Where will rising water travel next?",
+      "An early warning gives people downstream time to act.",
+      "Warnings let downstream villages prepare for possible ___.",
+      "Villages can prepare for floods: upstream water may reach them next."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "To save lives from floods",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both highlight flood preparation benefit",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -7275,7 +9293,9 @@
      "verified": {
       "solverAnswer": "Harsha; Xuanzang",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch15-t01-i02",
@@ -7567,6 +9587,166 @@
       "solverAnswer": "Open: three kingdoms, regions, achievements",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch15-t01-rl-o1",
+     "skillId": "c7-sst-ch15-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum label dates a Chalukya inscription to 634 CE. Which century CE should the label show?",
+     "prompt_hi": "Museum ke label par ek Chalukya abhilekh ki tareekh 634 CE hai. Label par kaunsi shatabdi CE likhni chahiye?",
+     "answer": "7th century CE",
+     "acceptable": [
+      "7th century",
+      "seventh century CE",
+      "saatvi shatabdi",
+      "7vi shatabdi"
+     ],
+     "hints": [
+      "How do you turn a CE year into a century?",
+      "A century groups one hundred consecutive years.",
+      "The years 601–700 CE belong to the ___ century.",
+      "7th century CE: 634 falls between 601 and 700 CE."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "7th century CE",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch15-t01-rl-o2",
+     "skillId": "c7-sst-ch15-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "For a school exhibition map, place the Pala kingdom. Choose its main region: Bengal and Bihar, the Deccan, or Tamil Nadu?",
+     "prompt_hi": "School exhibition ke map par Pala rajya dikhana hai. Uska mukhya kshetra chuno: Bengal aur Bihar, Deccan, ya Tamil Nadu?",
+     "answer": "Bengal and Bihar",
+     "acceptable": [
+      "Bengal-Bihar",
+      "Bengal aur Bihar"
+     ],
+     "hints": [
+      "Which region was the Pala kingdom centred in?",
+      "Think of the kingdoms associated with eastern India.",
+      "On this map, place the Palas in ___.",
+      "Bengal and Bihar: the Palas ruled mainly in eastern India."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Bengal and Bihar",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch15-t01-rl-h1",
+     "skillId": "c7-sst-ch15-t01-s2",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "A history club marks the Narmada as a limit to Harsha’s southern expansion. Which ruler checked him there: Pulakeshin II, Dharmapala, or Narasimhavarman I?",
+     "prompt_hi": "History club ne Narmada ko Harsha ke dakshin ki taraf vistaar ki seema dikhaya. Wahan use kis shasak ne roka: Pulakeshin II, Dharmapala, ya Narasimhavarman I?",
+     "answer": "Pulakeshin II",
+     "acceptable": [
+      "Pulakeshin",
+      "Pulakesi II",
+      "Pulakeśin II"
+     ],
+     "hints": [
+      "Which rival ruled south of the Narmada?",
+      "Match Harsha’s opponent to the Chalukya kingdom.",
+      "Harsha’s expansion was checked by the Chalukya ruler ___.",
+      "Pulakeshin II: the Chalukya ruler checked Harsha near the Narmada."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Pulakeshin II",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch15-t01-rl-h2",
+     "skillId": "c7-sst-ch15-t01-s3",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "An exhibition has two displays: the rock-cut Kailasa temple at Ellora and support for learning at Nalanda. Match each contribution to its kingdom: Rashtrakutas or Palas?",
+     "prompt_hi": "Exhibition mein do displays hain: Ellora ka rock-cut Kailasa mandir aur Nalanda mein padhai ko sahayata. Har yogdan ko Rashtrakutas ya Palas se jodo.",
+     "answer": "Kailasa temple—Rashtrakutas; Nalanda learning—Palas",
+     "acceptable": [
+      "Rashtrakutas—Kailasa; Palas—Nalanda",
+      "Kailasa Rashtrakutas, Nalanda Palas"
+     ],
+     "hints": [
+      "Which display is a monument, and which concerns learning?",
+      "Recall which dynasty built at Ellora and which supported eastern learning centres.",
+      "Kailasa—___; support for learning at Nalanda—___.",
+      "Kailasa—Rashtrakutas; Nalanda learning—Palas. Their contributions differed."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Rashtrakutas: rock-cut Kailasa temple at Ellora; Palas: support for learning at Nalanda",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Matching is identical",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch15-t01-rl-h3",
+     "skillId": "c7-sst-ch15-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A royal inscription calls a king ‘unbeaten’, but a traveller reports that he lost a battle. Why should a historian check both accounts instead of copying the inscription alone?",
+     "prompt_hi": "Ek rajkiya abhilekh raja ko ‘kabhi na haara’ kehta hai, par ek yatri uski haar batata hai. Itihaskar ko sirf abhilekh ki baat maanane ke bajay dono ko kyun jaanchna chahiye?",
+     "answer": "The royal inscription may exaggerate the king’s success, so comparing accounts helps test the claim.",
+     "acceptable": [
+      "Royal inscriptions can be biased; compare sources",
+      "The inscription may exaggerate; check it against the traveller",
+      "Raja ka abhilekh badha-chadha kar keh sakta hai, isliye dono srot milao"
+     ],
+     "hints": [
+      "Who had a reason to praise the king?",
+      "A source’s purpose can affect what it says.",
+      "Compare the accounts because the royal claim may be ___.",
+      "Royal praise may exaggerate; comparing accounts helps test its claim."
+     ],
+     "ge": 6.25,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Inscriptions may glorify kings; travellers give outside views, revealing contradictions.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Reasons align on bias",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -7783,7 +9963,9 @@
      "verified": {
       "solverAnswer": "Rajaraja I, Thanjavur, c. 1010 CE",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch16-t01-i02",
@@ -8096,6 +10278,163 @@
       "solverAnswer": "Open: Cholas, Mahmud/Ghori, a source",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch16-t01-rl-o1",
+     "skillId": "c7-sst-ch16-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A museum label says Rajendra I sent Chola ships across the Bay of Bengal. Which Chola strength does this show: navy or village assembly?",
+     "prompt_hi": "Museum ke label par likha hai ki Rajendra I ne Chola jahaz Bay of Bengal ke paar bheje. Isse Cholon ki kaunsi taakat dikhti hai: navy ya village assembly?",
+     "answer": "navy",
+     "acceptable": [
+      "naval power",
+      "nausena",
+      "Chola navy"
+     ],
+     "hints": [
+      "Which option could send ships across the sea?",
+      "Think about the Cholas’ ability to organise sea expeditions.",
+      "Ships crossing the Bay of Bengal show Chola ____.",
+      "Navy—the expedition depended on ships and sailors."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "navy",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch16-t01-rl-o2",
+     "skillId": "c7-sst-ch16-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "An inscription says a Chola village committee managed its irrigation tank. Was this an example of village self-government or a king’s naval conquest?",
+     "prompt_hi": "Ek inscription kehta hai ki Chola gaon ki committee apne irrigation tank ka kaam sambhalti thi. Yeh village self-government ka example hai ya raja ki naval conquest ka?",
+     "answer": "village self-government",
+     "acceptable": [
+      "local self-government",
+      "gaon ka swashasan",
+      "village assembly"
+     ],
+     "hints": [
+      "Who is managing the tank in the inscription?",
+      "Focus on a local committee making a local decision.",
+      "A village committee managing its tank shows ____.",
+      "Village self-government—the local committee handled a village responsibility."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "village self-government",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch16-t01-rl-h1",
+     "skillId": "c7-sst-ch16-t01-s2",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A craft exhibition displays two Chola bronzes made using separate lost-wax moulds. Why can the second bronze not be an exact copy made from the first mould?",
+     "prompt_hi": "Craft exhibition mein do Chola bronze murtiyan hain, jo alag-alag lost-wax moulds se bani hain. Doosri murti pehle mould se bani bilkul exact copy kyun nahi ho sakti?",
+     "answer": "The mould is broken to remove each bronze.",
+     "acceptable": [
+      "Each mould is destroyed when the statue is removed.",
+      "Mould todna padta hai, isliye use dobara nahi kar sakte."
+     ],
+     "hints": [
+      "What must happen before the finished bronze comes out?",
+      "Think about whether the mould survives removal.",
+      "To take out the bronze, the maker must ____.",
+      "The mould is broken to remove the bronze, so it cannot be reused."
+     ],
+     "ge": 7,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Lost-wax moulds break after one use; each bronze needs a new mould.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Mould destruction matches",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch16-t01-rl-h2",
+     "skillId": "c7-sst-ch16-t01-s3",
+     "kind": "practice",
+     "difficulty": 4,
+     "prompt_en": "A timeline marks Rajendra I’s Ganga campaign around 1025 CE, Mahmud of Ghazni’s Somnath raid in 1026 CE, and Muhammad Ghori’s victory at Tarain in 1192 CE. Which came between the other two?",
+     "prompt_hi": "Timeline par Rajendra I ka Ganga campaign lagbhag 1025 CE, Mahmud of Ghazni ka Somnath raid 1026 CE, aur Muhammad Ghori ki Tarain jeet 1192 CE likhi hai. Baaki dono ke beech kaunsi ghatna hui?",
+     "answer": "Mahmud of Ghazni’s Somnath raid",
+     "acceptable": [
+      "Somnath raid",
+      "Mahmud’s raid on Somnath",
+      "Somnath par Mahmud ka hamla"
+     ],
+     "hints": [
+      "Which date lies after the earliest and before the latest?",
+      "Compare the three CE years in increasing order.",
+      "The middle year is ____ CE; name its event.",
+      "Mahmud of Ghazni’s Somnath raid—1026 CE falls between 1025 and 1192."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Mahmud of Ghazni’s Somnath raid in 1026 CE",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch16-t01-rl-h3",
+     "skillId": "c7-sst-ch16-t01-s4",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "A Chola inscription records a gift of land to a temple. A visitor writes, ‘Everyone in that village welcomed the gift.’ Which statement is an opinion not established by the inscription: the land gift or everyone’s welcome?",
+     "prompt_hi": "Ek Chola inscription mandir ko zameen daan dene ka record rakhta hai. Ek visitor likhta hai, ‘Gaon mein sabne daan ka swagat kiya.’ Inscription se kaunsi baat saabit nahi hoti: zameen ka daan ya sabka swagat?",
+     "answer": "everyone’s welcome",
+     "acceptable": [
+      "everyone welcomed the gift",
+      "sabka swagat",
+      "the claim that everyone approved"
+     ],
+     "hints": [
+      "Which statement goes beyond what the inscription records?",
+      "A record of an action does not reveal every person’s feelings.",
+      "The unsupported claim is about ____.",
+      "Everyone’s welcome—the inscription records a gift, not everyone’s reaction."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "everyone's welcome",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -8314,7 +10653,9 @@
      "verified": {
       "solverAnswer": "Jews, Syrian Christians, Parsis, Arab traders, Siddis (any three)",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch17-t01-i02",
@@ -8605,6 +10946,105 @@
       "solverAnswer": "Open: two communities, reason, reception, contribution",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch17-t01-rl-h1",
+     "skillId": "c7-sst-ch17-t01-s2",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Arab merchants visited Malabar ports to exchange goods. Tibetan families reached India in 1959 after fleeing danger at home. Which group mainly came for trade, and which sought safety?",
+     "prompt_hi": "Arab vyapari saamaan ka len-den karne Malabar ke bandargaahon par aaye. Tibetan parivaar 1959 mein apne ghar par khatre se bachkar Bharat aaye. Kaunsa samuh mukhya taur par vyapar ke liye aaya, aur kaunsa suraksha ke liye?",
+     "answer": "Arab merchants for trade; Tibetan families for safety",
+     "acceptable": [
+      "Arabs: trade; Tibetans: safety",
+      "Arab vyapari: vyapar; Tibetan parivaar: suraksha"
+     ],
+     "hints": [
+      "What was each group doing before or during its journey?",
+      "Exchange of goods and escape from danger suggest different motives.",
+      "Arab merchants: ___; Tibetan families: ___.",
+      "Arabs came for trade; Tibetans sought safety from danger."
+     ],
+     "ge": 5.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Arab merchants mainly came for trade; Tibetan families sought safety.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Identical contrast of trade vs safety",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch17-t01-rl-h2",
+     "skillId": "c7-sst-ch17-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A Kochi heritage walk visits a synagogue, a church, and a temple; its food stalls serve dishes shaped by several communities. Does this show a shared culture shaped by many traditions, or one unchanged tradition? Give the key evidence.",
+     "prompt_hi": "Kochi ki heritage walk mein synagogue, church aur mandir hain; food stalls par kai samudaayon se prabhavit khaane milte hain. Kya yeh kai paramparaon se bani saanjhi sanskriti dikhata hai, ya ek hi aparivartit parampara? Mukhya saboot batao.",
+     "answer": "A shared culture shaped by many traditions; the different places of worship and foods show their contributions",
+     "acceptable": [
+      "shared culture; different worship places and foods",
+      "saanjhi sanskriti; alag-alag ibadat ke sthal aur khaane"
+     ],
+     "hints": [
+      "How many kinds of traditions appear on this walk?",
+      "Consider both the buildings and the food stalls.",
+      "The walk shows ___, as seen in ___ .",
+      "Many traditions shaped a shared culture; the worship places and foods show this."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "A shared culture shaped by many traditions. Evidence: multiple religious places and diverse food influences.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both identify shared culture with evidence",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch17-t01-rl-h3",
+     "skillId": "c7-sst-ch17-t01-s4",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "A copper-plate record says a Kerala ruler granted trading rights to a Jewish community. A student says, ‘This proves every ruler always welcomed every newcomer.’ Why is that conclusion too broad?",
+     "prompt_hi": "Ek taamrapatra record kehta hai ki Kerala ke ek raja ne Yahoodi samudaay ko vyapar ke adhikar diye. Ek student kehta hai, ‘Isse saabit hota hai ki har raja ne hamesha har naye samudaay ka swagat kiya.’ Yeh nishkarsh bahut bada kyun hai?",
+     "answer": "One record shows what one ruler did for one community, not what every ruler always did",
+     "acceptable": [
+      "one example cannot prove what happened everywhere",
+      "ek record se har raja aur har samay ke baare mein saabit nahi hota"
+     ],
+     "hints": [
+      "How many rulers does this record describe?",
+      "Check whether the claim reaches beyond the source.",
+      "This record supports one case, not ___ .",
+      "One ruler’s grant cannot prove how every ruler treated every newcomer."
+     ],
+     "ge": 6.75,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "One grant does not prove universal welcome; other rulers may have acted differently.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both note one example is not universal",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -8824,7 +11264,9 @@
      "verified": {
       "solverAnswer": "Population, territory, government, sovereignty",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch18-t01-i02",
@@ -9094,6 +11536,133 @@
       "solverAnswer": "Panchayat village, sarpanch; corporation city, mayor",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch18-t01-rl-o2",
+     "skillId": "c7-sst-ch18-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A court decides whether a new law follows the Constitution. Which organ of government is acting: legislature, executive or judiciary?",
+     "prompt_hi": "Ek court faisla karta hai ki naya kanoon Constitution ke mutabik hai ya nahi. Kaunsa government organ kaam kar raha hai: legislature, executive ya judiciary?",
+     "answer": "Judiciary",
+     "acceptable": [
+      "the judiciary",
+      "nyaypalika"
+     ],
+     "hints": [
+      "Which organ settles legal questions?",
+      "Think about the organ that interprets laws.",
+      "A court belongs to the ___.",
+      "Judiciary; courts interpret laws and check them against the Constitution."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "judiciary",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch18-t01-rl-h1",
+     "skillId": "c7-sst-ch18-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A law about defence is passed by Parliament and carried out by a ministry. Name the level of government and the organ carrying it out.",
+     "prompt_hi": "Defence par ek kanoon Parliament pass karti hai aur ministry use lagu karti hai. Government ka level aur use lagu karne wala organ batao.",
+     "answer": "Union government; executive",
+     "acceptable": [
+      "central government; executive",
+      "kendra sarkaar; karyapalika"
+     ],
+     "hints": [
+      "Is defence handled locally or for the whole country?",
+      "Ministries implement laws; law-making is a different job.",
+      "The level is ___; the implementing organ is ___.",
+      "Union government; executive. Defence is national, and ministries implement laws."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Union level, executive",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both name union/central and executive",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch18-t01-rl-h2",
+     "skillId": "c7-sst-ch18-t01-s3",
+     "kind": "why",
+     "difficulty": 4,
+     "prompt_en": "Riya pays no income tax while attending a government school. How can the government still pay her teachers? Give the main source of the money.",
+     "prompt_hi": "Riya government school mein padhti hai aur income tax nahi deti. Phir bhi government uske teachers ko salary kaise deti hai? Paise ka mukhya source batao.",
+     "answer": "Taxes collected from people and businesses",
+     "acceptable": [
+      "tax revenue",
+      "taxes paid by others",
+      "logon aur businesses se liya gaya tax"
+     ],
+     "hints": [
+      "Must every student pay personally for a public service?",
+      "Public money is collected from many people and businesses.",
+      "Teachers are paid using money collected through ___.",
+      "Taxes; the government pools tax money to fund public schools."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Taxes paid by other citizens and businesses",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Both identify taxes from others",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch18-t01-rl-h3",
+     "skillId": "c7-sst-ch18-t01-s4",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "A neighbourhood’s public water tap stays broken despite repeated complaints. Besides voting, which action would best help residents hold the municipality accountable: ignore it, or submit a written complaint and request a response?",
+     "prompt_hi": "Mohalle ka public water tap baar-baar complaint ke baad bhi kharab hai. Voting ke alawa municipality ko jawabdeh banane ke liye kya behtar hai: nazarandaaz karna, ya likhit complaint dekar jawab maangna?",
+     "answer": "Submit a written complaint and request a response",
+     "acceptable": [
+      "written complaint and request a response",
+      "likhit complaint dekar jawab maangna"
+     ],
+     "hints": [
+      "Which option asks officials to explain what they will do?",
+      "Accountability means seeking an answer for a public problem.",
+      "Residents should submit a ___ and ask for a ___.",
+      "Submit a written complaint and request a response; officials must address the issue."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "submit a written complaint and request a response",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -9311,7 +11880,9 @@
      "verified": {
       "solverAnswer": "Basic facilities: roads, power, water, schools, hospitals",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch19-t01-i02",
@@ -9602,6 +12173,103 @@
       "solverAnswer": "Long-lived, protect environment; solar, metro, rainwater harvesting",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch19-t01-rl-o1",
+     "skillId": "c7-sst-ch19-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A town funds a government clinic and a water pipeline. Which one is social infrastructure?",
+     "prompt_hi": "Ek town government clinic aur water pipeline ke liye paisa deta hai. Inmein social infrastructure kaunsa hai?",
+     "answer": "Government clinic",
+     "acceptable": [
+      "clinic",
+      "sarkari clinic"
+     ],
+     "hints": [
+      "Which facility directly provides a public service to people?",
+      "Social infrastructure includes facilities for health and education.",
+      "The social infrastructure here is the ____.",
+      "Government clinic: it provides healthcare."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Government clinic",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch19-t01-rl-h1",
+     "skillId": "c7-sst-ch19-t01-s2",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "A hill town gets reliable internet. Local craft sellers can now take online orders and arrange deliveries. Why might their income rise? Give one link between the internet and sales.",
+     "prompt_hi": "Ek hill town mein reliable internet aaya. Local craft sellers ab online orders lekar delivery kar sakte hain. Unki income kyun badh sakti hai? Internet aur sales ke beech ek link batao.",
+     "answer": "They can reach more buyers online and sell more crafts.",
+     "acceptable": [
+      "Online orders bring more customers",
+      "They can sell beyond their town",
+      "Zyada buyers tak pahunchkar zyada samaan bech sakte hain"
+     ],
+     "hints": [
+      "Who could buy the crafts before, and who can buy them now?",
+      "Digital networks can connect sellers to customers farther away.",
+      "Internet → more potential ____ → more sales.",
+      "More buyers: online orders let sellers reach customers beyond their town."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Internet connects sellers to more customers, increasing sales.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "More buyers/sales link",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch19-t01-rl-h3",
+     "skillId": "c7-sst-ch19-t01-s4",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "A city has money for only one plan: repair leaking water pipes or build a decorative fountain. The leaks waste drinking water daily. Which plan better supports sustainable infrastructure, and why?",
+     "prompt_hi": "Ek city ke paas sirf ek plan ke liye paisa hai: leak hoti water pipes repair karna ya decorative fountain banana. Leaks se roz drinking water waste hota hai. Sustainable infrastructure ke liye kaunsa plan behtar hai, aur kyun?",
+     "answer": "Repair the pipes, because it saves drinking water.",
+     "acceptable": [
+      "Fix the leaks to reduce water waste",
+      "Pipes repair karo, taaki paani bache"
+     ],
+     "hints": [
+      "Which plan tackles a resource being lost every day?",
+      "Sustainability includes maintaining existing systems and conserving resources.",
+      "Choose ____ because it prevents ____.",
+      "Repair the pipes: fixing leaks conserves drinking water."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Repair leaking pipes, because it conserves water.",
+      "agrees": true,
+      "how": "equivalence",
+      "correct": "both",
+      "note": "Pipe repair conserves water",
+      "solver": "DeepSeek-V4-Pro",
+      "checker": "grok-4-20-non-reasoning",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -9820,7 +12488,9 @@
      "verified": {
       "solverAnswer": "Accept deposits, give loans",
       "agrees": true
-     }
+     },
+     "ge": 6.25,
+     "geSource": "raters-v2"
     },
     {
      "id": "c7-sst-ch20-t01-i02",
@@ -10134,6 +12804,159 @@
       "solverAnswer": "Open: deposits -> loan -> repay with interest -> saver interest; bank earns gap",
       "agrees": true
      }
+    },
+    {
+     "id": "c7-sst-ch20-t01-rl-o1",
+     "skillId": "c7-sst-ch20-t01-s1",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "A school collects ₹30,000 for its annual event and deposits it in a bank. Later, the school uses the bank to pay the sound technician. Which bank service makes that payment possible: a loan or a payment transfer?",
+     "prompt_hi": "School annual event ke liye ₹30,000 bank mein jama karta hai. Baad mein bank ke zariye sound technician ko paise bhejta hai. Yeh kaunsi bank service hai: loan ya payment transfer?",
+     "answer": "Payment transfer",
+     "acceptable": [
+      "transfer",
+      "money transfer",
+      "payment"
+     ],
+     "hints": [
+      "Is the school borrowing money or sending its own money?",
+      "Banks can move money from one account to another.",
+      "The service used to send money is a ____.",
+      "Payment transfer: the bank sends the school’s money to someone else."
+     ],
+     "ge": 5.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "A payment transfer",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch20-t01-rl-o2",
+     "skillId": "c7-sst-ch20-t01-s2",
+     "kind": "practice",
+     "difficulty": 3,
+     "prompt_en": "Meera can put aside ₹200 from her pocket money every month for a year. She wants a bank account designed for regular monthly deposits. Should she choose a recurring deposit or a fixed deposit?",
+     "prompt_hi": "Meera har mahine pocket money se ₹200 bacha sakti hai. Use regular monthly jama ke liye bana bank account chahiye. Woh recurring deposit chune ya fixed deposit?",
+     "answer": "Recurring deposit",
+     "acceptable": [
+      "RD",
+      "recurring deposit account"
+     ],
+     "hints": [
+      "Will Meera deposit once or repeatedly?",
+      "Compare how money is added in the two options.",
+      "Regular monthly deposits fit a ____.",
+      "Recurring deposit: it is designed for deposits made each month."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "opener",
+     "verified": {
+      "solverAnswer": "Recurring deposit",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch20-t01-rl-h1",
+     "skillId": "c7-sst-ch20-t01-s2",
+     "kind": "contrast",
+     "difficulty": 4,
+     "prompt_en": "Kabir has ₹8,000 now. He will not need it for two years and wants to deposit the whole amount at once to earn interest. Which suits this plan better: a fixed deposit or a recurring deposit?",
+     "prompt_hi": "Kabir ke paas abhi ₹8,000 hain. Do saal tak zaroorat nahi hai; woh poori rakam ek saath jama karke byaaj kamaana chahta hai. Fixed deposit ya recurring deposit—kya behtar hai?",
+     "answer": "Fixed deposit",
+     "acceptable": [
+      "FD",
+      "fixed deposit account"
+     ],
+     "hints": [
+      "Is Kabir depositing one lump sum or monthly amounts?",
+      "One option holds a lump sum for a set period.",
+      "His plan matches a ____.",
+      "Fixed deposit: he deposits the whole amount for a set period."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "reason",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Fixed deposit",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch20-t01-rl-h2",
+     "skillId": "c7-sst-ch20-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A cricket club deposits ₹12,000 at 5% simple interest per year for 3 years. How much money, including interest, will it have after 3 years?",
+     "prompt_hi": "Ek cricket club ₹12,000 ko 5% saalana saadharan byaaj par 3 saal ke liye jama karta hai. Byaaj milaakar 3 saal baad kitne paise honge?",
+     "answer": "₹13,800",
+     "acceptable": [
+      "13800",
+      "thirteen thousand eight hundred rupees",
+      "terah hazaar aath sau rupaye"
+     ],
+     "hints": [
+      "First, how much interest is earned in one year?",
+      "Simple interest adds the same amount each year.",
+      "Total = ₹12,000 + (₹12,000 × 5 ÷ 100 × ____).",
+      "₹13,800: the interest is ₹600 yearly, or ₹1,800 over three years."
+     ],
+     "ge": 6.5,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "₹13,800",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
+    },
+    {
+     "id": "c7-sst-ch20-t01-rl-h3",
+     "skillId": "c7-sst-ch20-t01-s4",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "Sana receives a message claiming to be from her bank: ‘Share the OTP sent to your phone to keep your Jan Dhan account active.’ Should she share the OTP or contact the bank through its official helpline?",
+     "prompt_hi": "Sana ko message aata hai: ‘Jan Dhan account active rakhne ke liye phone par aaya OTP bhejo.’ Use OTP bhejna chahiye ya bank ki official helpline par sampark karna chahiye?",
+     "answer": "Contact the bank through its official helpline",
+     "acceptable": [
+      "contact the official helpline",
+      "call the bank's official number",
+      "official helpline"
+     ],
+     "hints": [
+      "Can you trust a message just because it names your bank?",
+      "An OTP must stay private, even if a message sounds urgent.",
+      "Check the claim using the bank’s ____.",
+      "Contact the official helpline: never share an OTP from a message."
+     ],
+     "ge": 6,
+     "geSource": "raters-v2",
+     "demand": "apply",
+     "relevel": "harder",
+     "verified": {
+      "solverAnswer": "Contact the bank through its official helpline",
+      "agrees": true,
+      "how": "code",
+      "solver": "DeepSeek-V4-Pro",
+      "date": "2026-10-04"
+     }
     }
    ],
    "workedExample": {
@@ -10175,5 +12998,9 @@
     "buying a cricket kit"
    ]
   }
- ]
+ ],
+ "relevel": {
+  "overlay": "2026-10-04",
+  "generator": "taxila-gpt6"
+ }
 }

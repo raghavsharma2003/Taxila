@@ -1,0 +1,1753 @@
+{
+ "topicId": "c6-maths-ch05-t02",
+ "title": "Prime and composite numbers",
+ "chapter": "Prime Time",
+ "subject": "maths",
+ "class": 6,
+ "topicType": "T3",
+ "plan": {
+  "game": "sieve-storm@1",
+  "hint": "rules prime / composite"
+ },
+ "game": {
+  "archetype": "sieve-storm@1",
+  "spec": {
+   "archetype": "sieve-storm@1",
+   "skills": [
+    "c6-maths-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "slashed": "right calls",
+    "combo": "combo",
+    "coach": "Swipe the numbers that fit the rule",
+    "runDone": "Storm over",
+    "prime": "prime",
+    "composite": "composite",
+    "even": "even",
+    "odd": "odd",
+    "multipleOf": "multiples of",
+    "commonOf": "common multiples of",
+    "factorOf": "factors of",
+    "cfactorOf": "common factors of",
+    "divisibleBy": "divisible by",
+    "coprimeWith": "co-prime with",
+    "square": "square numbers",
+    "palindrome": "palindromes",
+    "slipped": "slipped",
+    "wrongCut": "not this one",
+    "and": "and"
+   },
+   "title": "Prime Time Sieve",
+   "rounds": [
+    {
+     "rule": "prime",
+     "title": "Spot the primes",
+     "sub": "Count the factors carefully",
+     "lo": 1,
+     "hi": 20,
+     "count": 12,
+     "hitRate": 0.5,
+     "seed": 17,
+     "speed": 0.7,
+     "targets": "c6-maths-ch05-t02-m-one-prime"
+    },
+    {
+     "rule": "composite",
+     "title": "Crack composites",
+     "sub": "Use factor pairs as clues",
+     "lo": 2,
+     "hi": 60,
+     "count": 16,
+     "hitRate": 0.5,
+     "seed": 39,
+     "speed": 0.9
+    },
+    {
+     "rule": "prime",
+     "title": "Sieve the high stream",
+     "sub": "Odd numbers need a closer check",
+     "lo": 10,
+     "hi": 100,
+     "count": 18,
+     "hitRate": 0.4,
+     "seed": 91,
+     "speed": 1.1,
+     "targets": "c6-maths-ch05-t02-m-odd-prime"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c6-maths-ch05-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Prime or composite?",
+   "accent": "ion",
+   "targets": "c6-maths-ch05-t02-m-odd-prime",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "row",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Prime or composite?"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Every odd number is prime"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "prime",
+       "type": "node",
+       "text": "Prime",
+       "sub": "2 factors",
+       "glyph": "star",
+       "color": "mint"
+      },
+      {
+       "id": "comp",
+       "type": "node",
+       "text": "Composite",
+       "sub": "More than 2",
+       "color": "amber"
+      },
+      {
+       "id": "one",
+       "type": "node",
+       "text": "1",
+       "sub": "1 factor",
+       "color": "volt"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "sieve",
+       "type": "grid",
+       "cols": 10,
+       "rows": 8,
+       "shaded": 74,
+       "x": 80,
+       "y": 210
+      },
+      {
+       "id": "tw",
+       "type": "label",
+       "text": "Cross multiples of 2",
+       "x": 90,
+       "y": 180,
+       "color": "ion"
+      },
+      {
+       "id": "th",
+       "type": "label",
+       "text": "Then 3, 5 and 7",
+       "x": 90,
+       "y": 430,
+       "color": "sci"
+      },
+      {
+       "id": "left",
+       "type": "label",
+       "text": "25 primes remain",
+       "x": 620,
+       "y": 250,
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "split",
+     "els": [
+      {
+       "id": "ex",
+       "type": "title",
+       "text": "51: test it"
+      },
+      {
+       "id": "odd",
+       "type": "label",
+       "text": "Odd, but not enough",
+       "x": 80,
+       "y": 230,
+       "color": "amber"
+      },
+      {
+       "id": "sum",
+       "type": "label",
+       "text": "5 + 1 = 6",
+       "x": 80,
+       "y": 300,
+       "color": "ion"
+      },
+      {
+       "id": "pair",
+       "type": "label",
+       "text": "51 = 3 × 17",
+       "x": 80,
+       "y": 370,
+       "color": "mint"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "Composite",
+       "sub": "More than 2",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s5",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ask",
+       "type": "title",
+       "text": "Which numbers survive in the 40s?"
+      },
+      {
+       "id": "n41",
+       "type": "label",
+       "text": "41",
+       "x": 170,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "n42",
+       "type": "label",
+       "text": "42",
+       "x": 350,
+       "y": 330,
+       "color": "amber"
+      },
+      {
+       "id": "n43",
+       "type": "label",
+       "text": "43",
+       "x": 530,
+       "y": 330,
+       "color": "mint"
+      },
+      {
+       "id": "n45",
+       "type": "label",
+       "text": "45",
+       "x": 710,
+       "y": 330,
+       "color": "amber"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A prime number has exactly two factors: 1 and itself.",
+    "L2": "A composite number has more than two factors and can make a rectangle with more than one row.",
+    "L3": "One is neither prime nor composite because it has only one factor. And 2 is the only even prime.",
+    "L4": "Odd does not mean prime. For example, 21 is odd but 21 equals 3 times 7.",
+    "L5": "Use a sieve: cross out multiples of 2, then 3, 5 and 7.",
+    "L6": "The numbers left, except 1, are the primes up to 100.",
+    "L7": "Try 51. Its digit sum is 6, so 3 is a factor and 51 equals 3 times 17.",
+    "L8": "Now check the 40s. Tap the numbers that survive the sieve."
+   },
+   "narration": {},
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "prime"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "comp"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "one"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "one"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "sieve"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "tw",
+        "th"
+       ]
+      },
+      {
+       "at": 1.2,
+       "do": "shade",
+       "dur": 1.2,
+       "target": "sieve",
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "left"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "left"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "odd"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.6,
+       "target": "sum"
+      },
+      {
+       "at": 1,
+       "do": "show",
+       "dur": 0.8,
+       "target": "pair"
+      },
+      {
+       "at": 1.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s5",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "ask"
+      },
+      {
+       "at": 0.6,
+       "do": "interactive",
+       "dur": 1
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which number survives in the 40s?",
+    "options": [
+     "n41",
+     "n42",
+     "n43",
+     "n45"
+    ],
+    "answer": "n41",
+    "src": "c6-maths-ch05-t02-i07"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "arrow:ends",
+   "arrow:ends",
+   "clamp:rows",
+   "glyph",
+   "cue:target",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast",
+  "seconds": 56
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "prime number",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        220,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "self",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        220
+       ],
+       "r": 55
+      },
+      {
+       "id": "oneText",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        230
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "selfText",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        230
+       ],
+       "text": "itself",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "factorArrow",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 2600,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        280,
+        220
+       ],
+       "to": [
+        520,
+        220
+       ]
+      },
+      {
+       "id": "exact",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3800,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        350
+       ],
+       "text": "exactly two factors",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "compTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "composite number",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "rectOuter",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        150
+       ],
+       "w": 300,
+       "h": 190
+      },
+      {
+       "id": "row1",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        245
+       ],
+       "to": [
+        480,
+        245
+       ]
+      },
+      {
+       "id": "row2",
+       "op": "line",
+       "startMs": 2300,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        295
+       ],
+       "to": [
+        480,
+        295
+       ]
+      },
+      {
+       "id": "rows",
+       "op": "text",
+       "startMs": 2900,
+       "endMs": 4000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        245
+       ],
+       "text": "more than one row",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "many",
+       "op": "text",
+       "startMs": 4300,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        405
+       ],
+       "text": "more than two factors",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "oneBig",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 60
+      },
+      {
+       "id": "oneLabel",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oneFact",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        180,
+        300
+       ],
+       "text": "one factor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "twoCircle",
+       "op": "circle",
+       "startMs": 3500,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        580,
+        170
+       ],
+       "r": 60
+      },
+      {
+       "id": "twoLabel",
+       "op": "text",
+       "startMs": 4100,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        580,
+        180
+       ],
+       "text": "2",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "even",
+       "op": "text",
+       "startMs": 4600,
+       "endMs": 5400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        580,
+        300
+       ],
+       "text": "even prime",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "only",
+       "op": "text",
+       "startMs": 5500,
+       "endMs": 6100,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        580,
+        390
+       ],
+       "text": "only",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 7409,
+     "ops": [
+      {
+       "id": "odd",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        80
+       ],
+       "text": "odd",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "not",
+       "op": "text",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        80
+       ],
+       "text": "does not mean",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "prime",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        620,
+        80
+       ],
+       "text": "prime",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "num",
+       "op": "text",
+       "startMs": 2100,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        230
+       ],
+       "text": "21",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "oddLabel",
+       "op": "text",
+       "startMs": 2600,
+       "endMs": 3100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        180,
+        310
+       ],
+       "text": "odd",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 3300,
+       "endMs": 5000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        270,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "21",
+         "=",
+         "3",
+         "times",
+         "7"
+        ]
+       ]
+      },
+      {
+       "id": "composite",
+       "op": "text",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "composite",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "sieveTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "sieve",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "two",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "twoT",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        180,
+        180
+       ],
+       "text": "2",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "three",
+       "op": "circle",
+       "startMs": 1500,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        330,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "threeT",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        330,
+        180
+       ],
+       "text": "3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "five",
+       "op": "circle",
+       "startMs": 2300,
+       "endMs": 2700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        480,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "fiveT",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        480,
+        180
+       ],
+       "text": "5",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "seven",
+       "op": "circle",
+       "startMs": 3100,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        630,
+        170
+       ],
+       "r": 42
+      },
+      {
+       "id": "sevenT",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 3800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        630,
+        180
+       ],
+       "text": "7",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        120,
+        330
+       ],
+       "to": [
+        680,
+        330
+       ]
+      },
+      {
+       "id": "crossLabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 5900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        410
+       ],
+       "text": "cross out multiples",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "leftTitle",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "numbers left",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "one",
+       "op": "text",
+       "startMs": 800,
+       "endMs": 1200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        180
+       ],
+       "text": "1",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "exclude",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 1700,
+       "ink": "mark",
+       "weight": 3,
+       "from": [
+        90,
+        150
+       ],
+       "to": [
+        150,
+        210
+       ]
+      },
+      {
+       "id": "range",
+       "op": "arrow",
+       "startMs": 1800,
+       "endMs": 2600,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        200,
+        180
+       ],
+       "to": [
+        650,
+        180
+       ]
+      },
+      {
+       "id": "up",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        425,
+        280
+       ],
+       "text": "up to 100",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "primes",
+       "op": "text",
+       "startMs": 3700,
+       "endMs": 4400,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        390
+       ],
+       "text": "primes",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "fiftyone",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "51",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        140
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "5",
+         "+",
+         "1",
+         "=",
+         "6"
+        ]
+       ]
+      },
+      {
+       "id": "multiple",
+       "op": "text",
+       "startMs": 2000,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        240
+       ],
+       "text": "6 multiple of 3",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "factor",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        300
+       ],
+       "text": "3 is a factor",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "division",
+       "op": "numwork",
+       "startMs": 4100,
+       "endMs": 5400,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        230,
+        360
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "51",
+         "÷",
+         "3",
+         "=",
+         "17"
+        ]
+       ]
+      },
+      {
+       "id": "product",
+       "op": "numwork",
+       "startMs": 5600,
+       "endMs": 7000,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        260,
+        435
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "51",
+         "=",
+         "3",
+         "×",
+         "17"
+        ]
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c6-maths-ch05-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "forties",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 600,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "40s",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 800,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        140,
+        130
+       ],
+       "w": 520,
+       "h": 250
+      },
+      {
+       "id": "tap1",
+       "op": "circle",
+       "startMs": 1700,
+       "endMs": 2100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        230,
+        205
+       ],
+       "r": 25
+      },
+      {
+       "id": "tap2",
+       "op": "circle",
+       "startMs": 2200,
+       "endMs": 2600,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        370,
+        205
+       ],
+       "r": 25
+      },
+      {
+       "id": "tap3",
+       "op": "circle",
+       "startMs": 2700,
+       "endMs": 3100,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        510,
+        205
+       ],
+       "r": 25
+      },
+      {
+       "id": "survive",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "survive the sieve",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast"
+ },
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 13 prime?"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 17 prime?"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 11 prime?"
+  },
+  {
+   "itemId": "r1:3",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 7 prime?"
+  },
+  {
+   "itemId": "r1:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 4 prime?"
+  },
+  {
+   "itemId": "r1:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 19 prime?"
+  },
+  {
+   "itemId": "r1:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 10 prime?"
+  },
+  {
+   "itemId": "r1:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 9 prime?"
+  },
+  {
+   "itemId": "r1:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 20 prime?"
+  },
+  {
+   "itemId": "r1:9",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 8 prime?"
+  },
+  {
+   "itemId": "r1:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 15 prime?"
+  },
+  {
+   "itemId": "r1:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 14 prime?"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 17 composite?"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 25 composite?"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 31 composite?"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 2 composite?"
+  },
+  {
+   "itemId": "r2:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 7 composite?"
+  },
+  {
+   "itemId": "r2:5",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 38 composite?"
+  },
+  {
+   "itemId": "r2:6",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 34 composite?"
+  },
+  {
+   "itemId": "r2:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 37 composite?"
+  },
+  {
+   "itemId": "r2:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 47 composite?"
+  },
+  {
+   "itemId": "r2:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 51 composite?"
+  },
+  {
+   "itemId": "r2:10",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 23 composite?"
+  },
+  {
+   "itemId": "r2:11",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 29 composite?"
+  },
+  {
+   "itemId": "r2:12",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 19 composite?"
+  },
+  {
+   "itemId": "r2:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 49 composite?"
+  },
+  {
+   "itemId": "r2:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 9 composite?"
+  },
+  {
+   "itemId": "r2:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 16 composite?"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 33 prime?"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 89 prime?"
+  },
+  {
+   "itemId": "r3:2",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 40 prime?"
+  },
+  {
+   "itemId": "r3:3",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 70 prime?"
+  },
+  {
+   "itemId": "r3:4",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 28 prime?"
+  },
+  {
+   "itemId": "r3:5",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 12 prime?"
+  },
+  {
+   "itemId": "r3:6",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 57 prime?"
+  },
+  {
+   "itemId": "r3:7",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 44 prime?"
+  },
+  {
+   "itemId": "r3:8",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 42 prime?"
+  },
+  {
+   "itemId": "r3:9",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 17 prime?"
+  },
+  {
+   "itemId": "r3:10",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 13 prime?"
+  },
+  {
+   "itemId": "r3:11",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 53 prime?"
+  },
+  {
+   "itemId": "r3:12",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 31 prime?"
+  },
+  {
+   "itemId": "r3:13",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 71 prime?"
+  },
+  {
+   "itemId": "r3:14",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 59 prime?"
+  },
+  {
+   "itemId": "r3:15",
+   "key": "fits the rule (slash it)",
+   "prompt": "is 23 prime?"
+  },
+  {
+   "itemId": "r3:16",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 22 prime?"
+  },
+  {
+   "itemId": "r3:17",
+   "key": "does not fit (let it fall)",
+   "prompt": "is 90 prime?"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

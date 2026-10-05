@@ -63,19 +63,22 @@ export const RUNG_ENGINE = "explainer@1";
  * costs no attention and carries `replacesRung` (turn.js drops the rung once Studio acks; a refusal keeps it).
  * Returns { proposals, declined } (the reason code for the trace when nothing was proposed).
  */
-export function whiteboardAskOf({ beat, lane, late, strained, move = null, studioView = null, rungMounted = false }) {
-  if (!beat || !EXPLAIN_BEATS.has(beat.type)) return { proposals: [], declined: null };
+export function whiteboardAskOf({ beat, lane, late, strained, move = null, studioView = null, rungMounted = false, requested = false }) {
+  // `requested` (owner-truth patch 09, F16; OWNER TEST 2026-10-04 item 5): the CHILD asked to see it (director/requests.js
+  // visual → move.visual). Their ask is honoured on any beat, on the voice lane, and when strained (a picture is their
+  // smaller step). W2-H's attention and reveal gates below still hold: an interactive piece mid-use is never pulled away.
+  if (!requested && (!beat || !EXPLAIN_BEATS.has(beat.type))) return { proposals: [], declined: null };
   if (late) return { proposals: [], declined: "studio_rejected.late" };
   if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
-  if (lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
-  if (strained) return { proposals: [], declined: "studio_rejected.strained" };
+  if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
+  if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };
   const on = studioView?.onScreen;
   const interactive = !!on && typeof on.kind === "string" && on.kind !== "whiteboard" && on.archetype !== "whiteboard";
   if (interactive && !studioView?.propose?.retire) return { proposals: [], declined: "studio_rejected.attention" };
   if (studioView?.propose?.reveal) return { proposals: [], declined: "studio_rejected.reveal_ready" };
   return {
-    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat.type, beatId: beat.id, ...(rungMounted ? { replacesRung: true } : {}) },
-      urgency: 2, costs: { attention: rungMounted ? 0 : 1 }, reason: ["studio.whiteboard_asked", `beat.${beat.type}`, ...(rungMounted ? ["studio.replaces_rung"] : [])] })],
+    proposals: [proposal("studio", "ask_whiteboard", AUTHORITY.studio, { payload: { beat: beat?.type ?? "explain", beatId: beat?.id ?? null, ...(rungMounted ? { replacesRung: true } : {}), ...(requested ? { requested: true } : {}) },
+      urgency: requested ? 3 : 2, costs: { attention: rungMounted ? 0 : 1 }, reason: ["studio.whiteboard_asked", requested ? "child.asked_visual" : `beat.${beat.type}`, ...(rungMounted ? ["studio.replaces_rung"] : [])] })],
     declined: null,
   };
 }

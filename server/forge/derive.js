@@ -42,6 +42,10 @@ export function barsActivity(item, kit) {
     if (!task.operands.every(proper)) return { ok: false, why: "outside_bars_domain" };
     // Equal fractions: the engine's "same" button is the answer, so the kit must say so in words.
     if (!task.key && !SAME_RE.test(String(item.answer))) return { ok: false, why: "compare_equal_unkeyed" };
+    // Day 0 (RS-6 overlay merge): the kit key must name the bigger/smaller fraction itself. "Team Pune, by 1 slice"
+    // (c4-maths-ch05-t01-rl-h3) asks for a count, which the bars cannot grade; the G1 gate refused it at
+    // truth.kit_answer_not_a_value, so derive never offers it.
+    if (task.key && !kv.some((k) => eq(k, task.key))) return { ok: false, why: "kit_answer_not_the_compared_value" };
     params = { mode: "compare", denominators: task.operands.map((f) => f.d), numerators: task.operands.map((f) => f.n), question: task.question, showLabels: true };
   } else if (task.op === "equiv") {
     const [a] = task.operands; const T = task.target;

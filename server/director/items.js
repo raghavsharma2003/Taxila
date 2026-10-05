@@ -1,6 +1,7 @@
 // Item bookkeeping for the director: probe mapping, the practice queue, isomorphic items, the spoken
 // diagnostic (P7) built from a kit misconception, and the code-level answer-leak predicate.
 import { toAap } from "./register.js";
+import { p4pl, A_GE, C_OPEN, S_SLIP } from "../learner/kt/ability.js";
 
 /** Item kind → probe id from the catalogue (learning-science §7). Plain practice is P15, hint-ladder consumption. */
 export const PROBE_FOR_KIND = {
@@ -146,12 +147,60 @@ export function findItem(s, kit, id) {
   return addressed(kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null, address);
 }
 
+// ── content F0 (CONTENT-LEVEL §3 F0, RS-6; owner reset R2 "wrong level") ──
+// Before F0 the queue served each topic's easiest rung first (kit difficulty is relative to the topic, and every topic
+// was written with a difficulty-1 entry rung), spliced the diagnostic in second on the same motif, and cut the HARD end
+// at QUEUE_MAX: a class-4 child opened lesson 1 with "how many faces does a dice have" and then a dice picture.
+/** Flag `content.f0`: on unless TAXILA_CONTENT_F0=off (read per call so a test or an incident can switch it). */
+export const contentF0 = () => process.env.TAXILA_CONTENT_F0 !== "off";
+/** OD5 targets for the first two items: P(correct) 0.85, then 0.75. */
+export const OPEN_TARGETS = Object.freeze([0.85, 0.75]);
+/** Items 1-2 need ge >= C-1 + this (start of class C) when the kit has two such items and the child is not weak. */
+export const OPEN_FLOOR_OFFSET = 0.25;   // Day 0 (2026-10-05): +0.25 measured with v1's judge: items 1-2 graded <= C-2 117->100 and 87->80 of 385 (crosscheck-v1)
+/** P(correct) of an on-grade child AT an item's ge (the rater/generator anchor; server/placement/cat.js uses the same). */
+const ANCHOR_P = 0.7;
+const classOfKit = (kit) => Number(/^c(\d+)-/.exec(String(kit?.topicId ?? ""))?.[1]) || null;
 /**
- * Practice order: skills in kit order (prerequisites first), items by difficulty then kind, teach-back
- * held for the teach-back phase, and one spoken diagnostic second in line — the child's known
- * misconception if this kit has it, else the kit's first.
+ * An item's grade-equivalent on ability.js's scale (class C runs from GE C-1 to C): the kit's measured `ge` (re-levelled
+ * and rater-calibrated, data/kits-relevel), else the interim proxy C - 1 + (difficulty - 3) * 0.5 (CONTENT-LEVEL F0.1).
  */
-export function buildPracticeQueue(kit, { activeMisconceptionIds = [] } = {}) {
+export function itemGE(item, classLevel) {
+  if (typeof item?.ge === "number") return item.ge;
+  return classLevel - 1 + ((item?.difficulty ?? 2) - 3) * 0.5;
+}
+/** Expected P(correct) for a child at θ (default: an on-track child mid-year, GE C-0.5) on the ability.js 4PL. */
+export function expectedSuccess(item, theta, classLevel) {
+  const c = item?.options?.length ? 1 / item.options.length : C_OPEN;
+  const ge = itemGE(item, classLevel);
+  const b = ge - Math.log((ANCHOR_P - c) / (1 - c - S_SLIP) / (1 - (ANCHOR_P - c) / (1 - c - S_SLIP))) / A_GE;
+  return p4pl(theta, b, A_GE, c, S_SLIP);
+}
+/** "Too far below" for item 1 or 2: ge <= C-2 (CONTENT-LEVEL F0.1), unless the child is weak on this topic or below. */
+export const tooFarBelow = (item, classLevel) => itemGE(item, classLevel) <= classLevel - 2;
+/** Two prompts on the same motif (the dice, then the dice picture): content-word overlap >= 0.4 of the smaller set. */
+export function sameMotif(a, b) {
+  const wa = contentWords(a?.prompt_en ?? ""), wb = contentWords(b?.prompt_en ?? "");
+  if (!wa.size || !wb.size) return false;
+  const inter = [...wa].filter((w) => wb.has(w)).length;
+  return inter / Math.min(wa.size, wb.size) >= 0.4;
+}
+
+/**
+ * Practice order. With `content.f0` on (default):
+ * - item 1 is the item an on-track child answers right with P closest to 0.85, from the earliest skill that has one
+ *   (items with a measured ge first, when the kit has two),
+ *   and item 2 the one closest to 0.75 on a different motif; neither is ever ge <= C-2 unless `weak` (the child has shown
+ *   weakness on this topic or its prerequisite) or the kit has nothing else;
+ * - the rest round-robin across skills in kit order, easiest first within a skill, so every skill (the hardest too)
+ *   enters before the cap; over QUEUE_MAX the EASIEST items go first, never a skill's last item;
+ * - the spoken diagnostic goes third or later, never on item 1's motif.
+ * Off (TAXILA_CONTENT_F0=off): the pre-F0 order below, unchanged.
+ * @param {object} kit
+ * @param {{ activeMisconceptionIds?: string[], classLevel?: number, theta?: number, weak?: boolean }} [opts]
+ */
+export function buildPracticeQueue(kit, { activeMisconceptionIds = [], classLevel, theta, weak = false } = {}) {
+  const C = classLevel ?? classOfKit(kit);
+  if (contentF0() && C) return buildF0Queue(kit, { activeMisconceptionIds, C, theta: theta ?? C - 0.5, weak });
   const ids = [];
   for (const sk of kit.skills) {
     ids.push(...kit.items.filter((i) => i.skillId === sk.id && i.kind !== "teachback")
@@ -162,8 +211,113 @@ export function buildPracticeQueue(kit, { activeMisconceptionIds = [] } = {}) {
   return ids.slice(0, QUEUE_MAX);
 }
 
-/** Next item to pose, or null when the queue is spent. `easier` picks the gentlest remaining one. */
-export function selectNext(s, kit, { easier = false } = {}) {
+function buildF0Queue(kit, { activeMisconceptionIds, C, theta, weak }) {
+  const skillIdx = new Map(kit.skills.map((sk, i) => [sk.id, i]));
+  const pool = kit.items.filter((i) => i.kind !== "teachback" && skillIdx.has(i.skillId))
+    .map((i) => ({ i, ge: itemGE(i, C), p: expectedSuccess(i, theta, C), k: skillIdx.get(i.skillId) }));
+  const openable = (x) => x.i.kind !== "error_spot" && x.i.kind !== "far_transfer" && (weak || !tooFarBelow(x.i, C));
+  const pick = (cands, target) => [...cands].sort((a, b) => Math.abs(a.p - target) - Math.abs(b.p - target) || a.k - b.k || a.ge - b.ge)[0] ?? null;
+  let cands = pool.filter(openable);
+  // A measured ge (re-levelled, rater-calibrated) beats the difficulty proxy for the two items a child meets first: the
+  // proxy is exactly what put the dice first (75% of difficulty-1 entry rungs were judged too easy, CONTENT-LEVEL §0).
+  const measured = cands.filter((x) => typeof x.i.ge === "number");
+  if (measured.length >= 2) cands = measured;
+  // Opener floor: with no evidence of weakness, the first two items need at least start-of-class-C demand (GE C-1).
+  // Measured 2026-10-04 with v1's independent judge: without it, the 0.85 target picked items a class below.
+  const atGrade = cands.filter((x) => x.ge >= C - 1 + OPEN_FLOOR_OFFSET);
+  if (!weak && atGrade.length >= 2) cands = atGrade;
+  // Leave headroom: never open on the topic's hardest level when two openable items sit below it, so "harder one" has
+  // somewhere to go from item 1.
+  const topGE = Math.max(...pool.map((x) => x.ge));
+  const belowTop = cands.filter((x) => x.ge < topGE - 0.01);
+  if (belowTop.length >= 2) cands = belowTop;
+  // A kit with nothing at grade still opens: its highest-ge items, never a blank queue.
+  if (!cands.length) { const top = Math.max(...pool.map((x) => x.ge)); cands = pool.filter((x) => x.ge >= top - 0.25 && x.i.kind !== "error_spot"); }
+  const firstSkill = Math.min(...cands.map((x) => x.k));
+  const first = pick(cands.filter((x) => x.k === firstSkill), OPEN_TARGETS[0]);
+  const second = first && pick(cands.filter((x) => x !== first && x.k <= first.k + 1 && !sameMotif(x.i, first.i)), OPEN_TARGETS[1])
+    || first && pick(cands.filter((x) => x !== first && !sameMotif(x.i, first.i)), OPEN_TARGETS[1]);
+  const head = [first, second].filter(Boolean);
+  // Round-robin the rest across skills, easiest first within each skill.
+  const bySkill = kit.skills.map((_, k) => pool.filter((x) => x.k === k && !head.includes(x)).sort((a, b) => a.ge - b.ge || KIND_ORDER[a.i.kind] - KIND_ORDER[b.i.kind]));
+  let rest = [];
+  for (let r = 0; bySkill.some((xs) => xs.length > r); r++) for (const xs of bySkill) if (xs[r]) rest.push(xs[r]);
+  const m = kit.misconceptions.find((x) => x.diagnostic && activeMisconceptionIds.includes(x.id)) ?? kit.misconceptions.find((x) => x.diagnostic);
+  const room = QUEUE_MAX - head.length - (m ? 1 : 0);
+  // Cap by coverage: drop the easiest item whose skill keeps another item, until it fits.
+  while (rest.length > room) {
+    const count = new Map(); for (const x of [...head, ...rest]) count.set(x.k, (count.get(x.k) ?? 0) + 1);
+    const victim = [...rest].sort((a, b) => a.ge - b.ge).find((x) => count.get(x.k) > 1) ?? rest[0];
+    rest = rest.filter((x) => x !== victim);
+  }
+  // Within the kept rest, keep the round-robin order (it is already prerequisite-first per round).
+  const ids = [...head, ...rest].map((x) => x.i.id);
+  if (m) {
+    const diag = diagnosticItem(kit, m);
+    let at = Math.min(2, ids.length);
+    if (diag && first && sameMotif(diag, first.i)) at = Math.min(3, ids.length);
+    ids.splice(at, 0, DIAG_PREFIX + m.id);
+  }
+  return ids.slice(0, QUEUE_MAX);
+}
+
+/**
+ * The item a "harder one" asks for (the chip symmetric to "an easier one", OD12 "warm-up or spicy"): among every not-yet-
+ * done kit item (not only the queue, so the harder path is reachable past the cap), the smallest step above the current
+ * item's ge; null when nothing is above it.
+ */
+export function harderThan(s, kit, currentId = s.activeItemId ?? s.itemsDone?.[s.itemsDone.length - 1]) {
+  const C = classOfKit(kit) ?? 5;
+  const done = new Set([...(s.itemsDone ?? []), ...(s.skipped ?? []), currentId].filter(Boolean));
+  const cur = currentId ? findItem(s, kit, currentId) : null;
+  const base = cur ? itemGE(cur, C) : C - 1;
+  const left = kit.items.filter((i) => i.kind !== "teachback" && !done.has(i.id));
+  const above = left.filter((i) => itemGE(i, C) > base + 0.05).sort((a, b) => itemGE(a, C) - itemGE(b, C));
+  // Nothing above: null, never a step down (the caller says so and may ask Forge for an on-grade "spicy" isomorph, F3).
+  return above[0] ?? null;
+}
+
+/** Fast-forward (CONTENT-LEVEL F0.5) needs "fast": an unaided first-try answer under this many ms. */
+export const FAST_MS = 20_000;
+/**
+ * Items to skip after strong early evidence (pure; the caller adds them to s.skipped). `answers`: this lesson's graded
+ * first attempts in order, { itemId, correct, unaided, ms }.
+ * - The first two answers both correct, unaided and fast: skip the rest of that skill's items below C-1 + 0.25
+ *   (the warm-up rungs, difficulty <= 2 on the proxy).
+ * - Three correct unaided answers in a row on one skill: skip the rest of that skill (move to the next skill).
+ */
+export function fastForwardSkips(s, kit, answers) {
+  const C = classOfKit(kit) ?? 5;
+  const done = new Set([...(s.itemsDone ?? []), ...(s.skipped ?? [])]);
+  const items = new Map(kit.items.map((i) => [i.id, i]));
+  const good = (a) => a && a.correct && a.unaided !== false;
+  const out = new Set();
+  const [a1, a2] = answers;
+  if (good(a1) && good(a2) && (a1.ms ?? Infinity) <= FAST_MS && (a2.ms ?? Infinity) <= FAST_MS) {
+    const sk = items.get(a2.itemId)?.skillId ?? items.get(a1.itemId)?.skillId;
+    for (const i of kit.items) if (i.skillId === sk && !done.has(i.id) && itemGE(i, C) < C - 1 + 0.25) out.add(i.id);
+  }
+  const last3 = answers.slice(-3);
+  if (last3.length === 3 && last3.every(good)) {
+    const sks = new Set(last3.map((a) => items.get(a.itemId)?.skillId));
+    if (sks.size === 1) { const [sk] = sks; for (const i of kit.items) if (i.skillId === sk && !done.has(i.id) && i.kind !== "teachback") out.add(i.id); }
+  }
+  for (const a of answers) out.delete(a.itemId);
+  return [...out];
+}
+/** Topic test-out (F0.5): three on-grade items (ge >= C-0.5) right and unaided this lesson. */
+export function testedOut(kit, answers) {
+  const C = classOfKit(kit) ?? 5;
+  const items = new Map(kit.items.map((i) => [i.id, i]));
+  return answers.filter((a) => a.correct && a.unaided !== false && items.has(a.itemId) && itemGE(items.get(a.itemId), C) >= C - 0.5).length >= 3;
+}
+
+/**
+ * Next item to pose, or null when the queue is spent. `easier` picks the gentlest remaining one; `harder` the next step
+ * up (harderThan), reaching past the queue.
+ */
+export function selectNext(s, kit, { easier = false, harder = false } = {}) {
+  if (harder && contentF0()) return harderThan(s, kit);
   const done = new Set([...s.itemsDone, ...s.skipped]);
   const ok = s.queue.map((id) => findItem(s, kit, id)).filter((it) => {
     if (!it || done.has(it.id) || it.id === s.activeItemId) return false;
@@ -172,6 +326,7 @@ export function selectNext(s, kit, { easier = false } = {}) {
     return !!sk && sk.pKnown >= ERROR_SPOT_P && sk.correctUnaided >= 1;
   });
   if (!easier) return ok[0] ?? null;
+  if (contentF0()) { const C = classOfKit(kit) ?? 5; return [...ok].sort((a, b) => itemGE(a, C) - itemGE(b, C))[0] ?? null; }
   return [...ok].sort((a, b) => a.difficulty - b.difficulty)[0] ?? null;
 }
 

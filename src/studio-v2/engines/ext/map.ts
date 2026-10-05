@@ -4,7 +4,7 @@
 // distance dial to real km using the scale. Drop pins at latitude and longitude, or fly to a named continent or
 // ocean on a world map drawn from Natural Earth land (no borders). The host grades every act by computation.
 import { LAND } from "../../../../shared/studio-spec-ext/land-data.ts";
-import { flyRoute, regionOf, scaleKey, type MapSpec, type MrRoundT } from "../../../../shared/studio-spec-ext/map.ts";
+import { curvePts, flyRoute, polyLen, regionOf, scaleKey, threadKey, traceStray, type MapSpec, type MrRoundT } from "../../../../shared/studio-spec-ext/map.ts";
 import { C, W, H } from "../../core/tokens.ts";
 import { clamp, hexA, lerp, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
@@ -22,7 +22,7 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
   const T = spec.strings, accent = "#C9A7FF";
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 151 + 9);
-  const g = { prog: [] as string[], flying: false, flyT: 0, path: [] as [number, number][], blocked: false, tape: null as null | { a: [number, number]; b: [number, number] }, dragging: false, dial: 0, dialDrag: false, k: 0, pin: null as null | { lon: number; lat: number }, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false };
+  const g = { prog: [] as string[], flying: false, flyT: 0, path: [] as [number, number][], blocked: false, tape: null as null | { a: [number, number]; b: [number, number] }, dragging: false, dial: 0, dialDrag: false, k: 0, pin: null as null | { lon: number; lat: number }, answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, coachA: 1, coachGone: false, trace: [] as [number, number][], tracing: false, straightT: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): MrRoundT => spec.rounds[Math.max(0, flow.round)];
   const flow = new RoundFlow(api, spec.rounds.length, {
@@ -30,11 +30,11 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     onEnd(k) { api.event("round_end", { round: k + 1 }); },
     onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, of: g.n }); },
   });
-  function reset() { g.prog = []; g.flying = false; g.flyT = 0; g.path = []; g.blocked = false; g.tape = null; g.dial = 0; g.pin = null; g.answered = false; g.verdict = ""; g.detail = ""; g.revealT = 0; const r = rd(); api.task(`${T.round} ${flow.round + 1}`, r.mode === "route" ? `${r.places[r.goal].label}: ${T.coach}` : r.mode === "scale" ? T.measure : r.mode === "globe" ? pinText(r.pins[g.k]) : `${T.fly} ${r.asks[g.k]}`); }
+  function reset() { g.prog = []; g.flying = false; g.flyT = 0; g.path = []; g.blocked = false; g.tape = null; g.dial = 0; g.pin = null; g.answered = false; g.verdict = ""; g.detail = ""; g.revealT = 0; const r = rd(); api.task(`${T.round} ${flow.round + 1}`, r.mode === "route" ? `${r.places[r.goal].label}: ${T.coach}` : r.mode === "scale" ? T.measure : r.mode === "globe" ? pinText(r.pins[g.k]) : r.mode === "thread" ? T.thread : `${T.fly} ${r.asks[g.k]}`); g.trace = []; g.tracing = false; }
   const units = () => { const r = rd(); return r.mode === "globe" ? r.pins.length : r.mode === "region" ? r.asks.length : 1; };
   const pinText = (p: { lat: number; lon: number }) => `${T.lat} ${Math.abs(p.lat)}°${p.lat >= 0 ? T.N : T.S}, ${T.lon} ${Math.abs(p.lon)}°${p.lon >= 0 ? T.E : T.W}`;
-  const grid = (r: Extract<MrRoundT, { mode: "route" | "scale" }>) => { const cell = Math.min(60, 560 / r.w, 330 / r.h); return { cell, x0: 420 - (cell * r.w) / 2, y0: 356 - (cell * r.h) / 2 }; };
-  const cc = (r: Extract<MrRoundT, { mode: "route" | "scale" }>, c: [number, number]): [number, number] => { const G = grid(r); return [G.x0 + (c[0] + 0.5) * G.cell, G.y0 + (c[1] + 0.5) * G.cell]; };
+  const grid = (r: { w: number; h: number }) => { const cell = Math.min(60, 560 / r.w, 330 / r.h); return { cell, x0: 420 - (cell * r.w) / 2, y0: 356 - (cell * r.h) / 2 }; };
+  const cc = (r: { w: number; h: number }, c: [number, number]): [number, number] => { const G = grid(r); return [G.x0 + (c[0] + 0.5) * G.cell, G.y0 + (c[1] + 0.5) * G.cell]; };
   const dirBtns = () => (rd() as Extract<MrRoundT, { mode: "route" }>).steer === "turns" ? [{ m: "F", lab: "↑", x: 860, y: 200 }, { m: "L", lab: "↺", x: 820, y: 300 }, { m: "R", lab: "↻", x: 900, y: 300 }] : [{ m: "N", lab: T.N, x: 860, y: 180 }, { m: "W", lab: T.W, x: 800, y: 260 }, { m: "E", lab: T.E, x: 920, y: 260 }, { m: "S", lab: T.S, x: 860, y: 340 }];
   const dialMax = () => { const r = rd(); return r.mode === "scale" ? Math.ceil((scaleKey(r) * 1.6) / 10) * 10 || 10 : 1; };
   const DIAL = { x0: 160, x1: 760, y: 572 };
@@ -60,13 +60,14 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
         if (Math.abs(p.y - DIAL.y) < 36) { g.dialDrag = true; g.dial = clamp(((p.x - DIAL.x0) / (DIAL.x1 - DIAL.x0)) * dialMax(), 0, dialMax()); return; }
         g.dragging = true; g.tape = { a: [p.x, p.y], b: [p.x, p.y] }; return;
       }
+      if (r.mode === "thread") { const G = grid(r), q: [number, number] = [(p.x - G.x0) / G.cell - 0.5, (p.y - G.y0) / G.cell - 0.5]; if (Math.hypot(q[0] - r.curve[0][0], q[1] - r.curve[0][1]) < 0.8) { g.tracing = true; g.trace = [r.curve[0]]; } return; }
       if (p.x < WM.x || p.x > WM.x + WM.w || p.y < WM.y || p.y > WM.y + WM.h) return;
       const lon = +lonOf(p.x).toFixed(1), lat = +latOf(p.y).toFixed(1); g.pin = { lon, lat };
       if (r.mode === "globe") { const t = r.pins[g.k], e = Math.max(Math.abs(lat - t.lat), Math.abs(((lon - t.lon + 540) % 360) - 180)); judge({ lat, lon }, e <= r.tol ? "right" : "wrong"); }
       else judge({ lat, lon }, regionOf(lon, lat) === r.asks[g.k] ? "right" : "wrong");
     },
-    move(p) { if (g.dragging && g.tape) g.tape.b = [p.x, p.y]; if (g.dialDrag) g.dial = clamp(((p.x - DIAL.x0) / (DIAL.x1 - DIAL.x0)) * dialMax(), 0, dialMax()); },
-    up() { if (g.dragging) { g.dragging = false; api.record("tape", g.tape); } if (g.dialDrag) { g.dialDrag = false; g.dial = Math.round(g.dial * 2) / 2; api.record("dial", { km: g.dial }); } },
+    move(p) { const r0 = rd(); if (g.tracing && r0.mode === "thread") { const G = grid(r0), q: [number, number] = [(p.x - G.x0) / G.cell - 0.5, (p.y - G.y0) / G.cell - 0.5], l = g.trace[g.trace.length - 1]; if (Math.hypot(q[0] - l[0], q[1] - l[1]) > 0.08) g.trace.push([+q[0].toFixed(3), +q[1].toFixed(3)]); } if (g.dragging && g.tape) g.tape.b = [p.x, p.y]; if (g.dialDrag) g.dial = clamp(((p.x - DIAL.x0) / (DIAL.x1 - DIAL.x0)) * dialMax(), 0, dialMax()); },
+    up() { const r0 = rd(); if (g.tracing && r0.mode === "thread") { g.tracing = false; const end = r0.curve[r0.curve.length - 1], l = g.trace[g.trace.length - 1]; if (g.trace.length > 3 && Math.hypot(l[0] - end[0], l[1] - end[1]) < 0.9) { const got = polyLen(g.trace) * r0.kmPerSquare, key = threadKey(r0); judge({ trace: g.trace }, Math.abs(got - key) / key * 100 <= r0.tolPct && traceStray(r0, g.trace) <= 0.35 ? "right" : "wrong"); g.straightT = 0; } else { g.trace = []; api.record("thread", { dropped: true }); } } if (g.dragging) { g.dragging = false; api.record("tape", g.tape); } if (g.dialDrag) { g.dialDrag = false; g.dial = Math.round(g.dial * 2) / 2; api.record("dial", { km: g.dial }); } },
   });
   function update(dt: number) {
     if (!fontOk) return;
@@ -75,6 +76,7 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
     if (flow.state !== "play") return;
     const r = rd();
     if (g.flying && r.mode === "route") { g.flyT += dt; if (g.flyT > (g.path.length - 1) * 0.28 + (g.blocked ? 0.35 : 0) + 0.2) { g.flying = false; const goal = r.places[r.goal].at, end = g.path[g.path.length - 1], ok = !g.blocked && end[0] === goal[0] && end[1] === goal[1] && g.path.length - 1 <= r.maxSteps; if (g.blocked) api.fx.shake(5, 0.25); judge([...g.prog], ok ? "right" : "wrong"); } }
+    if (g.answered) g.straightT += dt;
     if (g.answered) { g.revealT += dt; if (g.revealT > 2.6) { if (g.k + 1 < units()) { g.k++; reset(); } else flow.endRound(); } }
     hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
   }
@@ -118,6 +120,16 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
         if (done) pill(api, ctx, `${scaleKey(r).toFixed(1)} ${T.km}`, 880, 380, { color: C.ion, size: 38 });
         ctx.save(); ctx.fillStyle = !done ? "rgba(203,255,77,.14)" : "rgba(255,255,255,.04)"; roundRect(ctx, GO.x, GO.y, GO.w, GO.h, 16); ctx.fill(); ctx.strokeStyle = !done ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.set, GO.x + GO.w / 2, GO.y + GO.h / 2 + 2, { font: "display", size: 38, weight: 800, color: !done ? C.volt : C.ink3, align: "center", baseline: "middle" });
       }
+    } else if (r.mode === "thread") {
+      const G = grid(r), toS = (q: [number, number]): [number, number] => [G.x0 + (q[0] + 0.5) * G.cell, G.y0 + (q[1] + 0.5) * G.cell];
+      ctx.fillStyle = "#1B2B22"; ctx.fillRect(G.x0, G.y0, G.cell * r.w, G.cell * r.h);
+      ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 1; for (let i = 0; i <= r.w; i++) { ctx.beginPath(); ctx.moveTo(G.x0 + i * G.cell, G.y0); ctx.lineTo(G.x0 + i * G.cell, G.y0 + r.h * G.cell); ctx.stroke(); } for (let j = 0; j <= r.h; j++) { ctx.beginPath(); ctx.moveTo(G.x0, G.y0 + j * G.cell); ctx.lineTo(G.x0 + r.w * G.cell, G.y0 + j * G.cell); ctx.stroke(); }
+      const road = curvePts(r.curve).map(toS); ctx.save(); ctx.strokeStyle = "#8C6A44"; ctx.lineWidth = 18; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); road.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke(); ctx.strokeStyle = "rgba(255,230,180,.35)"; ctx.lineWidth = 2; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.restore();
+      const [ax, ay] = toS(r.curve[0]), [bx, by] = toS(r.curve[r.curve.length - 1]);
+      for (const [x, y, lab] of [[ax, ay, "A"], [bx, by, "B"]] as [number, number, string][]) { bloom(ctx, C.volt, x, y, 30, 0.5); ctx.save(); ctx.fillStyle = C.volt; ctx.beginPath(); ctx.arc(x, y, 18, 0, Math.PI * 2); ctx.fill(); ctx.restore(); api.text(ctx, lab, x, y + 1, { font: "display", size: 38, weight: 800, color: "#0B0E14", align: "center", baseline: "middle" }); }
+      if (g.trace.length > 1) { const k = done ? clamp(g.straightT / 1.2, 0, 1) : 0, len = polyLen(g.trace); ctx.save(); ctx.strokeStyle = C.sun; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); let acc = 0; g.trace.forEach((q, i) => { if (i) acc += Math.hypot(q[0] - g.trace[i - 1][0], q[1] - g.trace[i - 1][1]); const [x, y] = toS(q), sx = 160 + (acc / Math.max(len, 1e-6)) * Math.min(600, len * G.cell), sy = 590; const X = x + (sx - x) * k, Y = y + (sy - y) * k; if (i) ctx.lineTo(X, Y); else ctx.moveTo(X, Y); }); ctx.stroke(); ctx.restore(); }
+      api.text(ctx, T.scale, 870, 258, { font: "mono", size: 38, weight: 600, color: accent, align: "center", baseline: "middle", maxWidth: 240 }); api.text(ctx, `${fmtNum(r.kmPerSquare, r.kmPerSquare % 1 ? 1 : 0)} ${T.km}`, 870, 304, { font: "display", size: 44, weight: 800, color: accent, align: "center", baseline: "middle", maxWidth: 240 });
+      if (done) { pill(api, ctx, g.detail, 870, 400, { color: ok ? C.mint : C.amber, size: 38 }); pill(api, ctx, `${threadKey(r).toFixed(1)} ${T.km}`, 870, 470, { color: C.ion, size: 38 }); }
     } else {
       ctx.drawImage(api.layer("world", paintWorld), 0, 0, W, H);
       for (const la of [-60, -30, 30, 60]) api.text(ctx, `${Math.abs(la)}°${la > 0 ? T.N : T.S}`, WM.x + 8, wy(la) - 2, { font: "mono", size: 38, weight: 600, color: "rgba(255,255,255,.45)", baseline: "bottom", decor: true });
@@ -153,6 +165,7 @@ function create(api: EngineApi, spec: MapSpec): EngineInstance {
       if (Math.abs(g.dial - Math.round(want * 2) / 2) > 0.26) return { type: "drag", from: [DIAL.x0 + (g.dial / dialMax()) * (DIAL.x1 - DIAL.x0), DIAL.y], to: [kx, DIAL.y], ms: 400, after: 300 };
       return { type: "tap", at: [GO.x + 75, GO.y + 32], after: 500 };
     }
+    if (r.mode === "thread") { const G = grid(r), pts = curvePts(r.curve, 6).map((q, i): [number, number] => [G.x0 + (q[0] + 0.5 + (slip && i % 2 ? 0.5 : 0)) * G.cell, G.y0 + (q[1] + 0.5) * G.cell]); return { type: "path", points: pts, ms: 2200, after: 900 }; }
     if (r.mode === "globe") { const t = r.pins[g.k]; return { type: "tap", at: [wx(t.lon + (slip ? 20 : 0)), wy(t.lat)], after: 900 }; }
     const anchors: Record<string, [number, number]> = { Asia: [90, 45], Africa: [20, 5], Europe: [15, 50], "North America": [-100, 45], "South America": [-60, -15], Australia: [134, -25], Antarctica: [0, -80], "Pacific Ocean": [-150, 0], "Atlantic Ocean": [-30, 10], "Indian Ocean": [75, -15], "Arctic Ocean": [0, 85], "Southern Ocean": [60, -63] };
     const [lo, la] = anchors[r.asks[g.k]] ?? [0, 0]; return { type: "tap", at: [wx(lo), wy(la)], after: 900 };

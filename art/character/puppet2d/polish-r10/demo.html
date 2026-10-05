@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher C Puppet r10</title>
+<style>
+  :root { --bg: #fbe5bd; --ink: #3a2c22; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+  #wrap { display: flex; flex-direction: column; align-items: center; padding: 12px 16px; gap: 8px; }
+  #c { width: min(92vw, 720px); aspect-ratio: 1 / 1; display: block; border-radius: 16px; }
+  #hud { font-variant-numeric: tabular-nums; opacity: 0.8; min-height: 1.4em; text-align: center; }
+  body.facerig #hud { font-size: 18px; opacity: 1; background: #fff6e6; border: 1px solid #c9a77a; border-radius: 12px; padding: 8px 12px; }
+  button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 1px solid #c9a77a; background: #fff6e6; }
+  body.capture #hud, body.capture button, body.capture #note { display: none; }
+  body.capture #wrap { padding: 0; }
+  body.capture #c { width: 720px; border-radius: 0; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+  <div id="hud"></div>
+  <button id="start">Restart timeline</button>
+  <div id="note">Polish r10 of arm P. New in r10: the HAIR turns with the head (the cap slides toward the far side about the part line, fitted to the painted 30-degree keys: the near half widens, the far half compresses, the bun swings to the far side) and is relit from yaw (far half darker, near sheen lifted); open-mouth corners are clean (the closed lip line beyond the opening is inpainted to skin; corner-tick gate 0 hits); delight is re-posed onto c-happy (smaller jaw drop, dominant upper-teeth band, slim lower lip, smiling eyes); concern is caring, not sad (lids up and on the child, level soft mouth, a one-sided reassuring lift on take B); thinking looks diagonally up and the lid follows; the eyes keep c-front size while talking; cleaner eyeliner wings. Tap Restart to hear the voice. Options: ?facerig=1 phone performance read-out (fps, work p95), ?hair=0 the r9 frontal hair, ?rel=0 the r8 frontal light, ?hairp={..} / ?lipp={..} / ?relp={..} tuning, ?sil=0 / ?feat=0 turn terms off, ?bg=r,g,b backdrop, ?start=seconds.</div>
+</div>
+<script>if (new URLSearchParams(location.search).has("capture")) document.body.classList.add("capture");</script>
+<script type="module" src="./demo.bundle.js"></script>
+</body>
+</html>

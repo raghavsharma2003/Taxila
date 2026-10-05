@@ -1,0 +1,46 @@
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -2,6 +2,7 @@
+ // Every route acts for an authenticated guardian's child (requireChild). One compile() feeds both lanes:
+ // the voice client applies `instructions` verbatim via session.update, and text mode generates its reply
+ // from the SAME string (inherited rejection: two prompts for two lanes).
++import { warmupItemsFor } from "../learner/checks.js";
+ import { randomUUID } from "crypto";
+ import { q, one, tx } from "../db.js";
+ import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
+@@ -67,24 +68,8 @@
+  * clears its skill's delayed_check trigger (director/state.js activate).
+  * @param {string[]} skillIds openers, most urgent first
+  */
+-async function warmupItemsFor(skillIds) {
+-  const out = [];
+-  for (const skillId of skillIds.slice(0, LIMITS.warmupMax)) {
+-    const st = { skillId };
+-    const topicId = topicOf(st.skillId);
+-    const kit = topicId ? await getKit(topicId, { generate: false }) : null;
+-    const it = kit?.items
+-      .filter((i) => i.skillId === st.skillId && ["retrieval", "practice", "near_transfer"].includes(i.kind))
+-      .sort((a, b) => (b.kind === "retrieval") - (a.kind === "retrieval") || a.difficulty - b.difficulty)[0];
+-    if (!it) continue;
+-    out.push({
+-      ...it, kind: "retrieval", topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
+-      misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception)
+-        .map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
+-    });
+-  }
+-  return out;
+-}
++// The delayed check's item: server/learner/checks.js (VALUES-100 V1.3: a NEW form the child has never answered on the
++// skill, from the per-skill check reserve; no unseen item → no check this session, never a repeat).
+ 
+ /** A weave_queue row → the reducer's entry (comprehension/weave.js). */
+ const weaveEntryOf = (r) => ({ childId: r.child_id, skillId: r.skill_id, kind: r.kind, anchorAt: new Date(r.anchor_at).toISOString(),
+@@ -196,7 +181,7 @@
+   const { q: plannedQ, hosted } = onTopicPlanned(consumeExpired(weaveQ, checks.consumed), kit.skills.map((x) => x.id), now);
+   // Seam (no-op): a hosted woven sub-step goes to the item generator (kit isomorph or Forge ModuleRequest.want.subSkill).
+   forgeSeam.wovenSubStep(hosted[0] ?? null);
+-  const warmupItems = await warmupItemsFor(checks.openers);
++  const warmupItems = await warmupItemsFor(checks.openers, { ledger });
+   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
+   const [history, brief0, stuck] = await Promise.all([loadRecentOutcomes(child.id, kit.skills.map((s) => s.id)), buildChildBrief(child, { memory }),
+     // W2-C review: items stuck on in recent lessons (rung 4 / left after don't-knows) route the guidance ladder; never evidence

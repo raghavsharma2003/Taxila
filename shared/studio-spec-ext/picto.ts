@@ -37,7 +37,7 @@ const pdDefault: PictoSpec = {
   rounds: [
     { mode: "tally", title: "Gate survey", sub: "count what passes the school gate", cats: [{ label: "Cycles", glyph: "wheel", count: 7 }, { label: "Buses", glyph: "car", count: 4 }, { label: "Walkers", glyph: "person", count: 9 }], scale: 1, axisStart: 0, claims: [], seed: 5, speed: 1 },
     { mode: "picto", title: "Draw the key", sub: "one symbol stands for 4", cats: [{ label: "Mango", glyph: "apple", count: 12 }, { label: "Guava", glyph: "apple", count: 6 }, { label: "Banana", glyph: "apple", count: 18 }], scale: 4, axisStart: 0, claims: [], seed: 7, speed: 1 },
-    { mode: "claims", title: "Check the claims", sub: "this axis does not start at 0", cats: [{ label: "Red", count: 42 }, { label: "Blue", count: 46 }, { label: "Green", count: 21 }], scale: 5, axisStart: 40, seed: 9, speed: 1, targets: "c7-maths-ch13-t03-m1",
+    { mode: "claims", title: "Check the claims", sub: "this axis does not start at 0", cats: [{ label: "Red", count: 42 }, { label: "Blue", count: 46 }, { label: "Green", count: 21 }], scale: 5, axisStart: 40, seed: 9, speed: 1, targets: "c7-maths-ch13-t03-m-axis-zero",
       claims: [{ kind: "twice", a: 1, b: 0 }, { kind: "twice", a: 0, b: 2 }, { kind: "more", a: 1, b: 0 }, { kind: "total", a: 0, b: 0, value: 109 }] },
   ],
 };

@@ -10,6 +10,7 @@
 // Bodies carry hashes, partial text (already the child's own words, the same text the STT gave the device) and hints.
 // Responses carry flags only: safety state, promotion keys. The child's words are never written to a log here.
 import { DuplexSlice } from "./slice.js";
+import { duplexRegistry } from "./registry.js";
 
 const SLICE_TTL_MS = 30 * 60_000;
 
@@ -30,6 +31,9 @@ export function createDuplexRoutes(deps) {
     for (const [id, x] of slices) if (now() - x.at > SLICE_TTL_MS) { x.slice.close(now()); slices.delete(id); }
     return s.slice;
   };
+  // safety-robust (2026-10-05): the brain's /turn reaches a lesson's live slice (model distress note) through the registry;
+  // a lesson with no slice (no duplex session) gets null and nothing happens.
+  duplexRegistry.sliceFor = (lessonId) => slices.get(lessonId)?.slice ?? null;
   const json = (res, code, body) => {
     res.statusCode = code;
     res.setHeader("content-type", "application/json; charset=utf-8");

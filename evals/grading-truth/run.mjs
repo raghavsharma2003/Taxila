@@ -111,11 +111,16 @@ for (const { kit, cls, subject } of kits) {
       // acceptable entries: truth from the two-rater parts labels when present, else the kit's own claim
       for (const a of (item.acceptable ?? []).slice(0, 4)) {
         const lab = partsLabels.items?.[item.id]?.acceptable?.[a];
-        run(a, lab === "partial" ? "partial" : "correct", lab ? `text:acceptable(${lab}, 2-rater)` : "text:acceptable(kit)", { tag: { truthSource: lab ? "two-rater" : "kit" } });
+        run(a, lab === "partial" ? "partial" : lab === "wrong" ? "incorrect" : "correct", lab ? `text:acceptable(${lab}, 2-rater)` : "text:acceptable(kit)", { tag: { truthSource: lab ? "two-rater" : "kit" } });
+        // the same words inside a sentence: the exact path cannot match, so the MODEL decides (this is where a rubric that
+        // reads every key as multi-part would call a complete single-part answer partial)
+        if (lab) run(`mujhe lagta hai ${a}`, lab === "partial" ? "partial" : lab === "wrong" ? "incorrect" : "correct", `text:acceptable-in-sentence(${lab}, 2-rater)`, { tag: { truthSource: "two-rater" } });
       }
       // a different answer from the same topic (never the same words)
       const other = R.shuffle(kit.items).find((o) => o.id !== item.id && norm0(o.answer) !== norm0(key) && ![key, ...(item.acceptable ?? [])].some((a) => norm0(a) === norm0(o.answer)) && !norm0(key).includes(norm0(o.answer)) && !norm0(o.answer).includes(norm0(key)));
-      if (other) run(String(other.answer), "incorrect", "text-wrong:other-item-key");
+      // WEAK truth: another item's key is assumed wrong for this one, but two items can share an answer ("p = 7" and
+      // "... x = 7"); a disagreement here is listed for a human look, never counted as a proven wrong grade
+      if (other) run(String(other.answer), "incorrect", "text-wrong:other-item-key(weak-truth)");
       // negation of the key ("not X" / "X nahi"): never the key
       if (key.split(/\s+/).length <= 4) run(R.chance(0.5) ? `not ${key}` : `${key} nahi`, "incorrect", "text-wrong:negated-key");
       const parts = partsLabels.items?.[item.id]?.parts;
@@ -153,13 +158,13 @@ function engineValue(engine, params, entry) {
     case "multiply-divide@1": { const c = L.MD.normalize(params); return { kind: "md.product", value: entry, rows: c.a, cols: c.b, built_right: true }; }
     case "place-value@1": { const c = L.PV.normalize(params);
       if (c.mode === "compare") return null;
-      if (c.mode === "build") return { kind: "pv.build", built: Number(entry), target: c.value, counts: [], canonical: true };
+      if (c.mode === "build") { const counts = /^\d+$/.test(String(entry).trim()) ? L.PV.digitsOf(Number(entry), c.places) : []; return { kind: "pv.build", built: Number(entry), target: c.value, counts, canonical: true }; }
       return { kind: "pv.write", written: entry, value: c.value }; }
     case "number-line@1": { const c = L.NL.normalize(params); return c.mode === "read" ? { kind: "nl.read", value: entry, target_shown: true } : { kind: c.mode === "jump" ? "nl.jump" : "nl.place", value: entry, abs_err: 0, hops: 1 }; }
     case "data-graphs@1": { const c = L.DG.normalize(params); return { kind: "dat.read", question: c.question, given: entry }; }
     case "geoboard@1": { const c = L.GEO.normalize(params, 48); return { kind: "geo.claim", ask: c.ask, claimed: Number(entry) }; }
     case "fractions@1": { const c = L.FR.normalize(params); if (c.mode === "compare") return null; return { kind: c.mode === "add" ? "fr.add" : c.mode === "equivalent" ? "fr.equivalent" : "fr.make", value: entry, parts: c.parts }; }
-    case "patterns@1": return { kind: "pat.term", given: [entry] };
+    case "patterns@1": { const c = L.PT.normalize(params); return { kind: "pat.term", given: Array.from({ length: c.blanks }, (_, i) => (i === c.blanks - 1 ? entry : String(L.PT.growAt(c, i)))) }; }
     default: return null;
   }
 }
@@ -290,12 +295,22 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
     for (let s = 0; s < steps.length; s++) {
       screen = s;
       const st = steps[s], frame = R.chance(0.5) ? {} : { itemId: st.itemId };
-      if (R.chance(0.4) && st.wrongAct !== undefined && st.wrongAct !== null) answer(st.wrongAct, frame, st.right(st.wrongAct), "wrong-try");
-      answer(st.rightAct, frame, true, st.tie ? "right:tie-member" : "right");
+      const tag = frame.itemId ? "item-stamped" : "no-item-id";
+      if (R.chance(0.4) && st.wrongAct !== undefined && st.wrongAct !== null) answer(st.wrongAct, frame, st.right(st.wrongAct), `wrong-try:${tag}`);
+      answer(st.rightAct, frame, true, `${st.tie ? "right:tie-member" : "right"}:${tag}`);
       if (s === Math.floor(steps.length / 2) && steps.length > 1 && R.chance(0.5)) {
         sess.mount(`k${rep}-${s}`);
         for (let t = 0; t <= s; t++) { screen = t; answer(steps[t].rightAct, {}, true, "right:after-remount"); }
       }
+    }
+    // a restart the host was NOT told about (no new mount key): the screen is back at step 1 and the child answers it right.
+    // Truth: correct. This is the case the closed-item fallback in grade.js pick() exists for; a fix that removes the
+    // fallback must show it as a cost here, not hide it.
+    if (steps.length > 1) {
+      const g3 = SG.createGradeSession(id, p); g3.mount("r");
+      for (let s2 = 0; s2 < steps.length - 1; s2++) g3.grade(steps[s2].rightAct, {});
+      const v = g3.grade(steps[0].rightAct, {}).correct ? "correct" : "incorrect";
+      rec({ grader: "studio.w2h", path: "server/studio/grade.js createGradeSession", archetype: id, itemId: steps[0].itemId, input: JSON.stringify(steps[0].rightAct)?.slice(0, 80), truth: "correct", kind: "restart-without-mount-key", verdict: v, wrong: wrongKind("correct", v) });
     }
     for (const m of R.shuffle(MALFORMED).slice(0, 3)) {
       const g2 = SG.createGradeSession(id, p); g2.mount("m");
@@ -412,17 +427,16 @@ section(7);
 if (MODEL_N > 0) {
   for (const line of readFileSync(join(MAIN, ".env.local"), "utf8").split("\n")) { const m = line.match(/^([A-Z0-9_]+)=(.*)$/); if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^"(.*)"$/, "$1"); }
   await imp("server/net.js");
-  // stratified: every partial case first (they are the V1.1 multi-part question), then the rest by kind family
-  const fam = (k) => k.split(":")[0];
-  const pool = R.shuffle(deferred);
-  const picked = [...pool.filter((d) => d.c.truth === "partial"), ...pool.filter((d) => d.c.truth !== "partial")];
-  const byFam = {}; const chosen = [];
-  for (const d of picked) { const f = fam(d.c.kind); if ((byFam[f] ?? 0) >= Math.ceil(MODEL_N / 5) && d.c.truth !== "partial") continue; byFam[f] = (byFam[f] ?? 0) + 1; chosen.push(d); if (chosen.length >= MODEL_N) break; }
+  // stratified over the six questions the model leg answers, equal shares, paired across trees (same seed, same pool)
+  const bucket = (c) => /acceptable-in-sentence\(complete/.test(c.kind) ? "complete-single-or-multi(2-rater)" : /partial/.test(c.kind) || c.truth === "partial" ? "partial(2-rater)"
+    : /^num:/.test(c.kind) ? "number-forms-correct" : /^num-wrong/.test(c.kind) ? "number-wrong" : /^text-wrong/.test(c.kind) ? "text-wrong(negated/other)" : "hedge/self-correct/other";
+  const pool = R.shuffle(deferred), per = Math.ceil(MODEL_N / 6), byB = {}, chosen = [];
+  for (const d of pool) { const b = bucket(d.c); if ((byB[b] ?? 0) >= per) continue; byB[b] = (byB[b] ?? 0) + 1; d.c.bucket = b; chosen.push(d); }
   let i = 0;
   const work = async () => { while (i < chosen.length) { const d = chosen[i++]; try {
     const r = await CL.classify({ ...d.args, trace: [] });
     const o = r.outcome, verdict = o === "correct" ? "correct" : o === "partial" ? "partial" : o === "incorrect" || o === "misconception" ? "incorrect" : "abstain";
-    modelRows.push({ ...d.c, grader: "lesson.classify(model)", source: r.source, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict) });
+    modelRows.push({ ...d.c, grader: "lesson.classify(model)", source: r.source, fallback: !!r.fallback, modelOutcome: o, verdict, wrong: wrongKind(d.c.truth, verdict) });
   } catch (e) { modelRows.push({ ...d.c, grader: "lesson.classify(model)", verdict: "abstain", error: String(e.message).slice(0, 80), wrong: null }); } } };
   await Promise.all(Array.from({ length: 6 }, work));
 }

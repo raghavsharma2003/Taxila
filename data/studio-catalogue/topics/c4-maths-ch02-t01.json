@@ -1,0 +1,1502 @@
+{
+ "topicId": "c4-maths-ch02-t01",
+ "title": "Top, front and side views",
+ "chapter": "Hide and Seek",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "solid-view@1",
+  "hint": "build mode: 3 rounds of block models (3x3 base, heights 0-2) whose top/front/side views must be matched"
+ },
+ "game": {
+  "archetype": "solid-view@1",
+  "spec": {
+   "archetype": "solid-view@1",
+   "skills": [
+    "c4-maths-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "lock": "LOCK",
+    "corners": "corners",
+    "edges": "edges",
+    "faces": "faces",
+    "marked": "marked",
+    "turn": "Drag to turn it",
+    "top": "top",
+    "front": "front",
+    "side": "side",
+    "target": "views to match",
+    "yours": "yours",
+    "plan": "tap a cell to stack",
+    "runDone": "Studio closed",
+    "cube": "cube",
+    "cuboid": "cuboid",
+    "triangularPrism": "triangular prism",
+    "squarePyramid": "square pyramid",
+    "tetrahedron": "triangular pyramid",
+    "pentagonalPrism": "pentagonal prism",
+    "hexagonalPrism": "hexagonal prism"
+   },
+   "title": "Solid Studio",
+   "rounds": [
+    {
+     "mode": "build",
+     "title": "Build the first view",
+     "sub": "match the top, front and side views",
+     "heights": [
+      [
+       1,
+       1,
+       0
+      ],
+      [
+       1,
+       1,
+       1
+      ],
+      [
+       0,
+       1,
+       1
+      ]
+     ]
+    },
+    {
+     "mode": "build",
+     "title": "Build the next view",
+     "sub": "use all three flat outlines",
+     "heights": [
+      [
+       2,
+       1,
+       1
+      ],
+      [
+       1,
+       2,
+       1
+      ],
+      [
+       1,
+       1,
+       1
+      ]
+     ],
+     "targets": "c4-maths-ch02-t01-m-draws-3d"
+    },
+    {
+     "mode": "build",
+     "title": "Build the final view",
+     "sub": "check every view before locking",
+     "heights": [
+      [
+       2,
+       1,
+       2
+      ],
+      [
+       1,
+       2,
+       1
+      ],
+      [
+       2,
+       1,
+       1
+      ]
+     ],
+     "targets": "c4-maths-ch02-t01-m-different-objects-different-views"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 2,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch02-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Top, front and side views",
+   "accent": "mint",
+   "targets": "c4-maths-ch02-t01-m-cylinder-top-rect",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Top, front and side views"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "A cylinder top view is a rectangle"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "glass",
+       "type": "node",
+       "text": "Glass",
+       "sub": "one object",
+       "glyph": "jug",
+       "color": "mint"
+      },
+      {
+       "id": "top",
+       "type": "node",
+       "text": "Top view",
+       "sub": "look down",
+       "glyph": "eye",
+       "color": "ion"
+      },
+      {
+       "id": "front",
+       "type": "node",
+       "text": "Front view",
+       "sub": "look straight",
+       "glyph": "eye",
+       "color": "amber"
+      },
+      {
+       "id": "circle",
+       "type": "label",
+       "text": "Circle"
+      },
+      {
+       "id": "rect",
+       "type": "label",
+       "text": "Rectangle"
+      },
+      {
+       "id": "g1",
+       "type": "arrow",
+       "from": "glass",
+       "to": "top",
+       "text": "from above"
+      },
+      {
+       "id": "g2",
+       "type": "arrow",
+       "from": "glass",
+       "to": "front",
+       "text": "from front"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "cycle",
+     "els": [
+      {
+       "id": "cone",
+       "type": "node",
+       "text": "Cone",
+       "sub": "top view",
+       "glyph": "pot",
+       "color": "sun"
+      },
+      {
+       "id": "cyl",
+       "type": "node",
+       "text": "Cylinder",
+       "sub": "top view",
+       "glyph": "jug",
+       "color": "sci"
+      },
+      {
+       "id": "same",
+       "type": "label",
+       "text": "Both: circle"
+      },
+      {
+       "id": "c1",
+       "type": "arrow",
+       "from": "cone",
+       "to": "same",
+       "text": "looks like"
+      },
+      {
+       "id": "c2",
+       "type": "arrow",
+       "from": "cyl",
+       "to": "same",
+       "text": "looks like"
+      },
+      {
+       "id": "outline",
+       "type": "node",
+       "text": "Flat outline",
+       "sub": "one view",
+       "glyph": "ruler",
+       "color": "mint"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "row",
+     "els": [
+      {
+       "id": "prompt",
+       "type": "title",
+       "text": "What is the glass top view?"
+      },
+      {
+       "id": "optCircle",
+       "type": "node",
+       "text": "Circle",
+       "color": "mint"
+      },
+      {
+       "id": "optRect",
+       "type": "node",
+       "text": "Rectangle",
+       "glyph": "ruler",
+       "color": "amber"
+      },
+      {
+       "id": "optTri",
+       "type": "node",
+       "text": "Triangle",
+       "glyph": "mountain",
+       "color": "sci"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A view shows an object from one direction. It is a flat outline, not a picture at an angle.",
+    "L2": "Look straight down from above for the top view. Look straight at the object for the front view.",
+    "L3": "For a glass, the top view shows its round mouth, so it is a circle.",
+    "L4": "The front view shows the glass's height and width, so it is a rectangle.",
+    "L5": "Here is the myth: a cylinder has a rectangle as its top view. That is not true.",
+    "L6": "A cylinder and a cone can both look like circles from the top. We use more views to identify the object.",
+    "L7": "Now check yourself: choose the top view of the glass."
+   },
+   "narration": {
+    "L1": {
+     "text": "A view shows an object from one direction. It is a flat outline, not a picture at an angle.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Look straight down from above for the top view. Look straight at the object for the front view.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "For a glass, the top view shows its round mouth, so it is a circle.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "The front view shows the glass's height and width, so it is a rectangle.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "Here is the myth: a cylinder has a rectangle as its top view. That is not true.",
+     "dur": 8,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "A cylinder and a cone can both look like circles from the top. We use more views to identify the object.",
+     "dur": 9,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Now check yourself: choose the top view of the glass.",
+     "dur": 6,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": "title"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "glass"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "top",
+        "front"
+       ]
+      },
+      {
+       "at": 1.3,
+       "do": "flow",
+       "dur": 0.8,
+       "target": [
+        "g1",
+        "g2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "circle"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "top"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "rect"
+      },
+      {
+       "at": 0.5,
+       "do": "highlight",
+       "dur": 1,
+       "target": "front"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.5,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "cone",
+        "cyl"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "c1",
+        "c2",
+        "same"
+       ]
+      },
+      {
+       "at": 1.5,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "c1",
+        "c2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.6,
+       "target": "prompt"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "optCircle",
+        "optRect",
+        "optTri"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the shape you see in the top view of the glass.",
+    "options": [
+     "optCircle",
+     "optRect",
+     "optTri"
+    ],
+    "answer": "optCircle",
+    "src": "c4-maths-ch02-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "cue:target"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 59
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 8685,
+     "ops": [
+      {
+       "id": "obj",
+       "op": "polygon",
+       "startMs": 0,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         220,
+         160
+        ],
+        [
+         360,
+         120
+        ],
+        [
+         500,
+         160
+        ],
+        [
+         500,
+         350
+        ],
+        [
+         220,
+         350
+        ]
+       ]
+      },
+      {
+       "id": "view",
+       "op": "text",
+       "startMs": 400,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        360,
+        90
+       ],
+       "text": "view",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "flat",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        360,
+        400
+       ],
+       "text": "flat outline",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "ray",
+       "op": "arrow",
+       "startMs": 3800,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        120,
+        250
+       ],
+       "to": [
+        210,
+        250
+       ]
+      },
+      {
+       "id": "direction",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        90,
+        220
+       ],
+       "text": "direction",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "angle",
+       "op": "line",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        570,
+        150
+       ],
+       "to": [
+        680,
+        90
+       ]
+      },
+      {
+       "id": "angle2",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        680,
+        90
+       ],
+       "to": [
+        735,
+        145
+       ]
+      },
+      {
+       "id": "picture",
+       "op": "text",
+       "startMs": 6500,
+       "endMs": 7800,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        670,
+        190
+       ],
+       "text": "not picture",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "above",
+       "op": "arrow",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        240,
+        100
+       ],
+       "to": [
+        240,
+        230
+       ]
+      },
+      {
+       "id": "top",
+       "op": "text",
+       "startMs": 300,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        240,
+        70
+       ],
+       "text": "top view",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "frontRay",
+       "op": "arrow",
+       "startMs": 1900,
+       "endMs": 3000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        570,
+        250
+       ],
+       "to": [
+        430,
+        250
+       ]
+      },
+      {
+       "id": "front",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 3200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        620,
+        220
+       ],
+       "text": "front view",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "down",
+       "op": "line",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "soft",
+       "weight": 1,
+       "from": [
+        180,
+        130
+       ],
+       "to": [
+        300,
+        130
+       ]
+      },
+      {
+       "id": "straight",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 5000,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        240,
+        150
+       ],
+       "text": "straight down",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "straight2",
+       "op": "text",
+       "startMs": 5100,
+       "endMs": 6100,
+       "ink": "soft",
+       "weight": 1,
+       "at": [
+        560,
+        290
+       ],
+       "text": "straight at",
+       "size": "s",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "glassTop",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1400,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 105
+      },
+      {
+       "id": "mouth",
+       "op": "circle",
+       "startMs": 700,
+       "endMs": 1700,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        400,
+        220
+       ],
+       "r": 72
+      },
+      {
+       "id": "topLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        90
+       ],
+       "text": "top view",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "round",
+       "op": "text",
+       "startMs": 3000,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        380
+       ],
+       "text": "round mouth",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "circleLabel",
+       "op": "text",
+       "startMs": 4700,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        440
+       ],
+       "text": "circle",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "glassFront",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        300,
+        130
+       ],
+       "w": 200,
+       "h": 230
+      },
+      {
+       "id": "height",
+       "op": "line",
+       "startMs": 1300,
+       "endMs": 2200,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        270,
+        130
+       ],
+       "to": [
+        270,
+        360
+       ]
+      },
+      {
+       "id": "heightLabel",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2800,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        220,
+        245
+       ],
+       "text": "height",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "width",
+       "op": "line",
+       "startMs": 2900,
+       "endMs": 3800,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        300,
+        390
+       ],
+       "to": [
+        500,
+        390
+       ]
+      },
+      {
+       "id": "widthLabel",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4400,
+       "ink": "mark",
+       "weight": 1,
+       "at": [
+        400,
+        430
+       ],
+       "text": "width",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "rectangleLabel",
+       "op": "text",
+       "startMs": 4800,
+       "endMs": 6000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        75
+       ],
+       "text": "rectangle",
+       "size": "l",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "cylinder",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        120,
+        170
+       ],
+       "w": 220,
+       "h": 170
+      },
+      {
+       "id": "cylTop",
+       "op": "ellipse",
+       "startMs": 600,
+       "endMs": 1300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        230,
+        170
+       ],
+       "rx": 110,
+       "ry": 35
+      },
+      {
+       "id": "cylLabel",
+       "op": "text",
+       "startMs": 1400,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        230,
+        390
+       ],
+       "text": "cylinder",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "myth",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        560,
+        110
+       ],
+       "text": "myth",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "rect",
+       "startMs": 3600,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        500,
+        190
+       ],
+       "w": 150,
+       "h": 120
+      },
+      {
+       "id": "wrongLabel",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        575,
+        350
+       ],
+       "text": "rectangle",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 5700,
+       "endMs": 6500,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        490,
+        180
+       ],
+       "to": [
+        660,
+        320
+       ]
+      },
+      {
+       "id": "cross2",
+       "op": "line",
+       "startMs": 6100,
+       "endMs": 6900,
+       "ink": "accent",
+       "weight": 3,
+       "from": [
+        660,
+        180
+       ],
+       "to": [
+        490,
+        320
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9536,
+     "ops": [
+      {
+       "id": "cylTop2",
+       "op": "circle",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        170
+       ],
+       "r": 75
+      },
+      {
+       "id": "cylName",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        290
+       ],
+       "text": "cylinder",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "cone",
+       "op": "polygon",
+       "startMs": 2100,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         430,
+         250
+        ],
+        [
+         530,
+         250
+        ],
+        [
+         480,
+         100
+        ]
+       ]
+      },
+      {
+       "id": "coneTop",
+       "op": "circle",
+       "startMs": 2800,
+       "endMs": 3500,
+       "ink": "accent",
+       "weight": 2,
+       "c": [
+        480,
+        100
+       ],
+       "r": 18
+      },
+      {
+       "id": "coneName",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        480,
+        290
+       ],
+       "text": "cone",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "same",
+       "op": "text",
+       "startMs": 4500,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        330,
+        170
+       ],
+       "text": "circles",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "views",
+       "op": "text",
+       "startMs": 5900,
+       "endMs": 7000,
+       "ink": "mark",
+       "weight": 2,
+       "at": [
+        400,
+        380
+       ],
+       "text": "more views",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "identify",
+       "op": "arrow",
+       "startMs": 7100,
+       "endMs": 7900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        400
+       ],
+       "to": [
+        400,
+        450
+       ]
+      },
+      {
+       "id": "object",
+       "op": "text",
+       "startMs": 7900,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        400,
+        475
+       ],
+       "text": "identify object",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch02-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4855,
+     "ops": [
+      {
+       "id": "question",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 800,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "top view",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "glass",
+       "op": "rect",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        190
+       ],
+       "w": 130,
+       "h": 170
+      },
+      {
+       "id": "glassTop",
+       "op": "ellipse",
+       "startMs": 1100,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        165,
+        190
+       ],
+       "rx": 65,
+       "ry": 22
+      },
+      {
+       "id": "choiceA",
+       "op": "circle",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        390,
+        220
+       ],
+       "r": 65
+      },
+      {
+       "id": "choiceB",
+       "op": "rect",
+       "startMs": 2200,
+       "endMs": 3000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        520,
+        170
+       ],
+       "w": 120,
+       "h": 100
+      },
+      {
+       "id": "choiceC",
+       "op": "polygon",
+       "startMs": 3100,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 2,
+       "points": [
+        [
+         260,
+         400
+        ],
+        [
+         390,
+         400
+        ],
+        [
+         325,
+         300
+        ]
+       ]
+      },
+      {
+       "id": "choose",
+       "op": "arrow",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 2,
+       "from": [
+        165,
+        150
+       ],
+       "to": [
+        390,
+        150
+       ]
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "front 1,1,1 side 1,1,1",
+   "prompt": "match top/front/side"
+  },
+  {
+   "itemId": "r2",
+   "key": "front 2,2,1 side 2,2,1",
+   "prompt": "match top/front/side"
+  },
+  {
+   "itemId": "r3",
+   "key": "front 2,2,2 side 2,2,2",
+   "prompt": "match top/front/side"
+  }
+ ],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

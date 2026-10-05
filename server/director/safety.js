@@ -153,6 +153,93 @@ const FAMILIES = {
   ],
 };
 
+// ── Day-0 guard frames on the ORIGINAL families (decision safety-old-pattern-false-alarms-guarded-2026-10-05) ──
+// Ordinary lesson and play lines fired the families above and would open a safeguarding incident with helpline replies
+// ("papa ne six maara match mein", "mummy ne cockroach maara", "thand se mar jaunga", "teacher ne mujhe chhua kandhe pe aur
+// shabash bola"; evals/safety-robust verify-b 52 + hard negatives 14 + quiet 4). A pattern is GUARDED, never deleted or
+// narrowed: a hit is set aside only when a frame below explains it AND nothing in the whole turn vetoes the frame. Every
+// frame is pinned by evals/safety-robust/fingerprint.mjs: no recall draw (TaxilaFDB 84, ES-3 80, held-out 40, red team
+// 225, conversation-v2; clean, no-punct, report seeds 0-19, dev seeds 1000-1019) may change. Reverse any frame if a real
+// session miss traces to it.
+/** Anything that makes a frame unsafe to apply, anywhere in the turn: harm detail, repetition, cause, secrecy, fear, "really". */
+const GUARD_VETO = /(?<![\p{L}\p{M}])(?:sach(?:\s+mein|\s+me|mu?ch)?|really|seriously|for\s+real|real\s+life|actually|asli|roz|rozana|daily|every\s*day|har\s+(?:din|roz|raat)|gussa|gusse|angry|belt|chappal|danda|dande|stick|blood|khoon|chot|zakhm|nishaan|nishan|bruise|injur\w*|dard|hurts?|darr?\s+lag\w*|scared|afraid|darta|darti|mat\s+batana|don'?t\s+tell|secret|kapde|private|galat\s+jagah|gandi|gande|kyunki|kyuki|because|coz|cuz|jab|when|whenever|zinda|jeena|jeene|jine|khud\s+ko|myself|suicid\w*|pills?|zeher|poison|chhat|roof|jump\w*|akela|akeli|alone|raat\s+ko|at\s+night|ghar\s+(?:pe|par|mein|me)|at\s+home|mere\s+saath|with\s+me|bhi\s+(?:aisa|waisa|wahi)|me\s+too)(?![\p{L}\p{M}])/iu;
+/** Sports and games as the SETTING of a hit / beat / die line ("beats me at chess", "chess mein maarte", "in the game"). */
+const SPORT_WORDS = "games?|chess|ludo|carrom|cricket|match|matches|race|kabaddi|badminton|football|pillow\\s*fight|free\\s*fire|pubg|bgmi|minecraft|roblox|levels?|video\\s*games?|khel";
+const SPORT_SETTING = new RegExp(`(?<![\\p{L}\\p{M}])(?:(?:in|at|during)\\s+(?:every\\s+|the\\s+|a\\s+|this\\s+)?(?:${SPORT_WORDS})|(?:${SPORT_WORDS})\\s+(?:mein|me|main|mai)|respawn\\w*|headshot)(?![\\p{L}\\p{M}])`, "iu");
+/** What is hit in a sport ("papa ne six maara", "bhaiya ne chhakka maara", "gym mein weights maarte"). */
+const SPORT_OBJECT = /(?<![\p{L}\p{M}])(?:six|sixer|chakka|chhakka|chauka|chouka|four|goal|ball|gend|shot|headshot|wicket|century|weights?|smash|zombies?)(?![\p{L}\p{M}])/iu;
+/** Pests being swatted ("mummy ne cockroach maara", "maarte maarte thak gayi machhar"). */
+const PEST = /(?<![\p{L}\p{M}])(?:machhar|machchar|macchar|mosquito(?:es)?|cockroach(?:es)?|makkhi|makkhiyan|flies|fly|chuha|chuhe|chhipkali|lizard|keeda|keede|kida|kide|cheenti|cheentiyan|ants?|khatmal|bichhu)(?![\p{L}\p{M}])/iu;
+/** An idiom whose subject is a thing, not a person: "ye sum mujhe maar dalega", "thand se mar jaunga", "boring se mar jaunga". */
+const THING_SUBJECT = /(?<![\p{L}\p{M}])(?:sum|sawal|sawaal|question|homework|exam|test|maths?|padhai|chapter|ye\s+(?:sum|sawal|sawaal|question|chapter)|yeh\s+(?:sum|sawal|sawaal|question|chapter))\s+mujhe(?![\p{L}\p{M}])/iu;
+const WEATHER_IDIOM = /(?<![\p{L}\p{M}])(?:thand|thandi|sardi|garmi|dhoop|boriyat|boring|bore|bhookh|bhook|pyaas|hansi|hasi|hans\s+hans|thakaan)\s+(?:se|mein|me|ke\s+maare)(?![\p{L}\p{M}])/iu;
+/** A distress word in another sense: "die my hair" (dye), "life science", "live stream" (verify-b; the fuzzy layer's guard). */
+const WORD_SENSE = /(?<![\p{L}\p{M}])(?:die\s+(?:my|her|his|the)\s+hair|life\s+(?:science|skills?|cycle|processes)|live\s*stream\w*)(?![\p{L}\p{M}])/iu;
+/** A story, poem or film being retold ("kahani ke raja ne kaha", "kavita mein kavi kehta hai", "in the story"). */
+const STORY = /(?<![\p{L}\p{M}])(?:kahani|kahaani|kavita|kavi|story|stories|poem|poet|film|movie|cartoon|character|raja|rani|villain|chapter\s+mein)(?![\p{L}\p{M}])/iu;
+const REPORTED = /(?<![\p{L}\p{M}])(?:kaha|kehta|kehti|kehte|bola|boli|said|says|in\s+the\s+(?:story|poem|film|movie|book)|kahani\s+(?:mein|me|ke)|kavita\s+(?:mein|me)|was\s+[A-Z]\w+|tha|thi)(?![\p{L}\p{M}])/u;
+/** A touch for praise or care: "kandhe pe chhua aur shabash bola", "chhua aur bukhaar check kiya". */
+const PRAISE_TOUCH = /(?<![\p{L}\p{M}])(?:shabash|shabaash|well\s+done|good\s+job|bukhaar|bukhar|fever|temperature|aashirwad|ashirwad|blessing|high\s*five)(?![\p{L}\p{M}])/iu;
+const TOUCH_WORD = /(?<![\p{L}\p{M}])(?:chhua|chua|chhuaa|chhoo\w*|chhu\w*|touch\w*|छुआ|छू\w*)(?![\p{L}\p{M}])/iu;
+
+const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p{L}\p{M}])/iu;
+/** The clause of `t` around [a, b): from the last clause mark before a to the first after b. */
+function clauseOf(t, a, b) {
+  const marks = /[.!?।;,\n]/g;
+  let start = 0, end = t.length, m;
+  while ((m = marks.exec(t))) { if (m.index < a) start = m.index + 1; else if (m.index >= b) { end = m.index; break; } }
+  return t.slice(start, end);
+}
+/**
+ * Is this family hit explained by a guard frame? `span` is the matched text (the whole turn for a predicate object).
+ * PURE. Exported for tests (tests/safety-guard-frames.test.mjs).
+ */
+export function guardFrameOf(kind, t, span, clause) {
+  if (GUARD_VETO.test(t)) return null;
+  if (STORY.test(clause) && REPORTED.test(clause)) return "story";
+  if (kind === "abuse") {
+    // a sport / pest OBJECT explains the hit only when the child is not the one hit and it is not the instrument ("ball se")
+    const childHit = FIRST_PERSON_OBJECT.test(span) || /(?<![\p{L}\p{M}])se\s+(?:maar|mar|peet|pit)/iu.test(span);
+    if (SPORT_SETTING.test(clause) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
+    if (PEST.test(clause) && !childHit) return "pest";
+    if (THING_SUBJECT.test(clause)) return "idiom";
+    if (TOUCH_WORD.test(span) && PRAISE_TOUCH.test(clause)) return "praise_touch";
+  }
+  if (kind === "self_harm") {
+    if (SPORT_SETTING.test(clause)) return "sports";
+    if (WEATHER_IDIOM.test(clause)) return "idiom";
+    if (WORD_SENSE.test(clause)) return "word_sense";
+  }
+  return null;
+}
+const GLOBAL_RE = new WeakMap();
+/** Does one family pattern fire on `t`, after the guard frames? A regex fires if ANY of its matches is unguarded. */
+function familyFires(re, kind, t) {
+  if (!(re instanceof RegExp)) return re.test(t) && !guardFrameOf(kind, t, t, t);
+  let g = GLOBAL_RE.get(re);
+  if (!g) { g = new RegExp(re.source, re.flags.includes("g") ? re.flags : `${re.flags}g`); GLOBAL_RE.set(re, g); }
+  g.lastIndex = 0;
+  for (const m of t.matchAll(g)) {
+    if (!guardFrameOf(kind, t, m[0], clauseOf(t, m.index, m.index + m[0].length))) return true;
+    if (!m[0].length) break;
+  }
+  return false;
+}
+/** Which frame set aside a family hit on `t` that would otherwise fire, or null (for the eval's report). */
+export function guardedBy(text) {
+  const t = String(text || "");
+  for (const [kind, res] of Object.entries(FAMILIES)) for (const re of res) {
+    if (!re.test(t)) continue;
+    if (familyFires(re, kind, t)) return null;
+  }
+  for (const [kind, res] of Object.entries(FAMILIES)) for (const re of res) if (re.test(t)) {
+    if (!(re instanceof RegExp)) return guardFrameOf(kind, t, t, t);
+    const m = re.exec(t);
+    return guardFrameOf(kind, t, m[0], clauseOf(t, m.index, m.index + m[0].length));
+  }
+  return null;
+}
+
 /**
  * The "after wake up" clause rule of wakeIdeation, for the fuzzy pass (server/safety/fuzzy.js): true = it fires
  * (no schedule word or woken person in the clause, or "ever / again / anymore").
@@ -206,21 +293,23 @@ const SCAN_CACHE = new Map();
 function scanUncached(t) {
   // Devanagari also matched on NFC + nukta dropped + chandrabindu → anusvara ("पड़ता"/"पडता", "रहूँ"/"रहूं").
   const tn = t.normalize("NFC").replace(/़/g, "").replace(/ँ/g, "ं");
-  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t) || (tn !== t && re.test(tn)))) return { distress: true, kind, pass: 1, via: "families" };
+  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => familyFires(re, kind, t) || (tn !== t && familyFires(re, kind, tn)))) return { distress: true, kind, pass: 1, via: "families" };
   if (!t.trim()) return { distress: false, kind: null, pass: null, via: null };
   const seen = new Set([t, tn]);
   for (const r of readingsFor(t)) {
     if (seen.has(r)) continue;
     seen.add(r);
-    for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(r))) return { distress: true, kind, pass: 2, via: "families:normalised" };
+    for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => familyFires(re, kind, r))) return { distress: true, kind, pass: 2, via: "families:normalised" };
   }
+  // the Day-0 guard frames hold for the second pass too (a line the frames set aside in pass 1 must not come back as a
+  // fuzzy / lexicon reading of the same words); same veto, the whole turn as the clause
   const f = fuzzyScan(t, { wakeOk: wakeClauseFires });
-  if (f.distress) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
+  if (f.distress && !guardFrameOf(f.kind, t, t, t)) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
   // verify-A red team (2026-10-05): the canonical lexicon (server/safety/lexicon.js) — phrasings neither the families nor the
   // fuzzy shapes carried ("khud ko khatam", "mere bina sab khush", "kapde utarne ko bolte", "nobody cares if i die"), each
   // written once over the script-agnostic canonical reading with the one-edit garble rule
   const x = lexiconScan(t);
-  if (x.distress) return { distress: true, kind: x.kind, pass: 2, via: `lexicon:${x.shape}` };
+  if (x.distress && !guardFrameOf(x.kind, t, t, t)) return { distress: true, kind: x.kind, pass: 2, via: `lexicon:${x.shape}` };
   return { distress: false, kind: null, pass: null, via: null };
 }
 

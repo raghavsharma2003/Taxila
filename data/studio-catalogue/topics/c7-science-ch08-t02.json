@@ -1,0 +1,1494 @@
+{
+ "topicId": "c7-science-ch08-t02",
+ "title": "Speed",
+ "chapter": "Measurement of Time and Motion",
+ "subject": "science",
+ "class": 7,
+ "topicType": "T4",
+ "plan": {
+  "game": "motion-lab@1",
+  "hint": "race mode (speed, time, distance asks; m/s and km/h)"
+ },
+ "game": {
+  "archetype": "motion-lab@1",
+  "spec": {
+   "archetype": "motion-lab@1",
+   "skills": [
+    "c7-science-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "round": "Round",
+    "done": "right",
+    "length": "length",
+    "mass": "mass",
+    "release": "SWING",
+    "stop": "STOP",
+    "lock": "LOCK",
+    "period": "one swing",
+    "swings": "swings",
+    "timer": "timer",
+    "run": "RUN",
+    "hold": "HOLD to drive",
+    "target": "target",
+    "yours": "yours",
+    "runDone": "Lab closed",
+    "coach": "Choose the missing value, then run",
+    "speed": "speed",
+    "time": "time",
+    "distance": "distance",
+    "train": "train",
+    "you": "you",
+    "together": "TOGETHER",
+    "early": "too early",
+    "late": "too late"
+   },
+   "title": "Speed Lab",
+   "rounds": [
+    {
+     "mode": "race",
+     "title": "Train to Jaipur",
+     "sub": "find how fast the train goes",
+     "ask": "speed",
+     "d": 240,
+     "t": 3,
+     "unitD": "km",
+     "unitT": "h",
+     "tolPct": 5,
+     "targets": "c7-science-ch08-t02-m3"
+    },
+    {
+     "mode": "race",
+     "title": "School bus trip",
+     "sub": "work out the journey time",
+     "ask": "time",
+     "d": 300,
+     "t": 4,
+     "unitD": "km",
+     "unitT": "h",
+     "tolPct": 5
+    },
+    {
+     "mode": "race",
+     "title": "Cricket dash",
+     "sub": "set the distance for the run",
+     "ask": "distance",
+     "d": 300,
+     "t": 12,
+     "unitD": "m",
+     "unitT": "s",
+     "tolPct": 5
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c7-science-ch08-t02"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Speed: distance over time",
+   "accent": "sci",
+   "targets": "c7-science-ch08-t02-m1",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Speed: distance over time"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Farther always means faster"
+      },
+      {
+       "id": "speed",
+       "type": "node",
+       "text": "Speed",
+       "sub": "how fast",
+       "glyph": "car",
+       "color": "sci"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "dist",
+       "type": "node",
+       "text": "Distance",
+       "sub": "150 km",
+       "glyph": "road",
+       "color": "mint"
+      },
+      {
+       "id": "time",
+       "type": "node",
+       "text": "Time",
+       "sub": "2.5 hours",
+       "glyph": "clock",
+       "color": "amber"
+      },
+      {
+       "id": "calc",
+       "type": "node",
+       "text": "Distance ÷ time",
+       "sub": "150 ÷ 2.5",
+       "glyph": "ruler",
+       "color": "ion"
+      },
+      {
+       "id": "result",
+       "type": "node",
+       "text": "60 km/h",
+       "sub": "average speed",
+       "color": "sun"
+      },
+      {
+       "id": "a1",
+       "type": "arrow",
+       "from": "dist",
+       "to": "calc",
+       "text": "divide"
+      },
+      {
+       "id": "a2",
+       "type": "arrow",
+       "from": "time",
+       "to": "calc",
+       "text": "divide"
+      },
+      {
+       "id": "a3",
+       "type": "arrow",
+       "from": "calc",
+       "to": "result",
+       "text": "gives"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "row",
+     "els": [
+      {
+       "id": "ajay",
+       "type": "node",
+       "text": "Ajay",
+       "sub": "100 m ÷ 20 s",
+       "glyph": "person",
+       "color": "ion"
+      },
+      {
+       "id": "bina",
+       "type": "node",
+       "text": "Bina",
+       "sub": "60 m ÷ 10 s",
+       "glyph": "person",
+       "color": "mint"
+      },
+      {
+       "id": "ajays",
+       "type": "label",
+       "text": "5 m/s",
+       "x": 180,
+       "y": 400,
+       "color": "ion"
+      },
+      {
+       "id": "binas",
+       "type": "label",
+       "text": "6 m/s",
+       "x": 600,
+       "y": 400,
+       "color": "mint"
+      },
+      {
+       "id": "faster",
+       "type": "node",
+       "text": "Bina is faster",
+       "sub": "bigger speed",
+       "glyph": "lightning",
+       "color": "sun"
+      },
+      {
+       "id": "a4",
+       "type": "arrow",
+       "from": "ajay",
+       "to": "ajays",
+       "text": "calculate"
+      },
+      {
+       "id": "a5",
+       "type": "arrow",
+       "from": "bina",
+       "to": "binas",
+       "text": "calculate"
+      },
+      {
+       "id": "a6",
+       "type": "arrow",
+       "from": "binas",
+       "to": "faster",
+       "text": "compare"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "avg",
+       "type": "node",
+       "text": "Average speed",
+       "glyph": "balance",
+       "color": "sci"
+      },
+      {
+       "id": "meter",
+       "type": "node",
+       "text": "Speedometer",
+       "sub": "speed now",
+       "color": "amber"
+      },
+      {
+       "id": "odo",
+       "type": "node",
+       "text": "Odometer",
+       "sub": "total distance",
+       "color": "mint"
+      },
+      {
+       "id": "opt1",
+       "type": "label",
+       "text": "distance ÷ time",
+       "x": 140,
+       "y": 420,
+       "color": "sci"
+      },
+      {
+       "id": "opt2",
+       "type": "label",
+       "text": "time ÷ distance",
+       "x": 420,
+       "y": 420,
+       "color": "amber"
+      },
+      {
+       "id": "opt3",
+       "type": "label",
+       "text": "distance × time",
+       "x": 700,
+       "y": 420,
+       "color": "ion"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "Speed tells us how fast something moves: it is the distance covered in one unit of time.",
+    "L2": "Here is the key rule: speed equals distance divided by time.",
+    "L3": "In the worked example, 150 kilometres takes 2 hours 30 minutes, or 2.5 hours.",
+    "L4": "So the average speed is 150 divided by 2.5, which is 60 kilometres per hour.",
+    "L5": "To compare runners, calculate both speeds in the same units. Ajay is 5 metres per second, while Bina is 6 metres per second.",
+    "L6": "The vehicle that travels farther is not always faster if it took longer. Compare speeds, not distance alone.",
+    "L7": "Average speed uses total distance divided by total time; a speedometer shows speed now, while an odometer shows total distance.",
+    "L8": "Now choose the expression that calculates speed."
+   },
+   "narration": {
+    "L1": {
+     "text": "Speed tells us how fast something moves: it is the distance covered in one unit of time.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L2": {
+     "text": "Here is the key rule: speed equals distance divided by time.",
+     "dur": 3,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L3": {
+     "text": "In the worked example, 150 kilometres takes 2 hours 30 minutes, or 2.5 hours.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L4": {
+     "text": "So the average speed is 150 divided by 2.5, which is 60 kilometres per hour.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L5": {
+     "text": "To compare runners, calculate both speeds in the same units. Ajay is 5 metres per second, while Bina is 6 metres per second.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L6": {
+     "text": "The vehicle that travels farther is not always faster if it took longer. Compare speeds, not distance alone.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Average speed uses total distance divided by total time; a speedometer shows speed now, while an odometer shows total distance.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now choose the expression that calculates speed.",
+     "dur": 2,
+     "lead": 0,
+     "tail": 0,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.3,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": "title"
+      },
+      {
+       "at": 0.4,
+       "do": "show",
+       "dur": 0.7,
+       "target": "speed"
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "dist",
+        "time",
+        "calc"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "flow",
+       "dur": 0.7,
+       "target": [
+        "a1",
+        "a2"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1,
+       "target": "time"
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.5,
+       "target": "a3"
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.3,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "result"
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "result"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.3,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "ajay",
+        "bina"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "ajays",
+        "binas"
+       ]
+      },
+      {
+       "at": 1.8,
+       "do": "flow",
+       "dur": 0.6,
+       "target": "a6",
+       "to": 1
+      },
+      {
+       "at": 2.3,
+       "do": "show",
+       "dur": 0.7,
+       "target": "faster"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 0.8,
+       "do": "bust",
+       "dur": 1.2,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.3,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "avg",
+        "meter",
+        "odo"
+       ]
+      },
+      {
+       "at": 1,
+       "do": "highlight",
+       "dur": 0.8,
+       "target": "avg"
+      },
+      {
+       "at": 2,
+       "do": "highlight",
+       "dur": 1,
+       "target": [
+        "meter",
+        "odo"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.7,
+       "target": [
+        "opt1",
+        "opt2",
+        "opt3"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive"
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Which expression calculates speed?",
+    "options": [
+     "opt1",
+     "opt2",
+     "opt3"
+    ],
+    "answer": "opt1",
+    "src": "c7-science-ch08-t02-i13"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "string:avg.sub",
+   "glyph",
+   "glyph"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast",
+  "seconds": 34
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 7834,
+     "ops": [
+      {
+       "id": "speedbox",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        80,
+        90
+       ],
+       "w": 640,
+       "h": 280
+      },
+      {
+       "id": "speed",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1400,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        400,
+        135
+       ],
+       "text": "speed",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "dist",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        620,
+        300
+       ]
+      },
+      {
+       "id": "dlabel",
+       "op": "label",
+       "startMs": 2300,
+       "endMs": 2900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        335
+       ],
+       "text": "distance",
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "time",
+       "op": "line",
+       "startMs": 3100,
+       "endMs": 3700,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        400,
+        180
+       ],
+       "to": [
+        400,
+        260
+       ]
+      },
+      {
+       "id": "tlabel",
+       "op": "label",
+       "startMs": 3700,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        450,
+        220
+       ],
+       "text": "time",
+       "to": [
+        400,
+        220
+       ]
+      },
+      {
+       "id": "fastarrow",
+       "op": "arrow",
+       "startMs": 4500,
+       "endMs": 5700,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        180,
+        250
+       ],
+       "to": [
+        620,
+        250
+       ]
+      },
+      {
+       "id": "unit",
+       "op": "text",
+       "startMs": 6000,
+       "endMs": 6800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        410
+       ],
+       "text": "unit of time",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "eq",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        150,
+        150
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "speed",
+         "=",
+         "distan",
+         "÷",
+         "time"
+        ]
+       ]
+      },
+      {
+       "id": "rule",
+       "op": "text",
+       "startMs": 3500,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        280
+       ],
+       "text": "key rule",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "known",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "distan",
+         "=",
+         "150",
+         "km"
+        ],
+        [
+         "time",
+         "=",
+         "2",
+         "hours"
+        ]
+       ]
+      },
+      {
+       "id": "minutes",
+       "op": "numwork",
+       "startMs": 1800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        90,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "30",
+         "minute",
+         "=",
+         "0.5",
+         "hour"
+        ]
+       ]
+      },
+      {
+       "id": "total",
+       "op": "numwork",
+       "startMs": 3600,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        90,
+        340
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "time",
+         "=",
+         "2.5",
+         "hours"
+        ]
+       ]
+      },
+      {
+       "id": "circle25",
+       "op": "highlight",
+       "startMs": 5100,
+       "endMs": 6000,
+       "ink": "soft",
+       "weight": 1,
+       "target": "total",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6983,
+     "ops": [
+      {
+       "id": "calc",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        120,
+        100
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "speed",
+         "=",
+         "150",
+         "÷",
+         "2.5"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 2100,
+       "endMs": 3900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        120,
+        230
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "150",
+         "÷",
+         "2.5",
+         "=",
+         "60"
+        ]
+       ]
+      },
+      {
+       "id": "units",
+       "op": "text",
+       "startMs": 4200,
+       "endMs": 5200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        360
+       ],
+       "text": "kilometres per hour",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "answerhi",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6500,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "underline"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 10387,
+     "ops": [
+      {
+       "id": "ajay",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        110
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Ajay",
+         "=",
+         "5",
+         "metres",
+         "per",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "bina",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 4600,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        250
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "Bina",
+         "=",
+         "6",
+         "metres",
+         "per",
+         "second"
+        ]
+       ]
+      },
+      {
+       "id": "same",
+       "op": "line",
+       "startMs": 5000,
+       "endMs": 6000,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        390
+       ],
+       "to": [
+        690,
+        390
+       ]
+      },
+      {
+       "id": "sameLabel",
+       "op": "text",
+       "startMs": 6200,
+       "endMs": 7000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        440
+       ],
+       "text": "same units",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "compare",
+       "op": "arrow",
+       "startMs": 7300,
+       "endMs": 8400,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        500,
+        170
+       ],
+       "to": [
+        500,
+        300
+       ]
+      },
+      {
+       "id": "higher",
+       "op": "label",
+       "startMs": 8500,
+       "endMs": 9000,
+       "ink": "good",
+       "weight": 1,
+       "at": [
+        540,
+        240
+       ],
+       "text": "6",
+       "to": [
+        500,
+        300
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 8260,
+     "ops": [
+      {
+       "id": "far",
+       "op": "line",
+       "startMs": 0,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        100,
+        150
+       ],
+       "to": [
+        650,
+        150
+       ]
+      },
+      {
+       "id": "farlabel",
+       "op": "text",
+       "startMs": 1300,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        375,
+        120
+       ],
+       "text": "farther",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "longtime",
+       "op": "line",
+       "startMs": 2100,
+       "endMs": 3300,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        100,
+        280
+       ],
+       "to": [
+        650,
+        280
+       ]
+      },
+      {
+       "id": "timelabel",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        375,
+        315
+       ],
+       "text": "longer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "notfast",
+       "op": "text",
+       "startMs": 4400,
+       "endMs": 5400,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        400,
+        390
+       ],
+       "text": "not always faster",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 9111,
+     "ops": [
+      {
+       "id": "average",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 2300,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        80,
+        80
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "averag",
+         "speed",
+         "=",
+         "total",
+         "distan",
+         "÷",
+         "total",
+         "time"
+        ]
+       ]
+      },
+      {
+       "id": "meter",
+       "op": "circle",
+       "startMs": 2500,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 2,
+       "c": [
+        180,
+        300
+       ],
+       "r": 55
+      },
+      {
+       "id": "needle",
+       "op": "line",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "mark",
+       "weight": 2,
+       "from": [
+        180,
+        300
+       ],
+       "to": [
+        205,
+        260
+       ]
+      },
+      {
+       "id": "speedometer",
+       "op": "text",
+       "startMs": 4000,
+       "endMs": 5000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        180,
+        390
+       ],
+       "text": "speedometer",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "odo",
+       "op": "rect",
+       "startMs": 5200,
+       "endMs": 6000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        470,
+        255
+       ],
+       "w": 170,
+       "h": 90
+      },
+      {
+       "id": "odoNum",
+       "op": "text",
+       "startMs": 6100,
+       "endMs": 7000,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        555,
+        300
+       ],
+       "text": "total distance",
+       "size": "s",
+       "align": "middle"
+      },
+      {
+       "id": "odometer",
+       "op": "text",
+       "startMs": 7100,
+       "endMs": 8000,
+       "ink": "accent",
+       "weight": 1,
+       "at": [
+        555,
+        390
+       ],
+       "text": "odometer",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c7-science-ch08-t02-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 3579,
+     "ops": [
+      {
+       "id": "choice",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        100
+       ],
+       "text": "choose",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "a",
+       "op": "numwork",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        190
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "distan",
+         "÷",
+         "time"
+        ]
+       ]
+      },
+      {
+       "id": "b",
+       "op": "numwork",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        100,
+        290
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "distan",
+         "×",
+         "time"
+        ]
+       ]
+      },
+      {
+       "id": "correct",
+       "op": "highlight",
+       "startMs": 2500,
+       "endMs": 3400,
+       "ink": "good",
+       "weight": 2,
+       "target": "a",
+       "style": "circle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast"
+ },
+ "keys": [
+  {
+   "itemId": "r1",
+   "key": "80 km/h",
+   "prompt": "speed?"
+  },
+  {
+   "itemId": "r2",
+   "key": "4 h",
+   "prompt": "time?"
+  },
+  {
+   "itemId": "r3",
+   "key": "300 m",
+   "prompt": "distance?"
+  }
+ ],
+ "check": {
+  "issues": [
+   {
+    "where": "game",
+    "what": "Round 2 (School bus trip) uses 300 km distance and 4 hours time, but the kit's bus example (item i08) uses 15 km and 30 km/h. The round's own numbers are self-consistent: speed = 300/4 = 75 km/h, and it asks for time. The kit scenario is not being retold, only the topic is reused with new numbers — allowed."
+   },
+   {
+    "where": "game",
+    "what": "Round 3 (Cricket dash) uses d=300 m, t=12 s, asks for distance. The kit's cricket item (i09) uses 144 km/h and 20 m pitch. New numbers are fine — allowed."
+   }
+  ],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}

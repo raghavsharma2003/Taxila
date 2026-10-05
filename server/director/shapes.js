@@ -37,7 +37,9 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
   prefix,
   `one idea only: ${skillTitle}`,
   interest && `an example from their interest (${interest}) if it fits naturally`,
-  "objects first, then a picture, then the symbol; point at the whiteboard anchor",
+  // F16 (evals/owner-truth): "then a picture … point at the whiteboard anchor" with nothing drawn made her draw with
+  // characters, deny she can draw, or recite "Whiteboard anchor:"; the screen is named only by the on-screen facts row
+  "objects first, then the symbol; point at the screen only at what the on-screen row lists; never a drawing made of characters",
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
 
@@ -150,10 +152,12 @@ export const changeApproach = () => join(
 );
 
 /** `chips`: choices are on screen THIS turn (UiDirectives.chips). Without them the shape never mentions tapping (G-SAY-1). */
+// F14 (evals/owner-truth): "say it once more, slowly" was said to a child who had asked HER to go slowly; the pace is hers
 export const repairUnclear = ({ chips = false } = {}) => (chips
   ? "you did not catch it clearly: ask them to say it once more, or to tap one of the choices on screen"
-  : "you did not catch it clearly: ask them to say it once more, slowly");
-export const repairOffTopic = () => "one warm line about what they said; then back to the question";
+  : "you did not catch it clearly: ask them to say it once more");
+// F11: "one warm line…; then back to the question" produced "baad mein baat karenge" — the child's words get a real answer
+export const repairOffTopic = () => "they said or asked something else: answer it for real first, in one or two warm lines — no deferring it to later; then a light bridge to the question";
 
 // ── typed turns and the unclear-try cap (BUILD-PLAN W1-A items 5 and 8; audit flows G4, comprehension G11) ──
 /** A typed reply that answers nothing (no attempt): never "say it again" — they typed it; a small nudge, then the same question. */
@@ -179,14 +183,50 @@ export const showChoices = () => join(
 );
 export const SKIP_ITEM = "they asked to skip this one for now: no verdict, it comes back another day; the next question";
 export const KNOWS_IT = "they say they know this: no teaching; let them show it";
-export const SLOWER = "say it again more slowly, in short simple words";
-/** "Show me why" / "Explain it differently" / "Show me how" on the question on the table. */
-export const helpExplain = ({ how }) => join(
+export const SLOWER = "they asked you to slow down: you go slower — short simple words, one small step at a time, a pause between steps; never ask them to speak slowly";
+// ── the child's requests in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5) ──
+export const STORY_ASKED = "they asked for it as a story: the same idea told as a tiny everyday story with a character, in a few lines";
+export const EXAMPLE_ASKED = "they asked for an example: one concrete example from everyday life, with your own numbers";
+export const ANOTHER_ASKED = "they asked for it another way: a new, simpler way in — not the words you used before";
+/** "Show me why" / "Explain it differently" / "Show me how" / an example / a story, on the question on the table. */
+export const helpExplain = ({ how, example = false, story = false }) => join(
   how ? "they asked how to do it: show the first step only, with a smaller example of your own (different numbers)"
-    : "they asked for it another way: one new, simpler picture of the same idea, with a different example",
+    : example ? "they asked for an example: one concrete everyday example of the same idea, with your own different numbers"
+      : story ? "they asked for a story: the same idea as a tiny everyday story with a character, a few lines, your own numbers"
+        : "they asked for it another way: one new, simpler picture of the same idea, with a different example",
   "the key stays unsaid",
   "then the same question again, as written",
 );
+// owner-truth patch 07's own stopCheck is not added: W2-I's stopCheck (below) is the one check-in shape (reconciled 2026-10-05).
+export const changeTopic = () => join(
+  "they want to talk about something else: say yes warmly — the lesson can wait a moment",
+  "ask what they would like to talk about, in a few words; the chips can bring them back to the lesson",
+  "no lesson question this turn",
+);
+/** The one side-chat turn after change_topic: their topic, for real. */
+export const sideChat = () => join(
+  "talk with them about what they just brought up, for real: two or three warm lines, a question back about it",
+  "then offer to go back to the lesson whenever they like (the chips); no lesson question this turn",
+);
+/** "Cricket ke baare mein baat karo": their interest, now, as the way into the same idea. `subject`: letters only, ≤ 30. */
+export const topicAsked = ({ subject, teaching = false }) => join(
+  `they asked to talk about ${subject}: say something real about ${subject} first (one or two lines, never 'later')`,
+  teaching ? `then explain the same idea with a ${subject} example; end with one small question about it` : `then use ${subject} as the setting for the same question`,
+);
+const LANG_NAME = { hindi: "simple Hindi (Roman script when written)", english: "simple English", hinglish: "Hinglish" };
+/** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
+export const languageAsked = ({ lang, teaching = false }) => join(
+  `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  teaching ? "say the last idea again in it, simply, and end with one small question" : "say the question in it",
+);
+/** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
+export const showVisual = ({ kind = "diagram" } = {}) => join(
+  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving" : "they asked to see it: a picture of the same idea",
+  "one idea; let the picture do the work; a few words about what to look at",
+  "the key stays unsaid; then one small question about what they see",
+);
+export const VISUAL_ON_STAGE = "it is on the screen now: point them at it in your first words and say what to look at";
+export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */

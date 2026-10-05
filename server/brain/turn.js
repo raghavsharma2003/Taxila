@@ -31,6 +31,7 @@ import { styleForChild } from "../routes/voice.js";
 import { onTurnCommit } from "../conductor/hooks.js";
 import { awaitSettled } from "../comprehension/session.js";
 import { seamSafe as guardSeam } from "../seam-safe.js";
+import { duplexRegistry } from "../duplex/registry.js";
 import { studioSeam, isStudioRow } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
@@ -80,10 +81,20 @@ export const HELP_SAID = { hint: "asked for a hint", why: "asked why", know: "sa
 
 // ───────────────────────────── POST /api/lesson/turn ─────────────────────────────
 
-/** What a module-only turn carried, in a few words: its milestones, and how many plain events. */
+/**
+ * What a module-only turn carried, in a few words: its milestones, and how many plain events. An answer is named with
+ * the value the child committed and NEVER with the frame's own `correct` claim (F2/F3, evals/owner-truth): the reply
+ * model followed "answer (right)" over the server's verdict note when the two disagreed. The verdict the words must
+ * agree with is the server's (planTurn lastVerdict → the move's VERDICT_NOTE and the G-PRAISE guards).
+ */
+const valueOf = (d) => {
+  if (!d || typeof d !== "object") return "";
+  const v = d.value ?? d.written ?? d.built ?? d.chosen ?? d.choice ?? d.picked;
+  return v == null || typeof v === "object" ? "" : ` ${String(v).replace(/[^\p{L}\p{N} /.,-]/gu, "").slice(0, 24)}`.trimEnd();
+};
 export function activitySummary(events, dropped) {
   const milestones = events.filter((e) => ["goal_met", "stuck", "answer"].includes(e?.type)).map((e) =>
-    e.type === "answer" ? `answer${typeof e.data?.correct === "boolean" ? (e.data.correct ? " (right)" : " (wrong)") : ""}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
+    e.type === "answer" ? `answer${valueOf(e.data)}` : `${e.type} ${String(e.name ?? "").slice(0, 40)}`.trim());
   const other = events.length - milestones.length + dropped;
   return [...milestones, ...(other ? [`${other} other event${other === 1 ? "" : "s"}`] : [])].join("; ");
 }
@@ -334,6 +345,20 @@ export async function lessonTurn(req, body) {
   let cls;
   try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
   mark("classified");
+  // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
+  // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
+  // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
+  // it to force a safeguard (fail closed), never to suppress one.
+  const pendingSafety = body.duplex?.safetyPending;
+  if (cls && pendingSafety && !cls.flags?.distress) {
+    cls = { ...cls, flags: { ...cls.flags, distress: true, distressKind: cls.flags?.distressKind ?? (typeof pendingSafety.kind === "string" ? pendingSafety.kind : "duplex_partial") } };
+  }
+  // ... and a model distress read on the committed turn (classify's model flag or distressCheck, which now runs on every
+  // committed child turn with words) reaches the duplex floor as a model note, so a reply speculated on the partials is
+  // cancelled there as well (PartialSafety.modelNote was never called before this).
+  if (cls?.flags?.distress && cls.source !== "predicate") {
+    seamSafe("duplex.modelNote", () => duplexRegistry.sliceFor(lesson.id)?.modelNote(cls.flags.distressKind, Date.now()) ?? null, null);
+  }
   if (settling) { await settling; carried = carriedFrom(state); planCtx.carried = carried; mark("settled"); }
   // This utterance's voice tie-breakers (features.js signalsFrom: capped booleans) reach the plan only if they are
   // already in when the classification is: the turn never waits on them (CE8: zero evidence weight, tie-break and
@@ -362,7 +387,7 @@ export async function lessonTurn(req, body) {
     // the Director's only new thing on screen is its template whiteboard rung (W2-B): the live board replaces it (owner
     // priority 6), the rung stays the fallback when Studio declines
     const rungMounted = r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE;
-    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted });
+    const wb = whiteboardAskOf({ beat, lane, late, strained: frustrationLoop(next.affect ?? initialAffect()), move: r.move, studioView: late ? null : studioView, rungMounted, requested: !!r.move?.visual });
     const t1 = performance.now();
     const proposals = proposalsOf({ r, relational, studioView: late ? null : studioView, whiteboard: wb.proposals, vibe: next.vibe });
     const arb = arbitrate(proposals);
@@ -538,9 +563,10 @@ export async function lessonTurn(req, body) {
     // line it must draw beside (drawn tokens ⊆ the line's tokens ∪ kit values) and the kit truth on the table. Studio
     // answers at once with the slot it will stream the drawing script into, or null (nothing changes on screen).
     const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
-    if (ask && teacherReply && !guard?.replaced) {
+    // a picture the child asked for is drawn even when the guard replaced her words (owner-truth patch 09, F16)
+    if (ask && teacherReply && (!guard?.replaced || r.move?.visual)) {
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
-        ? studioSeam.requestIntent({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat, next, kit,
+        ? studioSeam.requestIntent({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }),
           // W2 integration: the template board it replaces rides along as the slot's fallback, so a live board that fails
           // the drawing gate shows the guarded template (W2-B, open-item safe) instead of an empty stage
@@ -549,7 +575,7 @@ export async function lessonTurn(req, body) {
       if (ack?.slotId && ack?.intentId) {
         studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };
         wbAcked = true;
-        next.wbBeat = kernel.beat.id;
+        next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
         // (the client's tray shows one thing; a mounted module would win the tray over the studio slot). Its mount / param
         // commands go, a rung already on screen is unmounted, and its facts row leaves the move's content, so the next turn
@@ -572,12 +598,25 @@ export async function lessonTurn(req, body) {
   } else if (specs.length) {
     speculation = { tried: specs.length, hit: false };
   }
+  // Voice lane, the child asked to SEE it (F16): her words are not known before she speaks, so Studio draws from the
+  // move's kit content (the same lines her turn is written from); the slot rides on this response as on the text lanes.
+  if (!textLane && !late && !r.hold && r.move?.visual && !studioSlot) {
+    const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
+    const line = (next.lastContent ?? []).map((x) => String(typeof x === "string" ? x : "")).join(" ").trim() || String(kit?.skills?.find((k) => k.id === next.lastMove?.skillId)?.title ?? "");
+    if (ask && line) {
+      const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
+        ? studioSeam.requestIntent(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }))
+        : null), null);
+      if (ack?.slotId && ack?.intentId) { studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" }; wbAcked = true; moment = null; }
+    }
+  }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed
   // safeguarding line with both helplines, stored as her turn: the client raises the Help sheet from it even though
   // the lesson stays closed (runtime.ts flushOthers → lateSafeguard). Safety by predicate, never left unsaid.
   const lateSafeguard = late && (r.move.kind === "safeguard" || !!incident);
   if (lateSafeguard) {
-    teacherReply = safeguardLine(state.ctx);
+    teacherReply = safeguardLine(state.ctx, { kind: next.safeguard?.kind ?? null });
     const [row] = stageTurns(next, [{ speaker: "teacher", text: teacherReply, meta: { move: "safeguard", late: true } }]);
     staged.push(row);
     teacherReplySeq = row.seq;

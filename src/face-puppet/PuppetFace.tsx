@@ -7,7 +7,7 @@
 //     (TutorFace's rule: no fallback ever changes the face). A page that saw a failure starts later mounts on the
 //     fallback directly (failedThisPage), so a remount does not re-download against her TTS audio.
 // The AI disclosure ("<name>, AI teacher") is on the host on every path, never on the GPU.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { TutorFace, faceTutor } from "../avatar/TutorFace.tsx";
 import { p as copy } from "../avatar/picker/copy.ts";
 import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
@@ -40,6 +40,19 @@ export function resetPuppetFailure(): void {
   failedThisPage = null;
 }
 
+// Tap sources keyed by identity (TutorFace's sourcesKey rule): callers pass a fresh array literal per render
+// (Hello: `meters={[clip.meter]}`, Teacher.tsx: `p.meters ?? []`), and a stage keyed on the ARRAY would be disposed and
+// rebuilt (new WebGL context, pack reload, poster flash) on every parent re-render. Review v4, 2026-10-05.
+const meterIds = new WeakMap<object, number>();
+let nextMeterId = 1;
+export function sourcesKey(list: readonly TapSource[]): string {
+  return list.map((m) => {
+    let id = meterIds.get(m as object);
+    if (!id) meterIds.set(m as object, (id = nextMeterId++));
+    return id;
+  }).join(",");
+}
+
 /** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face. */
 export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
@@ -54,6 +67,8 @@ export function PuppetFace(p: PuppetFaceProps) {
   const onEvent = useRef(p.onEvent);
   onEvent.current = p.onEvent;
   const revealed = useRef(false);
+  const srcKey = sourcesKey(p.teacher);
+  const sources = useMemo(() => p.teacher, [srcKey]); // the key IS the dependency
 
   useEffect(() => {
     if (p.still || phase === "fallback" || !host.current) return;
@@ -72,7 +87,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       .then(async ({ PuppetStage }) => {
         if (cancelled) return;
         const s = new PuppetStage(el, {
-          band: p.band, sources: p.teacher, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
+          band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
           onEvent: (e) => {
             onEvent.current?.(e);
@@ -97,7 +112,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       stage.current = null;
     };
     // rebuilt only when the person, the framing or the meters change; status and motion flow through set()
-  }, [p.still, tutor.id, p.framing, p.teacher, phase === "fallback"]);
+  }, [p.still, tutor.id, p.framing, sources, phase === "fallback"]);
 
   useEffect(() => {
     stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });

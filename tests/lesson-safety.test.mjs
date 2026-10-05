@@ -125,7 +125,7 @@ test("ui.hint: a hint move sends the rung's text at rungs 1-3 (never the asserti
   assert.equal(r.move.kind, "hint");
   // W1-A (flows G5): the fixture's rung 1 is a teacher note ("pump: ask what the parts means"): its rung label never
   // reaches the card, and a line that still reads as a note to the teacher is not shown at all.
-  assert.equal(item.hints[0], "pump: ask what the parts means");
+  assert.match(item.hints[0], /^pump: ask what the \w+ means$/);   // which item opens follows content F0 (rs6)
   assert.equal(r.ui.hint, undefined);
   assert.deepEqual(hintFor({ kind: "hint" }, { answer: "7", hints: ["Prompt: count the tens first"] }, 1), { level: 1, text: "count the tens first" });
   r = turn(r, cls("incorrect"));

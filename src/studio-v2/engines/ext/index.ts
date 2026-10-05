@@ -19,6 +19,14 @@ import { zero } from "./zero.ts";
 import { map } from "./map.ts";
 import { motion } from "./motion.ts";
 import { life } from "./life.ts";
+import { heat } from "./heat.ts";
+import { sky } from "./sky.ts";
+import { ray } from "./ray.ts";
+import { land } from "./land.ts";
+import { town } from "./town.ts";
+import { solid } from "./solid.ts";
+import { pattern } from "./pattern.ts";
+import { field } from "./field.ts";
 
-const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair, dukaan, instrument, sieve, rule, geo, mirror, picto, fracops, zero, map, motion, life] as EngineDef<never>[];
+const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair, dukaan, instrument, sieve, rule, geo, mirror, picto, fracops, zero, map, motion, life, heat, sky, ray, land, town, solid, pattern, field] as EngineDef<never>[];
 export const ENGINES_EXT: Record<string, EngineDef<never>> = Object.fromEntries(list.map((d) => [d.archetype, d]));

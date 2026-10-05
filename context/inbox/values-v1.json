@@ -1,0 +1,37 @@
+{
+ "nodes": [
+  {"id": "v1-rj-recheck-top-level-fields", "kind": "rejection", "at": "2026-10-05",
+   "title": "Tried: owner-truth patch 01 recheckValue, which re-checks a bound engine answer from the event's TOP-LEVEL fields (value/written/built/...). Broke: the frame protocol nests the act (data = { value: { kind, ... }, correct }, src/modules/frame/protocol.ts toModuleEvent), so 126/126 forged claims on real events were still graded by the claim (evals/grading-truth, 2026-10-05); patch 10's F1 test passed only on a flat shape no frame sends. Flattening is worse: pv.write carries value=<key> beside written=<entry>. Instead: V1-01 recheck.js re-runs the engine's .logic.ts per act kind on server params; unrecomputable acts = no evidence."},
+  {"id": "v1-rj-multipartkey-punctuation", "kind": "rejection", "at": "2026-10-05",
+   "title": "Tried: owner-truth patch 04 multiPartKey (a key with commas/and/because is multi-part). Broke: it flags 169/174 (97%) two-rater-agreed SINGLE-part keys as multi-part (kit keys carry reasons), so the 'gives ALL of the KEY' rubric would mark complete answers partial. Instead: authored, human-adjudicated parts data (data/kits-parts.json, V1-02/V1-05); the model reports parts_present and code decides."},
+  {"id": "v1-rj-host-closed-item-fallback-removal", "kind": "rejection", "at": "2026-10-05",
+   "title": "Tried: removing the W2-H grade.js pick() fallback that credits an answer matching an already-closed item (cause of 5/853 wrong tries told 'right'). Broke: 36 false fails on restarts arriving without a new mount key. Instead: V1-04, the frame runtime stamps the data-item seam on every answer (stamped answers: 0 wrong)."},
+  {"id": "v1-rj-warmup-easiest-retrieval-as-check", "kind": "rejection", "at": "2026-10-05",
+   "title": "Found (simulated): routes/lesson.js warmupItemsFor always takes the skill's easiest retrieval item, so 99.7% of delayed checks (4,120, 240 sim children x 12 lessons) were an item already answered and 29% were < 2 days: 'secure' meant 'remembers that one question'. Replaced by V1-10/V1-11 (>= 2 learning days, never-seen item, per-skill held-out reserve)."},
+  {"id": "v1-dc-one-number-reader", "kind": "decision", "at": "2026-10-05",
+   "title": "One reader for a child's number (server/grading/spoken-number.js): returns a value only when every number word composes into one number (digits, Indian/intl grouping, Devanagari, English/Roman-Hindi 1-99 + sau/hazaar/lakh/crore, fractions incl. bata/chauthai/dedh/dhai/saade, decimals, sign), else null; a numeric kit key is graded by value in code before any model call. Reverse if the real-speech pilot audit (PILOT-PROTOCOL §4.3) shows the reader abstaining on > 10% of right numeric answers or any wrong value."},
+  {"id": "v1-dc-secure-needs-2days-new-item", "kind": "decision", "at": "2026-10-05",
+   "title": "PROPOSED (patch V1-10): a delayed check counts only >= 2 learning days after the anchor and on an item the skill was never answered on; DELAY_MS 20 h stays only as the earliest FSRS review. Reverse if pilot V1.6a accuracy on secure skills is >= 0.85 under the old 20 h same-item rule (it would mean the stricter rule buys nothing)."},
+  {"id": "v1-dc-calibration-map-from-pilot-only", "kind": "decision", "at": "2026-10-05",
+   "title": "The readout calibration map for pSuccessNext (needed: launch k[C0]=0.754 caps every prediction at 0.754) is fitted on pilot outcomes only; a simulator-fitted map never ships (it encodes simulator assumptions). Delayed checks get their own map. Reverse if pilot ECE of the raw readout is already <= 0.05."},
+  {"id": "v1-m-grading-truth-2026-10-05", "kind": "measurement", "at": "2026-10-05",
+   "title": "Grading-truth battery (evals/grading-truth/run.mjs, seed 7, constructed answers, real graders): wrong grades baseline / owner-truth 01-04 / +V1 patches: lesson classifyFast 1,294 / 1,294 / 0 of 25,385; classify() model leg on taxila-fast 145/517 (28.0%) / 91/517 (17.6%) / 18/336 (5.4%, 16 on rater-labelled partials); bound engines on real frame-protocol events 126 / 126 / 0 of 252; W2-H host 5 / 5 / 0 (with item stamp) of 853; placement 34 / 34 / 0 of 1,734; comprehension rKey (dormant) 167 / 167 / 0 of 399; studio-spec gradeAnswer 0/513 and ext 0 malformed. Uncredited right answers (deterministic) 1,855 -> 654."},
+  {"id": "v1-m-parts-two-rater-2026-10-05", "kind": "measurement", "at": "2026-10-05",
+   "title": "Two-rater parts labels (gpt-5.6-terra vs DeepSeek-V4-Pro, n=800 of 2,750 list-shaped class 4-7 kit keys, evals/grading-truth/label-parts.mjs, USD 1.91): multi- vs single-part agreed 588/800, kappa 0.43; acceptable entries 2,144 rated, 1,631 agreed (kappa 0.53), of which 947 PARTIAL and some wrong; agreed multi 404, agreed single 184."},
+  {"id": "v1-m-mastery-sim-2026-10-05", "kind": "measurement", "at": "2026-10-05",
+   "title": "SIMULATED (evals/mastery-calibration/sim.mjs: real planTurn pipeline, 240 children x 12 lessons, two truth families, seed 11): baseline / V1-10+11 / +V1-12: false mastery at 'mastered' (true new-form P < 0.5) 10.8% [9.5,12.3] / 11.5% / 13.8% (bar 2%: FAIL; shallow 77-88%, weak 30-45%); first-try ECE 0.111 / 0.116 / 0.120 (held-out isotonic 0.027 / 0.035 / 0.023); delayed checks on a new item 0.3% / 100% / 100%; boredom 28.6% / 26.0% / 16.8% (bar 5%: FAIL); overload in-session 4.6% / 6.4% / 3.8%, across sessions 7.8% / 7.4% / 4.4%."},
+  {"id": "v1-m-pilot-power-2026-10-05", "kind": "measurement", "at": "2026-10-05",
+   "title": "Pilot power (evals/mastery-calibration/power.mjs, Monte Carlo, 300 sims): V1.6a lower-95%-bound > 0.85 at 40 children x 8 checks: power 0.98 if true accuracy 0.93, 0.59 if 0.90, 0.24 if 0.88. V1.6b: a perfectly calibrated predictor has median ECE 0.051 at n=300, 0.027 at 1,200 (P(ECE<=0.05)=0.99), 0.018 at 2,400; slope-CI test passes 0.43 at 1,200, 0.90 at 2,400. voicesig simulate-pilot (assumed effect): dAUROC CI95 half-width 0.043 at 40 children, 0.028 at 100, 0.020 at 200."},
+  {"id": "v1-m-kit-check-items-census", "kind": "measurement", "at": "2026-10-05",
+   "title": "Kit census, class 4-7 maths: 424 skills, median 4 items per skill; items of a check kind (near_transfer/practice/retrieval) per skill: 0 for 59 skills (14%), 1 for 132 (31%). In the V1 sim 483 of 1,059 delayed checks had to use a practice-form item. A sealed transfer-form check bank (>= 4 isomorphs per skill) is required for V1.3."}
+ ],
+ "edges": [
+  {"src": "v1-rj-recheck-top-level-fields", "rel": "supersedes", "dst": "rj-ot-frame-claim-as-grade"},
+  {"src": "v1-dc-one-number-reader", "rel": "measured_by", "dst": "v1-m-grading-truth-2026-10-05"},
+  {"src": "v1-rj-multipartkey-punctuation", "rel": "measured_by", "dst": "v1-m-parts-two-rater-2026-10-05"},
+  {"src": "v1-dc-secure-needs-2days-new-item", "rel": "measured_by", "dst": "v1-m-mastery-sim-2026-10-05"},
+  {"src": "v1-rj-warmup-easiest-retrieval-as-check", "rel": "measured_by", "dst": "v1-m-mastery-sim-2026-10-05"},
+  {"src": "v1-m-kit-check-items-census", "rel": "blocks", "dst": "v1-dc-secure-needs-2days-new-item"},
+  {"src": "v1-dc-calibration-map-from-pilot-only", "rel": "measured_by", "dst": "v1-m-pilot-power-2026-10-05"}
+ ]
+}

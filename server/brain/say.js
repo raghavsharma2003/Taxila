@@ -2,7 +2,7 @@
 // instructions string (one compile() for every lane) and guarded on the bytes by code: answer leaks, drift, floor
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
-import { safetyOpeningFor } from "../relational/openings.js";
+import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, DEPLOY, isContentFilter } from "../azure.js";
 import { floorViolations, scrubPii } from "../director/safety.js";
 import { upcomingItem } from "../director/state.js";
@@ -10,7 +10,7 @@ import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy } fro
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 
@@ -64,10 +64,15 @@ export const TEACHING_MOVES = new Set(["hook", "explain", "worked_example", "ret
  * Devanagari for Hindi. Measured in evals/director-sim.mjs: a stray Gujarati word and Devanagari fragments
  * inside Roman Hinglish both reached the child before this check.
  */
-const LATIN = /^[\p{Script=Latin}\p{Script=Common}\p{M}]*$/u;
-const SCRIPT_OK = { hinglish: LATIN, english: LATIN, hindi: /^[\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{M}]*$/u };
-const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu, english: /[^\p{Script=Latin}\p{Script=Common}\p{M}]/gu,
-  hindi: /[^\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{M}]/gu };
+// F18 (evals/owner-truth s09 t17): `\p{M}` accepted ANY script's combining marks, so Gujarati vowel signs (U+0A82,
+// U+0AC7) passed as "Latin". Script=Inherited is the shared combining set (accents on Latin); a script's own marks belong
+// to that script (Devanagari's to Devanagari, allowed only for Hindi).
+const LATIN = /^[\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]*$/u;
+const SCRIPT_OK = { hinglish: LATIN, english: LATIN, hindi: /^[\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{Script=Inherited}]*$/u };
+const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/gu, english: /[^\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/gu,
+  hindi: /[^\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{Script=Inherited}]/gu };
+/** Is a written reply in the scripts its language allows? Exported for tests. */
+export const scriptOk = (t, lang) => (SCRIPT_OK[lang] ?? LATIN).test(String(t ?? ""));
 
 /**
  * What the child reads when no reply could be written (the model failed twice): content where there is
@@ -79,8 +84,10 @@ const HELPLINE_LINE = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" or ")
 const HELPLINE_LINE_HI = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" ya ");
 export const FALLBACK = {
   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
+    safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
     other: "Sorry, I lost my words for a second. Can you say that again?" },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
+    safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?" },
 };
 /**
@@ -88,13 +95,28 @@ export const FALLBACK = {
  * (server/relational/openings.js, identical to the client's src/lesson/safetyStrings.ts) and then one check-in question.
  */
 const CHECK_Q = { en: "Are you safe right now?", hinglish: { tum: "Kya tum abhi safe ho?", aap: "Kya aap abhi safe hain?" }, hi: { tum: "क्या तुम अभी सुरक्षित हो?", aap: "क्या आप अभी सुरक्षित हैं?" } };
-export function safeguardLine(ctx = {}) {
+/**
+ * F10 (evals/owner-truth patch 05, reconciled with W2-I's openings): a fallback safeguard line whose trigger was ONLY the
+ * classifier model or the content filter ("I'm done" read as distress) gets the neutral check-in wording, never "what you
+ * said matters". Every other trigger (the predicate's families, the relational floor, an unknown/legacy state) keeps the
+ * vetted disclosure opening. W2-I's CHECK opening (openings.js) names Childline only, and a fallback line must name both
+ * helplines (tests/lesson-truth "safeguard fallback names ... Tele-MANAS 14416"), so the check form is patch 05's
+ * two-helpline line; Devanagari has no vetted two-helpline check line yet, so it keeps the disclosure opening.
+ * Wording only: the predicate, the hold and the helplines are unchanged.
+ */
+const CHECK_ONLY_KINDS = new Set(["model", "content_filter"]);
+export function safeguardLine(ctx = {}, { kind = null } = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  if (CHECK_ONLY_KINDS.has(kind) && mode !== "hi") {
+    const line = FALLBACK[mode === "en" ? "english" : "hinglish"].safeguardCheck;
+    return ctx.address === "aap" && mode !== "en" ? toAap(line) : line;
+  }
   const open = safetyOpeningFor(ctx.lang, { address: ctx.address });
   const q = open.mode === "en" ? CHECK_Q.en : CHECK_Q[open.mode][ctx.address === "aap" ? "aap" : "tum"];
   return `${open.text} ${q}`;
 }
 export function fallbackReply(state, item) {
-  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx);
+  if (state.lastMove?.kind === "safeguard") return safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
   if (item && !CLOSING_MOVES.has(kind)) return promptFor(item, lang);
@@ -104,19 +126,37 @@ export function fallbackReply(state, item) {
   return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
 }
 
-/** The draft up to (not including) its first question, then the item's own question. Exported for tests. */
-export function repairDrift(draft, item, lang) {
+/**
+ * The draft up to (not including) its first question, then the item's own question; a lead sentence that repeats part of
+ * the question is dropped (F20) and, with `noLeak`, so is one that states the item's key (F17: a leak that survived the
+ * rewrite used to replace the WHOLE turn with the bare question — 38/394 replies in the owner's session). Exported for tests.
+ */
+export function repairDrift(draft, item, lang, { noLeak = false } = {}) {
   const sentences = String(draft).match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
   const lead = [];
   for (const x of sentences) {
     if (/[?？]/.test(x)) break;
+    if (noLeak && revealsAnswer(x, item)) continue;
     lead.push(x);
   }
-  return `${lead.join("").trim()} ${promptFor(item, lang)}`.trim();
+  return joinAsk(lead.join("").replace(/^[\s”"'’)\]]+/, "").trim(), promptFor(item, lang));
 }
 
 /** Sentences of `text` that do not state `item`'s key (what is left of a teaching turn after a leak survived). */
 export const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !revealsAnswer(x, item)).join("").trim();
+/**
+ * Is what is left of a gutted teaching turn still a turn? F18 (evals/owner-truth s06 t2): every sentence of an explanation
+ * "revealed" the next item, and the remainder was "” Aapka question?". A remainder must open on a word, carry some
+ * content, and hand the floor back. Exported for tests.
+ */
+export const coherentRemainder = (t) => !!t && !/^[\s”"'’)\]]/.test(t) && words(t) >= 6 && handsBack(t);
+/**
+ * An upcoming item whose key is a STATEMENT of the idea being taught (a why / teach-back item, or a key of 6+ words such
+ * as "Any question that can be checked by trying something") cannot be kept out of the explanation that teaches it: the
+ * ahead-leak check would gut the turn (F18). Its answer is still discounted if said (brain/turn.js spoiledBy → spoiled →
+ * hintsUsed 4), so evidence stays honest. Exported for tests.
+ */
+export const statementKey = (item) => !!item && (["why", "teachback"].includes(item.kind) || words(item.answer) >= 6);
 
 /**
  * Text-mode teacher reply from the SAME compiled instructions, guarded on the bytes: an answer leak before
@@ -127,7 +167,8 @@ export const withoutLeaks = (text, item) => (String(text).match(/[^.!?।]+[.!?�
  */
 export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
-  const ahead = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
+  const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
+  const ahead = next && !statementKey(next) ? next : null;
   const lang = state.ctx.lang;
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
   const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
@@ -169,7 +210,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     mustPose && !posesItem(t, item, lang) && "drift",
     whyProbe && !asksWhy(t) && "nowhy",
     mustHandBack && !handsBack(t) && "flat",
-    !(SCRIPT_OK[lang] ?? LATIN).test(t) && "script",
+    !scriptOk(t, lang) && "script",
     words(t) > max && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
     mustHandBack && parityOf(t).questions > 1 && "twoq",
@@ -259,10 +300,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       reply = fallbackReply(state, item);
       guard.replaced = true;
     } else if (found.includes("leak") && ahead) {
-      reply = withoutLeaks(reply, ahead) || fallbackReply(state, null);
-      guard.replaced = true;
+      // what is left must still be a turn (F18); else the rewrite stands and the next item is marked spoiled (turn.js)
+      const left = withoutLeaks(reply, ahead).replace(/^[\s”"'’)\]]+/, "");
+      if (coherentRemainder(left)) { reply = left; guard.replaced = true; } else guard.spoilsAhead = ahead.id;
     } else if (found.includes("leak") || found.includes("drift")) {
-      reply = promptFor(item, lang);
+      // the acknowledgement before the drift / leak stays, then the verified question (F17: never the bare question when
+      // the child's words got an answer in the draft)
+      reply = repairDrift(reply, item, lang, { noLeak: true });
+      if (problems(reply).includes("leak")) reply = promptFor(item, lang);
       guard.replaced = true;
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
@@ -270,7 +315,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // What is left of a turn whose words contradicted the verdict or the screen: those sentences go; if nothing
       // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
       const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
-        ? `${t ?? ""} ${promptFor(item, lang)}`.trim() : t || fallbackReply(state, item));
+        ? joinAsk(t ?? "", promptFor(item, lang)) : t || fallbackReply(state, item));
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }

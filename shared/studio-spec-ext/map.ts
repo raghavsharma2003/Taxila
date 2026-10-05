@@ -13,7 +13,7 @@ import { EnvelopeExt, MARKUP, TargetsField, UNGRADED, arr, envelope, isObj, num,
 import { GLYPHS, type Glyph } from "./scene.ts";
 import { LAND } from "./land-data.ts";
 
-const MR_STRINGS = { round: "Round", done: "deliveries", go: "FLY", undo: "UNDO", coach: "Tap arrows to program the route, then FLY", runDone: "Map room closed", fwd: "forward", left: "left", right: "right", km: "km", scale: "1 square =", measure: "Drag the tape between the two places, then set the distance", lat: "lat", lon: "long", drop: "Tap where the pin goes", fly: "Fly to", set: "SET", N: "N", S: "S", E: "E", W: "W", blocked: "BLOCKED", arrived: "DELIVERED" };
+const MR_STRINGS = { thread: "Drag the thread along the road from A to B", round: "Round", done: "deliveries", go: "FLY", undo: "UNDO", coach: "Tap arrows to program the route, then FLY", runDone: "Map room closed", fwd: "forward", left: "left", right: "right", km: "km", scale: "1 square =", measure: "Drag the tape between the two places, then set the distance", lat: "lat", lon: "long", drop: "Tap where the pin goes", fly: "Fly to", set: "SET", N: "N", S: "S", E: "E", W: "W", blocked: "BLOCKED", arrived: "DELIVERED" };
 const Cell = z.tuple([z.number().int().min(0).max(11), z.number().int().min(0).max(7)]);
 const Place = z.object({ at: Cell, label: z.string().min(1).max(10).refine((s) => !MARKUP.test(s)), glyph: z.enum(GLYPHS).optional() });
 export const REGIONS = ["Asia", "Africa", "Europe", "North America", "South America", "Australia", "Antarctica", "Pacific Ocean", "Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Southern Ocean"] as const;
@@ -21,6 +21,7 @@ const MrRound = z.discriminatedUnion("mode", [
   z.object({ mode: z.literal("route"), title: z.string().min(1).max(22), sub: z.string().max(40), w: z.number().int().min(5).max(12), h: z.number().int().min(4).max(8), blocks: z.array(Cell).max(40), places: z.array(Place).min(1).max(6), start: Cell, goal: z.number().int().min(0).max(5), steer: z.enum(["compass", "turns"]), maxSteps: z.number().int().min(2).max(30), ...TargetsField }),
   z.object({ mode: z.literal("scale"), title: z.string().min(1).max(22), sub: z.string().max(40), w: z.number().int().min(5).max(12), h: z.number().int().min(4).max(8), places: z.array(Place).min(2).max(6), from: z.number().int().min(0).max(5), to: z.number().int().min(0).max(5), kmPerSquare: z.number().min(0.5).max(500), tol: z.number().min(0.1).max(500), ...TargetsField }),
   z.object({ mode: z.literal("globe"), title: z.string().min(1).max(22), sub: z.string().max(40), pins: z.array(z.object({ lat: z.number().min(-80).max(80), lon: z.number().min(-180).max(180), label: z.string().min(1).max(12).optional() })).min(1).max(4), tol: z.number().min(2).max(15), ...TargetsField }),
+  z.object({ mode: z.literal("thread"), title: z.string().min(1).max(22), sub: z.string().max(40), w: z.number().int().min(5).max(12), h: z.number().int().min(4).max(8), curve: z.array(z.tuple([z.number().min(0).max(12), z.number().min(0).max(8)])).min(3).max(10), kmPerSquare: z.number().min(0.5).max(500), tolPct: z.number().min(4).max(20), ...TargetsField }),
   z.object({ mode: z.literal("region"), title: z.string().min(1).max(22), sub: z.string().max(40), asks: z.array(z.enum(REGIONS)).min(1).max(5), ...TargetsField }),
 ]);
 export type MrRoundT = z.infer<typeof MrRound>;
@@ -71,6 +72,19 @@ export function shortest(rd: Extract<MrRoundT, { mode: "route" }>): number {
   while (q.length) { const [x, y, d] = q.shift()!; if (x === goal[0] && y === goal[1]) return d; for (const [dx, dy] of Object.values(DIRS)) { const nx = x + dx, ny = y + dy, k = nx + "," + ny; if (nx < 0 || ny < 0 || nx >= rd.w || ny >= rd.h || blk.has(k) || seen.has(k)) continue; seen.add(k); q.push([nx, ny, d + 1]); } }
   return Infinity;
 }
+/** a smooth road through the control points (Catmull-Rom), sampled in grid units */
+export function curvePts(curve: [number, number][], per = 16): [number, number][] {
+  const P = [curve[0], ...curve, curve[curve.length - 1]], out: [number, number][] = [];
+  for (let i = 1; i < P.length - 2; i++) for (let k = 0; k < per; k++) { const t = k / per, t2 = t * t, t3 = t2 * t, f = (a: number, b: number, c: number, d: number) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3); out.push([f(P[i - 1][0], P[i][0], P[i + 1][0], P[i + 2][0]), f(P[i - 1][1], P[i][1], P[i + 1][1], P[i + 2][1])]); }
+  out.push(curve[curve.length - 1]); return out;
+}
+export const polyLen = (pts: [number, number][]) => pts.slice(1).reduce((a, p, i) => a + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
+export const threadKey = (rd: Extract<MrRoundT, { mode: "thread" }>) => polyLen(curvePts(rd.curve)) * rd.kmPerSquare;
+/** how far (grid units, mean) a traced path strays from the road */
+export function traceStray(rd: Extract<MrRoundT, { mode: "thread" }>, trace: [number, number][]): number {
+  const road = curvePts(rd.curve, 24); if (trace.length < 2) return Infinity;
+  return trace.reduce((a, q) => a + Math.min(...road.map((p) => Math.hypot(p[0] - q[0], p[1] - q[1]))), 0) / trace.length;
+}
 export const scaleKey = (rd: Extract<MrRoundT, { mode: "scale" }>) => { const a = rd.places[rd.from].at, b = rd.places[rd.to].at; return Math.hypot(a[0] - b[0], a[1] - b[1]) * rd.kmPerSquare; };
 
 const mrDefault: MapSpec = {
@@ -90,7 +104,16 @@ function repairMap(raw: Record<string, unknown>, r: string[]): MapSpec | null {
   for (const x of arr(raw.rounds, "rounds", r).slice(0, 4)) {
     if (!isObj(x)) { r.push("round"); continue; }
     const head = { title: reqStr(x.title, 22, "round.title", r) ?? "Map", sub: typeof x.sub === "string" && x.sub.length <= 40 && !MARKUP.test(x.sub) ? x.sub : "", ...targets(x.targets, r) };
-    const mode = oneOf(x.mode, ["route", "scale", "globe", "region"] as const, "route", "mode", r);
+    const mode = oneOf(x.mode, ["route", "scale", "globe", "region", "thread"] as const, "route", "mode", r);
+    if (mode === "thread") {
+      const w = num(x.w, 5, 12, 10, "w", r, true), h = num(x.h, 4, 8, 6, "h", r, true);
+      const curve = arr(x.curve, "curve", r).filter((c): c is [number, number] => Array.isArray(c) && c.length === 2 && c.every((n) => typeof n === "number" && Number.isFinite(n))).slice(0, 10).map(([a, b]) => [Math.min(w - 0.5, Math.max(0.5, a)), Math.min(h - 0.5, Math.max(0.5, b))] as [number, number]);
+      if (curve.length < 3) { r.push("thread:curve"); continue; }
+      const rd = { mode, ...head, w, h, curve, kmPerSquare: num(x.kmPerSquare, 0.5, 500, 5, "kmPerSquare", r), tolPct: num(x.tolPct, 4, 20, 10, "tolPct", r) } as Extract<MrRoundT, { mode: "thread" }>;
+      const straight = Math.hypot(curve[curve.length - 1][0] - curve[0][0], curve[curve.length - 1][1] - curve[0][1]), along = polyLen(curvePts(curve));
+      if (along < straight * 1.15) { r.push("thread:road-too-straight"); continue; }
+      rounds.push(rd); continue;
+    }
     if (mode === "route" || mode === "scale") {
       const w = num(x.w, 5, 12, 10, "w", r, true), h = num(x.h, 4, 8, 6, "h", r, true), ps = places(x.places, r, w, h);
       if (mode === "route") {
@@ -128,15 +151,16 @@ function gradeMap(spec: MapSpec, itemId: string, value: unknown): Graded {
     return { verdict: arrived && f.path.length - 1 <= rd.maxSteps ? "right" : arrived ? "partial" : "wrong", truth: shortest(rd), detail: f.blocked ? "blocked" : arrived ? `${f.path.length - 1} steps` : "missed" };
   }
   if (rd.mode === "scale") { const key = scaleKey(rd), v = typeof value === "number" ? value : NaN; if (!Number.isFinite(v)) return { verdict: "wrong", truth: key, detail: "no-value" }; const e = Math.abs(v - key); return { verdict: e <= rd.tol ? "right" : e <= rd.tol * 2.5 ? "partial" : "wrong", truth: +key.toFixed(2), error: +e.toFixed(2) }; }
+  if (rd.mode === "thread") { const key = threadKey(rd), v = isObj(value) ? value : {}, trace = Array.isArray(v.trace) ? v.trace.filter((q): q is [number, number] => Array.isArray(q) && q.length === 2 && q.every((n) => typeof n === "number" && Number.isFinite(n))).slice(0, 400) : []; if (trace.length < 2) return { verdict: "wrong", truth: +key.toFixed(1), detail: "no-value" }; const got = polyLen(trace) * rd.kmPerSquare, e = (Math.abs(got - key) / key) * 100, stray = traceStray(rd, trace); return { verdict: e <= rd.tolPct && stray <= 0.35 ? "right" : e <= rd.tolPct * 2 ? "partial" : "wrong", truth: +key.toFixed(1), error: +e.toFixed(1), detail: stray > 0.35 ? "off the road" : `${got.toFixed(1)} km` }; }
   if (rd.mode === "globe") { const p = rd.pins[i]; if (!p) return UNGRADED; const v = isObj(value) ? value : {}; const lat = Number(v.lat), lon = Number(v.lon); if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { verdict: "wrong", truth: p, detail: "no-value" }; const e = Math.max(Math.abs(lat - p.lat), Math.abs(((lon - p.lon + 540) % 360) - 180)); return { verdict: e <= rd.tol ? "right" : e <= rd.tol * 2 ? "partial" : "wrong", truth: p, error: +e.toFixed(1) }; }
   const ask = rd.asks[i]; if (!ask) return UNGRADED; const v = isObj(value) ? value : {}; const lat = Number(v.lat), lon = Number(v.lon);
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { verdict: "wrong", truth: ask, detail: "no-value" };
   const got = regionOf(lon, lat); return { verdict: got === ask ? "right" : "wrong", truth: ask, detail: got };
 }
-function keysMap(spec: MapSpec) { return spec.rounds.flatMap((rd, k) => rd.mode === "route" ? [{ itemId: `r${k + 1}:0`, key: `${shortest(rd)} steps`, prompt: `to ${rd.places[rd.goal].label}` }] : rd.mode === "scale" ? [{ itemId: `r${k + 1}:0`, key: `${scaleKey(rd).toFixed(1)} km`, prompt: `${rd.places[rd.from].label}→${rd.places[rd.to].label} at ${rd.kmPerSquare} km/square` }] : rd.mode === "globe" ? rd.pins.map((p, i) => ({ itemId: `r${k + 1}:${i}`, key: `${p.lat},${p.lon}`, prompt: p.label ?? "pin" })) : rd.asks.map((a, i) => ({ itemId: `r${k + 1}:${i}`, key: a, prompt: `fly to ${a}` }))); }
+function keysMap(spec: MapSpec) { return spec.rounds.flatMap((rd, k) => rd.mode === "route" ? [{ itemId: `r${k + 1}:0`, key: `${shortest(rd)} steps`, prompt: `to ${rd.places[rd.goal].label}` }] : rd.mode === "scale" ? [{ itemId: `r${k + 1}:0`, key: `${scaleKey(rd).toFixed(1)} km`, prompt: `${rd.places[rd.from].label}→${rd.places[rd.to].label} at ${rd.kmPerSquare} km/square` }] : rd.mode === "thread" ? [{ itemId: `r${k + 1}:0`, key: `${threadKey(rd).toFixed(1)} km`, prompt: `road length at ${rd.kmPerSquare} km/square` }] : rd.mode === "globe" ? rd.pins.map((p, i) => ({ itemId: `r${k + 1}:${i}`, key: `${p.lat},${p.lon}`, prompt: p.label ?? "pin" })) : rd.asks.map((a, i) => ({ itemId: `r${k + 1}:${i}`, key: a, prompt: `fly to ${a}` }))); }
 export const mapDef: ExtSpecDef<MapSpec> = {
   archetype: "map-route@1", title: "Map Room", kind: "game", subjects: ["maths", "sst", "evs", "science"],
-  act: "program a drone's route with direction tiles and fly it round obstacles, measure a map with the tape and convert with the scale, drop pins at latitude and longitude, fly to a named continent or ocean",
+  act: "program a drone's route with direction tiles and fly it round obstacles, lay a thread along a winding road and straighten it on the scale, measure a map with the tape and convert with the scale, drop pins at latitude and longitude, fly to a named continent or ocean",
   outcomes: { classes: [4, 5, 6, 7], subjects: ["maths", "sst"], topics: ["c5-maths-ch14-t01", "c5-maths-ch14-t02", "c6-sst-ch01-t01"], misconceptions: [] },
   schema: MapSchema as unknown as z.ZodType<MapSpec>, defaultSpec: mrDefault, repair: repairMap, grade: gradeMap, keys: keysMap,
 };

@@ -56,9 +56,10 @@ test("revealsAnswer: a key the question does not name leaks anywhere; a named op
   assert.equal(revealsAnswer("1/2 aur 1/3 ko roti se socho. Kaunsa tukda bada lagega?", i3), false);
 });
 
-test("practice queue: kit order, teach-back held back, a diagnostic second; isomorphic stays on skill", () => {
+test("practice queue: teach-back held back, the diagnostic third or later (content F0, RS-6); isomorphic stays on skill", () => {
   const q = buildPracticeQueue(K);
-  assert.equal(q[1], "diag:c4-maths-ch05-t01-m1");
+  // Day 0 (rs6 01-content-f0): the spoken diagnostic is never item 1 or 2 (was second, on item 1's motif: the dice picture)
+  assert.ok(q.indexOf("diag:c4-maths-ch05-t01-m1") >= 2, q.join(","));
   assert.ok(!q.includes("i8"), "the teach-back item is for the teach-back phase");
   const s = { itemsDone: ["i1"] };
   const iso = isomorphicFor(s, K, K.items.find((i) => i.id === "i1"));

@@ -1,0 +1,1543 @@
+{
+ "topicId": "c4-maths-ch04-t01",
+ "title": "Numbers up to 9999",
+ "chapter": "Thousands Around Us",
+ "subject": "maths",
+ "class": 4,
+ "topicType": "T3",
+ "plan": {
+  "game": "vault-heist@1",
+  "hint": "place-value vault codes (Indian system)"
+ },
+ "game": {
+  "archetype": "vault-heist@1",
+  "spec": {
+   "archetype": "vault-heist@1",
+   "skills": [
+    "c4-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "coach": "Tap place blocks to load the vault",
+    "round": "Vault",
+    "target": "TARGET",
+    "loaded": "loaded",
+    "over": "over by",
+    "under": "short by",
+    "cracked": "VAULT OPEN",
+    "regroup": "REGROUPED",
+    "runDone": "Heist complete",
+    "words": "say it",
+    "time": "laser"
+   },
+   "system": "indian",
+   "belt": 1,
+   "rounds": [
+    {
+     "target": 2345,
+     "seconds": 35,
+     "show": "digits",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000
+     ]
+    },
+    {
+     "target": 4050,
+     "seconds": 40,
+     "show": "words",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000
+     ],
+     "targets": "c4-maths-ch04-t01-m-drop-zero"
+    },
+    {
+     "target": 7009,
+     "seconds": 45,
+     "show": "words",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000
+     ],
+     "targets": "c4-maths-ch04-t01-m-concat"
+    },
+    {
+     "target": 6543,
+     "seconds": 50,
+     "show": "digits",
+     "denoms": [
+      1,
+      10,
+      100,
+      1000
+     ],
+     "targets": "c4-maths-ch04-t01-m-face-value"
+    }
+   ]
+  },
+  "repairs": [],
+  "attempts": 1,
+  "model": "taxila-fast"
+ },
+ "explainer": {
+  "archetype": "scene-explainer@1",
+  "spec": {
+   "archetype": "scene-explainer@1",
+   "skills": [
+    "c4-maths-ch04-t01"
+   ],
+   "lang": "en",
+   "strings": {
+    "again": "Show again",
+    "yourTurn": "Your turn",
+    "check": "Check",
+    "right": "Got it",
+    "look": "Look again",
+    "myth": "MYTH",
+    "busted": "NOT TRUE",
+    "order": "Tap them in order"
+   },
+   "title": "Build a 4-digit number",
+   "accent": "ion",
+   "targets": "c4-maths-ch04-t01-m-drop-zero",
+   "scenes": [
+    {
+     "id": "s1",
+     "layout": "split",
+     "els": [
+      {
+       "id": "title",
+       "type": "title",
+       "text": "Numbers up to 9999"
+      },
+      {
+       "id": "myth",
+       "type": "myth",
+       "text": "Four thousand fifty is 450"
+      },
+      {
+       "id": "places",
+       "type": "label",
+       "text": "Four places"
+      },
+      {
+       "id": "num",
+       "type": "node",
+       "text": "4-digit",
+       "sub": "number",
+       "glyph": "ruler",
+       "color": "ion"
+      }
+     ]
+    },
+    {
+     "id": "s2",
+     "layout": "row",
+     "els": [
+      {
+       "id": "th",
+       "type": "node",
+       "text": "Thousands",
+       "sub": "1000s",
+       "color": "ion"
+      },
+      {
+       "id": "hu",
+       "type": "node",
+       "text": "Hundreds",
+       "sub": "100s",
+       "color": "sci"
+      },
+      {
+       "id": "te",
+       "type": "node",
+       "text": "Tens",
+       "sub": "10s",
+       "glyph": "ruler",
+       "color": "mint"
+      },
+      {
+       "id": "on",
+       "type": "node",
+       "text": "Ones",
+       "sub": "1s",
+       "glyph": "spark",
+       "color": "amber"
+      },
+      {
+       "id": "p1",
+       "type": "arrow",
+       "from": "th",
+       "to": "hu",
+       "text": "next place"
+      },
+      {
+       "id": "p2",
+       "type": "arrow",
+       "from": "hu",
+       "to": "te",
+       "text": "next place"
+      },
+      {
+       "id": "p3",
+       "type": "arrow",
+       "from": "te",
+       "to": "on",
+       "text": "next place"
+      }
+     ]
+    },
+    {
+     "id": "s3",
+     "layout": "column",
+     "els": [
+      {
+       "id": "exTitle",
+       "type": "title",
+       "text": "Fill every place"
+      },
+      {
+       "id": "ex",
+       "type": "bar",
+       "parts": 4,
+       "shaded": 1,
+       "text": "6042"
+      },
+      {
+       "id": "d1",
+       "type": "label",
+       "text": "6 thousands"
+      },
+      {
+       "id": "d2",
+       "type": "label",
+       "text": "0 hundreds"
+      },
+      {
+       "id": "d3",
+       "type": "label",
+       "text": "4 tens"
+      },
+      {
+       "id": "d4",
+       "type": "label",
+       "text": "2 ones"
+      },
+      {
+       "id": "zero",
+       "type": "node",
+       "text": "0",
+       "sub": "holds place",
+       "glyph": "shield",
+       "color": "amber"
+      }
+     ]
+    },
+    {
+     "id": "s4",
+     "layout": "grid",
+     "els": [
+      {
+       "id": "qTitle",
+       "type": "title",
+       "text": "Your turn"
+      },
+      {
+       "id": "opt4050",
+       "type": "node",
+       "text": "4050",
+       "glyph": "question",
+       "color": "mint"
+      },
+      {
+       "id": "opt450",
+       "type": "node",
+       "text": "450",
+       "sub": "missing place",
+       "glyph": "question",
+       "color": "sun"
+      },
+      {
+       "id": "opt40050",
+       "type": "node",
+       "text": "40050",
+       "sub": "extra place",
+       "glyph": "question",
+       "color": "sun"
+      }
+     ]
+    }
+   ],
+   "text": {
+    "L1": "A 4-digit number has four places: thousands, hundreds, tens and ones.",
+    "L2": "A digit's value depends on its place. In 3456, the 3 is worth 3000.",
+    "L3": "We write a number by filling each place, not by joining the spoken parts.",
+    "L4": "Here is a common mistake: leaving out the zero in four thousand fifty.",
+    "L5": "The zero holds the empty hundreds place, so four thousand fifty is 4050.",
+    "L6": "To write six thousand forty-two, make four places first.",
+    "L7": "Put 6 thousands, 0 hundreds, 4 tens and 2 ones. The number is 6042.",
+    "L8": "Now check: which number correctly shows four thousand fifty?"
+   },
+   "narration": {
+    "L1": {
+     "text": "A 4-digit number has four places: thousands, hundreds, tens and ones.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L2": {
+     "text": "A digit's value depends on its place. In 3456, the 3 is worth 3000.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L3": {
+     "text": "We write a number by filling each place, not by joining the spoken parts.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L4": {
+     "text": "Here is a common mistake: leaving out the zero in four thousand fifty.",
+     "dur": 4.5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L5": {
+     "text": "The zero holds the empty hundreds place, so four thousand fifty is 4050.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L6": {
+     "text": "To write six thousand forty-two, make four places first.",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L7": {
+     "text": "Put 6 thousands, 0 hundreds, 4 tens and 2 ones. The number is 6042.",
+     "dur": 5,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    },
+    "L8": {
+     "text": "Now check: which number correctly shows four thousand fifty?",
+     "dur": 4,
+     "lead": 0,
+     "tail": 0.3,
+     "pauses": []
+    }
+   },
+   "beats": [
+    {
+     "line": "L1",
+     "gap": 0.4,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "title"
+      },
+      {
+       "at": 0.5,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "places",
+        "num"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L2",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "th",
+        "hu",
+        "te",
+        "on"
+       ]
+      },
+      {
+       "at": 0.8,
+       "do": "highlight",
+       "dur": 1,
+       "target": "th"
+      }
+     ]
+    },
+    {
+     "line": "L3",
+     "gap": 0.4,
+     "scene": "s2",
+     "cues": [
+      {
+       "at": 0,
+       "do": "flow",
+       "dur": 1.2,
+       "target": [
+        "p1",
+        "p2",
+        "p3"
+       ],
+       "to": 1
+      }
+     ]
+    },
+    {
+     "line": "L4",
+     "gap": 0.5,
+     "scene": "s1",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "myth"
+      },
+      {
+       "at": 1,
+       "do": "bust",
+       "dur": 1,
+       "target": "myth"
+      }
+     ]
+    },
+    {
+     "line": "L5",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "exTitle",
+        "zero"
+       ]
+      },
+      {
+       "at": 0.7,
+       "do": "highlight",
+       "dur": 1,
+       "target": "zero"
+      }
+     ]
+    },
+    {
+     "line": "L6",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": "ex"
+      },
+      {
+       "at": 0.7,
+       "do": "show",
+       "dur": 1,
+       "target": [
+        "d1",
+        "d2",
+        "d3",
+        "d4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L7",
+     "gap": 0.4,
+     "scene": "s3",
+     "cues": [
+      {
+       "at": 0,
+       "do": "highlight",
+       "dur": 1.5,
+       "target": [
+        "d1",
+        "d2",
+        "d3",
+        "d4"
+       ]
+      }
+     ]
+    },
+    {
+     "line": "L8",
+     "gap": 0,
+     "scene": "s4",
+     "cues": [
+      {
+       "at": 0,
+       "do": "show",
+       "dur": 0.8,
+       "target": [
+        "qTitle",
+        "opt4050",
+        "opt450",
+        "opt40050"
+       ]
+      },
+      {
+       "at": "end",
+       "do": "interactive",
+       "dur": 0
+      }
+     ]
+    }
+   ],
+   "task": {
+    "kind": "tap",
+    "prompt": "Tap the number that shows four thousand fifty.",
+    "options": [
+     "opt4050",
+     "opt450",
+     "opt40050"
+    ],
+    "answer": "opt4050",
+    "src": "c4-maths-ch04-t01-i02"
+   }
+  },
+  "repairs": [
+   "glyph",
+   "glyph",
+   "string:opt4050.sub"
+  ],
+  "attempts": 3,
+  "model": "taxila-fast-bg",
+  "seconds": 40
+ },
+ "whiteboard": {
+  "beats": [
+   {
+    "line": "L1",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L1",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 5281,
+     "ops": [
+      {
+       "id": "title",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        55
+       ],
+       "text": "4-digit number",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "box",
+       "op": "rect",
+       "startMs": 500,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 620,
+       "h": 150,
+       "round": 8
+      },
+      {
+       "id": "vline1",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        245,
+        150
+       ],
+       "to": [
+        245,
+        300
+       ]
+      },
+      {
+       "id": "vline2",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1800,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        300
+       ]
+      },
+      {
+       "id": "vline3",
+       "op": "line",
+       "startMs": 1800,
+       "endMs": 2100,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        555,
+        150
+       ],
+       "to": [
+        555,
+        300
+       ]
+      },
+      {
+       "id": "t1",
+       "op": "text",
+       "startMs": 2200,
+       "endMs": 2800,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        167,
+        205
+       ],
+       "text": "thousands",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t2",
+       "op": "text",
+       "startMs": 2800,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        322,
+        205
+       ],
+       "text": "hundreds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t3",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        477,
+        205
+       ],
+       "text": "tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "t4",
+       "op": "text",
+       "startMs": 3900,
+       "endMs": 4400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        632,
+        205
+       ],
+       "text": "ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "under",
+       "op": "line",
+       "startMs": 4500,
+       "endMs": 5000,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        110,
+        325
+       ],
+       "to": [
+        690,
+        325
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L2",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L2",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "n",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        190,
+        95
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3456"
+        ]
+       ]
+      },
+      {
+       "id": "d3",
+       "op": "text",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        220,
+        180
+       ],
+       "text": "3",
+       "size": "l"
+      },
+      {
+       "id": "place",
+       "op": "label",
+       "startMs": 1500,
+       "endMs": 2300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        215,
+        250
+       ],
+       "text": "thousands",
+       "to": [
+        220,
+        195
+       ]
+      },
+      {
+       "id": "value",
+       "op": "numwork",
+       "startMs": 2400,
+       "endMs": 3900,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        190,
+        320
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "3",
+         "×",
+         "1000",
+         "=",
+         "3000"
+        ]
+       ]
+      },
+      {
+       "id": "circ",
+       "op": "highlight",
+       "startMs": 4000,
+       "endMs": 4800,
+       "ink": "accent",
+       "weight": 2,
+       "target": "d3",
+       "style": "circle"
+      },
+      {
+       "id": "arr",
+       "op": "arrow",
+       "startMs": 4800,
+       "endMs": 5500,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        240,
+        210
+       ],
+       "to": [
+        300,
+        305
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L3",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L3",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "places",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        120
+       ],
+       "w": 620,
+       "h": 125,
+       "round": 8
+      },
+      {
+       "id": "p1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 950,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        245,
+        120
+       ],
+       "to": [
+        245,
+        245
+       ]
+      },
+      {
+       "id": "p2",
+       "op": "line",
+       "startMs": 950,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        120
+       ],
+       "to": [
+        400,
+        245
+       ]
+      },
+      {
+       "id": "p3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1450,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        555,
+        120
+       ],
+       "to": [
+        555,
+        245
+       ]
+      },
+      {
+       "id": "num",
+       "op": "numwork",
+       "startMs": 2600,
+       "endMs": 3500,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        150,
+        350
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "place",
+         "→",
+         "digit"
+        ]
+       ]
+      },
+      {
+       "id": "cross",
+       "op": "line",
+       "startMs": 3800,
+       "endMs": 4500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        150,
+        390
+       ],
+       "to": [
+        650,
+        390
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L4",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L4",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "phrase",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 1000,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        70
+       ],
+       "text": "four thousand fifty",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "wrong",
+       "op": "numwork",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "accent",
+       "weight": 2,
+       "at": [
+        250,
+        170
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "405"
+        ]
+       ]
+      },
+      {
+       "id": "strike",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2500,
+       "ink": "accent",
+       "weight": 2,
+       "from": [
+        235,
+        155
+       ],
+       "to": [
+        430,
+        215
+       ]
+      },
+      {
+       "id": "zero",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3300,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        290
+       ],
+       "text": "zero",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hundreds",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 3900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        345
+       ],
+       "text": "hundreds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "arrowz",
+       "op": "arrow",
+       "startMs": 4000,
+       "endMs": 4700,
+       "ink": "mark",
+       "weight": 1,
+       "from": [
+        400,
+        330
+       ],
+       "to": [
+        400,
+        225
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L5",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L5",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6132,
+     "ops": [
+      {
+       "id": "chart",
+       "op": "rect",
+       "startMs": 0,
+       "endMs": 700,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        100,
+        110
+       ],
+       "w": 600,
+       "h": 140,
+       "round": 8
+      },
+      {
+       "id": "c1",
+       "op": "line",
+       "startMs": 700,
+       "endMs": 950,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        250,
+        110
+       ],
+       "to": [
+        250,
+        250
+       ]
+      },
+      {
+       "id": "c2",
+       "op": "line",
+       "startMs": 950,
+       "endMs": 1200,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        110
+       ],
+       "to": [
+        400,
+        250
+       ]
+      },
+      {
+       "id": "c3",
+       "op": "line",
+       "startMs": 1200,
+       "endMs": 1450,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        550,
+        110
+       ],
+       "to": [
+        550,
+        250
+       ]
+      },
+      {
+       "id": "vals",
+       "op": "numwork",
+       "startMs": 1600,
+       "endMs": 2700,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        155,
+        145
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4",
+         "0",
+         "5",
+         "0"
+        ]
+       ]
+      },
+      {
+       "id": "answer",
+       "op": "numwork",
+       "startMs": 3900,
+       "endMs": 4700,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        285,
+        385
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4050"
+        ]
+       ]
+      },
+      {
+       "id": "circleanswer",
+       "op": "highlight",
+       "startMs": 4800,
+       "endMs": 5600,
+       "ink": "good",
+       "weight": 2,
+       "target": "answer",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L6",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L6",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "prompt",
+       "op": "text",
+       "startMs": 0,
+       "endMs": 900,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        65
+       ],
+       "text": "six thousand forty-two",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "frame",
+       "op": "rect",
+       "startMs": 900,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        90,
+        150
+       ],
+       "w": 620,
+       "h": 130,
+       "round": 8
+      },
+      {
+       "id": "f1",
+       "op": "line",
+       "startMs": 1500,
+       "endMs": 1750,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        245,
+        150
+       ],
+       "to": [
+        245,
+        280
+       ]
+      },
+      {
+       "id": "f2",
+       "op": "line",
+       "startMs": 1750,
+       "endMs": 2000,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        400,
+        150
+       ],
+       "to": [
+        400,
+        280
+       ]
+      },
+      {
+       "id": "f3",
+       "op": "line",
+       "startMs": 2000,
+       "endMs": 2250,
+       "ink": "chalk",
+       "weight": 2,
+       "from": [
+        555,
+        150
+       ],
+       "to": [
+        555,
+        280
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "line": "L7",
+    "ok": true,
+    "errors": [],
+    "fixes": 0,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L7",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "continue",
+     "durationMs": 6557,
+     "ops": [
+      {
+       "id": "digits",
+       "op": "numwork",
+       "startMs": 0,
+       "endMs": 1100,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        155,
+        155
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "6",
+         "0",
+         "4",
+         "2"
+        ]
+       ]
+      },
+      {
+       "id": "th",
+       "op": "text",
+       "startMs": 1100,
+       "endMs": 1900,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        165,
+        285
+       ],
+       "text": "6 thousands",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "hu",
+       "op": "text",
+       "startMs": 1900,
+       "endMs": 2700,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        320,
+        285
+       ],
+       "text": "0 hundreds",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "te",
+       "op": "text",
+       "startMs": 2700,
+       "endMs": 3400,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        475,
+        285
+       ],
+       "text": "4 tens",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "on",
+       "op": "text",
+       "startMs": 3400,
+       "endMs": 4100,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        630,
+        285
+       ],
+       "text": "2 ones",
+       "size": "m",
+       "align": "middle"
+      },
+      {
+       "id": "equals",
+       "op": "numwork",
+       "startMs": 4300,
+       "endMs": 5300,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        280,
+        390
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "number",
+         "=",
+         "6042"
+        ]
+       ]
+      },
+      {
+       "id": "ring6042",
+       "op": "highlight",
+       "startMs": 5400,
+       "endMs": 6200,
+       "ink": "good",
+       "weight": 2,
+       "target": "equals",
+       "style": "circle"
+      }
+     ]
+    }
+   },
+   {
+    "line": "L8",
+    "ok": true,
+    "errors": [],
+    "fixes": 1,
+    "script": {
+     "v": 1,
+     "scriptId": "c4-maths-ch04-t01-wb-L8",
+     "line": {
+      "lessonId": "catalogue"
+     },
+     "anchor": "line_audio_start",
+     "board": {
+      "w": 800,
+      "h": 500,
+      "ground": "chalk"
+     },
+     "mode": "fresh",
+     "durationMs": 4430,
+     "ops": [
+      {
+       "id": "phrase2",
+       "op": "text",
+       "startMs": 700,
+       "endMs": 1500,
+       "ink": "chalk",
+       "weight": 2,
+       "at": [
+        400,
+        115
+       ],
+       "text": "four thousand fifty",
+       "size": "l",
+       "align": "middle"
+      },
+      {
+       "id": "option",
+       "op": "numwork",
+       "startMs": 1700,
+       "endMs": 2500,
+       "ink": "good",
+       "weight": 3,
+       "at": [
+        300,
+        210
+       ],
+       "layout": "equation",
+       "rows": [
+        [
+         "4050"
+        ]
+       ]
+      },
+      {
+       "id": "boxoption",
+       "op": "rect",
+       "startMs": 2500,
+       "endMs": 3200,
+       "ink": "good",
+       "weight": 2,
+       "at": [
+        260,
+        180
+       ],
+       "w": 280,
+       "h": 100,
+       "round": 8
+      },
+      {
+       "id": "yes",
+       "op": "text",
+       "startMs": 3300,
+       "endMs": 4200,
+       "ink": "chalk",
+       "weight": 1,
+       "at": [
+        400,
+        355
+       ],
+       "text": "zero holds hundreds",
+       "size": "m",
+       "align": "middle"
+      }
+     ]
+    }
+   }
+  ],
+  "model": "taxila-fast-bg"
+ },
+ "keys": [],
+ "check": {
+  "issues": [],
+  "verdict": "pass",
+  "model": "DeepSeek-V4-Flash"
+ }
+}
