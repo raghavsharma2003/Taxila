@@ -12,6 +12,7 @@ import fs from "node:fs";
 import { OPENNESS } from "../../src/face-puppet/visemes.ts";
 
 const DIR = new URL("./out/product/", import.meta.url).pathname;
+const PREFIX = (() => { const i = process.argv.indexOf("--prefix"); return i > 0 ? process.argv[i + 1] : ""; })();
 const HOP = 5, SR = 24000, WIN = 10;
 const q = (a, p) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
 function envelope(buf) {
@@ -38,7 +39,7 @@ function pearson(a, b, lag) {
 const bestLag = (a, b) => { let best = -2, lag = 0; for (let l = -60; l <= 60; l++) { const r = pearson(a, b, l); if (r > best) { best = r; lag = l; } } return { lagMs: lag * HOP, r: +best.toFixed(3) }; };
 
 const rows = [];
-for (const f of fs.readdirSync(DIR).filter((x) => /-\d+\.json$/.test(x) && !x.endsWith(".ctc.json")).sort()) {
+for (const f of fs.readdirSync(DIR).filter((x) => /-\d+\.json$/.test(x) && !x.endsWith(".ctc.json") && x.startsWith(PREFIX)).sort()) {
   const meta = JSON.parse(fs.readFileSync(DIR + f, "utf8"));
   const ctcF = DIR + f.replace(".json", ".ctc.json");
   if (!fs.existsSync(ctcF)) continue;
@@ -53,7 +54,7 @@ for (const f of fs.readdirSync(DIR).filter((x) => /-\d+\.json$/.test(x) && !x.en
 const ok = rows.filter((r) => !r.skipped);
 const paired = ok.map((r) => r.pairedMs), direct = ok.map((r) => r.directLagMs);
 const res = {
-  date: new Date().toISOString().slice(0, 10),
+  date: new Date().toISOString().slice(0, 10), prefix: PREFIX || "(all)",
   method: "product path (real server + Azure websocket + real ttsStream player + real stage, Chromium headless SwiftShader); reference = wav2vec2-base-960h CTC forced alignment of the same scheduled audio; estimator = lipsync-offset E3 (best-Pearson lag on 5 ms grid)",
   segments: rows.length, scored: ok.length, skipped: rows.filter((r) => r.skipped).length,
   productMinusJudgedMs: { n: paired.length, median: q(paired, 0.5), q25: q(paired, 0.25), q75: q(paired, 0.75), min: paired.length ? Math.min(...paired) : null, max: paired.length ? Math.max(...paired) : null, within50: paired.length ? +(paired.filter((x) => Math.abs(x) <= 50).length / paired.length).toFixed(2) : null },
@@ -61,6 +62,6 @@ const res = {
   gapVsSoundMs: { median: q(ok.map((r) => r.gapLagMs), 0.5), rMedian: q(ok.map((r) => r.gapR), 0.5) },
   rows,
 };
-fs.writeFileSync(new URL("./out/lipsync-product-score.json", import.meta.url), JSON.stringify(res, null, 1));
+fs.writeFileSync(new URL(`./out/lipsync-product-score${PREFIX ? "-" + PREFIX.replace(/[^\w]+$/, "") : ""}.json`, import.meta.url), JSON.stringify(res, null, 1));
 console.log(JSON.stringify({ ...res, rows: undefined }, null, 1));
 console.table(rows);

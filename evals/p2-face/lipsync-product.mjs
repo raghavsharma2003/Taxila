@@ -24,109 +24,24 @@ const OUT = new URL("./out/", import.meta.url).pathname;
 fs.mkdirSync(OUT, { recursive: true });
 const REPLIES = ["haan, ready", "pata nahi, thoda samjhao", "achha, aur batao", "ek example do"];
 
-const INIT = () => {
-  const W = (window.__rec = { audio: [], ts: [], frames: [], bus: [], lt: [], ctx: null });
-  try { new PerformanceObserver((l) => { for (const e of l.getEntries()) W.lt.push([Math.round(e.startTime), Math.round(e.duration)]); }).observe({ type: "longtask", buffered: true }); } catch {}
-  const start0 = AudioBufferSourceNode.prototype.start;
-  AudioBufferSourceNode.prototype.start = function (when = 0, offset = 0, duration) {
-    try {
-      const b = this.buffer;
-      if (b && b.length) {
-        W.ctx = this.context;
-        const ch = b.getChannelData(0);
-        const s = Math.max(0, Math.floor(offset * b.sampleRate));
-        const n = duration !== undefined ? Math.min(ch.length - s, Math.floor(duration * b.sampleRate)) : ch.length - s;
-        const i16 = new Int16Array(n);
-        for (let i = 0; i < n; i++) i16[i] = Math.max(-32768, Math.min(32767, Math.round(ch[s + i] * 32767)));
-        let bin = ""; const u8 = new Uint8Array(i16.buffer);
-        for (let i = 0; i < u8.length; i += 0x8000) bin += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
-        W.audio.push({ when: when || this.context.currentTime, rate: b.sampleRate, at: performance.now(), loop: !!this.loop, n, ctxRate: this.context.sampleRate, pcm: btoa(bin) });
-      }
-    } catch (e) { W.err = String(e); }
-    return start0.call(this, when, offset, duration);
-  };
-  const stop0 = AudioBufferSourceNode.prototype.stop;
-  AudioBufferSourceNode.prototype.stop = function (when) { try { W.audio.push({ stop: true, when: when ?? this.context.currentTime, at: performance.now() }); } catch {} return stop0.call(this, when); };
-  let hooked = false;
-  const loop = () => {
-    const now = performance.now();
-    const P = window.__puppet;
-    if (P) {
-      const m = P.mouthProbe();
-      if (m) W.frames.push([Math.round(now * 10) / 10, Math.round(m.gap * 100) / 100, m.lip, m.state, m.revealed ? 1 : 0]);
-    }
-    if (!hooked && window.__puppetBus) { hooked = true; window.__puppetBus.on((e) => { if (e.kind === "visemes") W.bus.push({ at: performance.now(), part: e.part, playAt: e.playAt, n: e.visemes.length, words: e.words?.length ?? 0, v: e.visemes.map((x) => [x.ms, x.id]) }); else W.bus.push({ at: performance.now(), kind: e.kind }); }); }
-    if (W.ctx && W.ctx.getOutputTimestamp) { const t = W.ctx.getOutputTimestamp(); if (t.contextTime && t.performanceTime) W.ts.push([t.contextTime, t.performanceTime]); }
-    requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
-};
-
-const q = (a, p) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
-function pearson(a, b, lag) { let n = 0, sa = 0, sb = 0, saa = 0, sbb = 0, sab = 0; for (let i = 0; i < a.length; i++) { const j = i + lag; if (j < 0 || j >= b.length || Number.isNaN(b[j]) || Number.isNaN(a[i])) continue; const x = a[i], y = b[j]; n++; sa += x; sb += y; saa += x * x; sbb += y * y; sab += x * y; } if (n < 40) return -2; const c = sab / n - (sa / n) * (sb / n); return c / Math.sqrt((saa / n - (sa / n) ** 2) * (sbb / n - (sb / n) ** 2) + 1e-12); }
-
-/** Lay the scheduled audio on the performance clock and cross-correlate its envelope with the drawn gap, per reply. */
-export function analyse(rec) {
-  const offs = rec.ts.map(([c, p]) => p - c * 1000);
-  const off = q(offs, 0.5);
-  const HOP = 5;
-  // the scheduled samples on a 5 ms grid of the performance clock: each source's samples at perf = when*1000 + off
-  const starts = rec.audio.filter((a) => !a.stop && a.rate === 24000).map((a) => {
-    const b = Buffer.from(a.pcm, "base64"); const s = new Int16Array(b.buffer, b.byteOffset, b.length >> 1);
-    return { t0: a.when * 1000 + off, rate: a.rate, s };
-  });
-  if (!starts.length || off == null) return { error: "no audio scheduled" };
-  const T0 = Math.min(...starts.map((x) => x.t0)), T1 = Math.max(...starts.map((x) => x.t0 + (x.s.length / x.rate) * 1000));
-  const n = Math.ceil((T1 - T0) / HOP) + 1;
-  const e = new Float64Array(n), cnt = new Float64Array(n);
-  for (const x of starts) for (let i = 0; i < x.s.length; i++) { const k = Math.floor((x.t0 + (i / x.rate) * 1000 - T0) / HOP); if (k >= 0 && k < n) { e[k] += (x.s[i] / 32768) ** 2; cnt[k]++; } }
-  // 10 ms windows (2 hops), log energy; no audio scheduled = silence (-90 dB)
-  const env = new Float64Array(n);
-  for (let k = 0; k < n; k++) { const E = e[k] + (k + 1 < n ? e[k + 1] : 0), C = cnt[k] + (k + 1 < n ? cnt[k + 1] : 0); env[k] = C ? 10 * Math.log10(E / C + 1e-9) : -90; }
-  // the drawn gap on the same grid (a frame is on screen until the next)
-  const fr = rec.frames;
-  const gap = new Float64Array(n).fill(NaN), lipAt = new Array(n).fill(null);
-  let j = 0;
-  for (let k = 0; k < n; k++) { const t = T0 + k * HOP; while (j + 1 < fr.length && fr[j + 1][0] <= t) j++; if (fr[j] && fr[j][0] <= t && (j + 1 >= fr.length || t - fr[j][0] < 250)) { gap[k] = fr[j][1]; lipAt[k] = fr[j][2]; } }
-  // replies = runs of scheduled audio separated by >= 1.5 s of nothing
-  const voiced = env.map((v) => v > -60);
-  const segs = [];
-  let s0 = -1, last = -1e9;
-  for (let k = 0; k < n; k++) if (voiced[k]) { if (s0 < 0 || k - last > 300) { if (s0 >= 0) segs.push([s0, last]); s0 = k; } last = k; }
-  if (s0 >= 0) segs.push([s0, last]);
-  const rows = [];
-  for (const [a, b] of segs) {
-    if ((b - a) * HOP < 600) continue;
-    const E = Array.from(env.slice(Math.max(0, a - 20), b + 20)), G = Array.from(gap.slice(Math.max(0, a - 20), b + 20));
-    let best = -2, lag = 0;
-    for (let l = -60; l <= 60; l++) { const r = pearson(E, G, l); if (r > best) { best = r; lag = l; } }
-    const lips = lipAt.slice(a, b).filter((x, i) => voiced[a + i] && x);
-    rows.push({ startMs: Math.round(T0 + a * HOP), secs: +(((b - a) * HOP) / 1000).toFixed(2), gapLagMs: lag * HOP, r: +best.toFixed(3), framesCovered: +(G.filter((x) => !Number.isNaN(x)).length / G.length).toFixed(2), visemeShare: lips.length ? +(lips.filter((x) => x === "visemes").length / lips.length).toFixed(3) : null });
-  }
-  // (A bilabial-closure metric was tried here and dropped: DragonHD's slow-rate speech does not dip the 10 ms envelope at
-  // p/b/m reliably, so "min envelope" was not the closure; logged as rj-p2f-envelope-closure-metric.)
-  const closure = {};
-  // her first sound vs the face: was the live face revealed when her voice started, and how long after?
-  const firstSound = T0 + (voiced.indexOf(true)) * HOP;
-  const frameGapsSpeaking = [];
-  for (let i = 1; i < fr.length; i++) if (fr[i][3] === "speaking") frameGapsSpeaking.push(fr[i][0] - fr[i - 1][0]);
-  Object.defineProperty(closure, "grid", { enumerable: false, value: { T0, HOP, env: Array.from(env, (v) => Math.round(v * 10) / 10), gap: Array.from(gap, (v) => (Number.isNaN(v) ? null : Math.round(v * 100) / 100)) } });
-  // per reply: its samples (24 kHz, silence where nothing was scheduled), the drawn gap and the envelope on the grid, for
-  // the forced-alignment pass (ctc-product.py) and the paired score (score-product.mjs)
-  const segments = segs.filter(([a, b]) => (b - a) * HOP >= 600).map(([a, b]) => {
-    const t0 = T0 + a * HOP, t1 = T0 + (b + 1) * HOP;
-    const pcm = new Int16Array(Math.ceil(((t1 - t0) / 1000) * 24000));
-    for (const x of starts) { const off0 = Math.round(((x.t0 - t0) / 1000) * 24000); for (let i = 0; i < x.s.length; i++) { const j = off0 + i; if (j >= 0 && j < pcm.length) pcm[j] = x.s[i]; } }
-    return { t0, pcm, gap: Array.from(gap.slice(a, b + 1), (v) => (Number.isNaN(v) ? null : v)) };
-  });
-  Object.defineProperty(closure, "segments", { enumerable: false, value: segments });
-  return { outputOffsetMs: Math.round(off), firstSoundAt: Math.round(firstSound), replies: rows, closure, rafGapSpeakingP95: q(frameGapsSpeaking, 0.95), rafGapSpeakingMax: frameGapsSpeaking.length ? Math.max(...frameGapsSpeaking) : null };
-}
+import { INIT, analyse, q } from "./recorder.mjs";
 
 const ARGS = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--autoplay-policy=no-user-gesture-required", "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"];
 let result = null;
 await withTestAccount(async ({ api, child }) => {
-  const h = await launch({ cookieFrom: api, viewport: THROTTLE ? { width: 360, height: 640 } : { width: 412, height: 860 }, launch: { args: ARGS } });
+  // --throttle N: a budget-phone PROFILE on desktop Chromium (360x780 CSS px at DPR 2, touch, CPU throttled N x by CDP).
+  // Not a phone: CDP throttles the renderer's main thread only, and SwiftShader rasterises on the host CPU in the GPU
+  // process, unthrottled; the GPU side of a Mali-G52 is not modelled at all.
+  const h = THROTTLE ? await (async () => {
+    process.env.PLAYWRIGHT_BROWSERS_PATH ||= "/opt/pw-browsers";
+    const { chromium } = await import("playwright");
+    const browser = await chromium.launch({ args: ARGS });
+    const context = await browser.newContext({ viewport: { width: 360, height: 780 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, ignoreHTTPSErrors: true });
+    const c = api.cookie(); const i = c.indexOf("=");
+    await context.addCookies([{ name: c.slice(0, i), value: c.slice(i + 1), url: BASE }]);
+    return { browser, context, page: await context.newPage() };
+  })() : await launch({ cookieFrom: api, viewport: { width: 412, height: 860 }, launch: { args: ARGS } });
+  const fpsSamples = [];
   try {
     await h.context.addInitScript(INIT);
     if (THROTTLE) { const cdp = await h.context.newCDPSession(h.page); await cdp.send("Emulation.setCPUThrottlingRate", { rate: THROTTLE }); }
@@ -143,11 +58,16 @@ await withTestAccount(async ({ api, child }) => {
     });
     h.page.on("request", (r) => { if (/\/api\/voice\/tts-stream$/.test(r.url())) { try { spoken.push(JSON.parse(r.postData() || "{}").seq); } catch {} } });
     const t0 = Date.now();
-    await h.page.goto(`${BASE}/c/${child.id}/lesson/new?mode=text&facerig=1`, { waitUntil: "domcontentloaded", timeout: 90_000 });
+    await h.page.goto(`${BASE}/c/${child.id}/lesson/new?mode=text&facerig=1${process.env.P2F_PUPPET_OFF ? "&puppet=0" : ""}`, { waitUntil: "domcontentloaded", timeout: 90_000 });
     await h.page.waitForFunction(() => !!window.__puppet || !!document.querySelector("[data-face]:not([data-face='puppet2d'])"), null, { timeout: 60_000 }).catch(() => {});
     const tap = h.page.getByText(/Tap to hear/);
     if (await tap.count()) await tap.first().click().catch(() => {});
-    const speaking = () => h.page.evaluate(() => window.__rec.frames.slice(-8).some((f) => f[3] === "speaking"));
+    const speaking = async () => {
+      // speaking = the puppet says so, or her scheduled TTS audio has not finished (the ?puppet=0 control arm has no puppet)
+      const r = await h.page.evaluate(() => { const W = window.__rec; const audioOn = !!W.ctx && W.audio.some((a) => !a.stop && a.rate === 24000 && a.when + a.n / a.rate > W.ctx.currentTime - 0.3); return { s: audioOn || W.frames.slice(-8).some((f) => f[3] === "speaking"), snap: window.__puppet?.snapshot?.() ?? null }; });
+      if (r.snap) fpsSamples.push({ ...r.snap, speaking: r.s });
+      return r.s;
+    };
     const waitQuiet = async (maxMs) => { const t = Date.now(); let quietFor = 0; while (Date.now() - t < maxMs) { await h.page.waitForTimeout(500); if (await speaking()) quietFor = 0; else if ((quietFor += 500) >= 2500 && Date.now() - t > 4000) return; } };
     await waitQuiet(45_000);
     // the child's turns: type a reply when the dock has a text box, else tap the help tiles that make her speak
@@ -166,7 +86,7 @@ await withTestAccount(async ({ api, child }) => {
       }
       await waitQuiet(60_000);
     }
-    const rec = await h.page.evaluate(() => ({ ...window.__rec, ctx: null, log: window.__puppet?.log ?? [], snap: window.__puppet?.snapshot?.() ?? null, face: document.querySelector("[data-face]")?.getAttribute("data-face"), label: document.querySelector("[data-face]")?.getAttribute("aria-label") }));
+    const rec = await h.page.evaluate(() => ({ ...window.__rec, ctx: null, rafGaps: window.__rec.rafGaps, log: window.__puppet?.log ?? [], snap: window.__puppet?.snapshot?.() ?? null, face: document.querySelector("[data-face]")?.getAttribute("data-face"), label: document.querySelector("[data-face]")?.getAttribute("aria-label") }));
     const a = analyse(rec);
     const firstDraw = rec.log.find((e) => e.type === "firstDraw"), reveal = rec.log.find((e) => e.type === "reveal");
     result = {
@@ -177,6 +97,10 @@ await withTestAccount(async ({ api, child }) => {
       stalls: rec.log.filter((e) => e.type === "stall"), longTasks: rec.lt.length, longTaskMaxMs: rec.lt.length ? Math.max(...rec.lt.map((x) => x[1])) : 0,
       busBatches: rec.bus.filter((b) => b.n).length, busVisemes: rec.bus.reduce((s, b) => s + (b.n || 0), 0), busWords: rec.bus.reduce((s, b) => s + (b.words || 0), 0), cuts: rec.bus.filter((b) => b.kind === "cut").length,
       snapshot: rec.snap, ...a,
+      fps: (() => {
+        const sp = fpsSamples.filter((x) => x.speaking && x.frames > 60), idle = fpsSamples.filter((x) => !x.speaking && x.frames > 60);
+        return { n: fpsSamples.length, speakingFpsP50: q(sp.map((x) => x.fpsP50), 0.5), idleFpsP50: q(idle.map((x) => x.fpsP50), 0.5), workP95Median: q(fpsSamples.map((x) => x.workP95), 0.5), workP95Max: fpsSamples.length ? Math.max(...fpsSamples.map((x) => x.workP95)) : null, finalDpr: rec.snap?.dpr, finalFpsCap: rec.snap?.fpsCap, governor: rec.log.filter((e) => e.type === "governor" || e.type === "fallback") };
+      })(),
     };
     const segDir = `${OUT}product/`;
     fs.mkdirSync(segDir, { recursive: true });

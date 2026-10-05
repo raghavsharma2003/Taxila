@@ -1,0 +1,26 @@
+--- a/shared/engine-catalog.js
++++ b/shared/engine-catalog.js
+@@ -532,9 +532,22 @@
+   // geoboard's generic normalize reads the FIRST number(s): a rectangle that fits the grid, or an area to build
+   "geoboard@1": (v, pre) => !!pre.contrast || (ints(v)[0] > 0 && ints(v)[0] <= 40),
+   "data-graphs@1": () => false,
+-  "patterns@1": (v, pre) => pre.mode === "grow" && v.numbers.length >= 3,
++  // owner-1 (2026-10-05): the numbers a problem MENTIONS are not a sequence ("3 5 7 8 ? ?": no rule fits, the frame's Check
++  // could commit nothing). A grow activity is built only from numbers that ARE one (patterns.logic inferRule: a constant
++  // step, a constant ratio, or squares); anything else shows no activity rather than an unanswerable one.
++  "patterns@1": (v, pre) => pre.mode === "grow" && v.numbers.length >= 3 && growFits(v.numbers.slice(0, 10)),
+   "measure@1": (v) => v.numbers.length > 0,
+ };
++/** Do these numbers follow one grow rule (add k, multiply by k, or consecutive squares)? PURE. Exported for tests. */
++export function growFits(ns) {
++  const a = (ns ?? []).filter(Number.isInteger);
++  if (a.length < 3 || a.length !== (ns ?? []).length) return false;
++  const d = a[1] - a[0];
++  if (d !== 0 && a.every((x, i) => i === 0 || x - a[i - 1] === d)) return true;
++  if (a[0] !== 0 && a[1] % a[0] === 0) { const r = a[1] / a[0]; if (r > 1 && a.every((x, i) => i === 0 || x === a[i - 1] * r)) return true; }
++  const r0 = Math.round(Math.sqrt(a[0]));
++  return r0 * r0 === a[0] && a.every((x, i) => x === (r0 + i) * (r0 + i));
++}
+ /** fraction-bars@1 reads denominators / numerators, not `fractions`: the item's fractions as unshaded bars. */
+ const fallbackShape = (engine, v) =>
+   engine === "fraction-bars@1" ? { denominators: v.fractions.filter(([n, d]) => d >= 1 && d <= 12 && n <= d).slice(0, 3).map(([, d]) => d) } : v;

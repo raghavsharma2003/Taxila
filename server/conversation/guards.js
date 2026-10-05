@@ -35,15 +35,18 @@ export function ownWords(reply, ...asks) {
 }
 
 export const BARE_MIN_WORDS = 4;
-/** Is the reply only the pinned question (fewer than BARE_MIN_WORDS words of its own)? PURE. */
-export function isBare(reply, askFull, askCard) {
+/**
+ * Is the reply only the pinned question (fewer than `min` words of its own; BARE_MIN_WORDS for a re-pose, 1 for a question
+ * posed for the first time, where a short bridge is enough)? PURE.
+ */
+export function isBare(reply, askFull, askCard, min = BARE_MIN_WORDS) {
   if (!askFull && !askCard) return false;
   const own = ownWords(reply, askFull, askCard);
   const n = wordList(own).length;
   if (n === 0) return true;
   // the card form may be a cut of the question: what is left must not just be a piece of it
   const a = normW(askFull);
-  return n < BARE_MIN_WORDS || (a && a.includes(normW(own)));
+  return n < min || (a && a.includes(normW(own)));
 }
 
 export const REPEAT_SIM = 0.8;

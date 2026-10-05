@@ -9,7 +9,7 @@
 // Plus the RUNTIME kill switch (ship5 p2-face): the server's TAXILA_FACE_PUPPET2D=0, read from GET /api/face/config
 // (server/face-puppet/config.js) by puppetServerAllows(). PuppetFace awaits it (in parallel with the stage chunk) before
 // it builds a stage, so a kill reaches every face not yet revealed and lands on the old face, the automatic fallback.
-// Fail-open: an unreachable or absent route (404 before the server seam is applied) means "allowed". A device forced
+// Fail-open: an unreachable or absent route (404 before patch 03, the server seam, is applied) means "allowed". A device forced
 // on with ?puppet=1 (the owner's test) is not overridden by the server.
 export const PUPPET_FLAG_KEY = "tx.flag.face.puppet2d";
 

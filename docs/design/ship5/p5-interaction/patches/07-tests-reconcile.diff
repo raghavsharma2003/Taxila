@@ -1,0 +1,467 @@
+--- a/tests/owner-requests.test.mjs
++++ b/tests/owner-requests.test.mjs
+@@ -135,23 +135,36 @@
+   assert.equal(countsAsDone({ abandoned: true, did: [1] }), false);
+ });
+ 
+-test("F8: 'talk about something else' is never a stop — a yes and a question about what, with chips back to the lesson", () => {
++// owner rule (2026-10-05, decisions owner-ship-five; reconciled by p5-interaction): "can we talk about something else" is
++// STEERING — never a stop, never a break, never a wrap. The patch-07 side chat (a break move + "ask what they would like to
++// talk about") contradicted it (w2i-release case 4); the kill switch TAXILA_P5_STEER=off brings it back, tested below.
++test("F8: 'talk about something else' is steering — never a stop, a break or a wrap; a warm yes with ways in, and back", () => {
+   const r = toPractice();
+   const c = said(r, "can we talk about something else");
+   assert.equal(c.flags.wantsToStop, false);
+   const s = turn(r, c);
+   assert.equal(ended(s), false);
+-  assert.equal(s.move.kind, "break");
+-  assert.match(s.move.shape, /ask what they would like to talk about/);
++  assert.ok(!["break", "wrap"].includes(s.move.kind), s.move.kind);
++  assert.match(s.move.shape, /a different way into today's idea/);
+   assert.ok(s.ui.chips.some((x) => x.id === "stop:continue"));
+-  // the next turn is their topic, for real, once; then the lesson
+-  const side = turn(s, cls("no_evidence"), { text: "dinosaurs" });
+-  assert.equal(side.move.kind, "break");
+-  assert.match(side.move.shape, /talk with them about what they just brought up/);
+-  const back = turn(side, NE, { chipId: "stop:continue" });
++  assert.ok(s.ui.chips.some((x) => x.id === "req:visual"));
++  const back = turn(s, NE, { chipId: "stop:continue" });
+   assert.equal(back.move.itemId, r.move.itemId);
+ });
+ 
++test("F8 (kill switch TAXILA_P5_STEER=off): the patch-07 side chat — a yes, a question about what, one real turn on it", () => {
++  const saved = process.env.TAXILA_P5_STEER;
++  process.env.TAXILA_P5_STEER = "off";
++  try {
++    const r = toPractice();
++    const s = turn(r, said(r, "can we talk about something else"));
++    assert.equal(s.move.kind, "break");
++    assert.match(s.move.shape, /ask what they would like to talk about/);
++    const side = turn(s, cls("no_evidence"), { text: "dinosaurs" });
++    assert.match(side.move.shape, /talk with them about what they just brought up/);
++  } finally { if (saved === undefined) delete process.env.TAXILA_P5_STEER; else process.env.TAXILA_P5_STEER = saved; }
++});
++
+ test("F11: their interest, now — 'cricket ke baare mein baat karo' answers about cricket, never 'later'", () => {
+   const r = toPractice();
+   const s = turn(r, said(r, "cricket ke baare mein baat karo"));
+--- a/tests/state.test.mjs
++++ b/tests/state.test.mjs
+@@ -8,6 +8,16 @@
+ const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });
+ const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
+ const NE = cls("no_evidence");
++/**
++ * The classic four-rung ladder (pump → hint → prompt → assertion, one question for five turns) is the kill-switch path since
++ * p5-interaction's card cap (one question at most 3 turns in a row: owner-2 R5.loop). Scoped per test: npm test runs every
++ * file in one process, so the switch is restored in a finally (rj-chatstream-flake-label-2026-10-05).
++ */
++function capOff(fn) {
++  const saved = process.env.TAXILA_P5_CARDCAP;
++  process.env.TAXILA_P5_CARDCAP = "off";
++  try { return fn(); } finally { if (saved === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = saved; }
++}
+ 
+ /** Drive a new (novice) learner from the greeting to the first practice item. */
+ function toPractice() {
+@@ -34,11 +44,16 @@
+   let r = step(fresh({ skills }), { event: "start", kit: K, now: 0 });
+   const kinds = [];
+   while (!r.move.itemId) { r = turn(r, NE); kinds.push(r.move.kind); }
+-  assert.deepEqual(kinds, ["hook", "practice"]);
++  // V1-11 (checks.js): each skill's check reserve is held out of practice, so the first question can be on a skill this child
++  // has not met (one short explain turn first, poseNext). What expertise reversal promises is unchanged: no worked example,
++  // and the first question is attempt-first.
++  assert.equal(kinds[0], "hook");
++  assert.ok(!kinds.includes("worked_example") && !kinds.includes("first_step"), kinds.join(","));
++  assert.ok(["practice", "probe"].includes(kinds.at(-1)), kinds.join(","));
+   assert.equal(r.move.format, "F8");
+ });
+ 
+-test("hint ladder never reveals before rung 4, then poses an isomorphic item", () => {
++test("hint ladder never reveals before rung 4, then poses an isomorphic item (TAXILA_P5_CARDCAP=off)", () => capOff(() => {
+   let r = toPractice();
+   const item = r.item;
+   const levels = [];
+@@ -57,14 +72,32 @@
+   assert.ok(r.move.itemId && r.move.itemId !== item.id, "an isomorphic item follows the assertion");
+   assert.equal(r.item.skillId, item.skillId);
+   assert.equal(r.move.hintLevel, 0);
++}));
++
++test("with the card cap: rungs 1-2 never reveal; the third miss gets the key plainly (in content, never the shape) and an isomorphic item", () => {
++  let r = toPractice();
++  const item = r.item;
++  for (let i = 0; i < 2; i++) {
++    r = turn(r, cls("incorrect"));
++    assert.equal(r.move.itemId, item.id);
++    assert.match(r.move.shape, /the key stays unsaid/);
++    assert.ok(!r.move.shape.includes(item.answer));
++  }
++  r = turn(r, cls("incorrect"));
++  assert.notEqual(r.move.itemId, item.id, "the question left the card after 3 turns");
++  assert.equal(r.item.skillId, item.skillId, "a similar question follows");
++  assert.match(r.move.shape, /give its answer plainly with one line of why/);
++  assert.ok(!r.move.shape.includes(`${item.answer};`), "the key rides in the content lines, not the shape");
++  assert.ok(r.content.some((l) => l.includes(String(item.answer))));
++  assert.deepEqual(evidenceFrom(r.state, cls("correct"), K).filter((e) => e.itemId === item.id), [], "no evidence on the asserted item");
+ });
+ 
+-test("no evidence is taken after an assertion (the answer was said)", () => {
++test("no evidence is taken after an assertion (the answer was said) (TAXILA_P5_CARDCAP=off)", () => capOff(() => {
+   let r = toPractice();
+   for (let i = 0; i < 4; i++) r = turn(r, cls("incorrect"));
+   assert.equal(r.state.hintLevel, 4);
+   assert.deepEqual(evidenceFrom(r.state, cls("correct"), K), []);
+-});
++}));
+ 
+ test("a misconception gets one re-teach with the kit's representation, then the ladder", () => {
+   let r = toPractice();
+@@ -204,7 +237,10 @@
+   let r = toPractice();
+   const right = { ...cls("correct"), reason: "right" };
+   const ev = evidenceFrom(r.state, right, K);
+-  assert.deepEqual(ev.map((e) => e.probe), ["P15", "P2"], "the volunteered reason is its own generative evidence row");
++  // (the first practice item's own probe id depends on which item V1-11's reserve leaves first; the reason row is the claim)
++  assert.equal(ev.length, 2);
++  assert.notEqual(ev[0].probe, "P2");
++  assert.equal(ev[1].probe, "P2", "the volunteered reason is its own generative evidence row");
+   const next = turn(r, right);
+   assert.notEqual(next.move.probe, "P2", "no 'how did you know?' after they already said how");
+   const trapped = turn(r, { ...cls("correct"), reason: "misconception", reasonMisconceptionId: "c4-maths-ch05-t01-m1" });
+--- a/tests/compiler.test.mjs
++++ b/tests/compiler.test.mjs
+@@ -59,8 +59,17 @@
+   assert.match(check, /the key stays unsaid \(ladder rung 0 of 4\)/);
+   const hinted = compile(inputAfter([...toFirstItem(), cls("incorrect")]));
+   assert.match(hinted.split("\n").at(-2), /the same one again .* no new question; the key stays unsaid \(ladder rung 1 of 4\)/);
+-  const atFour = compile(inputAfter([...toFirstItem(), cls("incorrect"), cls("incorrect"), cls("incorrect"), cls("incorrect")]));
+-  assert.match(atFour, /rung 4 now: say the key plainly/);
++  // the classic rung 4 is the kill-switch path since p5-interaction's card cap (scoped: npm test runs every file in one process)
++  const saved = process.env.TAXILA_P5_CARDCAP;
++  process.env.TAXILA_P5_CARDCAP = "off";
++  try {
++    const atFour = compile(inputAfter([...toFirstItem(), cls("incorrect"), cls("incorrect"), cls("incorrect"), cls("incorrect")]));
++    assert.match(atFour, /rung 4 now: say the key plainly/);
++  } finally { if (saved === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = saved; }
++  // with the cap, the question is resolved by its third turn on the card (here a repair turn came first): its answer with one
++  // line of why, then a similar question — never later than the third miss
++  const k = [1, 2, 3].find((n) => /give its answer plainly with one line of why/.test(compile(inputAfter([...toFirstItem(), ...Array(n).fill(cls("incorrect"))]))));
++  assert.ok(k != null, "the card cap resolved the question within three misses");
+ });
+ 
+ test("lanes share every byte except the voice-only branch lines", () => {
+@@ -146,7 +155,8 @@
+ test("an item whose pinned text cannot compile is skipped once, and the next question is compiled", () => {
+   // walked past the guidance ladder's faded step (W2-C) to the first KIT item, whose text is doctored below
+   let s = lessonAfter(toFirstItem(), "text");
+-  for (let i = 0; i < 8 && String(s.lastMove.itemId ?? "").startsWith("fade:"); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
++  // (V1-11 holds a check reserve out of practice, so the first kit question can follow an explain turn with no item)
++  for (let i = 0; i < 10 && (!s.lastMove.itemId || String(s.lastMove.itemId).startsWith("fade:")); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
+   const bad = s.lastMove.itemId;
+   const huge = { ...K, items: K.items.map((i) => (i.id === bad ? { ...i, prompt_hi: "bahut lamba sawaal ".repeat(400) } : i)) };
+   const out = instructionsAfter({ state: s, move: s.lastMove }, huge, 300_000);
+--- a/tests/director-truth.test.mjs
++++ b/tests/director-truth.test.mjs
+@@ -166,7 +166,7 @@
+ 
+ // ───────────── the repair loop (comprehension G11) ─────────────
+ 
+-test("repair loop: unclear replies on one item are capped at 3, then the item is left with no verdict and the lesson moves on", () => {
++test("repair loop: unclear replies on one item are capped (the card cap: 3 turns on the card), then the item is left with no verdict and the lesson moves on", () => {
+   // the fixture's diagnostic is second in the queue: walk to it
+   let r = toItem(K);
+   for (let i = 0; i < 6 && !String(r.move.itemId).startsWith("diag:"); i++) r = turn(r, K, cls("correct"));
+@@ -181,13 +181,14 @@
+   assert.ok(sameItemTurns <= LIMITS.unclearTries - 1, `at most ${LIMITS.unclearTries - 1} re-asks on the item after the first (got ${sameItemTurns})`);
+   assert.ok(r.state.skipped.includes(diag), "left with no verdict");
+   assert.notEqual(r.move.kind, "wrap");
+-  // a plain item with no chips gets the choices on its third unclear reply, then moves on
++  // a plain item with no chips gets the choices on its SECOND unclear reply (p5-interaction card cap: one question at most
++  // LIMITS.cardMax turns on the card; LIMITS.unclearTriesCapped), then moves on
+   let p = toItem(SK, { lang: "hinglish", classLevel: 2, ageBand: "6-9" }, "c2-maths-ch01-t01-i01");
+-  p = turn(p, SK, NE); p = turn(p, SK, NE);
+-  const third = turn(p, SK, NE);
+-  assert.ok(third.ui.chips?.some((c) => c.label === "10"), "the third unclear reply puts the choices on screen");
+-  const fourth = turn(third, SK, NE);
+-  assert.notEqual(fourth.move.itemId, "c2-maths-ch01-t01-i01", "past the cap: the next question");
++  p = turn(p, SK, NE);
++  const second = turn(p, SK, NE);
++  assert.ok(second.ui.chips?.some((c) => c.label === "10"), "the second unclear reply puts the choices on screen");
++  const third = turn(second, SK, NE);
++  assert.notEqual(third.move.itemId, "c2-maths-ch01-t01-i01", "past the cap: the next question");
+ });
+ 
+ // ───────────── hints (flows G5) ─────────────
+--- a/tests/learner-live.test.mjs
++++ b/tests/learner-live.test.mjs
+@@ -4,7 +4,7 @@
+ // cached fold byte for byte (TP2 on the integrated write path; the unit-level property is learner-order.test.mjs).
+ // Also: the episode mapping, the two upstream ledger fixes (source weight, misconception cap), E6 on the held why,
+ // voice isolation (CE8), the re-teach cooldown, and the 001 projection the parent corner reads.
+-import { describe, test } from "node:test";
++import { describe, test, before, after } from "node:test";
+ import assert from "node:assert/strict";
+ import { __test } from "../server/routes/lesson.js";
+ import { initLessonState, step, LIVE_PROBE_SHAPES, RETEACH_COOLDOWN } from "../server/director/state.js";
+@@ -68,6 +68,11 @@
+ ];
+ 
+ describe("live learner path", () => {
++  // LESSON_RUN is a fixed fold fixture with the classic hint ladder (wrong, wrong, then right on one item after a repair):
++  // p5-interaction's card cap would resolve that item first. Scoped to this describe (npm test runs every file in one process).
++  let savedCap;
++  before(() => { savedCap = process.env.TAXILA_P5_CARDCAP; process.env.TAXILA_P5_CARDCAP = "off"; });
++  after(() => { if (savedCap === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = savedCap; });
+   test("replay of the staged kt_evidence rows (seq = insert order) equals the online fold, across a whole lesson", async () => {
+     const { log, live } = await drive(LESSON_RUN);
+     assert.ok(log.length >= 6, `the lesson wrote KT events (${log.length})`);
+--- a/tests/lesson-truth.test.mjs
++++ b/tests/lesson-truth.test.mjs
+@@ -194,7 +194,9 @@
+     // W1-A G-ASK parity: the draft also ended on a side question instead of the pinned item ("ask").
+     assert.ok(out.guard.caught.includes("praise"), JSON.stringify(out.guard.caught));
+     assert.equal(praiseProblem(out.reply, "not_yet"), null, out.reply);
+-    assert.ok(!out.guard.final, JSON.stringify(out.guard));
++    // p5-interaction: when the one-question fix would leave only the pinned question (owner-2 R3), the model's last lead
++    // question stays before it; that one relaxation of G-ASK parity ("twoq") is the only thing allowed to remain
++    assert.ok(!out.guard.final || out.guard.final.every((p) => p === "twoq"), JSON.stringify(out.guard));
+     assert.ok(item);
+   } finally { replyDeps.chat = (await import("../server/azure.js")).chat; }
+ });
+@@ -208,9 +210,11 @@
+   assert.ok(screenProblem("Choice tap karo.", { chips: [] }, null));
+   assert.ok(!screenProblem("Choice tap karo.", { chips: [{ id: "opt:0", label: "1/2" }] }, null));
+   assert.ok(!screenProblem("Activity mein tap karke dekho.", {}, { id: "m3" }));
+-  // a plain item (no chips) that was not heard clearly: the shape never mentions tapping
++  // a plain item (no chips, nothing mounted) that was not heard clearly: the shape never mentions tapping. (V1-11 holds a check
++  // reserve out of practice, so the first practice item can carry a mount: walk to one with nothing on screen.)
+   let r = toPractice();
+-  assert.ok(!r.ui.chips);
++  for (let i = 0; i < 10 && (!r.move.itemId || r.ui.chips || r.state.module || r.state.pendingWhy); i++) r = turn(r, cls("correct"));
++  assert.ok(!r.ui.chips && !r.state.module, "a plain item with nothing on screen");
+   r = turn(r, NE);
+   assert.equal(r.move.kind, "repair");
+   assert.doesNotMatch(r.move.shape, /tap/);
+--- a/tests/owner-truth-guards.test.mjs
++++ b/tests/owner-truth-guards.test.mjs
+@@ -20,14 +20,20 @@
+   fractions: { type: "array" }, numbers: { type: "array" }, target: { type: "string" }, start: { type: "string" },
+ } };
+ 
+-test("F1: a bound engine's numeric commit is re-checked against the verified key; a forged claim is never graded", () => {
+-  const state = { activeItemId: "i1", module: { id: "m3", itemId: "i1", key: "72" } };
++// V1-01r (p5-interaction; supersedes patch 01's flat-shape recheck, rejected v1-rj-recheck-top-level-fields): the act is
++// re-run by the engine's logic on the server's params when its kind is known (recheck.js), else the committed VALUE is
++// compared with the verified key, else the answer is { unverifiable } — never the frame's claim.
++test("F1: a bound engine's commit is re-checked against the verified key; a forged claim is never graded", () => {
++  const state = { activeItemId: "i1", module: { id: "m3", engine: "number-line@1", itemId: "i1", key: "72" } };
+   const ev = (data) => [{ moduleId: "m3", type: "answer", data }];
+-  assert.deepEqual(moduleAnswerOf(state, ev({ value: "82", correct: true })), { correct: false, value: "82", source: "engine_rechecked", claimMismatch: true });
+-  assert.deepEqual(moduleAnswerOf(state, ev({ value: "72", correct: false })), { correct: true, value: "72", source: "engine_rechecked", claimMismatch: true });
++  assert.deepEqual(moduleAnswerOf(state, ev({ value: "82", correct: true })), { correct: false, value: "82", source: "value_rechecked", claimMismatch: true });
++  assert.deepEqual(moduleAnswerOf(state, ev({ value: "72", correct: false })), { correct: true, value: "72", source: "value_rechecked", claimMismatch: true });
+   assert.equal(moduleAnswerOf(state, ev({ value: "72", correct: true })).correct, true);
+-  // a non-numeric key or commit keeps the engine's verdict (the engine's own binding computed it)
+-  assert.deepEqual(moduleAnswerOf({ ...state, module: { ...state.module, key: "closer to 1" } }, ev({ value: "x", correct: true })), { correct: true, value: "x", source: "engine" });
++  // the frame protocol's real shape: the act nested under data.value (owner-1 sent { value: { value } }: 8/9 accepted on prod)
++  assert.equal(moduleAnswerOf(state, ev({ value: { value: "82" }, correct: true })).correct, false);
++  // a short label key compares by its text; nothing comparable is unverifiable (asked for in words), never the claim
++  assert.equal(moduleAnswerOf({ ...state, module: { ...state.module, key: "closer to 1" } }, ev({ value: "x", correct: true })).correct, false);
++  assert.equal(moduleAnswerOf(state, ev({ value: { foo: 1 }, correct: true })).unverifiable, true);
+   assert.equal(recheckValue({ written: "3/4" }, "6/8"), true);
+   assert.equal(recheckValue({ chosen: 1, fractions: ["1/3", "1/2"] }, "1/2"), true);
+   assert.equal(recheckValue({ chosen: 0, fractions: ["1/3", "1/2"] }, "1/2"), false);
+@@ -53,14 +59,25 @@
+   assert.doesNotMatch(stripPraise("✅ Sahi! Ab agla: 5 ka double?"), /✅/);
+ });
+ 
+-test("F5: a multi-part key offers `partial`; an ungraded attempt is never told it is right", () => {
++test("F5: a multi-part key offers `partial`; an ungraded attempt is never told it is right", async () => {
+   assert.equal(multiPartKey("The ones decide: 47 is bigger"), true);
+   assert.equal(multiPartKey("solid, liquid and gas"), true);
+   assert.equal(multiPartKey("3/4"), false);
+   assert.equal(multiPartKey("one-fourth"), false);
++  // V1-02 (VALUES-100 V1.1): multi-part comes from the authored parts data (server/content/parts.js), never from commas —
++  // multiPartKey called 97% of two-rater-agreed single-part keys multi-part (v1-rj-multipartkey-punctuation). An item with
++  // no parts row is single-part; one with a row offers `partial`.
+   const item = { id: "x", skillId: K.skills[0].id, kind: "predict", answer: "The ones decide: 47 is bigger", acceptable: [] };
+-  const t = targetFor({ phase: "practice", hintLevel: 0 }, K, item);
+-  assert.equal(t.open, true);
++  assert.equal(targetFor({ phase: "practice", hintLevel: 0 }, K, item).open, false, "no parts row: single-part");
++  const { writeFileSync, mkdtempSync } = await import("node:fs");
++  const dir = mkdtempSync(`${(await import("node:os")).tmpdir()}/parts-`);
++  writeFileSync(`${dir}/p.json`, JSON.stringify({ items: { x: { parts: ["the ones decide", "47 is bigger"] } } }));
++  const saved = process.env.TAXILA_PARTS_FILE;
++  process.env.TAXILA_PARTS_FILE = `${dir}/p.json`;
++  const { resetPartsCache } = await import("../server/content/parts.js");
++  resetPartsCache();
++  try { assert.equal(targetFor({ phase: "practice", hintLevel: 0 }, K, item).open, true, "a parts row: partial is offered"); }
++  finally { if (saved === undefined) delete process.env.TAXILA_PARTS_FILE; else process.env.TAXILA_PARTS_FILE = saved; resetPartsCache(); }
+   const none = { mode: "none" };
+   assert.equal(verdictFor({ outcome: "no_evidence" }, none, { childText: "photosynthesis means plants make food from sunlight" }), "attempt");
+   assert.equal(verdictFor({ outcome: "no_evidence" }, none, { childText: "haan" }), "ungraded");
+--- a/tests/learner-mastery.test.mjs
++++ b/tests/learner-mastery.test.mjs
+@@ -49,72 +49,80 @@
+   assert.equal(at(fold(L0(), session("one", T0, [WHY, C0]))).display, "practising");
+ });
+ 
+-test("mastered needs a produce-form success ≥ 20 h after the anchor, in another session, first attempt, before re-teach", () => {
++// VALUES-100 V1.3 (V1-10, docs/design/values/v1/patches): "secure" needs a correct delayed check at least 2 LEARNING days
++// after the anchor (local IST days, start to start), on an item the skill was never answered on, unaided. These cases were
++// rewritten from the 20 h / same-item rule to that one (the README's "rewrite the tests to the V1.3 rule, never roll back").
++const D2 = 2 * DAY;
++test("mastered needs a produce-form success ≥ 2 learning days after the anchor, on a NEW item, in another session, first attempt, before re-teach", () => {
+   const L1 = fold(L0(), learnDay("A", T0));
+   assert.equal(at(L1).display, "learned_today");
++  const NEW = { itemKey: "k-new" };
+   // same session, later: never a delayed check
+-  assert.equal(at(fold(L1, session("A", T0, [C0]))).display, "learned_today");
+-  // a different session 10 h later: too soon
+-  assert.equal(at(fold(L1, session("B", T0 + 10 * H, [C0]))).display, "learned_today");
+-  // 20 h later, but re-taught first
+-  assert.equal(at(fold(L1, session("C", T0 + 21 * H, [{ teach: true }, C0]))).display, "learned_today");
+-  // 20 h later, first attempt is a tap: a recognition item is never a delayed check
+-  assert.equal(at(fold(L1, session("D", T0 + 21 * H, [{ cls: "item.mcq3", outcome: 0 }, C0]))).display, "learned_today");
+-  // 20 h later, hinted: not a pass
+-  assert.equal(at(fold(L1, session("E", T0 + 21 * H, [{ outcome: 2 }]))).display, "learned_today");
+-  assert.equal(at(fold(L1, session("E2", T0 + 21 * H, [{ preAttemptHelp: true }]))).display, "learned_today");
+-  // 20 h later, first produce attempt C0 → mastered
+-  const M = fold(L1, session("F", T0 + 21 * H, [C0]));
++  assert.equal(at(fold(L1, session("A", T0, [{ ...NEW }]))).display, "learned_today");
++  // a different session 10 h later, and 21 h later (the old 20 h rule): too soon
++  assert.equal(at(fold(L1, session("B", T0 + 10 * H, [{ ...NEW }]))).display, "learned_today");
++  assert.equal(at(fold(L1, session("B2", T0 + 21 * H, [{ ...NEW }]))).display, "learned_today", "one day is not two learning days");
++  // 2 days later, but re-taught first
++  assert.equal(at(fold(L1, session("C", T0 + D2, [{ teach: true }, { ...NEW }]))).display, "learned_today");
++  // 2 days later, first attempt is a tap: a recognition item is never a delayed check
++  assert.equal(at(fold(L1, session("D", T0 + D2, [{ cls: "item.mcq3", outcome: 0, ...NEW }, { itemKey: "k-new2" }]))).display, "learned_today");
++  // 2 days later, hinted: not a pass
++  assert.equal(at(fold(L1, session("E", T0 + D2, [{ outcome: 2, ...NEW }]))).display, "learned_today");
++  assert.equal(at(fold(L1, session("E2", T0 + D2, [{ preAttemptHelp: true, ...NEW }]))).display, "learned_today");
++  // 2 days later, the SAME item again: a recall of that item, not the skill in a new form
++  assert.equal(at(fold(L1, session("E3", T0 + D2, [C0]))).display, "learned_today");
++  // 2 days later, first produce attempt C0 on a new item → mastered
++  const M = fold(L1, session("F", T0 + D2, [{ ...NEW }]));
+   assert.equal(at(M).display, "mastered");
+   assert.equal(at(M).flags.delayed, true);
+-  // a near-transfer pass also counts as (c)
+-  assert.equal(at(fold(L1, session("G", T0 + 2 * DAY, [{ cls: "probe.transfer.near", outcome: 0, grader: "code" }]))).display, "mastered");
++  // a near-transfer pass on a new item also counts as (c)
++  assert.equal(at(fold(L1, session("G", T0 + D2, [{ cls: "probe.transfer.near", outcome: 0, grader: "code", ...NEW }]))).display, "mastered");
+ });
+ 
+-test("a C1/C2 at a delayed check is neither pass nor miss: it re-anchors the 20 h clock", () => {
++test("a C1/C2 at a delayed check is neither pass nor miss: it re-anchors the 2-day clock", () => {
+   const L1 = fold(L0(), learnDay("A", T0));
+-  const L2 = fold(L1, session("B", T0 + 21 * H, [{ outcome: 1 }]));
++  const L2 = fold(L1, session("B", T0 + D2, [{ outcome: 1, itemKey: "k2" }]));
+   assert.equal(at(L2).display, "learned_today");
+   assert.equal(at(L2).delayedMisses, 0);
+   assert.equal(at(L2).anchorSession, "B");
+-  // 21 h after the original anchor but only 3 h after the new one: not a check
+-  assert.equal(at(fold(L2, session("C", T0 + 24 * H, [C0]))).display, "learned_today");
+-  assert.equal(at(fold(L2, session("D", T0 + 42 * H, [C0]))).display, "mastered");
++  // 2 days after the original anchor but the same day as the new one: not a check
++  assert.equal(at(fold(L2, session("C", T0 + D2 + 3 * H, [{ itemKey: "k3" }]))).display, "learned_today");
++  assert.equal(at(fold(L2, session("D", T0 + 2 * D2, [{ itemKey: "k3" }]))).display, "mastered");
+ });
+ 
+ test("one delayed miss sets refresh only; two consecutive misses demote one level, never two", () => {
+   let L = fold(L0(), learnDay("A", T0));
+-  L = fold(L, session("B", T0 + DAY, [C0]));
++  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
+   assert.equal(at(L).display, "mastered");
+-  L = fold(L, session("C", T0 + 3 * DAY, [{ outcome: 4 }]));
++  L = fold(L, session("C", T0 + 2 * D2, [{ outcome: 4, itemKey: "k3" }]));
+   assert.equal(at(L).display, "mastered");
+   assert.equal(at(L).refresh, true);
+   // a pass between misses resets the count
+-  const reset = fold(L, session("C2", T0 + 5 * DAY, [C0]));
++  const reset = fold(L, session("C2", T0 + 3 * D2, [{ itemKey: "k4" }]));
+   assert.equal(at(reset).refresh, false);
+   assert.equal(at(reset).delayedMisses, 0);
+-  L = fold(L, session("D", T0 + 5 * DAY, [{ outcome: 3 }]));
++  L = fold(L, session("D", T0 + 3 * D2, [{ outcome: 3, itemKey: "k5" }]));
+   assert.equal(at(L).display, "learned_today", "two consecutive misses: mastered → learned_today");
+-  L = fold(L, session("E", T0 + 7 * DAY, [{ outcome: 4 }]));
++  L = fold(L, session("E", T0 + 4 * D2, [{ outcome: 4, itemKey: "k6" }]));
+   assert.equal(at(L).display, "learned_today");
+-  L = fold(L, session("F", T0 + 9 * DAY, [{ outcome: 4 }]));
++  L = fold(L, session("F", T0 + 5 * D2, [{ outcome: 4, itemKey: "k7" }]));
+   assert.equal(at(L).display, "practising");
+   assert.equal(at(L).aDay, null, "a fresh (a) + (b) day comes first");
+ });
+ 
+ test("durable: mastered plus unaided delayed successes at ≥ 7 d and ≥ 30 d after learned_today", () => {
+   let L = fold(L0(), learnDay("A", T0));
+-  L = fold(L, session("B", T0 + DAY, [C0]));
+-  L = fold(L, session("C", T0 + 8 * DAY, [C0]));
++  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
++  L = fold(L, session("C", T0 + 9 * DAY, [{ itemKey: "k3" }]));
+   assert.equal(at(L).display, "mastered");
+   assert.equal(at(L).flags.durable7, true);
+-  L = fold(L, session("D", T0 + 31 * DAY, [C0]));
++  L = fold(L, session("D", T0 + 31 * DAY, [{ itemKey: "k4" }]));
+   assert.equal(at(L).display, "durable");
+ });
+ 
+ test("absence never lowers display; it only raises the refresh flag through R", () => {
+   let L = fold(L0(), learnDay("A", T0));
+-  L = fold(L, session("B", T0 + DAY, [C0]));
++  L = fold(L, session("B", T0 + D2, [{ itemKey: "k2" }]));
+   const year = readSkill(at(L), new Date(T0 + 365 * DAY).toISOString());
+   assert.equal(year.display, "mastered");
+   assert.equal(year.refresh, true);
+--- a/tests/comprehension-engine.test.mjs
++++ b/tests/comprehension-engine.test.mjs
+@@ -11,6 +11,8 @@
+ 
+ const SK = "c5-maths-ch01-t01-s1";
+ const T0 = "2026-10-01T05:00:00.000Z", T1 = "2026-10-02T06:00:00.000Z", T9 = "2026-10-10T06:00:00.000Z";
++// VALUES-100 V1.3 (V1-10): the delayed check is ≥ 2 learning days after the anchor and on an item never answered on the skill
++const T2 = "2026-10-03T06:00:00.000Z";
+ let n = 0;
+ const ev = (o = {}) => ({ id: `e${++n}`, seq: n, sessionId: "s1", sessionStartAt: T0, at: T0, episodeId: `ep${n}`, skillIds: [SK], itemKey: "k",
+   cls: "item.open", outcome: 0, grader: "code", graderVersion: "g", topicType: "T3", ...o });
+@@ -21,8 +23,8 @@
+ function understanderLog() {
+   return [ev({ teach: true }), ev(), ev(), ev({ cls: "probe.why", outcome: 0, grader: "llm", spanOk: true, shapeId: "C03" }),
+     ev({ cls: "probe.errorspot", outcome: 0, shapeId: "C07" }), ev({ cls: "probe.transfer.near", outcome: 0, shapeId: "C20" }),
+-    ev({ sessionId: "s2", sessionStartAt: T1, at: T1, shapeId: "C31", via: "callback" }),
+-    ev({ sessionId: "s2", sessionStartAt: T1, at: T1, cls: "probe.transfer.far", outcome: 0, shapeId: "C18" })];
++    ev({ sessionId: "s2", sessionStartAt: T2, at: T2, shapeId: "C31", via: "callback", itemKey: "k2" }),
++    ev({ sessionId: "s2", sessionStartAt: T2, at: T2, cls: "probe.transfer.far", outcome: 0, shapeId: "C18", itemKey: "k3" })];
+ }
+ 
+ test("shape registry: 36 shapes, each names a kit input, a closed class and an operator", () => {
+@@ -32,7 +34,7 @@
+ 
+ test("worked trajectory (spec §2.6): the understander reaches understood only after a delayed check + far transfer", () => {
+   const s = run(understanderLog());
+-  const x = b(s, T1);
++  const x = b(s, T2);
+   assert.equal(x.state, "understood");
+   assert.ok(Math.abs(x.U - 0.795) < 0.01, `U ${x.U}`);
+   assert.ok(Math.abs(x.T - 0.920) < 0.01, `T ${x.T}`);
+--- a/tests/prod/owner-4-steering.mjs
++++ b/tests/prod/owner-4-steering.mjs
+@@ -27,9 +27,14 @@
+  * response, for persistence), persona }.
+  */
+ const REQUESTS = [
++  // owner rule (2026-10-05, decisions owner-ship-five; w2i-release): "can we talk about something else" is STEERING — never a
++  // break and never a wrap. Taken up = a yes and a different way in (a picture, a story, a game: the ways-in chips), or
++  // what they would like instead; never the same lesson turn again.
+   { id: "talk_else", text: "can we talk about something else", persona: "meher",
+-    check: (rep, c) => (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo)\b/i.test(rep) && jaccard(minusAsk(rep, kitAsk(c.r)), c.prev) < 0.5 ? null
+-      : "no sign the topic change was taken up (no 'what would you like to talk about', or the same lesson turn again)") },
++    check: (rep, c) => (["break", "wrap"].includes(c.r?.move?.kind) || c.r?.end ? `a ${c.r?.end ? "lesson end" : c.r?.move?.kind} (the owner rule: steering, never a break or a wrap)`
++      : (/\b(what would you like|what do you want to talk|kis (?:baare|cheez)|kya baat karna|something else|kuch aur|sure|of course|zaroor|theek hai|chalo|yes|haan|bilkul|picture|story|game|kahani|khel|chitra|different|alag)\b/i.test(rep)
++        || (c.r?.ui?.chips ?? []).some((x) => /^req:/.test(x.id))) && jaccard(minusAsk(rep, kitAsk(c.r)), c.prev) < 0.5 ? null
++      : "no sign the topic change was taken up (no yes / ways in / what they would like, or the same lesson turn again)") },
+   { id: "topic_interest", text: "cricket ke baare mein baat karo", persona: "aarav",
+     check: (rep) => (/\b(cricket|bat|batting|batsman|bowler|bowling|wicket|overs?|runs?|six|sixer|four|boundary|shot|pitch|stumps|innings|captain|kohli|dhoni|ipl|match|team)\b/i.test(rep) ? null : "cricket never came up: the request was ignored") },
+   { id: "differently", text: "explain it differently", persona: "zoya",

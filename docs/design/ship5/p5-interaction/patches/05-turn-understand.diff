@@ -1,0 +1,101 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -49,6 +49,9 @@
+ import { FACTS_ROW_PREFIX } from "../director/modules.js";
+ import { engagementOf, frustrationLoop, initialAffect } from "../learner/affect.js";
+ import { turnSignals } from "../persona/signals.js";
++import { understand } from "../conversation/understand.js";
++import { applyNote, withAnswerMods } from "../conversation/policy.js";
++import { conv2Mode, p5Flag } from "../conversation/flags.js";
+ import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
+ 
+ /**
+@@ -296,6 +299,9 @@
+   // `correct`; a bound catalog engine carries the engine's verdict (director/modules.js moduleAnswerOf).
+   const moduleAnswer = moduleAnswerOf(state, moduleEvents);
+   const machineAnswer = typeof moduleAnswer?.correct === "boolean" && target.mode === "item";
++  // V1-01r: an answer the server could not re-check (moduleAnswerOf → { unverifiable }) is never graded by the frame's
++  // claim and never dropped silently: the Director asks the child for it in words (state.js moduleReaction)
++  const moduleUnverified = !!moduleAnswer?.unverifiable && p5Flag("RECHECK");
+   const clsArgs = { target, childText, heard, lang: state.ctx?.lang, asrConfidence: body.asrConfidence, typed, chipId: body.chipId, moduleAnswer, classLevel: child.class_level, trace };
+   const classified = !(moduleOnly && !machineAnswer) && !laneResume;
+   const answer = normAnswer(childText);
+@@ -324,7 +330,8 @@
+   const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume }), null);
+   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
+   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+-    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };
++    childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
++    ...(moduleUnverified ? { moduleUnverified: true } : {}) };
+   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
+   const historyOf = (next) => (moduleOnly || help || laneResume ? next.recent : next.recent.slice(0, -1));
+ 
+@@ -342,9 +349,29 @@
+   const specs = textLane && !late && fast && !fast.result
+     ? speculate(state, target, fast.flags, { ...planCtx, now }, { said, historyOf }, fast.lowAsr ? { outcomes: ["no_evidence"], source: "asr" } : {})
+     : [];
++  // CONVERSATION-V2 UNDERSTAND (server/conversation/understand.js): when the bytes decided nothing, a model reads what the
++  // child MEANS, in parallel with classify(). It is waited on only when classify() says the turn is not an answer, at most
++  // NOTE_WAIT_MS from its start; a 429, an error or a timeout is no note (today's path). Off / shadow: TAXILA_CONV2.
++  const c2 = conv2Mode();
++  const noteT0 = performance.now();
++  const noteP = c2 !== "off" && !late && fast && !fast.result && !fast.lowAsr && !fast.request && childText && !help
++    ? understand({ cls: child.class_level, topicTitle: state.ctx?.topicTitle, phase: state.phase, teacherLast: heard ?? "",
++      ask: target.mode === "item" && activeItem ? promptFor(activeItem, state.ctx?.lang) : null, key: target.mode === "item" ? target.key ?? null : null,
++      earlier: earlierExchanges(state.recent, 2), said: childText, trace }) : null;
++  noteP?.catch(() => {});
+   let cls;
+   try { cls = classified ? await classify(clsArgs) : null; } finally { clsDone(); }
+   mark("classified");
++  let noteReason = null;
++  if (noteP && cls) {
++    const nonAnswer = cls.outcome === "no_evidence" && !cls.request && !cls.help && !cls.flags?.distress;
++    const note = await settleWithin(noteP, nonAnswer ? Math.max(0, NOTE_WAIT_MS - (performance.now() - noteT0)) : 0);
++    if (note) cls = applyNote(cls, note, { mode: c2 });
++    noteReason = note ? `conv2.${c2 === "shadow" ? "shadow" : "note"}.${note.intent}` : "conv2.no_note";
++    mark("noted");
++  }
++  // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
++  if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
+   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
+   // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
+   // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
+@@ -690,6 +717,10 @@
+           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+           ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }),
+           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
++          // p5-interaction: what the turn was read as (intent / request ids only, never the child's words), the card cap,
++          // an unverifiable module answer
++          ...(noteReason ? [noteReason] : []), ...(cls?.request?.type ? [`request.${cls.request.type}`] : []),
++          ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
+           ...[...seamErrors].map((c) => `component_error.${c}`)],
+         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
+         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
+@@ -837,7 +868,7 @@
+   else if (state.rel) delete state.rel;
+   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
+   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
+-    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed };
++    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}) };
+   const stepped = moduleOnly
+     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
+     : step(state, { ...stepIn, event: "turn" });
+@@ -1050,3 +1081,18 @@
+     return `${parts} [spec: ${String(a[i] ?? "").slice(0, 120)} || real: ${String(b[i] ?? "").slice(0, 120)}]`;
+   }));
+ }
++
++/** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
++export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);
++/** The promise's value if it settles within `ms` (0: only if already settled), else null. Never throws. */
++export function settleWithin(p, ms) {
++  return Promise.race([p.catch(() => null), new Promise((res) => setTimeout(() => res(null), Math.max(0, ms)))]);
++}
++/** The last `n` child → teacher exchanges of the recent transcript (masked), for the note's context. */
++export function earlierExchanges(recent = [], n = 2) {
++  const out = [];
++  for (let i = recent.length - 1; i >= 1 && out.length < n; i--) {
++    if (recent[i].who === "teacher" && recent[i - 1].who === "child") { out.unshift({ child: scrubbed(recent[i - 1].text), teacher: scrubbed(recent[i].text) }); i--; }
++  }
++  return out;
++}

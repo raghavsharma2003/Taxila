@@ -1,0 +1,47 @@
+--- a/server/director/classify.js
++++ b/server/director/classify.js
+@@ -11,6 +11,9 @@
+ import { partsOf } from "../content/parts.js";
+ import { plainNumberKey, numberPhrases, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
+ import { requestOf, FLOW_REQUESTS } from "./requests.js";
++import { readIntent } from "../conversation/lexicon.js";
++import { requestFromReading } from "../conversation/policy.js";
++import { p5Flag } from "../conversation/flags.js";
+ 
+ // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
+ // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
+@@ -422,6 +425,10 @@
+     const o = target.options[Number(chipId.slice(4))];
+     if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, "chip", m); }
+   }
++  // p5-interaction: a ways-in chip (state.js waysChips) is a request, never an answer and never read by a model
++  if (chipId && /^req:(visual|story|game)$/.test(chipId) && p5Flag("STEER")) {
++    return done("no_evidence", "chip", { request: chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true } });
++  }
+   if (chipId && target.offered && /^pick:\d+$/.test(chipId)) {
+     const picked = target.offered[Number(chipId.slice(5))];
+     if (typeof picked === "string") {
+@@ -437,7 +444,13 @@
+   // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
+   // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
+   // distress read (the floor's backup is never skipped), and classify() then applies the request over the model's flags.
+-  let request = !chipId && !moduleAnswer ? requestOf(text) : null;
++  // p5-interaction (CONVERSATION-V2 §4.1 code first): the readings requests.js does not make ("nahi samjha", "matlab?",
++  // "phir se bolo", "mummy bula rahi thi, haan", "skip", "boring", "mujhse nahi hoga", "ruko soch raha hoon", "tum robot
++  // ho?", "aapko kaunsa cricketer pasand hai?", "ghost story sunao"). Whole-turn and request-shaped only (lexicon.js). An
++  // out-of-bounds ask outranks a request word inside it ("ghost story sunao" is never a story request).
++  const reading = !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
++  let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
++  if (!request && reading) request = requestFromReading(reading);
+   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
+   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
+   // lesson on the right answer; "stop", "kahani", "khelna", "dheere", "hindi", "for example a samosa" were never graded).
+@@ -533,7 +546,7 @@
+   const t = norm(text);
+   const answers = [target?.key, ...(target?.also || []), ...((target?.options || []).map((o) => o?.text))]
+     .filter((a) => typeof a === "string" || typeof a === "number").map(String);
+-  return answers.some((a) => norm(a) === t || requestOf(a)?.type === type);
++  return answers.some((a) => norm(a) === t || requestOf(a)?.type === type || (p5Flag("STEER") && requestFromReading(readIntent(a))?.type === type));
+ }
+ 
+ /**

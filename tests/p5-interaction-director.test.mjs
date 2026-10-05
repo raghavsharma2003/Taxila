@@ -137,7 +137,7 @@ test("boredom and frustration: something changes now (ways in / a smaller step),
   assert.match(b.move.shape, /bored: no guilt/);
   assert.equal(ended(b), false);
   const f = turn(r, said(r, "mujhse nahi hoga"));
-  assert.match(f.move.shape, /the work that is hard, never them/);
+  assert.match(f.move.shape, /this one is hard work and that is okay/);
   assert.notEqual(f.move.kind, "safeguard");
 });
 
