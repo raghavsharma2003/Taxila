@@ -128,6 +128,33 @@ export const OVERLAP = {
    * resumed 0.8 s later (M-D7 ablation "eager"). The duck at onset already backs her voice off within ~40 ms.
    */
   earlyVoicedZ: 0,
+  /**
+   * The hush (p1-duplex 2026-10-05): after this much sustained non-echo child voice over her, her gain drops to hushLevel
+   * while the engine decides (YIELD on a barge-in, un-hush on a continuer). 0 turns it off. [E; fitted on TaxilaFDB TRAIN]
+   */
+  hushMs: 120 as Ms,
+  /** ≈ -26 dB: under a child talking at the phone, her line is masked; she has not stopped, so a continuer costs nothing. */
+  hushLevel: 0.05,
+  /** Hushes that ended with no words and no turn before the hush switches off for the session (her echo, a noisy room). */
+  hushGiveUp: 4,
+  /** A short ended burst rising at least this fast over at least risingMinMs reads as a repair request ("kya?"). [E, TRAIN] */
+  risingStPerS: 25,
+  risingMinMs: 180 as Ms,
+  /** An ended burst at most this long with ≤ 3 tokens incl. a listening token is a continuer (leakage glued on). [E, TRAIN] */
+  shortBurstMs: 650 as Ms,
+  /**
+   * A burst whose opening median f0 sits this many semitones (or more) below the child's own median f0 is not the child
+   * (an adult on the TV, a parent): no hush, no yield on its words or its length. 0 = off. [E, TaxilaFDB TRAIN]
+   */
+  notChildSemitones: 5,
+  /** Removed echo words count as echo evidence only while the mic is within this many dB of her echo estimate. [E] */
+  echoNearDb: 10,
+  /**
+   * A burst this far below the child's own speech level is the room (TV, a sibling across it), not the child. 0 = OFF, the
+   * default: on TaxilaFDB TRAIN (FAST, child-level prior from the same voice and room) TV false yields went 16/24 → 15/24
+   * at 8 dB and 15/24 at 6 dB (TV peaks sit within a few dB of the child), so it ships off until a speaker model (X3).
+   */
+  backgroundBelowChildDb: 0,
 };
 
 /**

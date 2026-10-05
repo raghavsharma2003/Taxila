@@ -75,6 +75,45 @@ export class VoicesigHead {
     if (this.xs.length > 4500) this.xs.splice(0, this.xs.length - 4500);
   }
 
+  /**
+   * Stage-0 kv for one committed turn, SYNCHRONOUSLY (no detector): what rides on the turn request when the detector is
+   * absent or has not answered yet, so the request is never delayed (SPEC §3.4, VS-A9). Never throws.
+   */
+  commitNow(c: CommitInput): KnowledgeVoice | null {
+    try {
+      const t0 = this.now();
+      const frames = this.fe.frames(c.fromT, c.toT);
+      if (!frames.length) return null;
+      const f = turnAcoustics({ frames, teacherEndAt: c.teacherEndAt, words: c.words });
+      if (!f) return null;
+      return this.kvOf(frames, f, 0, c, t0);
+    } catch {
+      return null;
+    }
+  }
+
+  /** True when a filler detector is loaded (commit() may then add fillerLeadMs / fillerRuns / contentOnsetMs). */
+  get hasDetector(): boolean { return !!this.filler; }
+
+  private kvOf(frames: AudioFrame[], f: NonNullable<ReturnType<typeof turnAcoustics>>, det: 0 | 1, c: CommitInput, t0: number): KnowledgeVoice {
+    const caps = this.fe.caps();
+    return {
+      v: 1,
+      modelVer: det ? `${HEAD_VER}+${this.filler?.ver}` : HEAD_VER,
+      stage: 0,
+      f,
+      q: {
+        audio: audioQuality(frames, f, this.fe.frameCore.floorDb),
+        raw: frames.some((x) => x.rawDb != null) ? 1 : 0,
+        enc: caps.encoder ? 1 : 0,
+        det,
+        micClass: c.micClass ?? caps.micClass,
+        langMode: c.langMode ?? "unk",
+      },
+      computeMs: Math.round((this.now() - t0) * 10) / 10,
+    };
+  }
+
   /** Build kv for one committed turn. Never throws; never waits past HEAD_BUDGET_MS for the detector. */
   async commit(c: CommitInput): Promise<KnowledgeVoice | null> {
     const t0 = this.now();
@@ -105,21 +144,6 @@ export class VoicesigHead {
     }
     const f = turnAcoustics({ frames, teacherEndAt: c.teacherEndAt, words: c.words, filler });
     if (!f) return null;
-    const caps = this.fe.caps();
-    return {
-      v: 1,
-      modelVer: det ? `${HEAD_VER}+${this.filler?.ver}` : HEAD_VER,
-      stage: 0,
-      f,
-      q: {
-        audio: audioQuality(frames, f, this.fe.frameCore.floorDb),
-        raw: frames.some((x) => x.rawDb != null) ? 1 : 0,
-        enc: caps.encoder ? 1 : 0,
-        det,
-        micClass: c.micClass ?? caps.micClass,
-        langMode: c.langMode ?? "unk",
-      },
-      computeMs: Math.round((this.now() - t0) * 10) / 10,
-    };
+    return this.kvOf(frames, f, det, c, t0);
   }
 }

@@ -128,6 +128,11 @@ export class ChildAudioTracker {
       if (this.voicingNow || this.f0InRun) this.lastLoudAt = t;
       this.hist.push([t, db, f0]);
       if (f0) { this.f0s.push(f0); if (this.f0s.length > 3000) this.f0s.splice(0, 1000); }
+      // the child's own level: voiced frames while she is quiet (her echo cannot be in them)
+      if (this.herDb === null && f0) {
+        this.ownDb.push(db); if (this.ownDb.length > 400) this.ownDb.shift();
+        this.ownF0.push(f0); if (this.ownF0.length > 400) this.ownF0.shift();
+      }
       // onset: 2 loud frames (40 ms) after a quiet spell longer than the hangover; back-dated to the first loud frame
       // ...and periodic: at least one YIN f0 frame in the loud run (fan / traffic / TV-bed bursts carry none; TaxilaFDB noisy
       // beds: 0 f0 frames in 149 post-turn frames, child speech 43% f0 frames). Without this, noise bursts reopen the turn.
@@ -163,6 +168,41 @@ export class ChildAudioTracker {
   }
 
   get voicing(): boolean { return this.voicingNow; }
+
+  /** voiced-frame dB of the child's own speech while she was quiet (last 400 frames ≈ 8 s of voice) */
+  private ownDb: number[] = [];
+  /** The child's own speech level (median voiced dB while she is quiet); null until 1.5 s of their voice (75 frames). */
+  childLevelDb(): number | null {
+    if (this.ownDb.length < 75) return null;
+    const s = [...this.ownDb].sort((a, b) => a - b);
+    return s[Math.floor(s.length / 2)];
+  }
+
+  private ownF0: number[] = [];
+  /** The child's own median f0 (Hz, voiced frames while she is quiet); null until 75 voiced frames. Speaker attribution only. */
+  childF0Hz(): number | null {
+    if (this.ownF0.length < 75) return null;
+    const s = [...this.ownF0].sort((a, b) => a - b);
+    return s[Math.floor(s.length / 2)];
+  }
+
+  /** Median f0 of the voiced frames in [from, from + windowMs]; null with fewer than `min` f0 frames. */
+  burstF0Hz(from: Ms, windowMs: Ms = 400, min = 3): number | null {
+    const v: number[] = [];
+    for (const [t, , f] of this.hist) if (t >= from && t <= from + windowMs && f) v.push(f);
+    if (v.length < min) return null;
+    v.sort((a, b) => a - b);
+    return v[Math.floor(v.length / 2)];
+  }
+
+  /** Median dB of the loud frames in [from, from + windowMs] (the burst's opening), null if none yet. */
+  burstDb(from: Ms, windowMs: Ms = 400): number | null {
+    const v: number[] = [];
+    for (const [t, d] of this.hist) if (t >= from && t <= from + windowMs) v.push(d);
+    if (!v.length) return null;
+    v.sort((a, b) => a - b);
+    return v[Math.floor(v.length / 2)];
+  }
 
   /** Child voiced ms after `fromMs` (the lexical horizon's unseen voice). Counts the open run up to now. */
   voicedAfter(fromMs: Ms): Ms {

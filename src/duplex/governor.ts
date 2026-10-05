@@ -325,7 +325,9 @@ export class Governor {
       const target = o.targetSpeaker === null || o.targetSpeaker >= 0.5;
       if (target && o.echoLikelihood < 0.7 && c.voicing && c.voicedRunMs >= OVERLAP.forceYieldMs) {
         veto("YIELD", "sustained_voice", { action: "YIELD", reason: "barge_in", atWordBoundary: true, resumable: true });
-      } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || o.lexicalKind === "answer" || o.lexicalKind === "turn") {
+      } else if (o.lexicalKind === "stop" || o.lexicalKind === "repair" || (target && (o.lexicalKind === "answer" || o.lexicalKind === "turn"))) {
+        // p1-duplex (2026-10-05): words from a burst far below the child's own level (the TV, the room) are not the child's
+        // turn; only an explicit stop / repeat request from a quieter voice still stops her
         const reason = o.lexicalKind === "stop" ? "stop_request" : o.lexicalKind === "repair" ? "repair_request" : o.lexicalKind === "answer" ? "answer_to_her_question" : "barge_in";
         veto("YIELD", o.lexicalKind === "stop" ? "stop_request" : o.lexicalKind === "repair" ? "repeat_request" : "child_voicing", { action: "YIELD", reason, atWordBoundary: true, resumable: false });
       }

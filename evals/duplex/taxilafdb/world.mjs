@@ -192,7 +192,7 @@ export async function runStream(id, arm) {
       return;
     }
     if (c.to !== "voice") return;
-    if (c.op === "duck") { rec.ducks++; (rec.duckAt ??= []).push(c.t); return; }
+    if (c.op === "duck") { rec.ducks++; (rec.duckAt ??= []).push(c.t); (rec.duckLv ??= []).push([c.t, c.level]); return; }
     if (c.op === "speak" || c.op === "cut_in") {
       const s = stage();
       const safeguard = c.op === "speak" ? c.reason === "safeguard" : c.reason === "safety";
@@ -235,6 +235,10 @@ export async function runStream(id, arm) {
 
   // the Director's context, then her scripted line (gold word times from the render)
   host.context(ctx, 0);
+  // p1-duplex (opt-in, default off): the child's speech level from "earlier in the lesson" (the same voice and room in
+  // OTHER streams), as a device that has heard the child before would know it
+  if (arm.childLevelDb) host.setChildLevel(arm.childLevelDb(d));
+  if (arm.childF0Hz) host.setChildF0(arm.childF0Hz(d));
   const handsOver = !!sc.child && sc.child.start?.mode === "after_her" || /[?？]\s*$/.test(sc.her.text);
   const herWords = (g.herWords || []).map((w) => ({ w: w.w, startMs: Math.round(w.start), endMs: Math.round(w.end) }));
   schedule(g.herSpan.start, { kind: "her_line", words: herWords, handsOver });
@@ -255,7 +259,10 @@ export async function runStream(id, arm) {
     while (pending.length && pending[0].t <= t) {
       const { t: et, ev } = pending.shift();
       if (ev.kind === "her_line") {
-        host.herEvent(startHer(et, sc.her.text, sc.her.lastAct, ev.handsOver, null, ev.words));
+        // p1-duplex (opt-in, arm.herActFromScenario): a yes/no line is "asked_yes_no" (the Director knows what she asked;
+        // the scenarios mark it askedYesNo but carry lastAct "explaining", so herAskedYesNo was never true in L1)
+        const act = arm.herActFromScenario && sc.her.askedYesNo ? "asked_yes_no" : sc.her.lastAct;
+        host.herEvent(startHer(et, sc.her.text, act, ev.handsOver, null, ev.words));
         rec.herLine.id = her.id;
       } else if (ev.kind === "her_end") {
         if (!her || her.id !== ev.id || her.stoppedAt !== null) continue;

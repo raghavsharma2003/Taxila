@@ -440,9 +440,13 @@ const AFFECT = /frustrat|bored|anxi|sad\b|happy|arous|valence|mood|stress|tired|
  * FIXED allowlist. `asrConfidence` / `asrConf` are the STT's own score (an input name). The placement harness predates the
  * lint and is a research inventory that names EXCLUDED models; it ships nothing.
  */
-const ALLOW = new Set(["asrConfidence", "asrConf", "unsureCorrect"]);
-/** The lint's own file holds the forbidden list itself. */
-const ALLOW_DIRS = ["evals/voicesig/placement/", "evals/voicesig/tests/"];
+const ALLOW = new Set(["asrConfidence", "asrConf", "unsureCorrect", "distress"]);
+/**
+ * The lint's own file holds the forbidden list itself; server/voicesig/lint.js is the shared restriction-12 word list
+ * (ship5 p3-voicesig) and is exempt for the same reason. `distress` is the SAFETY module's flag that the lesson seam reads
+ * only to suppress voicesig on a disclosure turn (a safety input, never a voicesig output).
+ */
+const ALLOW_DIRS = ["evals/voicesig/placement/", "evals/voicesig/tests/", "server/voicesig/lint.js"];
 
 test("G-VS-LABEL: no state-of-mind or affect word in any identifier, key or string under the voicesig folders", () => {
   const scope = ["src/voicesig", "server/voicesig", "evals/voicesig", "scripts/voicesig"].flatMap((d) => files(join(ROOT, d)));
@@ -472,15 +476,23 @@ test("G-VS-SCHEMA: the migration proposal holds no per-turn history, text, audio
 });
 
 test("boundaries: voicesig imports nothing from duplex or server/signals internals; nothing imports a research arm", () => {
+  // The lesson seam (server/voicesig/lesson.js, ship5) is the ONE exception: it sits ABOVE both layers and reads the
+  // transcript's Tier-T features from server/signals/linguistic.js. The pure adapter path stays free of signals, and
+  // server/signals must never import the seam (no cycle: checked below).
+  const SEAM = /server\/voicesig\/lesson\.js$/;
   for (const f of [...files(join(ROOT, "src/voicesig")), ...files(join(ROOT, "server/voicesig"))]) {
     const code = readFileSync(f, "utf8");
     for (const m of code.matchAll(/from\s+["']([^"']+)["']/g)) {
-      assert.ok(!/duplex|server\/signals|\/signals\//.test(m[1]) || f.includes("/tests/"), `${f.slice(ROOT.length)} imports ${m[1]}`);
+      const seamOk = SEAM.test(f) && m[1] === "../signals/linguistic.js";
+      assert.ok(seamOk || !/duplex|server\/signals|\/signals\//.test(m[1]) || f.includes("/tests/"), `${f.slice(ROOT.length)} imports ${m[1]}`);
       assert.ok(!/research|shadow-arm|placement/.test(m[1]), `${f.slice(ROOT.length)} imports ${m[1]}`);
     }
   }
+  for (const f of files(join(ROOT, "server/signals"))) {
+    const code = readFileSync(f, "utf8");
+    assert.ok(!/from\s+["'][^"']*voicesig\/lesson\.js["']/.test(code), `${f.slice(ROOT.length)} imports the voicesig seam (cycle)`);
+  }
 });
-
 test("A3 precondition: server/voice/features.js validateUtterance ignores a top-level kv (no HTTP 400 before A3 lands)", async () => {
   const vf = await import("../../../server/voice/features.js");
   const u = vf.validateUtterance({ context: "answer", bargeIn: false, features: { durationMs: 900, voicedFrac: 0.6, words: 2 }, kv: kvOf() });

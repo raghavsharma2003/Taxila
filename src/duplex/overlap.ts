@@ -62,7 +62,10 @@ export function classifyOverlap(f: OverlapFeatures, s: { voicing: boolean; f0Slo
 
   // 4. acoustics only (the first 150-250 ms)
   if (f.durMs < OVERLAP.decideMs && s.voicing) { codes.push("short_burst"); return out(null, 0.5, false, false, null, "too_short"); }
-  const rising = s.f0SlopeStPerS !== null && s.f0SlopeStPerS >= 6;
+  // p1-duplex (2026-10-05, TaxilaFDB TRAIN, FAST): with the burst-local echo fix the acoustic path runs, and >= 6 st/s read
+  // noise-fragmented continuers (120-280 ms pieces, slopes 5-29 st/s) as "kya?" (11/72 yielded); TTS repair requests rise
+  // 28-69 st/s over >= 160 ms. A real child's "kya?" may differ: the words still decide a repair on every lane.
+  const rising = s.f0SlopeStPerS !== null && s.f0SlopeStPerS >= OVERLAP.risingStPerS && f.durMs >= OVERLAP.risingMinMs;
   const raised = f.onsetF0Rel !== null && f.onsetF0Rel >= 0.7;
   const ended = !s.voicing;
   let z = -0.5;

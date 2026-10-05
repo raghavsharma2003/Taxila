@@ -134,7 +134,7 @@ export function policyDecide(text: string, ctx: TurnContext): { send: boolean; h
  * passes `askedYesNo`).
  */
 export type OverlapKind = "continuer" | "answer" | "repair" | "stop" | "turn";
-const CONTINUERS = new Set(["hmm", "hm", "hmmm", "mm", "mhm", "achha", "acha", "accha", "ok", "okay", "theek", "ji", "हम्म", "अच्छा", "ओके", "जी", "ठीक"]);
+const CONTINUERS = new Set(["hmm", "hm", "hmmm", "mm", "mhm", "achha", "acha", "accha", "ok", "okay", "theek", "ji", "हम्म", "अच्छा", "ओके", "जी", "ठीक", "हम", "हम्म्म", "हूँ", "हूं", "achcha", "theek"]);
 const YES = new Set(["haan", "han", "haa", "haanji", "yes", "हाँ", "हां"]);
 const NO = new Set(["nahi", "nahin", "na", "no", "नहीं", "ना"]);
 export function overlapKind(text: string, opts: { askedYesNo?: boolean } = {}): OverlapKind {
@@ -148,6 +148,17 @@ export function overlapKind(text: string, opts: { askedYesNo?: boolean } = {}): 
   // a lone "haan" is an answer if she asked yes/no, else a continuer; a lone "nahi" is an answer or a disagreement (stop)
   if (toks.length <= 2 && toks.every((w) => YES.has(w))) return opts.askedYesNo ? "answer" : "continuer";
   if (toks.length <= 2 && toks.every((w) => NO.has(w))) return opts.askedYesNo ? "answer" : "turn";
-  if (toks.length <= 2 && toks.every((w) => CONTINUERS.has(w) || w === "hai")) return "continuer";
+  // p1-duplex (2026-10-05, TaxilaFDB TRAIN): the template continuer "ठीक है" read as a turn ("है" was only listed as Roman
+  // "hai"), the STT's "हम" for "हम्म" (critique B1) and mixed "हाँ जी" / "अच्छा ठीक है" too: up to 3 listening tokens,
+  // any mix of continuers, yes-words and the copula, stay a continuer (an answer when she asked yes/no and one is a yes)
+  if (toks.length <= 3 && toks.every((w) => CONTINUERS.has(w) || YES.has(w) || COPULA.has(w)) && !toks.every((w) => COPULA.has(w))) {
+    return opts.askedYesNo && toks.some((w) => YES.has(w)) ? "answer" : "continuer";
+  }
   return "turn";
+}
+const COPULA = new Set(["hai", "hain", "है", "हैं"]);
+/** The text holds a continuer or a yes-word ("ओके", "हम्म", "हाँ"): a listening token. */
+export function hasListeningToken(text: string): boolean {
+  const t = norm(String(text ?? ""));
+  return !!t && t.split(" ").some((w) => CONTINUERS.has(w) || YES.has(w));
 }

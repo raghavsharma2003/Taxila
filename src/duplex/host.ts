@@ -40,7 +40,7 @@ import { RulesEngine } from "./engineRules.ts";
 import { faceCue, phasePose, shippedFloor, type FaceCue } from "./face.ts";
 import { packFeatures } from "./features.ts";
 import { tokens, valuesOf } from "./numerals.ts";
-import { overlapKind } from "./turnPolicy.ts";
+import { hasListeningToken, overlapKind } from "./turnPolicy.ts";
 import { OVERLAP, WT1_DEFAULT } from "./config.ts";
 
 export type HostCommand =
@@ -152,7 +152,22 @@ export class EngineHost {
   private acoustic: AcousticEstimate | null = null;
   private semanticAsk: { at: Ms; words: number } = { at: -Infinity, words: 0 };
   private overlapOnset: Ms | null = null;
+  /** Echo tokens the fan-in had removed this epoch when the current overlap began (echo evidence must be burst-local). */
+  private overlapEchoBase = 0;
+  /** The epoch's words when the overlap began: they describe audio before this burst (her leaked words, an earlier burst). */
+  private overlapTextBase = "";
   private ducked = false;
+  /**
+   * The hush (p1-duplex 2026-10-05): sustained non-echo child voice over her for OVERLAP.hushMs → her gain drops to
+   * OVERLAP.hushLevel (≈ -26 dB, under the child's own voice) while the engine still decides; a continuer un-hushes her
+   * (she never stopped), a barge-in yields with heardUpTo taken at the hush (the masked words are re-said on resume).
+   */
+  private hushAt: Ms | null = null;
+  /** Hushes that ended as "nothing" (no words, a continuer-length burst): too many → hush off for the session (echo). */
+  private hushUnconfirmed = 0;
+  private hushOff = false;
+  /** The child's own speech level (dBFS, voiced frames while she is quiet): background speech well below it is not the child. */
+  private childLevelPrior: number | null = null;
   private prevTurnStart: Ms = 0;
   private lastLog: string | null = null;
   private lastPrepare: { draft: string; warm: string; hash: string } | null = null;
@@ -189,6 +204,8 @@ export class EngineHost {
         if (!this.ducked && !this.flags.shadow) this.o.emit({ to: "voice", op: "duck", t, level: OVERLAP.duckLevel });
         this.ducked = true;
         this.overlapOnset = r.edgeAt;
+        this.overlapEchoBase = this.fanin.echoRemoved;
+        this.overlapTextBase = this.fanin.view(t).text;
       }
       this.applyEvents(this.governor.observe({ kind: "child_onset", t, at: r.edgeAt ?? t }), t);
       this.step("voice_onset", t);
@@ -197,21 +214,65 @@ export class EngineHost {
     } else if (this.ducked && this.her.speaking && !this.audio.voicing && (this.audio.silenceRunMs() ?? 0) >= OVERLAP.duckReleaseMs) {
       // an undecided burst that went quiet: release the duck (shipped DUCK_RELEASE_MS)
       if (!this.flags.shadow) this.o.emit({ to: "voice", op: "unduck", t });
+      this.unhush(true);
       this.ducked = false;
+    } else if (this.ducked && this.her.speaking && this.audio.voicing) {
+      this.maybeHush(t);
     }
   }
+
+  /** The hush: see `hushAt`. Only for a burst that is plausibly the child (not her echo, not quiet background speech). */
+  private maybeHush(t: Ms): void {
+    if (this.hushAt !== null || this.hushOff || this.overlapOnset === null || OVERLAP.hushMs <= 0) return;
+    if (t - this.overlapOnset < OVERLAP.hushMs) return;
+    const ph = this.governor.phase;
+    if (ph !== "overlap" && ph !== "her_turn") return;
+    const o = this.overlapFeatures(t, true, this.fanin.view(t, (from) => this.audio.voicedAfter(from)));
+    if (!o || o.echoLikelihood >= 0.5 || (o.targetSpeaker !== null && o.targetSpeaker < 0.5)) return;
+    this.hushAt = t;
+    if (!this.flags.shadow) this.o.emit({ to: "voice", op: "duck", t, level: OVERLAP.hushLevel });
+    this.o.emit({ to: "log", row: { t, cause: "voice_onset", phase: ph, action: "HUSH", proposed: "-", detail: null, reasons: ["short_burst"], pComplete: 0, pHoldWanted: 0, engine: this.engine.id.id, turnSeq: this.governor.turnSeq } });
+  }
+
+  /** Her gain comes back (a continuer, an unconfirmed burst). `nothing`: the burst carried no words (echo / noise suspect). */
+  private unhush(nothing: boolean): void {
+    if (this.hushAt === null) return;
+    this.hushAt = null;
+    if (nothing && !this.fanin.view(this.t).text && ++this.hushUnconfirmed >= OVERLAP.hushGiveUp) this.hushOff = true;
+  }
+
+  /** The child's speech level from earlier in the lesson (dBFS); the host also learns it from the child's own turns. */
+  setChildLevel(db: number | null): void { this.childLevelPrior = db; }
+  /** The child's median f0 from earlier in the lesson (Hz); the host also learns it from the child's own turns. */
+  setChildF0(hz: number | null): void { this.childF0Prior = hz; }
+  private childF0Prior: number | null = null;
 
   /** One STT event of the always-on stream. */
   stt(ev: HostSttEvent): void {
     this.t = ev.t;
     if (ev.type === "speech_started" || ev.type === "speech_stopped") return; // the device's own frames time speech
     const changed = this.fanin.push(ev);
-    if (!changed) return;
+    // p1-duplex (2026-10-05): every item's own words go through the predicate too, whatever epoch they fall in. A final that
+    // lands after her next line opened a new epoch is outside the turn view (push → unchanged), so its words were never
+    // checked (TaxilaFDB TEST D4 f10-during_her-0511: "…मुझे मर जाना है." arrived 60 ms after her resume and was missed).
+    // Echo-subtracted first (her own safeguard words must not trip it); this only ever ADDS a trip.
+    let ownTripped = false;
+    if (ev.text && !this.safety.state().distress) {
+      const own = this.echo.subtract(ev.text, ev.t, this.fanin.lag.p90).text;
+      if (own) {
+        const ownAlt = this.echo.stripAll(own, ev.t, this.fanin.lag.p90);
+        ownTripped = this.safety.check(own, null, ev.t, ownAlt && ownAlt !== own ? [ownAlt] : []).tripped;
+      }
+    }
+    if (!changed) {
+      if (ownTripped) this.step("safety", ev.t);
+      return;
+    }
     const view = this.fanin.view(ev.t, (from) => this.audio.voicedAfter(from));
     const alt = view.text ? this.echo.stripAll(view.text, ev.t, this.fanin.lag.p90) : "";
     const s = this.safety.check(view.text, view.coverageEndMs, ev.t, alt && alt !== view.text ? [alt] : []);
     this.maybeAskSemantic(view, ev.t);
-    this.step(s.tripped ? "safety" : ev.type === "final" ? "final" : "partial", ev.t);
+    this.step(s.tripped || ownTripped ? "safety" : ev.type === "final" ? "final" : "partial", ev.t);
   }
 
   /** Her playback clock. */
@@ -230,6 +291,7 @@ export class EngineHost {
         const skip = up && normalizeLead(ev.text).startsWith(normalizeLead(up)) ? up.split(/\s+/).filter(Boolean).length : 0;
         this.echo.heard(ev.utteranceId, words.slice(skip));
         this.audio.setHerLevel(ev.outputDb ?? null);
+        this.hushAt = null;
         // her words open an overlap epoch: what the child says over her is read on its own (a revoke restores the turn)
         this.prevTurnStart = this.fanin.turnStart;
         this.fanin.begin(ev.t);
@@ -369,20 +431,50 @@ export class EngineHost {
     if ((ph !== "overlap" && ph !== "her_turn") || this.overlapOnset === null) return null;
     if (!voicing && (this.audio.silenceRunMs() ?? 0) > 3000) return null;
     const onset = this.overlapOnset;
-    const words = tr.text;
+    // p1-duplex (2026-10-05): only words that can describe THIS burst. Text already there at the onset, and text arriving
+    // sooner after it than half the source's median lag, is older audio (TaxilaFDB TRAIN D4: her leaked "हो" landed 60 ms
+    // after a continuer's onset and yielded her as a "turn")
+    let words = tr.text;
+    if (this.overlapTextBase && words.startsWith(this.overlapTextBase)) words = words.slice(this.overlapTextBase.length).trim();
+    if (t - onset < Math.min(400, 0.5 * this.fanin.lag.p50)) words = "";
     const askedYesNo = this.her.act === "asked_yes_no";
-    const echoRemoved = tr.echoRemovedTokens > 0 && !words;
+    // p1-duplex (2026-10-05): echo evidence is burst-local. The epoch's count included her echo removed BEFORE this onset, so
+    // every later burst with no words yet read as echo (0.8) and only G11's 1 s rule could yield (TaxilaFDB TRAIN FAST: all
+    // 40 F7 / 72 F8 bursts at 140 ms carried echoLikelihood 0.8)
     const lvl = this.audio.levelOverEchoDb();
+    // ...and her echo words removed after the onset are HER earlier words arriving late on a lagging source unless the mic is
+    // near her echo level: a child over her sits 10-60 dB above it (TaxilaFDB TRAIN probe), her echo within a few dB
+    const echoRemoved = tr.echoRemovedTokens - this.overlapEchoBase > 0 && !words && (lvl === null || lvl < OVERLAP.echoNearDb);
+    // her own words that leak through on a lagging source ("पौधे अच्छा": her word + the child's "अच्छा") must not turn a
+    // continuer into a turn (TaxilaFDB TRAIN D4: 20/72 continuers yielded hard on such words): read the kind without them
+    let kind = words ? overlapKind(words, { askedYesNo }) : null;
+    if (kind === "turn") {
+      const own = this.echo.stripAll(words, t, this.fanin.lag.p90);
+      kind = own ? overlapKind(own, { askedYesNo }) : null;
+    }
+    // a short ended burst (≤ OVERLAP.shortBurstMs) cannot carry a turn of many words: ≤ 3 tokens with a listening token among
+    // them is a continuer plus leakage the STT glued on ("ओके हो", "ओके छोटा हो": TaxilaFDB TRAIN D4 / MAI)
+    const burstMs = Math.max(0, (voicing ? t + 20 : this.audio.t - (this.audio.silenceRunMs() ?? 0) + 20) - onset);
+    if (kind === "turn" && !voicing && burstMs <= OVERLAP.shortBurstMs && hasListeningToken(words) && words.split(/\s+/).filter(Boolean).length <= 3) kind = "continuer";
+    // the child's own level (learned from their turns, or the lesson's prior): speech far below it is the room, not the child
+    const childDb = this.audio.childLevelDb() ?? this.childLevelPrior;
+    const burstDb = this.audio.burstDb(onset);
+    const quiet = OVERLAP.backgroundBelowChildDb > 0 && childDb !== null && burstDb !== null && burstDb < childDb - OVERLAP.backgroundBelowChildDb;
+    // ...and a voice pitched far below the child's own (an adult on the TV, a parent across the room) is not the child. Speaker
+    // attribution from pitch only (never an affect read): the child's median f0 from their own turns vs the burst's opening
+    const childF0 = this.audio.childF0Hz() ?? this.childF0Prior;
+    const burstF0 = OVERLAP.notChildSemitones > 0 && childF0 !== null ? this.audio.burstF0Hz(onset) : null;
+    const lowVoice = burstF0 !== null && childF0 !== null && 12 * Math.log2(childF0 / burstF0) >= OVERLAP.notChildSemitones;
     return {
       onsetAt: onset,
       durMs: Math.max(0, (voicing ? t + 20 : this.audio.t - (this.audio.silenceRunMs() ?? 0) + 20) - onset),
-      targetSpeaker: null,
+      targetSpeaker: lowVoice ? 0.1 : quiet ? 0.2 : null,
       echoLikelihood: echoRemoved ? 0.8 : lvl !== null && lvl < 3 ? 0.6 : 0.05,
       levelOverEchoDb: lvl,
       onsetF0Rel: this.audio.onsetF0Rel(),
       atHerBoundary: this.her.boundaries.some((b) => onset >= b - 100 && onset - b <= OVERLAP.boundarySlotMs),
       words,
-      lexicalKind: words ? overlapKind(words, { askedYesNo }) : null,
+      lexicalKind: kind,
       herAskedYesNo: askedYesNo,
     };
   }
@@ -390,7 +482,8 @@ export class EngineHost {
   private heardUpTo(t: Ms): HeardUpTo | null {
     const h = this.her;
     if (!h.utteranceId || !h.words.length) return null;
-    const until = h.stoppedAt ?? t;
+    // a hush masked her words from the hush on: a yield's heardUpTo is taken there, so a resume re-says them
+    const until = Math.min(h.stoppedAt ?? t, this.hushAt ?? Infinity);
     let words = 0, chars = 0;
     for (const w of h.words) { if (w.endMs <= until) { words++; chars += w.w.length + 1; } }
     return { chars: Math.max(0, chars - 1), words, ms: Math.max(0, until - h.startedAt) };
@@ -459,6 +552,7 @@ export class EngineHost {
       } else if (e.kind === "resume") {
         if (live) this.o.emit({ to: "voice", op: "resume", t: e.at });
         this.ducked = false;
+        this.unhush(false);
         // the burst that caused the yield is settled (a continuer): never reclassify it once she has resumed
         this.overlapOnset = null;
       } else if (e.kind === "fallback") {
@@ -510,9 +604,11 @@ export class EngineHost {
     } else if (d.action === "YIELD" && det?.action === "YIELD") {
       this.o.emit({ to: "voice", op: "yield", t, reason: det.reason, atWordBoundary: det.atWordBoundary, resumable: det.resumable, heardUpTo: this.heardUpTo(t) });
       this.ducked = false;
+      this.hushAt = null;
     } else if (d.action === "KEEP_TALKING" && det?.action === "KEEP_TALKING" && det.unduck && this.ducked) {
       this.o.emit({ to: "voice", op: "unduck", t });
       this.ducked = false;
+      this.unhush(det.reason !== "continuer" || !tick.transcript.text);
     } else {
       const cue = faceCue(d, this.governor.phase);
       if (cue) {
