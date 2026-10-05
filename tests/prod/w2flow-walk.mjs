@@ -171,7 +171,7 @@ try {
     // a number item shows the NumberPad: digits only (a key like "1,07,040" is typed as its digits)
     if (await page.locator('[data-testid="number-pad"]').isVisible().catch(() => false)) {
       const hasComma = (await page.locator('[data-testid="number-pad"] .dk-key', { hasText: /^,$/ }).count()) > 0;
-      const digits = String(text).replace(hasComma ? /[^\d,]/g : /\D/g, "").slice(0, 12) || "0";
+      const digits = String(text).replace(hasComma ? /[^\d,]/g : /\D/g, "").replace(/^,+/, "").slice(0, 12) || "0";
       if (/,/.test(String(text))) ok(hasComma, `turn ${turns.length + 1}: the pad has a "," key for a key written with commas (${text})`);
       for (const d of digits) await page.locator('[data-testid="number-pad"] .dk-key', { hasText: new RegExp(`^${d === "," ? "," : d}$`) }).first().click();
       await page.locator('[data-testid="pad-send"], [data-testid="number-pad"] .dk-key--send').first().click();
@@ -194,7 +194,7 @@ try {
     return turns.length > n ? turns.at(-1) : null;
   };
   /** A wrong answer of the same shape as the key (a number off by some, else an unlikely word). */
-  const wrongOf = (key) => (/^-?\d+$/.test(String(key)) ? String(Number(key) + 7) : /^\d+\/\d+$/.test(String(key)) ? "1/9" : "pata nahi, shayad sau");
+  const wrongOf = (key) => (/^-?[\d,]+$/.test(String(key)) ? String(Number(String(key).replace(/,/g, "")) + 7) : /^\d+\/\d+$/.test(String(key)) ? "1/9" : "pata nahi, shayad sau");
 
   for (let n = 0; n < MAX_TURNS && !last?.end; n++) {
     await pause(600);
@@ -260,7 +260,10 @@ try {
   }
   seen.ended = !!last?.end;
   ok(seen.ended, `the lesson ends (${last?.move?.kind})`);
-  await pause(2500);
+  // the lesson's end summary comes once her closing line has played (or failed to play: headless has no audio)
+  const summary = await page.waitForSelector('[data-testid="summary"], [data-testid="summary-show"]', { timeout: 30_000 }).catch(() => null);
+  ok(!!summary, "the end-of-lesson summary appears");
+  await pause(1200);
   await shoot("lesson-end");
   ok(seen.verdicts >= 2, `answers were checked (${seen.verdicts} verdicts)`);
   ok(seen.wrong >= 1, `a wrong answer was marked as not yet (${seen.wrong})`);
@@ -269,7 +272,7 @@ try {
   if (!seen.studio) warn(`no Studio piece was revealed in this lesson (${MAX_TURNS} turns; whiteboards ${seen.whiteboard}, module shows ${seen.frame})`);
 
   // ───────── after the lesson: the child home ─────────
-  const homeBtn = page.locator('[data-testid="summary-home"], a[href$="/home"], button:has-text("Home"), button:has-text("Back home")').first();
+  const homeBtn = page.locator('[data-testid="finish"], [data-testid="summary-home"], button:has-text("Back home")').first();
   if (await homeBtn.isVisible().catch(() => false)) await homeBtn.click(); else await page.goto(`${BASE}/c/${childId}`);
   await pause(2500);
   await shoot("child-home-after");
@@ -321,6 +324,8 @@ try {
   await page.goto(`${BASE}/parent`, { waitUntil: "networkidle" });
   await pause(1200);
   for (const d of PIN) { const k = page.locator("button", { hasText: new RegExp(`^\\s*${d}\\s*$`) }).first(); if (await k.isVisible().catch(() => false)) await k.click(); }
+  const okKey = btn(/^\s*OK\s*$/);
+  if (await okKey.isVisible().catch(() => false)) await okKey.click();
   await pause(2500);
   await shoot("parent-home");
   const lessonLink = page.locator('a[href*="/parent/lessons"], a[href*="lesson"]').first();

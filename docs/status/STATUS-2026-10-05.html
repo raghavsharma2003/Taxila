@@ -1,0 +1,172 @@
+<title>Taxila Build Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=Geist+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column; a status legend, then sections that each open with the verdict and follow with a scannable table. */
+:root{
+  --bg:#f5f6fb; --panel:#ffffff; --fg:#191b2b; --muted:#5d6177; --line:#dfe2ee;
+  --brand:#4b4fd8; --brand-soft:#e9eafc;
+  --live:#1f7a4d; --live-bg:#e3f4ea; --built:#8a5a00; --built-bg:#fcf0d9; --design:#5149b8; --design-bg:#ecebfb; --none:#9a2f3a; --none-bg:#f9e4e6;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif; --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11121c; --panel:#191b29; --fg:#ebecf5; --muted:#a3a7c0; --line:#2b2e44; --brand:#9a9dff; --brand-soft:#23254a;
+  --live:#6fd59f; --live-bg:#163326; --built:#f0bd60; --built-bg:#3a2c12; --design:#aaa5ff; --design-bg:#25244a; --none:#f08a95; --none-bg:#3d1b20; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11121c; --panel:#191b29; --fg:#ebecf5; --muted:#a3a7c0; --line:#2b2e44; --brand:#9a9dff; --brand-soft:#23254a;
+  --live:#6fd59f; --live-bg:#163326; --built:#f0bd60; --built-bg:#3a2c12; --design:#aaa5ff; --design-bg:#25244a; --none:#f08a95; --none-bg:#3d1b20; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body)}
+main{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:grid;gap:34px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800}
+h2{font-size:1.4rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0;max-width:68ch}
+.eyebrow{font:500 .75rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.1rem;color:var(--fg)}
+.muted{color:var(--muted)}
+section{display:grid;gap:14px}
+.verdict{background:var(--brand-soft);border-radius:12px;padding:14px 16px;display:grid;gap:6px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:.88rem;color:var(--muted)}
+.chip{display:inline-block;font:500 .72rem/1 var(--mono);letter-spacing:.04em;padding:5px 8px;border-radius:999px;white-space:nowrap}
+.LIVE{background:var(--live-bg);color:var(--live)} .BUILT{background:var(--built-bg);color:var(--built)} .DESIGN{background:var(--design-bg);color:var(--design)} .NONE{background:var(--none-bg);color:var(--none)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:500 .72rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--panel);position:sticky;top:0}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700;width:18%}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.86rem}
+.cols{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:8px;min-width:0}
+ul{margin:0;padding-left:1.1em;display:grid;gap:6px}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand)}
+.score{display:grid;gap:6px}
+.score .row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.score .pct{font:500 .9rem var(--mono);font-variant-numeric:tabular-nums}
+ol{margin:0;padding-left:1.3em;display:grid;gap:10px}
+.fix{border-left:3px solid var(--none);padding:6px 0 6px 12px}
+a{color:var(--brand)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+</style>
+
+<main>
+  <header style="display:grid;gap:10px">
+    <span class="eyebrow">Taxila · status as of 5 Oct 2026, morning IST</span>
+    <h1>Where Taxila stands</h1>
+    <p class="lede">The live site has not changed since you rated it 0/100. A large amount has been built since then, and almost none of it is live yet. Wave 2 is in its final merge step; after it come the 10 fixes for your complaints, a deploy, and then your five priorities in order.</p>
+    <div class="legend">
+      <span><span class="chip LIVE">LIVE</span> on taxila.dev now</span>
+      <span><span class="chip BUILT">BUILT</span> code exists and is tested, not live</span>
+      <span><span class="chip DESIGN">DESIGNED</span> spec or prototype only</span>
+      <span><span class="chip NONE">NOT STARTED</span></span>
+    </div>
+  </header>
+
+  <section>
+    <h2>If you open taxila.dev today</h2>
+    <div class="cols">
+      <div class="card">
+        <h3>What will happen</h3>
+        <ul>
+          <li>Classes 1 to 9 offered, with cartoon and baby-animal visuals.</li>
+          <li>Click to speak, with replies taking about 3.9 s.</li>
+          <li>The old robotic voice (gpt-4o-mini-tts). Diya is not live yet.</li>
+          <li>A flat, static drawn face.</li>
+          <li>A dice-level first question for class 4.</li>
+          <li>"End the lesson" or "talk about something else" ends it at once.</li>
+          <li>"Show me a diagram" produces nothing.</li>
+          <li>Quiz-style activities, sometimes graded wrong.</li>
+          <li>The time picker is broken on phones.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>What still works</h3>
+        <ul>
+          <li>Helplines (1098, 14416), saying she is an AI, and the safeguarding hand-off.</li>
+          <li>Speech recognition is accurate (11 of 11 test clips).</li>
+          <li>Delayed checks and re-teaching run, and parent letters arrive.</li>
+          <li>Requests like "explain it with cricket" work.</li>
+        </ul>
+        <p class="muted">Every one of your 16 complaints should still reproduce on the live site. Fixes for all of them exist in the code but are not deployed.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Your five priorities</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Priority</th><th>Status</th><th>Built so far</th><th>Measured</th><th>What is left</th></tr></thead>
+      <tbody>
+        <tr><td>1. Two-way (Griffin-style) teacher</td><td><span class="chip BUILT">BUILT</span></td><td>A decision engine that re-decides about every 100 ms, listens while she speaks, and handles backchannels and barge-in. Tested in simulation only.</td><td class="num">Cuts off a thinking child 0% (silence-wait 83%, today 25%); decides 0.36 s after the child stops</td><td>Stopping when interrupted: 0.76 s against a 0.2 s target. Talking through "haan haan": 70% against 90%. Never tested on real speech. Needs the India speech lane (your Azure ticket).</td></tr>
+        <tr><td>2. 2D teacher face</td><td><span class="chip BUILT">BUILT</span></td><td>In-house style-C puppet that talks, listens, thinks and emotes. Art and runtime are done; it is not wired into the app.</td><td class="num">Judge score 4.0/5 at round 7 (r4 3.8). 3D was abandoned at 2/5.</td><td>0.5 below your 4.5 bar. Polishing continues. Wiring into the lesson tile is one function call once you accept a score.</td></tr>
+        <tr><td>3. Voice features (did the child understand)</td><td><span class="chip BUILT">BUILT</span></td><td>On-phone hesitation detector (45 KB), per-child baselines, knowledge-state rules. Runs in test mode only.</td><td class="num">Hesitation detection 0.94 on adult speech. Nothing measured on children.</td><td>Needs real children's recordings (pilot of about 200) and your OK on one small library.</td></tr>
+        <tr><td>4. Live-built content shown to the student</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>16 real-time game and animation engines, a whiteboard planner, a picture lane. The parallel "build several, show the right one" engine is being researched and built now.</td><td class="num">0 visible failures in 16,000 broken specs; 43–59 fps (container, not a phone). Live site: 0 of 12 picture requests shown.</td><td>Engines cover 48 of 385 class 4–7 topics. Whiteboard arrives up to 3.2 s late. A child's request still triggers nothing until fix 09 is applied.</td></tr>
+        <tr><td>5. Student–teacher conversation</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>10 fixes for your exact complaints (listening, steering, stop check-in, grading). A new conversation system with 47 kinds of child intent, as a prototype.</td><td class="num">Live: 39% of 345 conversation tests pass (target 85%); 19% of turns broken</td><td>Apply the 10 fixes after the merge, then move the new conversation system into the server.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>The values we sell</h2>
+    <p class="muted">How far each one is from your bar. These are estimates, from the audit.</p>
+    <div class="cols">
+      <div class="card score"><div class="row"><h3>Knowing whether the child learnt it, and moving on accordingly</h3><span class="pct">~45% done</span></div><div class="bar"><i style="width:45%"></i></div><p class="muted">The most mature part: delayed checks and re-teaching work live (63/63, 22/22). Held back by wrong grading (a wrong answer marked right 16/16), too-easy first questions, and a placement test that is built but has never run.</p></div>
+      <div class="card score"><div class="row"><h3>Understanding learning behaviour automatically</h3><span class="pct">~20% done</span></div><div class="bar"><i style="width:20%"></i></div><p class="muted">Text and behaviour signals are built (42 tests) but nothing reads them yet. Voice signals are proven on adults only. Needs real children's data.</p></div>
+      <div class="card score"><div class="row"><h3>World-class content on the go, asked or not</h3><span class="pct">~15% done</span></div><div class="bar"><i style="width:15%"></i></div><p class="muted">The engines are real games, not quizzes, but none are in the app yet. The parallel content engine is starting now.</p></div>
+      <div class="card score"><div class="row"><h3>Human-like teacher</h3><span class="pct">~25–30% done</span></div><div class="bar"><i style="width:28%"></i></div><p class="muted">Voice chosen (Diya 3.5/5) and a fix so she says Hindi numbers right (87% → 98%). The face is at 4.0/5. Neither is live.</p></div>
+      <div class="card score"><div class="row"><h3>Natural conversation</h3><span class="pct">~20% done</span></div><div class="bar"><i style="width:20%"></i></div><p class="muted">Two-way engine proven in simulation; steering and parking off-topic questions are prototypes. Live is still click-to-speak at 39%.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every area, at a glance</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Area</th><th>Live</th><th>Built, not live</th><th>Biggest gap</th></tr></thead>
+      <tbody>
+        <tr><td>Design for ages 9–15</td><td><span class="chip NONE">old look</span></td><td><span class="chip BUILT">BUILT</span> New design system and every screen, 106 screenshots with 0 layout faults</td><td>Not connected to real data yet</td></tr>
+        <tr><td>Onboarding and scheduling</td><td><span class="chip LIVE">LIVE</span> with defects</td><td><span class="chip BUILT">BUILT</span> Classes 4–7 only; a time picker that works 20/20</td><td>Waits on the new design being wired in</td></tr>
+        <tr><td>Content level and placement</td><td><span class="chip LIVE">LIVE</span> too easy</td><td><span class="chip BUILT">BUILT</span> Placement test, harder questions for all 385 topics</td><td>Too-easy first questions still 30% (target 0)</td></tr>
+        <tr><td>Grading correctness</td><td><span class="chip LIVE">LIVE</span> wrong</td><td><span class="chip BUILT">BUILT</span> Server checks every answer against the key</td><td>Fix not applied yet</td></tr>
+        <tr><td>Voice in (listening)</td><td><span class="chip LIVE">LIVE</span> click to speak</td><td><span class="chip BUILT">BUILT</span> Hands-free two-way engine</td><td>India speech lane (your ticket)</td></tr>
+        <tr><td>Voice out</td><td><span class="chip LIVE">LIVE</span> old voice</td><td><span class="chip BUILT">BUILT</span> Diya + Hindi-script step</td><td>Pace tuning after the Hindi-script step</td></tr>
+        <tr><td>Teacher face</td><td><span class="chip LIVE">LIVE</span> static drawing</td><td><span class="chip BUILT">BUILT</span> 2D puppet at 4.0/5; 3D dropped at 2/5</td><td>0.5 below your bar; not wired in</td></tr>
+        <tr><td>Relationship layer</td><td><span class="chip NONE">none</span></td><td><span class="chip BUILT">BUILT</span> Bond tracking, never-rules, safe openings</td><td>Long-term memory and rituals only designed</td></tr>
+        <tr><td>Parent corner and reports</td><td><span class="chip LIVE">LIVE</span> inconsistent counts</td><td><span class="chip BUILT">BUILT</span> One-truth parent data, EN/HI reports</td><td>Waits on the merge</td></tr>
+        <tr><td>Safety floor</td><td><span class="chip LIVE">LIVE</span></td><td><span class="chip BUILT">BUILT</span> Distress detection that survives speech errors (recall 70.6% → 99.9%, 0 new false alarms)</td><td>Live misses 16 of 84 distress lines when speech is misheard; fix ships with the next deploy</td></tr>
+        <tr><td>India hosting</td><td><span class="chip LIVE">LIVE</span> US East</td><td><span class="chip BUILT">BUILT</span> South India staging rehearsed</td><td>Database ticket and quota (yours)</td></tr>
+        <tr><td>Android app</td><td><span class="chip NONE">NOT STARTED</span></td><td>Web app works on phones</td><td>Not planned yet</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>The road to your next test</h2>
+    <ol>
+      <li><strong>Finish the Wave 2 merge,</strong> with all checks passing, the database updates, and a deploy.</li>
+      <li><strong>Day 0:</strong> the 10 fixes for your complaints, no more easy openers, the safety upgrade, then deploy. This is the cheapest visible win: grading, "end the lesson", "show me" and the dice question all get fixed.</li>
+      <li><strong>Your priorities in order, behind switches:</strong>
+        <ol>
+          <li>two-way teacher;</li>
+          <li>2D face plus Diya;</li>
+          <li>voice features (test mode);</li>
+          <li>live content with the parallel engine;</li>
+          <li>new conversation;</li>
+          <li>the new design wired in.</li>
+        </ol>
+      </li>
+      <li><strong>Full experience test:</strong> 30 child-like sessions, the conversation test at 85% or more, and all 187 defects re-checked on the live site.</li>
+      <li><strong>Your own test.</strong> The plan estimates about 3 weeks from the merge. That is an estimate, and Wave 2 took longer than its plan.</li>
+    </ol>
+    <div class="card">
+      <h3>What I need from you</h3>
+      <ul>
+        <li><strong>2D face:</strong> ship at 4.0/5 now and keep polishing, or wait for 4.5?</li>
+        <li><strong>Two-way teacher:</strong> its plan asks for 2 weeks of internal testing before children use it. Keep that, or shorten it?</li>
+        <li><strong>Azure tickets:</strong> the South India database and the speech quota. These unblock the fast two-way teacher.</li>
+        <li><strong>Approvals:</strong> the small on-phone voice library, a ₹10k test phone, and recruiting the real-child pilot.</li>
+      </ul>
+    </div>
+  </section>
+</main>

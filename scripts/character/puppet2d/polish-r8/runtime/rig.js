@@ -94,6 +94,21 @@ export function featDx(x, y, sg) {
   if (y > 560) dx += FEAT.mouth * Math.exp(-(((x - 530) / 40) ** 2)) * smooth(560, 585, y) * (1 - smooth(650, 700, y));
   return sg * dx;
 }
+// r8 (fps): featDx as a 4 px bilinear table per side (built at load, rebuilt if FEAT changes); projectTo runs for every
+// vertex of every layer, and the direct form (up to 5 exp) doubled the unthrottled work p95 (2.4 -> 4.7 ms)
+const FD = { s: 4, x0: 400, y0: 320, nx: 66, ny: 96, key: "", T: null };
+function featTable() {
+  const key = JSON.stringify(FEAT);
+  if (FD.key === key) return FD.T;
+  FD.key = key; FD.T = [1, -1].map((sg) => { const T = new Float32Array(FD.nx * FD.ny); for (let j = 0; j < FD.ny; j++) for (let i = 0; i < FD.nx; i++) T[j * FD.nx + i] = featDx(FD.x0 + i * FD.s, FD.y0 + j * FD.s, sg); return T; });
+  return FD.T;
+}
+function featFast(x, y, T) {
+  const gx = (x - FD.x0) / FD.s, gy = (y - FD.y0) / FD.s;
+  if (gx <= 0 || gy <= 0 || gx >= FD.nx - 1.001 || gy >= FD.ny - 1.001) return 0;
+  const i = gx | 0, j = gy | 0, u = gx - i, v = gy - j, k = j * FD.nx + i;
+  return (T[k] * (1 - u) + T[k + 1] * u) * (1 - v) + (T[k + FD.nx] * (1 - u) + T[k + FD.nx + 1] * u) * v;
+}
 function silhouetteKey(K, gain) {
   if (K._sil) return;
   K._sil = gain;
@@ -561,6 +576,7 @@ export class Puppet2DRig {
       const K = this.g.yawKeys, f = clamp(yaw / K.keyDeg, -1, 1);   // r4: the painted key is reached at the yaw limit, never extrapolated (judge r3: the 1.25x was unverified)
       st.yk = f >= 0 ? K.R : K.L;
       st.ykf = Math.abs(f);
+      if (this.featOn && st.ykf > 0) st.featT = featTable()[f >= 0 ? 0 : 1];
       this.yawStep = K.grid.step; this.yawN = K.grid.n;
     }
     this.st = st;
@@ -718,7 +734,7 @@ export class Puppet2DRig {
     // yaw / keyDeg and sampled at this rest point (one shared field: nothing tears between head layers). The pitch
     // keeps the 2.5D proxy (depth z), applied after the turn.
     let X = x, Y = y;
-    if (s.yk && s.ykf > 0 && this.featOn) X += s.ykf * featDx(rx ?? x, ry ?? y, s.yaw >= 0 ? 1 : -1);
+    if (s.yk && s.ykf > 0 && this.featOn) X += s.ykf * featFast(rx ?? x, ry ?? y, s.featT);
     if (s.yk) {
       const D = s.yk, st = this.yawStep, gx = clamp((rx ?? x) / st, 0, this.yawN - 1.001), gy = clamp((ry ?? y) / st, 0, this.yawN - 1.001);
       const i = Math.floor(gx), j = Math.floor(gy), u = gx - i, v = gy - j;

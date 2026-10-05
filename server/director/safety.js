@@ -9,6 +9,7 @@ import { gatesFor } from "../compiler/gates.js";
 import { HELPLINES as HELPLINE_DATA } from "../compiler/floor.js";
 import { readingsFor } from "../safety/normalize.js";
 import { fuzzyScan } from "../safety/fuzzy.js";
+import { lexiconScan } from "../safety/lexicon.js";
 
 /** People a child names when disclosing harm (English and Hindi kinship / authority words). */
 const ACTOR_EN = "he|she|they|papa|mummy|mumma|mum|mom|dad|daddy|father|mother|brother|sister|step\\s*(?:father|mother|dad|mom)|uncle|aunty|auntie|teacher|sir|ma'?am|madam|bhai|bhaiya|didi|chacha|chachi|mama|mami|someone|somebody";
@@ -183,7 +184,9 @@ const near1 = (a, b) => {
  *   - the same families over normalised readings (server/safety/normalize.js readingsFor: danda and marks gone, letter runs
  *     collapsed, unreadable other-script tokens removed, Devanagari in Roman letters);
  *   - the fuzzy / phonetic shapes (server/safety/fuzzy.js): one mis-heard word in a disclosure, STT confusions, English
- *     in Devanagari, Hindi in Roman letters, each shape with its own fuzz budget and family guards.
+ *     in Devanagari, Hindi in Roman letters, each shape with its own fuzz budget and family guards;
+ *   - the canonical lexicon (server/safety/lexicon.js, verify-A red team): further disclosure shapes written once over the
+ *     script-agnostic canonical reading, with a one-edit garble rule and lesson / surprise guards.
  * Pass 2 only ever ADDS hits (no pattern was removed or narrowed).
  * @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null, pass: 1|2|null, via: string|null }}
  */
@@ -213,6 +216,11 @@ function scanUncached(t) {
   }
   const f = fuzzyScan(t, { wakeOk: wakeClauseFires });
   if (f.distress) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
+  // verify-A red team (2026-10-05): the canonical lexicon (server/safety/lexicon.js) — phrasings neither the families nor the
+  // fuzzy shapes carried ("khud ko khatam", "mere bina sab khush", "kapde utarne ko bolte", "nobody cares if i die"), each
+  // written once over the script-agnostic canonical reading with the one-edit garble rule
+  const x = lexiconScan(t);
+  if (x.distress) return { distress: true, kind: x.kind, pass: 2, via: `lexicon:${x.shape}` };
   return { distress: false, kind: null, pass: null, via: null };
 }
 

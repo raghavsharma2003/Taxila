@@ -1,0 +1,200 @@
+{
+ "date": "2026-10-05",
+ "round": "polish-r8 of arm P (from r7)",
+ "image_spend_usd": {
+  "r8": 0.0,
+  "ledger_total": 9.98,
+  "cap": 30
+ },
+ "fix1_thinking": "new default take THINK_UP re-targeted to c-thinking.webp: gaze (14,23) [i1/i2 (18,20) read 'skeptical undertone' to sol, moved up-first in i3], browOuterUpLeft 0.82 + browInnerUp 0.2, no browDown (no knit), head roll +7 so the raised-brow side rides up as in the concept, mouthLeft 0.45 (~9 px shift + 6 px bunching on that side), one-sided mouthPressLeft 0.6 (corner pulled in/up, that side's lips thinned), mouthRollUpper 0.2 (upper lip thinner, mouth 3% narrower), smile 0 with the lip-line curve flattened by a new 'pursed' term (i1 still showed c-front's closed smile), gaze micro-search 2.4x1.8 deg (~1.5 px) with 0.5-0.9 s fixations and 70 ms hops (expr.js searchAt). Takes: UP 0.58 / UP mirrored 0.30 / C (eyes down) 0.12 rare. r7 take A retired into UP.",
+ "fix2_concern_B": "pout removed: jawOpen 0.27 (lip gap ~10 px, lower drop ~9 px), mouthLowerDown 0.2, mouthShrugLower 0, frowns 0.36, inner brows up 1.0, eyeWide 0 (scale lock); solver: an expression lower-lip pull caps the upper lip's share (up x0.25) and hides the upper teeth (T -> 0) and flattens the tongue mound (it read as a forward lower lip). Head yaw -4 -> 0, roll -12 -> -8 (sol: 'crooked, mechanically warped' on i2).",
+ "fix2_bug": "the mouth interior strip took depth at its DISPLACED point while the lip shell used rest depth: under concern B's ~12 deg pitch the lowered lower lip and the strip separated ~2 px and the face showed as an orange band along the inner lower lip. Fixed (rest-line depth).",
+ "fix3_surprise": "faceW +2 rest weights: BROAD jaw follow (0.45 x jaw x surprised over a sigma-180 profile minus the narrow one) and NARROW cheeks (4.5 px per side at full drop, x(0.4+0.6 surprised), cancelled by a smile); applied to face, lip shell skin and interior strip alike. Tongue in a tall opening warmed (read lilac-grey).",
+ "fix3_delight_teeth": "uTeeth.w = joy in the main interior pass: teeth x0.92 and both rows' free edges rise toward the ends (rounded corners), wider side fade.",
+ "fix4_turn_method": "featDx (rig.js): interior-feature rotation at the key angle, sampled at each vertex's REST point in projectTo so every layer shares one field: nose tip/alae lead 16 px (sigma 27x24 about the tip, root fixed), far ala tucks 4 px toward the tip, bindi leads the brows 9 px, philtrum/lip centre line leads the corners 8 px (~0.5x nose). SIL.far 20 -> -8: skin-extent rows measured against the normalised 30-deg keys showed the r7 far outline 18-35 px INSIDE the painted one at y 520-640 (far eye on the outline, far lock crossing it). Far eye: set compression 1 - 0.15|yaw|/20 (0.85 at 20) replacing the 0.72 floor, far iris foreshortened x0.85 at full height instead of the uniform 0.9 shrink. 4 px bilinear LUT for fps. A/B: ?feat=0, ?featp=, ?silp=.",
+ "fix4_fit_note": "landmark positions (nose/bindi/lip centre vs eye corners) already matched the keys within ~15 px in r7; the gap was SHAPE (rigid frontal nose, symmetric mouth) and the far outline. Judged by eye beside the keys (turncmp.py), not by a numeric fit; the judge's 'near nostril foreshortened' was implemented as the FAR ala tucking (the side the tip turns toward), flagged for the judge.",
+ "fix5_scale_lock": {
+  "rule": "eyeWide passes up to 0.035 (+1.4% opening), the rest only as eyeWide climbs 0.3->0.6 (surprise); lean head scale 1+0.03*lean -> 1+0.01*tanh(lean/0.7)",
+  "audit": {
+   "out": {
+    "thinking_0": {
+     "opening": 1.029,
+     "scale": 0.9954,
+     "whites": 1.019,
+     "pass": true
+    },
+    "thinking_1": {
+     "opening": 1.029,
+     "scale": 0.9954,
+     "whites": 1.019,
+     "pass": true
+    },
+    "thinking_2": {
+     "opening": 0.885,
+     "scale": 0.9966,
+     "whites": 0.879,
+     "pass": true
+    },
+    "concern_0": {
+     "opening": 0.932,
+     "scale": 1.0076,
+     "whites": 0.946,
+     "pass": true
+    },
+    "concern_1": {
+     "opening": 1.006,
+     "scale": 1.0095,
+     "whites": 1.026,
+     "pass": true
+    },
+    "concern_2": {
+     "opening": 0.967,
+     "scale": 1.0076,
+     "whites": 0.982,
+     "pass": true
+    },
+    "delight_0": {
+     "opening": 0.783,
+     "scale": 1.0033,
+     "whites": 0.788,
+     "pass": true
+    },
+    "delight_1": {
+     "opening": 0.783,
+     "scale": 1.0033,
+     "whites": 0.788,
+     "pass": true
+    },
+    "delight_2": {
+     "opening": 0.784,
+     "scale": 1.0033,
+     "whites": 0.789,
+     "pass": true
+    },
+    "warm_0": {
+     "opening": 0.911,
+     "scale": 1.0028,
+     "whites": 0.916,
+     "pass": true
+    },
+    "warm_1": {
+     "opening": 0.911,
+     "scale": 1.0028,
+     "whites": 0.916,
+     "pass": true
+    },
+    "warm_2": {
+     "opening": 0.899,
+     "scale": 1.0028,
+     "whites": 0.904,
+     "pass": true
+    },
+    "surprise_0": {
+     "opening": 1.293,
+     "scale": 0.9924,
+     "whites": 1.273,
+     "pass": true
+    },
+    "surprise_1": {
+     "opening": 1.294,
+     "scale": 0.9924,
+     "whites": 1.274,
+     "pass": true
+    },
+    "surprise_2": {
+     "opening": 1.307,
+     "scale": 0.9924,
+     "whites": 1.288,
+     "pass": true
+    },
+    "playful_0": {
+     "opening": 0.565,
+     "scale": 1.0021,
+     "whites": 0.567,
+     "pass": true
+    },
+    "playful_1": {
+     "opening": 0.526,
+     "scale": 1.0021,
+     "whites": 0.528,
+     "pass": true
+    },
+    "listening_0": {
+     "opening": 1.015,
+     "scale": 1.0057,
+     "whites": 1.026,
+     "pass": true
+    },
+    "listening_1": {
+     "opening": 1.015,
+     "scale": 1.0057,
+     "whites": 1.026,
+     "pass": true
+    },
+    "listening_2": {
+     "opening": 1.015,
+     "scale": 1.0057,
+     "whites": 1.027,
+     "pass": true
+    }
+   },
+   "fail": 0
+  }
+ },
+ "lipkey_routing": "expression presets' LIP keys (mouthPucker, mouthFunnel, mouthRollUpper, mouthLowerDown*, ...) now go to the lip layer like jawOpen; r7's compositor dropped them from behaviour, so clip and sheet differed",
+ "gates_clip_i3": {
+  "hairgate": 0,
+  "teargate_v2_frames": 1,
+  "teargate_note": "1 of 1356 frames (t=23.23, the thinking head-tilt entry): 4 columns at the bun's lower edge where it meets the collar; inspected at 2x (f695-699), no visible tear, but the gate is formally RED on that frame",
+  "teargate_i2": 0,
+  "hairgate_i2": 0
+ },
+ "fps_proxy_swiftshader": {
+  "cpu4x_work_p95_ms": {
+   "r8": 12.7,
+   "r7_same_session": 13.0
+  },
+  "cpu4x_work_p50_ms": {
+   "r8": 8.6,
+   "r7_same_session": 8.0
+  },
+  "unthrottled_work_p95_ms": {
+   "r8": [
+    3.4,
+    4.5
+   ],
+   "r7_same_session": [
+    3.6,
+    3.6
+   ]
+  },
+  "triangles": 22794,
+  "note": "box busier than in r7's session (r7 itself measured 13.0 today vs 10 then); NOT a phone reading. Owner gate: demo.html?facerig=1 on the cheap Android before Integrate."
+ },
+ "blind_builder_grid_from_clip_i3": {
+  "sol": 3.7,
+  "grok": 3.8,
+  "same": [
+   true,
+   true
+  ],
+  "cells": "t=2,5.95,25.2,31,33,35.6,37.8 + sheet concern_v1 + t=43.2",
+  "history": {
+   "i2_bad_cells": {
+    "sol": 3.6,
+    "grok": 3.7
+   },
+   "i2_sheet_grid": {
+    "sol": 3.8,
+    "grok": 4.0
+   }
+  }
+ },
+ "clips": [
+  "clip-review-r8-1024.mp4 (45.2 s, 30 fps, i3)",
+  "clip-talk-14s-r8.mp4",
+  "clip-turn-6s-r8.mp4",
+  "clip-acting-16s-r8.mp4"
+ ],
+ "self_score": 3.9
+}

@@ -252,10 +252,32 @@ const reported = (c) => anyIn(c.toks, c.start, c.end, REPORT) || anyIn(c.toks, c
 const negated = (c) => NEG_AFTER.test(c.toks[c.end]?.raw ?? "") || NEG_AFTER.test(c.toks[c.end + 1]?.raw ?? "") && /^(?:hai|hain|है|हैं)$/u.test(c.toks[c.end]?.raw ?? "") || NEG_AFTER.test(c.toks[c.end - 2]?.raw ?? "");
 /** "I wish I wasn't here in class" (a place after "here"): the first pass's own exclusion. */
 const herePlace = (c) => /^(?:in|at)$/.test(c.toks[c.end]?.raw ?? "") && /^(?:this|the|my|class|lesson|school|tuition|coaching|exam|test)$/.test(c.toks[c.end + 1]?.raw ?? "");
-const jeenaGuard = (c) => /^(?:aata|aati|aate|sikh|sikho|seekho|isi|आता|आती)$/u.test(c.toks[c.end]?.raw ?? "") || /^(?:poem|kavita|kahani|story)$/u.test(c.toks[c.start - 1]?.raw ?? "");
+// Verify B (2026-10-05): a word talked ABOUT, not said ("'jeena nahi' wala vakya kaise banega", "jeena nahi ka matlab"): a
+// metalinguistic word right after the shape turns it off. "mujhe jeena nahi" with nothing after still fires.
+const jeenaGuard = (c) => /^(?:aata|aati|aate|sikh|sikho|seekho|isi|आता|आती|wala|wali|wale|vala|vali|matlab|meaning|word|words|shabd|vakya|vaakya|sentence|spelling|वाला|वाली|मतलब|शब्द|वाक्य)$/u.test(c.toks[c.end]?.raw ?? "") || /^(?:poem|kavita|kahani|story)$/u.test(c.toks[c.start - 1]?.raw ?? "");
+/**
+ * Verify B (2026-10-05): a threat INSIDE a story / lesson ("Ravan ne Sita ko dhamki di thi kahani mein", "villain ne hero ko
+ * dhamki di"). Story words only (never "show" / "book": "photo sabko show karega" is the grooming threat), read anywhere in the turn with the guard tolerance: NOT the lesson-object list, whose "log"
+ * (people) would switch off "log mujhe dhamki dete hain". (Devanagari "धमकी" still fires on pass 1 regardless.)
+ */
+const STORY = guardSet(("kahani kahaani story stories villain hero heroine ravan raavan kans raja rani rajkumar rakshas rakshasa movie film cartoon serial episode " +
+  "chapter kavita poem natak drama novel कहानी रावण कंस राजा रानी राक्षस फिल्म कविता नाटक").split(" "));
+const storyTalk = (c) => c.toks.some((t) => STORY.test(t.raw));
 /** a game or a story around a kill / die word ("i died three times in level 2"). */
 const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol)$/u);
 
+/**
+ * KEY slots (Verify B, 2026-10-05): the slot that carries the distress meaning of a shape (live, life, die, gone, the hit /
+ * touch verb, dar, dhamki ...). A token that is itself a different REAL word (KNOWN) never fills one: in "I don't want to
+ * give up", "I hate my line", "nobody will notice if I was done", "teacher mujhe maante hain" every other slot was exact
+ * and the budget-2 shapes let the one real word through. Function-word slots (I, want, to, mujhe, hai) still take one.
+ * Exception: a real word that is the slot word with ONE letter dropped ("lie" for "live", "hut" for "hurt", "maare" for
+ * "maarte", Devanagari by code point) still fills it at cost 2: a dropped sound is the transcriber's commonest
+ * garble (the critic's sttReal model), and without it 6 report-seed distress draws were lost (es3 "I hate my lie", held-out
+ * "i don't want to lie anymore"). The price is "I don't want to lie" in lesson talk (Verify B residual, logged).
+ */
+const KEY = new Set(["MARNA", "MAR", "JEENA", "JEENE", "ZINDA", "HARMV", "GAYAB", "BEAT_HI", "BEAT_PAST", "TOUCH_HI", "BEAT_EN", "DAR", "CHIDHA", "NAFRAT",
+  "BHAAG", "PYAAR", "HERE", "NOTICE", "GONE", "DIE", "LIVE", "WAKE", "KILL", "HATE", "LIFE", "BORN", "SCARED", "LOVES", "HATES", "TOUCH"]);
 const SHAPES = [
   // self-harm (FAMILIES.self_harm's shapes as slots; a longer variant of a shape exists so a garble has budget to land in)
   ["self_harm", "mujhe_marna_hai", "I_OBJ ?bas MARNA AUX"],
@@ -265,7 +287,7 @@ const SHAPES = [
   ["self_harm", "main_mar_jaun", "I_SUBJ MAR JAU"],
   ["self_harm", "jeena_nahi", "JEENA NEG_HI", { guard: jeenaGuard }],
   ["self_harm", "mujhe_jeena_nahi", "I_OBJ JEENA NEG_HI", { guard: jeenaGuard }],
-  ["self_harm", "mujhe_jeena_nahi_hai", "I_OBJ JEENA NEG_HI AUX"],
+  ["self_harm", "mujhe_jeena_nahi_hai", "I_OBJ JEENA NEG_HI AUX", { guard: (c) => /^(?:wala|wali|vala|matlab|meaning|word|shabd|vakya|sentence|spelling)$/u.test(c.toks[c.end]?.raw ?? "") }],
   ["self_harm", "jeene_ka_mann_nahi", "JEENE KA MANN NEG_HI"],
   ["self_harm", "zinda_nahi_rehna", "ZINDA NEG_HI REHNA"],
   ["self_harm", "mujhe_zinda_nahi_rehna", "I_OBJ ZINDA NEG_HI REHNA"],
@@ -318,7 +340,7 @@ const SHAPES = [
   ["fear", "sab_mujhse_nafrat", "SAB MUJHSE NAFRAT"],
   ["fear", "sab_mujhse_nafrat_karte", "SAB MUJHSE NAFRAT karte/करते"],
   ["fear", "koi_dhamki", "KOI I_OBJ ~1 DHAMKI"],
-  ["fear", "dhamki", "DHAMKI_SOLO"],
+  ["fear", "dhamki", "DHAMKI_SOLO", { guard: storyTalk }],
   ["fear", "koi_pyaar_nahi", "KOI MUJHSE PYAAR NEG_HI"],
   ["fear", "ghar_se_bhaag", "GHAR SE BHAAG JAUNGA"],
   ["fear", "scared_home", "SCARED ?TO ?go ?at HOME"],
@@ -332,7 +354,7 @@ const SHAPES = [
     if (s.startsWith("~")) return { gap: Number(s.slice(1)) };
     const opt = s.startsWith("?");
     const name = opt ? s.slice(1) : s;
-    return { opt, g: groupFor(name) };
+    return { opt, g: groupFor(name), key: KEY.has(name) };
   });
   const reqGroups = steps.filter((s) => s.g && !s.opt).map((s) => s.g);
   const req = reqGroups.length;
@@ -442,13 +464,24 @@ function prep(text) {
 }
 const costOf = (t, g) => costsOf(t).get(g.name) ?? Infinity;
 
+/** Is token t a slot word of g with exactly one letter (code point) dropped — on the spelling or the canonical key? */
+function droppedLetterOf(t, g) {
+  const memo = (t.drop ??= new Map());
+  if (memo.has(g.name)) return memo.get(g.name);
+  const one = (a, w) => { const A = cps(a), W = cps(w); if (W.length !== A.length + 1) return false; for (let k = 0; k < W.length; k++) if (W.slice(0, k).concat(W.slice(k + 1)).join("") === a) return true; return false; };
+  const r = [...g.folded].some((w) => one(t.raw, w)) || (!!t.canon && g.canonList.some((w) => one(t.canon, w)));
+  memo.set(g.name, r);
+  return r;
+}
+
 /** All matches of one shape starting at token i: yields { end, fuzz }. */
 function* walk(toks, steps, si, i, fuzz, budget) {
   if (si === steps.length) { yield { end: i, fuzz }; return; }
   const s = steps[si];
   if (s.gap !== undefined) { for (let k = 0; k <= s.gap && i + k <= toks.length; k++) yield* walk(toks, steps, si + 1, i + k, fuzz, budget); return; }
   if (i < toks.length) {
-    const c = costOf(toks[i], s.g);
+    let c = costOf(toks[i], s.g);
+    if (c === 2 && s.key && !droppedLetterOf(toks[i], s.g)) c = Infinity;   // a different real word in the meaning slot (KEY above)
     if (fuzz + c <= budget) yield* walk(toks, steps, si + 1, i + 1, fuzz + c, budget);
   }
   if (s.opt) yield* walk(toks, steps, si + 1, i, fuzz, budget);
