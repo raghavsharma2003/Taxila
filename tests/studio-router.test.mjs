@@ -13,6 +13,11 @@ import { planBuild, _setChat, checkStringsTable, chooseArchetype, paramsFromKit,
 import { archetype, FRAME_ARCHETYPES, validateParams, stringKeys, buildParams, minTarget } from "../server/studio/archetypes/index.js";
 import { readFileSync } from "node:fs";
 
+// The real fetch, captured at load: `npm test` runs every file in one process, so another file's top-level beforeEach
+// (classify.test.mjs swaps globalThis.fetch for a canned chat reply) also wraps this file's tests. The loopback
+// chatStream test must talk to its own server, never to whatever stub is installed around it.
+const NATIVE_FETCH = globalThis.fetch;
+
 setSink(() => {});
 const base = loadRoutes(true);
 const withLive = (live) => ({ ...base, archetypes: Object.fromEntries(Object.entries(base.archetypes).map(([k, v]) => [k, { ...v, live }])) });
@@ -291,6 +296,8 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
   const DISPATCHER = Symbol.for("undici.globalDispatcher.1");
   await fetch("data:,").then((r) => r.arrayBuffer()).catch(() => {});
   const prevDispatcher = globalThis[DISPATCHER];
+  const stubbedFetch = globalThis.fetch;
+  globalThis.fetch = NATIVE_FETCH;
   if (prevDispatcher?.constructor) globalThis[DISPATCHER] = new prevDispatcher.constructor({ noProxy: "*" });
   try {
     const deltas = [];
@@ -313,6 +320,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     assert.deepEqual(evs, [{ a: 1 }]);
   } finally {
     for (const [k, v] of [["AZURE_OPENAI_ENDPOINT", saved.e], ["AZURE_OPENAI_API_KEY", saved.k]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+    globalThis.fetch = stubbedFetch;
     if (prevDispatcher && globalThis[DISPATCHER] !== prevDispatcher) { const mine = globalThis[DISPATCHER]; globalThis[DISPATCHER] = prevDispatcher; mine?.close?.().catch?.(() => {}); }
     await new Promise((r) => srv.close(r));
     srv.closeAllConnections?.();

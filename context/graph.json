@@ -11586,6 +11586,13 @@
    "at": "2026-10-05",
    "title": "The stage governor steps quality down on JS work only (driver + rig calls), never on drawn-frame intervals: a GPU-bound phone is not detected. Evidence: under SwiftShader the face drew 16-20 fps with workP95 4 ms and the governor never stepped (cpu-1x.json fpsCap 60). At 4x CPU throttle it did cap at 30 fps while she spoke (cpu-4x.json, workP95 9.6 ms > 8 ms), so on a cheap phone CPU the talking face is likely 30 fps, not the 60 the report states. Both open until the phone gate (?facerig=1 on a Mali-G52-class device).",
    "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "rj-chatstream-flake-label-2026-10-05",
+   "kind": "rejection",
+   "title": "Calling the studio-router chatStream failure a load flake was wrong. npm test runs every file in one process, so classify.test.mjs's top-level beforeEach (a canned-reply globalThis.fetch stub) also wrapped this test, which then got that stub's 200 text/plain reply and no SSE events. Proven by logging globalThis.fetch at failure (2026-10-05, full npm test, n=1; same failure on GitHub gates runs 121-131). Fix: the test uses the fetch captured at module load and restores the stub after. Reverse if: tests move to process isolation and the file-level capture becomes unnecessary.",
+   "at": "2026-10-05",
+   "source": "inbox/test-fetch-leak.json"
   }
  ],
  "edges": [
