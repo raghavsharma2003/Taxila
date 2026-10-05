@@ -1,0 +1,12 @@
+/* Devanagari for the Studio v2 stage (canvas AND the host's DOM chrome) without touching core/tokens.ts: the three
+   stage families get a Mukta face for the Devanagari block only (unicode-range), so a Hindi label drawn with the
+   "ui" / "display" / "mono" token renders in Mukta instead of a missing-glyph box. Mukta is OFL (fonts/OFL-NOTICE.txt),
+   the same files the app ships in public/fonts. */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-600-devanagari.woff2") format("woff2"); font-weight: 400 600; font-display: block;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("./fonts/mukta-700-devanagari.woff2") format("woff2"); font-weight: 700 900; font-display: block;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
+@font-face { font-family: "Bricolage Grotesque"; src: url("./fonts/mukta-700-devanagari.woff2") format("woff2"); font-weight: 400 900; font-display: block;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }
+@font-face { font-family: "Geist Mono"; src: url("./fonts/mukta-600-devanagari.woff2") format("woff2"); font-weight: 400 900; font-display: block;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FF; }

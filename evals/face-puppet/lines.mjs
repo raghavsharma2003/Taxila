@@ -1,0 +1,30 @@
+// The V4 lip-sync battery: 24 Diya teacher lines (class 4-7 register: Roman Hinglish, English, Devanagari, mixed), chosen
+// to cover every visible Hindi mouth class (bilabial प/ब/म, labiodental व/f, dental त/द/न, retroflex ट/ड, lateral ल,
+// tap र, velar क/ग, palatal च/ज/श, sibilant स, open आ, front इ/ए, rounded उ/ओ) and both scripts. Text is lesson-shaped on
+// purpose: these are the sentences the face must sync to in production.
+export const LINES = [
+  "Chalo, aaj hum fractions dekhenge. Ek pizza ko barabar hisson mein baantte hain.",
+  "Bahut badhiya socha tumne. Ab batao, teen chauthai bada hai ya do tihai?",
+  "Photosynthesis mein paudhe dhoop, paani aur carbon dioxide se apna khana banate hain.",
+  "Let's think about it together. If the bottle holds two litres, how many glasses can we fill?",
+  "Mujhe lagta hai tum sahi raste par ho. Bas ek baar phir se gin ke dekho.",
+  "Paanch baar chaar, matlab chaar ko paanch baar jodna. Bees aata hai na?",
+  "नमस्ते! आज हम पानी के चक्र के बारे में बात करेंगे।",
+  "Ruko, ek second. Pehle yeh dekho ki triangle ke teeno kone milke kitne degree banate hain.",
+  "Mumbai se Pune ki doori lagbhag ek sau pachaas kilometre hai.",
+  "Good question! Magnets attract iron, but they do not attract wood or plastic.",
+  "Thoda dhyaan se padho: tota daal par baitha tha, aur thodi der baad ud gaya.",
+  "बारिश के बाद मिट्टी की खुशबू क्यों आती है? चलो सोचते हैं।",
+  "Vriksh ki jadein mitti ko pakad ke rakhti hain, isliye baadh mein mitti kam behti hai.",
+  "When you multiply by ten, every digit moves one place to the left.",
+  "Shabash! Tumne khud se pattern dhoondh liya. Ab agla number kya hoga?",
+  "Agar hum paani ko garam karein, toh woh bhaap ban jaata hai. Isse vaashpikaran kehte hain.",
+  "Your answer is close. Let's check the units once more, metres or centimetres?",
+  "भारत की सबसे लंबी नदी गंगा है, जो हिमालय से निकलती है।",
+  "Lambai guna chaudai, yahi area ka formula hai. Ab tum yeh rectangle naapo.",
+  "Prithvi apni dhuri par ghoomti hai, isi se din aur raat hote hain.",
+  "Hmm, interesting. Tumne yeh kaise socha? Mujhe apna tareeka batao.",
+  "The heart pumps blood through the body, and the lungs give it fresh oxygen.",
+  "Zero se chhoti sankhya ko negative number kehte hain, jaise minus paanch.",
+  "Chalo, ek chhota sa break lete hain, phir hum wapas fractions par aayenge.",
+];

@@ -2127,3 +2127,10 @@ words are left to read.
 **Replaced by:**
 - unreadable → ask again (`sr-unreadable-ask-again`);
 - recall reported as readable and as caught + ask-again (`sr-recall-metric-readable`).
+
+
+## W2 integration (2026-10-05; inbox `context/inbox/w2-integration.json`)
+- `rj-w2int-live-board-without-fallback` (2026-10-05): Replacing the template rung with the live whiteboard and dropping the rung on Studio's ack (W2-E fixer) without a fallback: the live planner's board fails W2-F's gate often enough on real lines (12 of ~24 in the integration runs) that 9 of 12 explain moves in w2b-explain-rungs showed an empty, calm tray. The ack happens before the board exists, so 'Studio accepted' is not 'something will be drawn'
+- `rj-w2int-template-facts-as-piece` (2026-10-05): First cut of the template fallback stored the rung script's own facts (kind 'diagram', archetype 'fraction-parts@1') on the whiteboard piece: brain/propose.js reads any non-'whiteboard' kind as an interactive piece holding attention, so every later explain ask was declined studio_rejected.attention and the replay's healthy-explain board rate fell 21/21 → 7/21. The fallback piece's facts must say kind/archetype 'whiteboard'
+- `rj-w2int-digits-only-pad-for-comma-keys` (2026-10-05): A digits-only NumberPad for items whose verified key carries commas (c5 Big numbers: '1,07,040', '1,25,000'): the grader correctly marks '107040' not_yet on a 'write it with Indian commas' item, so a child on the pad can never be right; the walk got hint after hint ('commas missing hain') on one item. Kit content was right; the answer surface was wrong
+- `rj-w2int-lint-prefix-match` (2026-10-05): lint-ui's path filter by plain string prefix: B1_PATHS 'src/ui' pulled in src/ui-v3/** (93 findings), so the npm-test lint gate went red in every Wave 2 stream for files none of them owned, and the deploy gate (npm test) could not pass

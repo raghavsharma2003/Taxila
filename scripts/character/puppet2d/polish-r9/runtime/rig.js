@@ -652,7 +652,7 @@ export class Puppet2DRig {
     // r6 (judge r5 fix 5, concern): mentalis. An expression lip press (not an m/b/p closure) pushes the chin skin up ~3 px,
     // the 'pressed, holding it in' chin of a worried or thinking face; it rides the jaw term, so face, lip shell and
     // interior all move together
-    { const ep = clamp01((k("mouthPressLeft") + k("mouthPressRight")) / 2 * 2.2); this.solver.ment = 3.2 * ep * (1 - clamp01(sp.g / 6)); }
+    { const ep = clamp01((k("mouthPressLeft") + k("mouthPressRight")) / 2 * 2.2); this.solver.ment = (3.2 * ep + 2.6 * (this.solver.moue || 0)) * (1 - clamp01(sp.g / 6)); }   // r9: + the moue's chin push
     this.mouth = { name: "shell", row: sp.g > 3 ? "open" : "closed", jawGain: 1, p: sp };
     // ---- lids: screen-left eye (L) is her right eye (ARKit *Right)
     const side = { L: "Right", R: "Left" };
@@ -846,7 +846,9 @@ export class Puppet2DRig {
     const sol = this.solver;
     if (!sol) return [0, 0];
     const o = clamp01((sol.lowerDrop() - 8) / 38), sur = sol.surprised || 0, sm = clamp01((this.expr.smile - 0.2) / 0.5);
-    const narrow = 4.5 * o * (0.4 + 0.6 * sur) * (1 - 0.75 * sm);
+    // r9 (judge r8 fix 2): 4.5 -> 3.0 px: the drawn-in cheeks read as a pinched, rubbery lower face; the volume now comes
+    // from the shell's cheek-mound light and the lower lip's contact shadow (lips.js)
+    const narrow = 3.0 * o * (0.4 + 0.6 * sur) * (1 - 0.75 * sm);
     const broad = 0.45 * sol.jaw() * sur;
     return [broad, narrow];
   }
@@ -961,10 +963,13 @@ export class Puppet2DRig {
   browChannels(s) {
     const bs = this.bs, sfx = s === "L" ? "Right" : "Left";
     const inner = bs.browInnerUp ?? 0, outer = bs["browOuterUp" + sfx] ?? 0, down = bs["browDown" + sfx] ?? 0, wide = bs["eyeWide" + sfx] ?? 0;
+    // r9 (judge r8 fix 3, thinking): a ONE-SIDED raise (this outer brow well above the other) peaks higher: c-thinking's
+    // raised brow is a tall arch, not a lifted copy of the rest shape. Symmetric raises (surprise, delight) are unchanged.
+    const other = bs["browOuterUp" + (s === "L" ? "Left" : "Right")] ?? 0, asym = clamp01((outer - other - 0.3) / 0.5);
     // r4 (judge r3 fix 4): ~35% more range: surprise / concern read as 'mild' at thumbnail size
     // r5: + the stressed-syllable brow flick (life.js), a few px, inner end a touch more
     const fl = this.life ? this.life.flick : 0;
-    return { lift: 14 * wide + 12 * outer + 5 * inner + 4.2 * fl, inner: 53 * inner + 3 * fl, arch: 38 * outer, knit: 21 * down };
+    return { lift: 14 * wide + 12 * outer + 5 * inner + 4.2 * fl, inner: 53 * inner + 3 * fl, arch: 38 * outer, knit: 21 * down, peak: 9 * asym * outer };
   }
 
   browOffset(s, x, y) {
@@ -978,7 +983,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.34) ** 2)) + c.knit * (1 - 0.6 * ui);
     };
     const dy = dyAt(x);
     const th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
@@ -995,7 +1000,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return dipA - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) + c.knit * (1 - 0.6 * ui);
+      return dipA - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.34) ** 2)) + c.knit * (1 - 0.6 * ui);
     };
     const dxT = (s === "L" ? 1 : -1) * (c.knit * 0.3 + c.inner * 0.05);
     for (let k = 0; k < L.colX.length; k++) {
@@ -1258,7 +1263,7 @@ export class Puppet2DRig {
     const p = sol.p;
     const teethH = 10 + 5 * p.tuck + 4.5 * p.sq;   // r5: f/v shows the incisors' full length, their tips on the lower lip; r6: ch's two rows meet
     const ext = 2 + 9 * p.tuck;   // = LipShell.update's strip extension below the lower inner edge
-    if (p.g > 0.05 && !(this.debug && this.debug.noInner)) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, sol.joy || 0], [p.th, p.tip, p.curl, p.dim], 1 - 0.5 * shade[3], 0, ext);
+    if (p.g > 0.05 && !(this.debug && this.debug.noInner)) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, sol.joy || 0], [p.th, p.tip, p.curl, p.dim], 1 - 0.5 * shade[3], 0, ext, sol.surprised || 0);
     for (const n of ["L", "U"]) {
       const sh = shell.sheets[n];
       if (n === "U" && p.tuck > 0.05 && p.g > 0.05) R.drawInner(this.innerMesh, this.tex.interior, [p.T, p.TL, teethH, 0.5], [p.th, p.tip, p.curl, 0], 1 - 0.5 * shade[3], 1, ext);

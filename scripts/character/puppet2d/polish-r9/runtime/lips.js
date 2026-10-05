@@ -132,7 +132,8 @@ export class LipSolver {
       // r4: a DROPPED jaw-O (taller than wide, the lower lip carries the drop), not a full-lipped pucker (it read "ooh")
       // r5 (judge r4): a TALLER, NARROWER oval than aa (aa is the wide one now)
       tgt.round = Math.max(tgt.round, 1.0 * s); tgt.flat = Math.max(tgt.flat, 1.0 * s); tgt.W = tgt.W * (1 - s) + 0.77 * s;   // r7 (judge r6): the O ~10% wider (0.7 -> 0.77)   // r6 i3: 0.64 -> 0.7 and the drop 82 -> 68 (blind r6: 'a crude tubular oval, too large') tgt.sq = 0; tgt.pout = 0;
-      tgt.T = tgt.T * (1 - s) + 0.45 * s; tgt.TL = 0; tgt.up = 0.3; tgt.th = Math.max(tgt.th, 0.3); tgt.g = Math.max(tgt.g, 76 * s * clamp01(open / 0.3));   /* r7: the jaw drops a little more (68 -> 76) */ tgt.ring = 0.12 * s; tgt.sm = 0;
+      // r9 (sol: 'a pale upper rim' on the O): the upper-teeth sliver 0.45 -> 0.22, the low tongue band 0.3 -> 0.16
+      tgt.T = tgt.T * (1 - s) + 0.22 * s; tgt.TL = 0; tgt.up = 0.3; tgt.th = Math.max(tgt.th, 0.16); tgt.g = Math.max(tgt.g, 76 * s * clamp01(open / 0.3));   /* r7: the jaw drops a little more (68 -> 76) */ tgt.ring = 0.12 * s; tgt.sm = 0;
     }
     // an open-mouthed smile (delight / laugh): the D-shape. More opening, the upper lip stays high and flat, the
     // lower lip carries the drop, upper teeth show
@@ -160,11 +161,15 @@ export class LipSolver {
     // LOWER lip down; the upper lip barely rises and the upper teeth stay hidden (r7's parted concern showed them and read
     // 'embarrassed'). mouthRollUpper (thinking's pucker): the upper lip rolls in (thinner red), the mouth narrows a touch.
     const ld = (k("mouthLowerDownLeft") + k("mouthLowerDownRight")) / 2, xq = clamp01(1 - Wsum / 0.2);
+    this.ldW = ld > 0.01 ? clamp01(ld * 5) * xq : 0;   // r9: concern B's rounder lower lip (edge())
     if (ld > 0.01 && xq > 0) { const w = clamp01(ld * 5) * xq; tgt.up = tgt.up * (1 - 0.75 * w); tgt.T = tgt.T * (1 - w); tgt.TL = tgt.TL * (1 - 0.6 * w); tgt.th = Math.min(tgt.th, 0.25 - 0.22 * w); }
     this.rollU = clamp01(k("mouthRollUpper")) * xq;
+    // r9 (judge r8 fix 3, thinking): mouthShrugLower = the MOUE. The lower lip pushes up into the upper one and both lips
+    // gain volume, most on the side the mouth is pushed to (LipShell.update); the chin rises with it (mentalis, rig.js)
+    this.moue = clamp01(k("mouthShrugLower")) * xq;
     // r8: pursed lips (a one-sided press and / or a rolled upper lip) hold NO smile curve: c-front's painted lip line rises
     // ~25 px to the corners, so zeroing mouthSmile alone still left a pleasant closed smile (r8 i1 thinking)
-    this.pursed = clamp01(Math.max(this.pressSide.L, this.pressSide.R) * 1.3 + this.rollU * 2.5) * xq;
+    this.pursed = clamp01(Math.max(this.pressSide.L, this.pressSide.R) * 1.3 + this.rollU * 2.5 + this.moue * 2.5) * xq;
     if (this.rollU > 0) tgt.W = tgt.W * (1 - 0.14 * this.rollU);
     // r8 (judge r7 fix 3): delight's teeth row is dimmed ~8% and its corners rounded (grok: 'too white and square')
     this.joy = joy;
@@ -307,10 +312,17 @@ export class LipShell {
     // far corner of an open smile at yaw 20, a defect since r6)
     const kexp = 2 + (2.6 * (1 - p.round) + 5 * p.sq) * (1 - 0.75 * far);
     const pw = 0.9 - 0.3 * p.round - 0.45 * p.sq;
-    const prof = ae < 1 ? Math.pow(Math.max(0, 1 - Math.pow(ae, kexp)), pw) : 0;
+    // r9 (judge r8 fix 4, concern B): a lower-lip PULL rounds the lower edge (a softer U, not a flat rectangle)
+    const kx = sign > 0 ? Math.max(2, kexp * (1 - 0.8 * (sol.ldW || 0))) : kexp;
+    const prof = ae < 1 ? Math.pow(Math.max(0, 1 - Math.pow(ae, kx)), pw) : 0;
     const g = p.g * prof;
-    if (sign < 0) dy -= g * p.up;
+    // r9 (judge r8 fix 2, surprise): the O narrows at the TOP (an egg: the upper lip lifts mostly at the middle)
+    const sur = sol.surprised || 0;
+    if (sign < 0) dy -= p.g * p.up * (sur > 0 ? Math.pow(prof, 1 + 1.3 * sur) : prof);
     else dy += g * (1 - p.up) - p.tuck * 6 * prof;
+    // r9: concern B's corners turn down and then CURL back a touch at the very end (a soft worried mouth, not a grimace)
+    const cw = (sol.worry || 0) * (sol.ldW || 0);
+    if (cw > 0) dy -= cw * 2.6 * Math.exp(-(((a - 1.0) / 0.1) ** 2));
     return [dx, dy, g];
   }
 
@@ -323,7 +335,8 @@ export class LipShell {
       const K = { A: new Float32Array(n), T: new Float32Array(n), JP: new Float32Array(n), FALL: new Float32Array(n), BUL: new Float32Array(n),
         FADE: new Float32Array(n), IN: new Uint8Array(n), FR: new Float32Array(n), CRW: new Float32Array(n), LS: new Uint8Array(n),
         LPR: new Float32Array(n), LBU: new Float32Array(n), LTK: new Float32Array(n), LRD: new Float32Array(n), J0: new Float32Array(n),
-        VOL: new Float32Array(n), ROLL: new Float32Array(n), CRN: new Float32Array(n), LIP: new Float32Array(n) };
+        VOL: new Float32Array(n), ROLL: new Float32Array(n), CRN: new Float32Array(n), LIP: new Float32Array(n),
+        CL: new Float32Array(n), UND: new Float32Array(n), PUFF: new Float32Array(n), MV: new Float32Array(n) };
       for (let q = 0; q < n; q++) {
         const x = sh.rest[q * 2], y = sh.rest[q * 2 + 1], d = sh.d[q];
         const s = sOf(x), a = Math.abs(s), t = sign < 0 ? tUof(a) : tLof(a);
@@ -352,6 +365,13 @@ export class LipShell {
         const sc = 1.04 + 0.0035 * d * (sign > 0 ? 1 : 0.6);
         K.CRN[q] = Math.exp(-(((a - sc) / 0.045) ** 2)) * Math.exp(-((d / (sign > 0 ? 11 : 6)) ** 2));
         K.LIP[q] = sign > 0 ? (d < t ? Math.pow(ins, 0.3) * (1 - 0.6 * Math.max(0, fr - 0.7) / 0.3) : 0) : 0;
+        // r9 (judge r8 fix 2, 'rubbery / harsh lower face'): CL the closed lip LINE near the corners (the dark seam that stayed
+        // as a hard tick beside a rounded opening); UND the contact shadow under an open lower lip (it sat on the chin like a
+        // sticker); PUFF the cheek mound above-outside each corner (soft light as the jaw drops); MV the closed lips' crown
+        K.CL[q] = Math.exp(-((d / 3.4) ** 2)) * sstep(0.45, 0.75, a) * (1 - sstep(1.15, 1.32, a));
+        K.UND[q] = sign > 0 ? Math.exp(-(((d - t - 6) / 6.5) ** 2)) * Math.pow(Math.max(0, 1 - Math.pow(a / 1.05, 2)), 0.6) : 0;
+        K.PUFF[q] = sign < 0 ? Math.exp(-(((a - 1.18) / 0.2) ** 2)) * Math.exp(-(((d - 26) / 16) ** 2)) : Math.exp(-(((a - 1.2) / 0.2) ** 2)) * Math.exp(-(((d - 18) / 14) ** 2));
+        K.MV[q] = d < t ? Math.exp(-(((fr - (sign > 0 ? 0.5 : 0.55)) / 0.3) ** 2)) * Math.pow(ins, 0.5) : 0;
       }
       sh.K = K;
     }
@@ -377,12 +397,20 @@ export class LipShell {
       // r6: ch flares the UPPER lip as much as the lower (r5's pout swelled only the lower one into a pink cushion)
       // r7 (judge r6): the surprise O no longer puffs the lips (the rounding's +55% thickness came back down by ~2/3 on surprise:
       // the full rounded lips plus the skin they push read as a ballooned lower face)
-      const thick = 1 + 0.55 * p.round * (1 - 0.65 * sur) + (sign < 0 ? 0.62 : 0.3) * p.pout - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.32 * p.tuck + 0.18 * sur : 0.15 * sur);
+      // r9 (judge r8 fix 2): the surprise O's lower lip rim thins further (0.18 -> 0.34: 'a heavy pink rim')
+      const thick = 1 + 0.55 * p.round * (1 - 0.65 * sur) + (sign < 0 ? 0.62 : 0.3) * p.pout - 0.72 * p.press - 0.3 * Math.max(0, p.W - 1) - (sign > 0 ? 0.32 * p.tuck + 0.34 * sur : 0.15 * sur);
       // r8: the upper lip rolls in (mouthRollUpper) and a one-sided press thins that side's lips (blended across the middle)
       const thick0 = thick - (sign < 0 ? 0.42 * (sol.rollU || 0) : 0.08 * (sol.rollU || 0));
-      const psd = sol.pressSide || { L: 0, R: 0 }, thL = thick0 - 0.55 * psd.L, thR = thick0 - 0.55 * psd.R, thAsym = thL !== thR;
+      // r9: the moue adds volume, full on the push side (sideTilt sign), ~40% on the other
+      const mo = sol.moue || 0, tl = sol.sideTilt || 0, moS = mo * (sign > 0 ? 0.55 : 0.4);
+      const psd = sol.pressSide || { L: 0, R: 0 };
+      const thL = thick0 - 0.55 * psd.L + moS * (tl < 0 ? 1 : 0.4), thR = thick0 - 0.55 * psd.R + moS * (tl > 0 ? 1 : 0.4), thAsym = thL !== thR;
       // r6: open-mouth shading weights (0 when closed, so the rest pose stays c-front's own pixels)
-      const opn = clamp01((p.g - 3) / 14) * (1 - p.press), crn = opn * clamp01((p.g - 8) / 30) * (1 - 0.5 * p.tuck);
+      const opn = clamp01((p.g - 3) / 14) * (1 - p.press), crn = opn * clamp01((p.g - 8) / 30) * (1 - 0.5 * p.tuck) * (1 - 0.6 * sur);
+      // r9: soft lower-face volume on an open mouth (aa, delight, the O): cheek mounds and the lower lip's contact shadow
+      const big = clamp01((p.g - 10) / 35), puffA = big * (0.5 + 0.5 * clamp01((sol.joy || 0) + 0.6 * sur)), undA = opn * (0.5 + 0.5 * big);
+      // the closed-seam softening runs where the lips meet BESIDE an opening (rounded shapes, the O) and on the moue
+      const seamA = clamp01(Math.max(p.round, p.flat) * clamp01((p.g - 6) / 12) * 0.9 + 0.5 * mo);
       const n = sh.C * R;
       for (let q = 0; q < n; q++) {
         const ci = (q / R) | 0, j = q - ci * R;
@@ -410,12 +438,16 @@ export class LipShell {
         // alpha: inner-edge AA row once the lips part, smile-crease fade
         let a = j === 0 ? 1 - clamp01((gp - 1.0) / 1.2) : 1;
         if (K.CRW[q] > 0) a *= 1 - K.CRW[q] * (1 - crease[K.LS[q]]);
+        // r9: the closed seam beside an opening fades toward the clean face skin under the shell (only where the column is
+        // closed, so the opening's own inner rim is never thinned)
+        if (seamA > 0 && K.CL[q] > 0) a *= 1 - 0.92 * seamA * K.CL[q] * (1 - clamp01(gp / 2));
         sh.alpha[q] = a;
         // light: pressed contact line darkens, the bulge catches light, the tucked lower lip sits in the teeth's
         // shadow, rounded / pouted lips catch a little more light at their centre
         sh.light[q] = (1 - lp1 * K.LPR[q] + lp2 * K.LBU[q] - lt * K.LTK[q] + lr * K.LRD[q])
-          * (1 + opn * (0.09 * K.VOL[q] - 0.17 * K.ROLL[q]) - 0.2 * crn * K.CRN[q]);
-        sh.tint[q] = opn * 0.85 * K.LIP[q] * (1 - 0.3 * p.pout) * (1 - 0.7 * p.tuck);
+          * (1 + opn * (0.09 * K.VOL[q] - 0.17 * K.ROLL[q]) - 0.13 * crn * K.CRN[q])
+          * (1 + 0.05 * puffA * K.PUFF[q] - 0.1 * undA * K.UND[q] + 0.07 * mo * K.MV[q] * (1 - opn));
+        sh.tint[q] = opn * 0.85 * K.LIP[q] * (1 - 0.3 * p.pout) * (1 - 0.7 * p.tuck) * (1 - 0.45 * sur);
         // r4: once the lips part, the inner-edge rows sample the lip's own colour ~2.5 px in, not c-front's dark lip
         // line (it showed as a grey rim on the parted lower lip)
         if (j <= 2) {

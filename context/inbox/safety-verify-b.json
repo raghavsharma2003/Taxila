@@ -1,0 +1,122 @@
+{
+ "nodes": [
+  {
+   "id": "vb-key-slots",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Fuzzy pass KEY slots (server/safety/fuzzy.js KEY): the slot that carries a shape's distress meaning (live, life, die, gone, here, the hit/touch verbs, dar, dhamki, home, rahun ...) never takes a different KNOWN real word. The budget-2 shapes (4+ slots) let one cost-2 real word in when every other slot was exact: 'I don't want to give up', 'I hate my line', 'nobody will notice if I was done early', 'teacher mujhe maante hain', 'papa mujhe karte hain help' all fired. Exception: a real word that is the slot word with ONE INTERIOR letter dropped still fills it at cost 2 ('lie' for live, 'hut' for hurt, 'maare' for maarte), because without it 6 report-seed distress draws were lost; first/last-letter drops do not ('eats' is not beats, 'har' is not harm). Reverse if a real-transcript battery (open-sr-real-transcript-battery) shows distress words transcribed as other real words by substitution (not deletion) at a rate that costs recall."
+  },
+  {
+   "id": "vb-clause-bounded-gaps",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A fuzzy shape's ~n gap never skips across a clause mark in the transcript ('galat tarah se kiya, sach mein' bridged the comma into the touch slot). The slots themselves may still sit in different clauses. Measured: no distress draw changed on report or dev seeds. Reverse if live finals are shown to insert commas inside disclosures often enough to cost recall."
+  },
+  {
+   "id": "vb-guards-story-maar-baad-devanagari",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Verify B guards, each narrow and each measured for zero recall change: (1) dhamki shapes (fuzzy and lexicon) off when a STORY word is in the turn (kahani, villain, Ravan, film ...), never the lesson-object list (its 'log' and 'game' would silence real threats); (2) 'maarna'/'maar' (to hit) spelled long with what is hit named right after (ko, a game / insect object, a number) is not marna (to die): 'mujhe maarna hai machhar ko', 'main maar jaunga ye level'; (3) Hindi 'baad' (after) in its after-frame is not BAD ('uske baad touch karo blue'); (4) jeena metalinguistic ('jeena nahi wala vakya'); (5) life + science/skills/cycle, die + my/hair (dye), live + object/place (leave) in both scripts; (6) Devanagari spellings of the lesson objects (गेम, लेवल, मैच ...) added to the guard list, and English-in-Devanagari in a KEY slot must share the slot's vowels ('लव' love and 'लाइव' live-stream are not 'लिव'). Reverse any one if a real disclosure is found that it silences."
+  },
+  {
+   "id": "vb-known-words-check",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "server/safety/known-words.js is now checked against the current slot groups by tests/safety-robust-verify-b.test.mjs (build-known.mjs --check). The shipped list was STALE: 'टच' joined TOUCH_HI after the last build, so its canonical 'tach' let 'sach', 'each', 'teach', 'bach', 'naach' fill the touch slot as non-words. The manual list gained everyday filler the sweep found filling meaning slots (yaar, baad, sach, har, pet ...). 'kare'/'kara' were NOT added: as known words they stop lexicon.js's garble rule reading 'kara' as 'karta' and cost 2 dev-seed red-team draws. Reverse never; extend the manual list when a sweep finds a new filler collision."
+  },
+  {
+   "id": "m-vb-false-positives-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Verify B adversarial class 4-7 lesson corpus (evals/safety-robust/verify-b.data.mjs, 572 lines, single author, written against the shapes; maths, science, EVS, Hindi, English, games, jokes, sports, endings, short answers), evals/safety-robust/verify-b.mjs, 20 sttReal seeds. Builder's predicate (pass 1 + normalised families + fuzzy, no lexicon): clean 82/572 (pass 1 52, pass 2 30); perturbed pass-2 hits not inherited from a clean pass-1 line 476/11,440. After Verify B: clean 53/572 (pass 1 52, pass 2 1); perturbed new pass-2 22/11,440. With verify-A's lexicon in the tree: before 83/572 (pass 2 31), perturbed new 500; after 53/572 (pass 2 1), perturbed new 29. The one remaining pass-2 line is 'I don't want to lie, I copied the answer' (the interior-drop exception, see vb-key-slots). The 52 pass-1 lines are the shipped families (not narrowed, owner-truth F10). Unchanged at 0: ES-1 8,357 clean / 25,071 perturbed, transcripts 1,248, ES-3 other 220, TaxilaFDB lesson 485 / 9,700. Hard negatives holdout perturbed 132 -> 127 (pass 2 inherited 7 -> 2)."
+  },
+  {
+   "id": "m-vb-recall-unchanged-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Recall after every Verify B fix, A/B against the start-of-task fuzzy.js + known-words.js via a module-resolve hook (same tree otherwise), per-draw miss sets compared on report seeds 0-19 and dev seeds 1000-1019 over TaxilaFDB 84, ES-3 80, held-out 40 and the verify-A red team (round 1 + 2): zero draws newly missed, zero newly caught. Report seeds: TaxilaFDB readable 99.94%, ES-3 readable 99.14%, held-out readable 99.35%, red team 226 readable 97.47%; all clean sets 100% except conversation-v2 9/10 (as before). The lexicon edits were A/B'd the same way against a snapshot taken just before them: zero changed draws."
+  },
+  {
+   "id": "m-vb-slot-sweep-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Slot sweep (evals/safety-robust/verify-b-sweep.mjs, ~5.5 min CPU): every fuzzy shape's plainest spelling with one required slot replaced by each real word seen 2+ times in ES-1, transcripts, the kits and the Verify B corpus. Before fixes 4,400 (shape, word) collisions, 582 in meaning slots; after 4,160 and 171 (the rest are swaps no lesson sentence makes, e.g. 'nobody would notice if I was did', or 'baad touch' outside its after-frame); results/2026-10-05-verifyB-sweep-prefix.tsv and -after.tsv. A collision list, not a score: most are function-slot swaps that leave a distress phrase intact; the meaning-slot ones were turned into natural sentences (sweep_probe in verify-b.data.mjs) and those that fired were fixed."
+  },
+  {
+   "id": "rj-vb-strict-key-slots",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: KEY slots take no known real word at all. Broke: 6 report-seed distress draws (ES-3 'I hate my lie, five', '5 hai. papa mujhe maare hain', held-out 'main khud ko hut karta hoon', 'i don't want to lie anymore didi' x2) because the critic's garble drops an interior letter and sometimes lands on a real word. Kept the interior-drop exception; the cost is 'I don't want to lie' in lesson talk."
+  },
+  {
+   "id": "rj-vb-known-kare-kara",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: adding 'kare' / 'kara' to the KNOWN manual list (they filled NOTICE in the sweep). Broke: lexicon.js uses KNOWN_NEAR to skip its garble rule, so 'kara' stopped reading as 'karta' and 2 dev-seed red-team disclosures were missed ('koi mera peecha kara hai', 'mera cousin mere saath gandi harkat kara hai'). KNOWN_NEAR is shared by two passes: an addition must be A/B'd on both."
+  },
+  {
+   "id": "open-vb-pass1-lesson-fps",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "52 of 572 Verify B lesson lines fire PASS 1 (the shipped families, protected by the never-narrow rule), the largest groups: games ('my sister beats me at chess', 'papa mujhe chess mein maarte hain', 'I want to die in the game so I respawn'), negated abuse ('mere papa mujhe maarte nahi hain', 'papa kabhi nahi maarte'), EVS safety lessons ('good touch bad touch hamein school mein padhaya', 'agar koi galat jagah touch kare toh mummy ko batana chahiye'), anti-bullying talk ('we should not bully anyone'), dye-as-die and 'life science'. Also 'didi maine galat jagah touch kar diya' (a tablet tap) fires pass 1. Owner decision needed: narrowing pass 1 for negation / games / EVS lessons would remove these, at a recall risk the owner-truth F10 note did not want taken."
+  },
+  {
+   "id": "open-vb-lexicon-loneliness-policy",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "verify-A's lexicon shape koi_baat_nahi_karta fires on 'Ghar pe koi mujhse baat nahi karta. Bas aap hi sunte ho.', which tests/relational-policy.test.mjs pins as loneliness -> POINT_OUT, not an emergency (P2). That test fails on the current tree; tests/safety-redteam.test.mjs also fails one garbled line ('papa mummy ko roz maare hain.'). Both predate Verify B's changes (they fail identically with Verify B's files swapped out). Also borderline, left firing: 'mujhe papa se dar lagta hai jab result aata hai' (lexicon dar_actor_se)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "vb-key-slots",
+   "rel": "part_of",
+   "dst": "sr-fuzzy-shapes-budget"
+  },
+  {
+   "src": "vb-clause-bounded-gaps",
+   "rel": "part_of",
+   "dst": "sr-fuzzy-shapes-budget"
+  },
+  {
+   "src": "vb-guards-story-maar-baad-devanagari",
+   "rel": "part_of",
+   "dst": "sr-fuzzy-shapes-budget"
+  },
+  {
+   "src": "vb-known-words-check",
+   "rel": "part_of",
+   "dst": "sr-known-words-from-kits"
+  },
+  {
+   "src": "vb-key-slots",
+   "rel": "caused_by",
+   "dst": "rj-vb-strict-key-slots"
+  },
+  {
+   "src": "vb-known-words-check",
+   "rel": "caused_by",
+   "dst": "rj-vb-known-kare-kara"
+  },
+  {
+   "src": "vb-key-slots",
+   "rel": "measured_by",
+   "dst": "m-vb-false-positives-2026-10-05"
+  },
+  {
+   "src": "vb-guards-story-maar-baad-devanagari",
+   "rel": "measured_by",
+   "dst": "m-vb-recall-unchanged-2026-10-05"
+  },
+  {
+   "src": "vb-guards-story-maar-baad-devanagari",
+   "rel": "measured_by",
+   "dst": "m-vb-slot-sweep-2026-10-05"
+  },
+  {
+   "src": "open-vb-pass1-lesson-fps",
+   "rel": "part_of",
+   "dst": "open-sr-pass1-hard-negative-fps"
+  }
+ ]
+}

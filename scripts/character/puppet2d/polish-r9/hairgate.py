@@ -98,7 +98,7 @@ while True:
     fr += 1
 p.wait()
 if pm:
-    pm.kill()   # the mask pass can hold a frame or two more than the clip encode (-t 45.2)
+    pm.kill()   # the mask pass can hold a frame or two more than the clip encode (-t 48)
 res = {"clip": clip, "frames": fr, "region_screen": [X0, Y0, X0 + w, Y0 + h], "frames_with_spikes": len(hits),
        "spikes": sum(len(hh["runs"]) for hh in hits), "seconds": sorted(set(round(hh["t"]) for hh in hits)),
        "first": hits[:8], "all": [[hh["t"], [[r["x"], r["y"], r["px"]] for r in hh["runs"]]] for hh in hits], "pass": len(hits) == 0 and fr > 0}

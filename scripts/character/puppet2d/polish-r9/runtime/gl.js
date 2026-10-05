@@ -142,6 +142,7 @@ uniform vec4 uTongue;  // body height share, tip, curl, -
 uniform float uShadeK;
 uniform float uOver;   // r5: 1 = the f/v overlay pass: only the upper teeth tips, drawn OVER the tucked lower lip
 uniform float uExt;    // r6: how far the strip reaches below the lower inner edge (px)
+uniform float uSur;    // r9: surprise weight (the O's cavity: warmer, less saturated)
 out vec4 o;
 vec3 rowc(float row, float u){ vec4 c = texture(uTex, vec2(u, (row + 0.5) / 64.0)); return c.rgb / max(c.a, 0.001); }
 // r4 (judge r3 fix 2): the teeth's free edge is the PAINTED contour's smooth fit (rows 12.9 - 2.7u^2 - 0.3u^4 of the
@@ -180,6 +181,9 @@ void main(){
   float occT = 1.0 - smoothstep(0.0, max(6.0, 0.42 * gap), dt);
   col *= 1.0 - 0.34 * occT * occT - 0.18 * smoothstep(0.55, 0.98, a);
   col *= 0.94 + 0.10 * smoothstep(0.25, 0.9, dt / gap);
+  // r9 (judge r8 fix 2): the surprise O's cavity was the strongest red in the set ('harsh'): ~30% less saturated, warmer
+  // (toward the refs' brown) and a touch lighter, so the O sits IN the face instead of on it
+  if (uSur > 0.0) { float lc = dot(col, vec3(0.299, 0.587, 0.114)); col = mix(col, mix(col, vec3(lc), 0.32) * vec3(1.1, 1.02, 0.9), uSur); }
   // ---- tongue: body mound on the floor; tip = a rounded LOBE that rises to the upper teeth (t d n l); curl = the
   // retroflex underside up at the palate
   float th = uTeeth.z, rp = 12.0 / th;
@@ -236,7 +240,9 @@ void main(){
   if (a < lwT && uTeeth.y > 0.01) {
     float ul = clamp((vS / lwT) * 0.5 + 0.5, 0.0, 1.0);
     float hL = th * 0.8 * smoothstep(0.2, 0.5, uTeeth.y) * (contourRows(vS / lwT) - joyT * 4.0 * pow(a / lwT, 3.0)) / 12.0;       // visible height above the lower lip
-    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12 - 0.1 * joyT, lwT, a)) * gapT;
+    // r9 (bug, the 'muddy doubled edging' under concern B's lower lip): with the row hidden (hL = 0) this coverage was still
+    // > 0 wherever db < 0.5, i.e. in the strip's 2 px under the lower lip: a pale teeth-coloured sliver. Gated by height.
+    float cov = clamp((hL - db) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(lwT - 0.12 - 0.1 * joyT, lwT, a)) * gapT * smoothstep(0.0, 0.8, hL) * step(0.0, db);
     float row = 31.0 - clamp(db * rp, 0.0, contourRows(vS / lwT) - 2.5);
     vec3 lt = rowc(row, ul) * dimT * (1.0 - 0.3 * pow(a / lwT, 2.0)) * vec3(1.12, 1.09, 1.04) * mix(vec3(1.0), vec3(0.8, 0.7, 0.64), uTongue.w);   // r5: the lower row read grey beside the upper one
     col = mix(col, lt, cov);
@@ -245,7 +251,7 @@ void main(){
     float uu = clamp((vS / uwT) * 0.5 + 0.5, 0.0, 1.0);
     float cr = contourRows(vS / uwT) - joyT * 4.5 * pow(a / uwT, 3.0);
     float hU = th * cr / 12.0 - (1.0 - uTeeth.x) * th;                 // visible height below the upper lip
-    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14 - 0.12 * joyT, uwT, a)) * gapT;
+    float cov = clamp((hU - dt) / px + 0.5, 0.0, 1.0) * (1.0 - smoothstep(uwT - 0.14 - 0.12 * joyT, uwT, a)) * gapT * smoothstep(0.0, 0.8, hU);   // r9: same gate
     float row = clamp((dt + (1.0 - uTeeth.x) * th) * rp, 0.0, cr - 2.5);
     vec3 ut = rowc(row, uu) * 1.08 * dimT * (1.0 - 0.3 * pow(a / uwT, 2.0) - 0.06 * joyT * pow(a / uwT, 2.0)) * mix(vec3(1.0), vec3(0.88, 0.78, 0.72), uTongue.w);   // r6: dim (ch funnel shadow, warm)
     // the free edge catches a whisper of shadow (painted teeth have it), inside the coverage ramp only
@@ -256,6 +262,9 @@ void main(){
   // so the cavity never reads as a crisp cut-out against the lip
   col *= mix(0.72, 1.0, smoothstep(0.0, 3.0, dt));
   col *= mix(0.80, 1.0, smoothstep(0.0, 2.2, db));
+  // r9 (sol r9: 'muddy doubled edging' on concern B): below the lower inner edge (db < 0, the strip's 2 px under the lower
+  // lip) the floor row showed through the lip's inner AA row as a pale grey second edge; it is the lip's dark contact line
+  col = mix(col, vec3(0.40, 0.19, 0.15), smoothstep(0.0, 1.4, -db) * (1.0 - step(0.5, uTeeth.y)));
   // r4b: a near-closed seam is the lip LINE (dark warm brown), fully opaque from gap 0.8 px, so the face layer never
   // leaks through between the lip sheet's fading inner row and the interior (it showed as orange dots per mesh column)
   col = mix(vec3(0.36, 0.17, 0.13), col, smoothstep(1.2, 3.5, gap));
@@ -416,9 +425,10 @@ export class Renderer {
     this.tris += mesh.count / 3;
   }
 
-  drawInner(mesh, tex, teeth, tongue, shadeK = 1, over = 0, ext = 2) {
+  drawInner(mesh, tex, teeth, tongue, shadeK = 1, over = 0, ext = 2, sur = 0) {
     const gl = this.gl, P = this.inner;
     gl.useProgram(P.p);
+    gl.uniform1f(P.u.uSur, sur);
     gl.uniform1f(P.u.uExt, ext);
     gl.uniform1f(P.u.uOver, over);
     gl.uniform2f(P.u.uView, this.canvas.width, this.canvas.height);

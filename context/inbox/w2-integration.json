@@ -1,0 +1,161 @@
+{
+ "nodes": [
+  {
+   "id": "w2int-seam-patches-applied",
+   "kind": "decision",
+   "title": "W2 integration applied the four cross-stream patches that were still waiting on hot-file owners: w2b-parts-repair (brain/say.js strips sentences still naming wrong part counts after the rewrite), w2b-watch-only (director/say.js: no 'tap' line while only the watch-only explainer@1 board is on screen), w2i-state-stop-check (state.js/shapes.js/classify.js: a stop phrase gets ONE warm check-in, a second stop / the stop chip / a true goodbye ends at once) and w2i-compile-rel-shapes (compile.js renders the relational overlay note; floor.js goodbye shape). All four applied with offsets only. Also the two W2-G client lines: api.ts turn → postTurnAudio when voice.turnAudio is on (default off) and cascadeLink.ts passes the clause sink + req to the player. Reversal: any of these is reverted by its owner with a replacement in the same wave",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-practice-ask-not-done",
+   "kind": "decision",
+   "title": "child.js countsAsDone counts only a Learn sitting (state.ctx.purpose absent or 'lesson'): a Practice or an Ask never uses up the day's lesson, so a Practice before the lesson no longer refuses the lesson with 409 'today's lesson is done' (STUDENT-FLOW §4.2: the done row offers Practice; W2-C open item; the w2seam-contracts 7/8 every stream reported). Practice and Ask minutes still count toward the daily cap. Reversal: the owner wants a graded Practice to stand in for the day's lesson",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-whiteboard-template-fallback",
+   "kind": "decision",
+   "title": "When Studio accepts the explain beat's whiteboard ask and the live board replaces W2-B's template rung, the rung's (open-item guarded) script rides in the ask as fallback.script (shared/brain.ts StudioAsk.fallback); if the live board fails W2-F's gate or times out, seam.js shows the template board in the same slot (state revealed, facts kind/archetype 'whiteboard' so it never holds attention). Before: a refused live board left an accepted slot empty (W2-E open item), and 9 of 12 explain moves in w2b-explain-rungs had an empty tray. No mount row is written for a template fallback. Reversal: W2-F's live board passes its gate on >= 95% of real explain lines (then the fallback is dead code and can go)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-pad-comma-key",
+   "kind": "decision",
+   "title": "A number item whose verified key is written with commas (Indian grouping, '1,07,040') sets ui.padComma; the Older/Young NumberPad then shows a ',' key (never first, never doubled, Send disabled on a trailing ','; 12 characters). Found by the Playwright flow walk: the digits-only pad could never enter the key the item checks for, and the child got 10+ 'commas missing' hints in a row. Reversal: the grader accepts a digits-only answer for comma items (then the item is not testing commas and the key should be rewritten)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-lint-dir-prefix",
+   "kind": "decision",
+   "title": "scripts/lint-ui.mjs treats a path as a directory: 'src/ui' holds src/ui/** and never the sibling src/ui-v3/**. The npm-test B1 lint (tests/ui-v2-lint) failed in every W2 stream only because 'src/ui' matched 'src/ui-v3' by string prefix; B1 findings are now 0. The whole-src verify-release lint-ui gate still reports other owners' files (src/studio-v2, src/duplex, src/ui-v3, src/studio/studio.css, src/modules/whiteboard/palette.ts). Reversal: none (a prefix match on a directory name is a bug)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-leaving-compound",
+   "kind": "decision",
+   "title": "Hinglish leaving lexicon: 'mujhe jaana hai/hoga' may be followed by one arrival clause ('papa aa gaye', 'mummy bula rahi hai', 'guests aa gaye') and still be a true goodbye (released at once). With the stop check applied, 'bye didi mujhe jaana hai papa aa gaye' (w2i-release cascade) read as no signal and became a check-in. In-lesson negatives stay 0/366 hand and 0/384 held-out; held-out goodbye recall 21 → 22 of 60 (that set is now 1 line in-sample). Reversal: a false release on a real lesson line",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-tests-follow-merged-behaviour",
+   "kind": "decision",
+   "title": "Tests changed to match merged behaviour, not to hide it: compiler/lesson-api-e2e look for the close FALLBACK ('nothing new; a short warm close') because the floor's goodbye line now also says 'short warm close'; state.test's stop case asserts the one check-in then the end; w2seam-contracts runs Practice and Ask first and puts the cascade and live call on siblings (one Learn lesson a day), and asserts the done refusal agrees with the home state; w2b-explain-rungs and w2b-first-paint count the live Studio whiteboard (or its template fallback) as the explain rung, check it is drawn inside the stage and the stage inside the tray, and report its arrival apart from the 300 ms client-paint gate. Reversal: n/a (test maintenance)",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2int-migration-rehearsal-2026-10-05",
+   "kind": "measurement",
+   "title": "Migration rehearsal, local Postgres 16: 001-015 applied to an empty database give a schema identical to production (541/541 columns by information_schema, read-only query on prod); 016-020 then apply cleanly with scripts/migrate.mjs's statement split, a second pass of all five is a no-op (idempotent), and the result equals the Neon test branch (673/673 columns) with all four new check constraints. Prod data fits the new checks: kt_evidence.via only 'dialogue' (11 rows), reteach_attempts empty, rel_event empty. n=1 rehearsal, 2026-10-05",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2int-gates-2026-10-05",
+   "kind": "measurement",
+   "title": "Combined W2 tree gates (2026-10-05, 4-core sandbox, npm test in 4 groups of 34-36 files): tsc -b and vite build pass; check-prompt-budget PASS (worst + note 1696/2600 tokens after the compile patch, was 1664); persona-invariants 70/70; never-rules PASS; pii, spoken, kit-budget, context PASS; npm test after the integration fixes: every file passes except migrations-applied (prod lacks 016-020) and relational-policy's loneliness case, broken by the concurrent safety-robust workflow's server/safety/lexicon.js (it now tags 'Ghar pe koi mujhse baat nahi karta' as harm). Browser studio-stage-states passed 8/8 alone after a load timeout",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2int-explain-rungs-2026-10-05",
+   "kind": "measurement",
+   "title": "w2b-explain-rungs on the merged tree (local serve.mjs, Neon test branch, real models, 12 topics c4-c7): before the template fallback 3/12 explain moves showed something (9 empty studio trays: the live board replaced the rung and then failed its gate); after, 12/12 (4 module engines, 8 Studio whiteboards: 36/36 checks). Live board planner outcome across these runs: 12 boards not drawn (W4.numbers_from_truth in 7, W9.no_reveal 3, W0.shape 3, timeout 2, W3/W2 1 each), 8 of them shown as the template fallback. Live board arrival after the reply in the browser: 2.3-4.8 s (n=6). n=12 topics, 2026-10-05",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2int-flow-walk-2026-10-05",
+   "kind": "measurement",
+   "title": "Playwright student-flow walk (tests/prod/w2flow-walk.mjs), class 5 Hinglish, local serve.mjs + Neon test branch: signup (7 screens) → Hello (5) → first lesson (Big numbers) → 22 typed turns incl. 2 deliberate wrong answers → natural wrap → summary → child home 'Done for today' → parent corner. Every screen shot at 360x800 and 1366x768: 0 horizontal overflow; every Studio whiteboard (3) drawn inside the stage box and the box inside the Work tray at both sizes; module frames (5) inside the tray. Before the comma key the same walk looped 10 hints on a comma item. Screenshots in docs/design/gap-audit/w2-flow/. n=1 walk per arm, 2026-10-05",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2int-live-board-without-fallback",
+   "kind": "rejection",
+   "title": "Replacing the template rung with the live whiteboard and dropping the rung on Studio's ack (W2-E fixer) without a fallback: the live planner's board fails W2-F's gate often enough on real lines (12 of ~24 in the integration runs) that 9 of 12 explain moves in w2b-explain-rungs showed an empty, calm tray. The ack happens before the board exists, so 'Studio accepted' is not 'something will be drawn'",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2int-template-facts-as-piece",
+   "kind": "rejection",
+   "title": "First cut of the template fallback stored the rung script's own facts (kind 'diagram', archetype 'fraction-parts@1') on the whiteboard piece: brain/propose.js reads any non-'whiteboard' kind as an interactive piece holding attention, so every later explain ask was declined studio_rejected.attention and the replay's healthy-explain board rate fell 21/21 → 7/21. The fallback piece's facts must say kind/archetype 'whiteboard'",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2int-digits-only-pad-for-comma-keys",
+   "kind": "rejection",
+   "title": "A digits-only NumberPad for items whose verified key carries commas (c5 Big numbers: '1,07,040', '1,25,000'): the grader correctly marks '107040' not_yet on a 'write it with Indian commas' item, so a child on the pad can never be right; the walk got hint after hint ('commas missing hain') on one item. Kit content was right; the answer surface was wrong",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2int-lint-prefix-match",
+   "kind": "rejection",
+   "title": "lint-ui's path filter by plain string prefix: B1_PATHS 'src/ui' pulled in src/ui-v3/** (93 findings), so the npm-test lint gate went red in every Wave 2 stream for files none of them owned, and the deploy gate (npm test) could not pass",
+   "at": "2026-10-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "rj-w2int-live-board-without-fallback",
+   "rel": "caused_by",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "supersedes",
+   "dst": "rj-w2int-live-board-without-fallback"
+  },
+  {
+   "src": "rj-w2int-template-facts-as-piece",
+   "rel": "part_of",
+   "dst": "w2int-whiteboard-template-fallback"
+  },
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "measured_by",
+   "dst": "m-w2int-explain-rungs-2026-10-05"
+  },
+  {
+   "src": "w2int-pad-comma-key",
+   "rel": "supersedes",
+   "dst": "rj-w2int-digits-only-pad-for-comma-keys"
+  },
+  {
+   "src": "w2int-pad-comma-key",
+   "rel": "measured_by",
+   "dst": "m-w2int-flow-walk-2026-10-05"
+  },
+  {
+   "src": "w2int-lint-dir-prefix",
+   "rel": "supersedes",
+   "dst": "rj-w2int-lint-prefix-match"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-migration-rehearsal-2026-10-05"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-gates-2026-10-05"
+  },
+  {
+   "src": "w2int-leaving-compound",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-tests-follow-merged-behaviour",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-practice-ask-not-done",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  }
+ ]
+}

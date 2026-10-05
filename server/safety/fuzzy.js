@@ -261,8 +261,9 @@ const herePlace = (c) => /^(?:in|at)$/.test(c.toks[c.end]?.raw ?? "") && /^(?:th
 const jeenaGuard = (c) => /^(?:aata|aati|aate|sikh|sikho|seekho|isi|आता|आती|wala|wali|wale|vala|vali|matlab|meaning|word|words|shabd|vakya|vaakya|sentence|spelling|वाला|वाली|मतलब|शब्द|वाक्य)$/u.test(c.toks[c.end]?.raw ?? "") || /^(?:poem|kavita|kahani|story)$/u.test(c.toks[c.start - 1]?.raw ?? "");
 /**
  * Verify B (2026-10-05): a threat INSIDE a story / lesson ("Ravan ne Sita ko dhamki di thi kahani mein", "villain ne hero ko
- * dhamki di"). Story words only (never "show" / "book": "photo sabko show karega" is the grooming threat), read anywhere in the turn with the guard tolerance: NOT the lesson-object list, whose "log"
- * (people) would switch off "log mujhe dhamki dete hain". (Devanagari "धमकी" still fires on pass 1 regardless.)
+ * dhamki di"). Story words only (never "show" / "book": "photo sabko show karega" is the grooming threat), read anywhere in
+ * the turn with the guard tolerance; NOT the lesson-object list, whose "log" (people) would switch off "log mujhe dhamki dete
+ * hain". (Devanagari "धमकी" still fires on pass 1 regardless.)
  */
 const STORY = guardSet(("kahani kahaani story stories villain hero heroine ravan raavan kans raja rani rajkumar rakshas rakshasa movie film cartoon serial episode " +
   "chapter kavita poem natak drama novel कहानी रावण कंस राजा रानी राक्षस फिल्म कविता नाटक").split(" "));

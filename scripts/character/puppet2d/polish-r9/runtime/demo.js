@@ -26,11 +26,13 @@ const SCENES = [
   { id: "warm", t0: 27.4, t1: 29.6, status: "your_turn", preset: "warm" },
   { id: "delight", t0: 29.6, t1: 32.0, status: "your_turn", preset: "delight" },
   { id: "concern", t0: 32.0, t1: 34.6, status: "your_turn", preset: "concern" },
-  { id: "surprise", t0: 34.6, t1: 36.8, status: "your_turn", preset: "surprise" },
-  { id: "playful", t0: 36.8, t1: 39.2, status: "your_turn", preset: "playful" },
-  { id: "turns", t0: 39.2, t1: 45.2, status: null, turn: true },
+  // r9 (judge r8 fix 6): concern B in motion (it was only judged as a sheet still); the emotes now crossfade (expr.js)
+  { id: "concernB", t0: 34.6, t1: 37.4, status: "your_turn", preset: "concern", variant: 1 },
+  { id: "surprise", t0: 37.4, t1: 39.6, status: "your_turn", preset: "surprise" },
+  { id: "playful", t0: 39.6, t1: 42.0, status: "your_turn", preset: "playful" },
+  { id: "turns", t0: 42.0, t1: 48.0, status: null, turn: true },
 ];
-export const DURATION = 45.2;
+export const DURATION = 48.0;
 
 function sceneAt(t) {
   for (const s of SCENES) if (t >= s.t0 && t < s.t1) return s;
@@ -118,7 +120,7 @@ async function main() {
     // scripted expression beat (demo Director)
     const head = [...b.head];
     // Director beats -> the expression emitters (compositor presets, expr.js)
-    if (sc.preset && exprs.sceneId !== sc.id) { exprs.sceneId = sc.id; exprs.emote(sc.preset, t, { hold: Math.max(0.2, sc.t1 - sc.t0 - 0.9) }); }
+    if (sc.preset && exprs.sceneId !== sc.id) { exprs.sceneId = sc.id; exprs.emote(sc.preset, t, { hold: Math.max(0.2, sc.t1 - sc.t0 - 0.9), variant: sc.variant }); }
     if (!sc.preset) exprs.sceneId = null;
     {
     }

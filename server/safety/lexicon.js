@@ -22,7 +22,8 @@ const g = (n) => `(?: [a-z]+){0,${n}}`;
 // actors (canonical): kinship, authority, step-parents; mummy = mumi, मम्मी = mami, daddy = dadi, uncle = unkle, अंकल = ankal
 const ACTOR = "papa|pitaji|pita|mumi|mami|mumy|mama|ma|man|mata|mataji|bhai|bhaiya|bhaia|didi|chacha|chachi|mami|unkle|ankal|aunti|anti|sir|sar|madam|maidam|teacher|tichar|dada|dadi|nana|nani|sautela|sauteli|tau|tai|fufa|fufi|mausa|mausi|kousin|kajin|stepdad|stepmom|stepfather|stepmother|dad|mom|mum|father|mother|brother|sister";
 // people other than a parent (an undressing / kissing / alone-with ask by a parent is often care, by these it is not)
-const NONPARENT = "unkle|ankal|chacha|mama|mausa|fufa|tau|bhaiya|bhaia|sir|sar|teacher|tichar|kousin|kajin|driver|draivar|padosi|koi|admi|aunti|anti|ladka|ladke|stranger|neighbour|neighbor|man|guy|he|someone|somebody";
+// (not "man" / "he": in a Hinglish turn they are "main" and "hai" heard short — "man kape utaar ke nahane jaata hoon" fired, dev run)
+const NONPARENT = "unkle|ankal|chacha|mama|mausa|fufa|tau|bhaiya|bhaia|sir|sar|teacher|tichar|kousin|kajin|driver|draivar|padosi|koi|admi|aunti|anti|ladka|ladke|stranger|neighbour|neighbor|guy|someone|somebody";
 const ACTOR_EN = "father|mother|dad|dadi|mom|mum|mumi|papa|brother|sister|unkle|aunti|teacher|sir|stepdad|stepfather|stepmom|stepmother|step dad|step mom|uncle|he|she|they";
 const I_S = "(?:main|mai|mein|maine|man)";
 const I_O = "(?:mujhe|mujhko|mereko|muje|mjhe)";
@@ -45,7 +46,13 @@ const ACCIDENT = words("galti mistake by_mistake accidentally accident ghadi wat
  * and still match the canonical reading ("nobodi", "kome", "unkle"): a non-canonical literal is a dead branch, and the
  * verify-A audit found 74 of them before this. Character classes, escapes and group syntax are left alone.
  */
-const canonSource = (src) => src.replace(/\[[^\]]*\]|\\.|\(\?<?[!=:]|\{\d+(?:,\d*)?\}|[a-z]+/g, (t) => (/^[a-z]+$/.test(t) ? canonKey(t) || t : t));
+const SPELLED = new Map();   // a shape literal as written ("nobody") → its canonical key ("nobodi"): the spelling-level garble rule reads these
+const canonSource = (src) => src.replace(/\[[^\]]*\]|\\.|\(\?<?[!=:]|\{\d+(?:,\d*)?\}|[a-z]+/g, (t) => {
+  if (!/^[a-z]+$/.test(t)) return t;
+  const c = canonKey(t) || t;
+  if (t.length >= 3 && t !== c) SPELLED.set(t, c);
+  return c;
+});
 const RX = (src) => new RegExp(`(?<![a-z])(?:${canonSource(src)})(?![a-z])`);
 /** [kind, id, source over the canonical reading, guard (true = reject)] */
 const SHAPES = [
@@ -81,10 +88,17 @@ const SHAPES = [
   ["self_harm", "happier_without_me", `(?:vould|vil|d|ll) be (?:so |much |a lot )?(?:hapier|beter|fine|ok|okay|beter of)${g(1)} (?:vithout me|if (?:i|ai) (?:vas|ver|vere|am|vasnt|verent) (?:ded|dead|gone|not here|not around|never born))`],
   // canonical copies of the shipped families' core shapes, so they too get the cross-script reading and the garble rule
   ["self_harm", "dont_want_to_live", `(?:dont|do not) ${WANT_EN} (?:to )?(?:live|be alive)(?! (?:in|at|vith|near|here|there|on))`],
-  ["self_harm", "mujhe_marna_hai", `${I_O} (?:bas )?(?:marna|mar jana) (?:hai|he|h|hain)|${I_S} mar (?:jaun|jau|jaon|jaunga|jaungi)(?! (?:kya|ki|ga))`, (m, full) => /(?<![a-z])(?:garmi|thand|bhuk|bhook|has|hans|hansi|hasi|joke|haha|lol|thakan|neend|nind)(?![a-z])/.test(full)],
+  ["self_harm", "mujhe_marna_hai", `${I_O} (?:bas )?(?:marna|mar jana) (?:hai|he|h|hain)|${I_S} mar (?:jaun|jau|jaon|jaunga|jaungi)(?! (?:kya|ki|ga))`, (m, full) => /(?<![a-z])(?:garmi|thand|bhuk|bhook|has|hans|hansi|hasi|joke|haha|lol|thakan|neend|nind)(?![a-z])/.test(full) ||
+    // Verify B (2026-10-05): "maarna" (to hit) is canonically "marna": what is hit, named right after, is a game / a mosquito
+    // ("mujhe maarna hai machhar ko", "mujhe bas maarna hai ek six", "main maar jaunga ye level"). The short spelling "mujhe marna
+    // hai" is pass 1's regardless.
+    /^(?: [a-z]+){0,2} (?:machar|machchar|makhi|kokroch|kokroach|chuha|chuhe|keda|kide|ball|bal|siks|chaka|chauka|bos|level|leval|jombie|game|gem|goal|viket|[0-9]+)(?![a-z])/.test(full.slice(full.indexOf(m) + m.length))],
   // round 2 (redteam.data.mjs REDTEAM_ROUND2: 18/50 before these)
   ["self_harm", "sab_khatam_karna", `(?<!(?:ye|yeh|is|ise|homevork|kam|savaal|saval|level|game|khana) )sab (?:kuch )?khatam (?:karna|kar dena) (?:chahta|chahti|chata|chati|hai|he)`],
-  ["self_harm", "nahi_jee_sakta", `${I_S}${g(2)} (?:aur |ab )?(?:nahi|nahin|nai|nhi) (?:ji|je|jiu|jiyu) (?:sakta|sakti|pata|pati|paunga|paungi)|(?:ji|jina) (?:nahi|nahin|nai) (?:sakta|sakti|pa raha|pa rahi)`],
+  ["self_harm", "nahi_jee_sakta", `${I_S}${g(2)} (?:aur |ab )?(?:nahi|nahin|nai|nhi) (?:ji|je|jiu|jiyu) (?:sakta|sakti|pata|pati|paunga|paungi)|(?:ji|jina) (?:nahi|nahin|nai) (?:sakta|sakti|pa raha|pa rahi)`,
+    // Verify B (2026-10-05): "koi mujhse jeet nahi sakta chess mein" — "jeet" (win, canonically "jit") is one edit from "ji"; the
+    // comparative "X se ... nahi sakta" frame, or a game, is winning, not living
+    (m, full) => LESSON.test(full) || /(?<![a-z])(?:mujhse|humse|tumse|usse|aapse|apse|se) (?:ji|jina) (?:nahi|nahin|nai)/.test(full)],
   ["self_harm", "kalai_cut", `(?:kalai|kalaiyon|nas|nasen|nason)(?: pe| par| ki| ko)? (?:kut|kat|kati|kata|kate|blade)`, (m, full) => ACCIDENT.test(full)],
   ["self_harm", "poison", `(?:jehar|jahar|jehr|jaher|poison)(?: [a-z]+)? (?:kha|pi|pee|kha)(?: [a-z]+)? (?:lun|lunga|lungi|lu|lena|liya|li|jaunga|jaungi)|(?:drink|eat|take|drank|ate|took|svalov\\w*) (?:some )?poison`],
   ["self_harm", "train_ke_aage", `(?:train|tren|bus|truk|gadi|kar)(?: ke)? (?:age|niche|samne|samane) (?:kud|a|so|let|chala|chali|jump)(?: [a-z]+)? (?:jaunga|jaungi|jaun|jau|jana|dunga|dungi)|(?:jump|lie dovn|lay dovn) in front of (?:a |the )?(?:train|bus|truk|kar)`],
@@ -142,11 +156,16 @@ const SHAPES = [
   ["fear", "kill_my_family_if_tell", `(?:vil|vould|gonna|gona|going to|il) (?:hurt|kil|beat|hit|harm) (?:me|mi family|mi mom|mi parents|mi brother|mi sister|mi dad)${g(1)} if (?:i|ai) (?:tel|told|say|speak)`],
   ["fear", "jaan_se_maar_dunga", `jan se mar (?:dunga|dungi|dega|degi|denge|dalunga|dalega|dalenge|dalungi|dene)`, (m, full) => LESSON.test(full)],
   ["fear", "scared_to_tell", `(?:skared|afraid|terified) to tel (?:anyone|anybody|someone|mi mom|mi parents|mi dad|mi teacher)`],
-  ["fear", "dhamkata", `dhamk(?:ata|ati|ate|aya|ayi|ana|ane)|dhamki (?:de|deta|deti|dete|di|diya|dia)`],
+  // Verify B (2026-10-05): a threat inside a story ("Ravan ne Sita ko dhamki di thi kahani mein", "villain ne hero ko dhamki di"):
+  // story words only, never LESSON (its "game" would silence "game wala bhaiya dhamki deta hai")
+  ["fear", "dhamkata", `dhamk(?:ata|ati|ate|aya|ayi|ana|ane)|dhamki (?:de|deta|deti|dete|di|diya|dia)`,
+    (m, full) => /(?<![a-z])(?:kahani|kahaniyan|stori|story|movie|muvi|film|kartun|serial|natak|kavita|chapter|vilain|vilen|ravan|rakshas|kans|hero|heroin)(?![a-z])/.test(full)],
   ["fear", "bataya_toh_maar_dega", `(?:kisi ko|kisiko|mumi ko|mami ko|papa ko|ghar pe|ghar par|teacher ko|mumi papa ko)(?: kuch)? (?:bataya|bola|bataega|bataegi|batai|bataoge|bataogi|batayi|batana)${g(3)} (?:mar|jan se mar|pitai|nuksan|mar dal|kat)(?: kar)? (?:dega|degi|denge|dalega|dalenge|dunga|karega|karenge)|(?:vil|vould|gonna|gona|going to|il) (?:hurt|kil|beat|hit|harm) me if (?:i|ai) (?:tel|told|say|speak)`],
   ["fear", "peecha_karta", `(?:koi|admi|ladka|unkle|bhaiya|someone|somebody|man|stranger)${g(2)} (?:mera|meri|mere) (?:picha|pichha) (?:karta|karte|karti|kar raha|kar rahi|kiya)|(?:foloving|folovs|stalking|stalks) me(?! on)`],
   ["fear", "dar_actor_se", `${I_O} (?:${ACTOR})(?: ji)? se${g(2)} (?:dar|dr) (?:lagta|lagti|lag|lagte)|(?:im|i am|i get|am) (?:so |realy |very |reali )?(?:skared|afraid|terified|frightened) of (?:mi|my) (?:dad|father|mom|mother|stepdad|stepfather|stepmom|stepmother|unkle|papa|mumi|brother|dadi|teacher|sir|kousin)`],
-  ["fear", "koi_baat_nahi_karta", `koi (?:bhi )?mujhse (?:bat|baat) (?:nahi|nahin|nai|nhi) (?:karta|karti|karte)|koi (?:bhi )?mujhe pasand (?:nahi|nahin|nai|nhi) (?:karta|karti|karte)|(?:nobodi|nobody|no one|noone) (?:talks to|likes) me`],
+  // NOT here: "koi mujhse baat nahi karta" / "nobody talks to me". Loneliness is a POINT_OUT, not a safeguarding moment
+  // (RELATIONAL-OS P2, server/relational/policy.js: "no helpline unless harm words"); the red team's first draft fired it and
+  // broke tests/relational-policy.test.mjs.
   ["fear", "scared_go_back_home", `(?:skared|afraid|terified|frightened) (?:to go|of going|to return|of)(?: bak)? home`],
   ["fear", "threat_blackmail_leak", `threat(?:en|ens|ened|ening) me|blakmail\\w*|(?:leak|viral|lik)(?: kar)? (?:mi|my|meri|mere) (?:fotos?|pics?|piktures?|videos?)|(?:mi|my|meri|mere) (?:fotos?|pics?|piktures?|videos?) (?:leak|viral|online|post)(?: kar| kr)? (?:dega|degi|denge|dunga|karega|vil|kar)`],
   ["fear", "ghar_chhod_bhaag", `ghar (?:chod|se)(?: ke| kar| kr)? (?:bhag|chali|chala) (?:jaunga|jaungi|jaun|jau|jana|jaenge)`],
@@ -190,10 +209,15 @@ function candidates(c, raw, deva, known) {
   // the spelling itself one edit from a lexicon word, where the canonical key hides it ("paa" → papa, "cacha" → chacha)
   // (also when the key is a 1-2 letter lexicon word the spelling collapsed into: "een" → in, "ppa" → pa; never otherwise:
   // "was" → nas fired "the tree was cut down", dev run)
-  if (!known && !deva && raw !== c && raw.length >= 3 && (!inVocab || c.length <= 2)) for (const n of [raw.length - 1, raw.length, raw.length + 1]) for (const w of VOCAB_BY_LEN.get(n) ?? []) if (lev1(raw, w)) out.add(w);
+  if (!known && !deva && raw !== c && raw.length >= 3 && (!inVocab || c.length <= 2)) {
+    for (const n of [raw.length - 1, raw.length, raw.length + 1]) for (const w of VOCAB_BY_LEN.get(n) ?? []) if (lev1(raw, w)) out.add(w);
+    for (const [w, k] of SPELLED) if (Math.abs(w.length - raw.length) <= 1 && lev1(raw, w)) out.add(k);   // "noody" → nobody
+  }
   // a letter added at the end of a short word ("mee" → me, "ie" → i, "toe" → to): canonKey would read "mee" as "mi" (my),
   // so this runs on the spelling and even when the token's key is itself a lexicon word
-  if (!deva && (raw.length >= 3 || raw.endsWith("e")) && raw.length <= 5) { const k = canonKey(raw.slice(0, -1)); if (k && k !== c && VOCAB.has(k)) out.add(k); }
+  // (Verify B, 2026-10-05: for a KNOWN real word only an added "e" is stripped — "diet" is not "die" + t, "I want to diet like
+  // mummy" fired i_want_to_die; the transcriber's slip, and the critic's garble, adds an "e": "koe", "haie", "diee")
+  if (!deva && (raw.length >= 3 || raw.endsWith("e")) && raw.length <= 5 && (!known || raw.endsWith("e"))) { const k = canonKey(raw.slice(0, -1)); if (k && k !== c && VOCAB.has(k)) out.add(k); }
   if (deva) {
     const cp = [...raw];
     const tryDeva = (w) => { const k = canonKey(w); if (k && k !== c && VOCAB.has(k)) out.add(k); };
@@ -262,3 +286,12 @@ export function lexiconScan(text) {
 }
 
 export const __lexicon = { SHAPES, VOCAB, canonSource };
+
+// Warm-up: V8 compiles a regex on its first exec and tiers it up to native code on its second. Unwarmed, the first child turns
+// of a process paid 20-120 ms here (90 large regexes), which landed in the relational p99 test (AT-U8, 3 ms) and would land on
+// a child's first turns. Two passes move that cost off the turn: at import on the server, at the first idle moment in a browser
+// (the device runs the predicate on partials; a blocking warm-up would add to page load).
+const warm = () => { for (const s of ["warm up the safety lexicon", "मुझे घर से डर लगता है papa ne mujhe"]) for (const sh of SHAPES) sh.re.exec(canonicalReading(s) + " " + s); };
+if (typeof window === "undefined") warm();
+else if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(warm);
+else setTimeout(warm, 0);

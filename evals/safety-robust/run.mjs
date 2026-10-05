@@ -6,6 +6,7 @@
 //   --seeds N   perturbation draws per distress item (seed 0 = the critic's own draw; report seeds 0..N-1)
 //   --dev       use the DEV seeds (1000..1000+N-1) instead: what tuning looked at, so the report seeds stay unseen
 //   --baseline  score pass 1 only (the shipped families on the bytes): today's predicate
+//   --no-lexicon  score without the verify-A canonical lexicon (server/safety/lexicon.js): the safety-robust build as reviewed
 //
 // Distress sets: TaxilaFDB 84 (21 F10 scenarios x 2 test voices x 2 conditions, rebuilt from the render manifest), ES-3 80
 // (category a), a held-out paraphrase set (negatives.data.mjs HELDOUT_DISTRESS, never tuned on) and the conversation-v2 offline
@@ -30,13 +31,15 @@ const flag = (k) => process.argv.includes(`--${k}`);
 const SEEDS = Number(arg("seeds", 20));
 const DEV = flag("dev");
 const BASE = flag("baseline");
-const LABEL = arg("label", BASE ? "baseline" : DEV ? "dev" : "report");
+const NOLEX = flag("no-lexicon");
+const LABEL = arg("label", BASE ? "baseline" : NOLEX ? "no-lexicon" : DEV ? "dev" : "report");
 const QUIET = flag("quiet");
 const DATE = "2026-10-05";
 
 const scan = (text) => {
   const d = scanSafetyDetail(text);
   if (BASE && d.pass !== 1) return { distress: false, kind: null, pass: null, via: null };
+  if (NOLEX && String(d.via).startsWith("lexicon:")) return { distress: false, kind: null, pass: null, via: null };
   return d;
 };
 const seedK = (k) => (DEV ? 1000 + k : k);
@@ -107,10 +110,10 @@ const fdb = C.taxilaFdbDistress();
 const es3 = C.es3Distress();
 const held = HELDOUT_DISTRESS.map(([text, kind], i) => ({ id: `held${i}`, segs: [text.split(/\s+/)], text, kind }));
 const cv2 = (await C.conversationV2Distress()).filter((x) => x.text).map((x) => ({ ...x, segs: [x.text.split(/\s+/)] }));
-// verify-A red team (2026-10-05): a second author's 226 disclosures (rounds 1-3). Tuned on (DEV data), so not an unseen estimate:
+// verify-A red team (2026-10-05): a second author's 225 disclosures (rounds 1-3). Tuned on (DEV data), so not an unseen estimate:
 // the unseen estimates are each round scored once before its fixes (round 2: 18/50, round 3: 14/30; redteam.data.mjs).
 const red = [...REDTEAM_DISTRESS, ...REDTEAM_ROUND2, ...REDTEAM_ROUND3].map(([text, kind], i) => ({ id: `red${i}`, segs: [text.split(/\s+/)], text, kind }));
-const distress = [distressSet("taxilafdb_84", fdb), distressSet("es3_80", es3), distressSet("heldout_paraphrase_40", held), distressSet("conversation_v2_offline", cv2), distressSet("redteam_verifyA_226", red)];
+const distress = [distressSet("taxilafdb_84", fdb), distressSet("es3_80", es3), distressSet("heldout_paraphrase_40", held), distressSet("conversation_v2_offline", cv2), distressSet("redteam_verifyA_225", red)];
 
 const hn = HARD_NEGATIVES;
 const fp = [
@@ -121,7 +124,7 @@ const fp = [
   fpSet("hard_negatives_plain_dev", hn.filter((x) => x.plain && x.split === "dev"), { perturb: SEEDS }),
   fpSet("hard_negatives_plain_holdout", hn.filter((x) => x.plain && x.split === "holdout"), { perturb: SEEDS }),
   fpSet("hard_negatives_ambiguous", hn.filter((x) => !x.plain)),
-  fpSet("redteam_quiet_126", [...REDTEAM_QUIET, ...REDTEAM_QUIET2, ...REDTEAM_QUIET3].map((text, i) => ({ id: `rq${i}`, text })), { perturb: SEEDS }),
+  fpSet("redteam_quiet_127", [...REDTEAM_QUIET, ...REDTEAM_QUIET2, ...REDTEAM_QUIET3].map((text, i) => ({ id: `rq${i}`, text })), { perturb: SEEDS }),
 ];
 
 // latency: µs per scan on lesson turns (the device runs it on every partial)
@@ -130,7 +133,7 @@ const l0 = performance.now();
 for (const t of lat) scanSafetyDetail(t);
 const usPerScan = ((performance.now() - l0) * 1000) / lat.length;
 
-const res = { id: `safety-robust-${LABEL}`, date: DATE, label: LABEL, baselineOnly: BASE, seeds: SEEDS, seedSet: DEV ? "dev" : "report",
+const res = { id: `safety-robust-${LABEL}`, date: DATE, label: LABEL, baselineOnly: BASE, noLexicon: NOLEX, seeds: SEEDS, seedSet: DEV ? "dev" : "report",
   method: "scanSafetyDetail on clean and sttReal-perturbed text (evals/duplex/critic/perturb.mjs, critic seed at k=0); FP on lesson corpora", usPerScanWithLru: +usPerScan.toFixed(1),
   distress, fp, wallMs: Math.round(performance.now() - t0) };
 fs.mkdirSync(path.join(HERE, "results"), { recursive: true });

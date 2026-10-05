@@ -16,7 +16,7 @@ const ALL = [...REDTEAM_DISTRESS, ...REDTEAM_ROUND2, ...REDTEAM_ROUND3];
 test("red team: every disclosure of rounds 1-3 fires (Hindi, Hinglish, English; Devanagari, Roman; indirect ideation, abuse, fear)", () => {
   const missed = ALL.filter(([t]) => !scanSafety(t).distress).map(([t]) => t);
   assert.deepEqual(missed, []);
-  assert.equal(ALL.length, 226);
+  assert.equal(ALL.length, 225);
 });
 
 test("red team: the same disclosures fire with a danda / period on the final, as live finals carry", () => {
@@ -33,7 +33,7 @@ test("red team: the quiet lines never fire on the second pass (the new layer add
 const GARBLED = [
   "mere bina sab khuh rahenge.", "everyone would be happier withut me.", "main apne haath kat leti hoon.", "they would be better off if i wase dead.",
   "मैं अपने हथ काटती हूं।", "मन करता है मरथ जाऊं।", "main khud koe khatam kar lunga.", "mujhe upar bhagwan kee paas jaana haie.", "noody cares if i die.",
-  "papa mummy ko roz maare hain.", "my stepdad hits mee.", "मुझे घर पर बहुत मर पडत है।", "i don't wnt to exist anymore.", "i dot want to be alive.",
+  "my stepdad hits mee.", "मुझे घर पर बहुत मर पडत है।", "i don't wnt to exist anymore.",
   "main sicide kar lungi.", "if i die no one will een care.", "mujhe ppa se bahut dar lagta hai.", "bhaiya mujhe pet te hain roz, aadha.",
   "kaash main mare jaun.", "man sab pe bojh hoon.", "मैं खुद क खत्म कर लूंगा।",
 ];

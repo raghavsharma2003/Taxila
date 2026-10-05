@@ -91,9 +91,15 @@ const MIRROR = (P) => {
 const THINK_UP = {
   // r8 i3: gaze (18, 20) -> (14, 23) and a little inner-brow lift (effort): the blind models read i2's more lateral look
   // plus the single arch as 'a mild skeptical undertone' / 'sly side-eye'; up-first reads as recalling
-  bs: { browOuterUpLeft: 0.82, browInnerUp: 0.2, eyeWideLeft: 0.05, eyeWideRight: 0.03,
-    mouthLeft: 0.45, mouthPressLeft: 0.6, mouthRollUpper: 0.2, mouthFrownRight: 0.22, mouthSmileLeft: -1, mouthSmileRight: -1 },
-  head: [-3, -3, 7], gaze: [14, 23], env: [0.35, 0, 0.45], act: "thinkUp", search: [2.4, 1.8],
+  // r9 (judge r8 fix 3): pushed toward c-thinking. The raised brow 0.82 -> 1.0 plus the rig's one-sided peak (~+35% at the
+  // arch's top); the mouth is a MOUE, not a thin line: the push-side press 0.6 -> 0.28 (it thinned the very side the
+  // concept fills), mouthShrugLower 0.22 (lower lip up and full, chin up) and mouthPucker 0.18 (lip volume, slightly
+  // narrower), the upper-lip roll 0.2 -> 0.08; gaze 3 px higher (23 -> 28 deg). The inner-brow lift stays (it removed
+  // the sceptical read in r8).
+  // r9 i2 (sol 1/3: 'mismatched brows plus pursed lips -> suspicion'): inner-brow lift 0.2 -> 0.32 (wonder, effort), pucker 0.18 -> 0.12
+  bs: { browOuterUpLeft: 1.0, browInnerUp: 0.32, eyeWideLeft: 0.05, eyeWideRight: 0.03,
+    mouthLeft: 0.45, mouthPressLeft: 0.28, mouthRollUpper: 0.08, mouthShrugLower: 0.22, mouthPucker: 0.12, mouthFrownRight: 0.22, mouthSmileLeft: -1, mouthSmileRight: -1 },
+  head: [-3, -3, 7], gaze: [14, 28], env: [0.35, 0, 0.45], act: "thinkUp", search: [2.4, 1.8],
 };
 // r7 take C (eyes down and aside, chin tucked, lips pressed and drawn to one side, one outer brow half up, no knit, zero
 // smile). r8: the RARE take only (judge r7: as the default it read sceptical side-eye in motion, shy / downcast at full size)
@@ -114,13 +120,16 @@ const CONCERN_B = {
   // and the judge). Same tilt and lean, but the lips PART (jaw ~7 px) with both corners down and the lower lip drawn DOWN,
   // not forward (mouthShrugLower 0, mouthLowerDown 0.2); the upper lip stays put so the upper teeth stay hidden (the
   // solver caps the upper teeth while an expression's lower-lip pull holds); inner brows up: 'oh no, are you okay?'
-  bs: { browInnerUp: 1.0, browDownLeft: 0.22, browDownRight: 0.22,
-    jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthFrownLeft: 0.36, mouthFrownRight: 0.36, mouthSmileLeft: -1, mouthSmileRight: -1 },
+  // r9 (judge r8 fix 4): brows ~25% less angular (grok: 'sharp, adult'): inner 1.0 -> 0.82, knit 0.22 -> 0.12 and a little
+  // outer lift (0.15) so the whole brow rises instead of only tilting; the mouth's lower edge rounds and its corners curl
+  // (lips.js: the lower-lip pull rounds the profile, worry x pull curls the ends)
+  bs: { browInnerUp: 0.82, browOuterUpLeft: 0.15, browOuterUpRight: 0.15, browDownLeft: 0.12, browDownRight: 0.12,
+    jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthPucker: 0.12, mouthFrownLeft: 0.36, mouthFrownRight: 0.36, mouthSmileLeft: -1, mouthSmileRight: -1 },
   head: [8, 0, -8], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",   // r8 i2: yaw -4 -> 0 (the field bent the parted mouth: sol "crooked, mechanically warped")
 };
 export const VARIANTS = {
   // r8: UP (default, c-thinking), UP mirrored (the other side), C (eyes down) rare
-  thinking: [THINK_UP, { ...MIRROR(THINK_UP), head: [-3, 3, -6], gaze: [-13, 22] }, THINK_C],
+  thinking: [THINK_UP, { ...MIRROR(THINK_UP), head: [-3, 3, -6], gaze: [-13, 27] }, THINK_C],
   concern: [
     CONCERN_A,
     CONCERN_B,
@@ -201,6 +210,10 @@ export class Expressions {
   emote(name, t, { hold = 1.6, intensity = 1, variant } = {}) {
     if (!EXPRESSIONS[name]) return;
     const { P, i } = this.pick(name, variant);
+    // r9: a new emote CROSSFADES from the one it replaces (r8 swapped instantly: concern A -> B jumped the head roll 15 deg);
+    // the old take keeps its own curves and fades out over the new one's attack (>= 0.3 s)
+    const e0 = this.cur ? this.level(t) : 0;
+    this.prev = e0 > 0.01 ? { c: this.cur, e0, t0: t, fade: Math.max(0.3, P.env[0]) } : null;
     this.cur = { name, t0: t, hold, I: intensity, rel: -1, P, variant: i, ph: this.rng() * 6.283 };
     if (P.bounce) this.bounce.v -= P.bounce * 14;
   }
@@ -222,16 +235,27 @@ export class Expressions {
     let left = dt;
     while (left > 1e-6) { const h = Math.min(0.004, left); this.bounce.v += (-160 * this.bounce.x - 2 * 0.5 * Math.sqrt(160) * this.bounce.v) * h; this.bounce.x += this.bounce.v * h; left -= h; }
     head[0] += this.bounce.x;
+    this.lean = 0;
+    // r9: the outgoing take (crossfade), mixed first so the incoming one wins where both set a key
+    if (this.prev) {
+      const pv = this.prev, ep = pv.e0 * (1 - smooth01((t - pv.t0) / pv.fade));
+      if (ep <= 0.001) this.prev = null;
+      else this._mix(pv.c, ep, t, bs, head, gaze, lip);
+    }
     const e = this.level(t);
-    if (!this.cur || e <= 0) { this.lean = 0; return 0; }
-    const P = this.cur.P || EXPRESSIONS[this.cur.name];
-    const pu = P.pulse, pt = t - this.cur.t0 - (pu ? pu.delay : 0);
+    if (!this.cur || e <= 0) return 0;
+    this._mix(this.cur, e, t, bs, head, gaze, lip);
+    return e;
+  }
+  _mix(cur, e, t, bs, head, gaze, lip) {
+    const P = cur.P || EXPRESSIONS[cur.name];
+    const pu = P.pulse, pt = t - cur.t0 - (pu ? pu.delay : 0);
     const pw = pu ? (pt < 0 ? 0 : pt < pu.a ? smooth01(pt / pu.a) : pt < pu.a + pu.hold ? 1 : 1 - smooth01((pt - pu.a - pu.hold) / pu.r)) : 1;
-    const u = t - this.cur.t0;
+    const u = t - cur.t0;
     for (const [k, v0] of Object.entries(P.bs)) {
       let v = pu && pu.keys.includes(k) ? v0 * pw : v0;
       // r7: micro-motion on a held key (sum of slow sines; the phases are fixed per emote so takes differ)
-      if (P.wob && P.wob[k]) for (const [amp, hz] of P.wob[k]) v += amp * Math.sin(2 * Math.PI * hz * u + (this.cur.ph || 0) + hz);
+      if (P.wob && P.wob[k]) for (const [amp, hz] of P.wob[k]) v += amp * Math.sin(2 * Math.PI * hz * u + (cur.ph || 0) + hz);
       // r8: every LIP-layer key of a preset goes to the lip layer (the compositor drops behaviour's lip keys, so r7's
       // presets lost mouthPucker / mouthFunnel in the clip while the sheet stills showed them)
       if (LIPK.has(k)) { if (lip) lip[k] = Math.max(lip[k] ?? 0, v * e); continue; }
@@ -240,17 +264,15 @@ export class Expressions {
     }
     for (let i = 0; i < 3; i++) head[i] += P.head[i] * e;
     // r7: the acting layer (head + body curves); a mirrored take mirrors yaw and roll
-    this.lean = 0;
     if (P.act && ACTS[P.act]) {
       const A = ACTS[P.act](u), m = P.mir ? -1 : 1;
       head[0] += A.head[0] * e; head[1] += m * A.head[1] * e; head[2] += m * A.head[2] * e;
-      this.lean = A.lean * e;
+      this.lean += A.lean * e;
     }
     // gaze: blend toward the preset (an averted expression look replaces behaviour's micro-saccades while held)
-    const sr = searchAt(u, this.cur.ph || 0, P.search);
+    const sr = searchAt(u, cur.ph || 0, P.search);
     gaze[0] = gaze[0] * (1 - e) + (P.gaze[0] + sr[0]) * e;
     gaze[1] = gaze[1] * (1 - e) + (P.gaze[1] + sr[1]) * e;
-    return e;
   }
 }
 
