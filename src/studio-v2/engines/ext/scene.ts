@@ -57,7 +57,7 @@ export function layoutScene(sc: SceneT): Map<string, Pos> {
         // closed loops read clockwise; labels sit OUTSIDE the loop so arrows never cross them
         const cx = itemR!.x + itemR!.w / 2, top = itemR!.y + 80, bot = itemR!.y + itemR!.h - 80, cyy = (top + bot) / 2;
         if (n === 3) { const pts: [number, number, "above" | "below"][] = [[cx, top, "above"], [cx + 260, bot, "below"], [cx - 260, bot, "below"]]; [x, y] = pts[i]; pos.set(e.id, { x, y, lab: pts[i][2] }); return; }
-        if (n === 4) { const t4 = itemR!.y + 84, b4 = itemR!.y + itemR!.h - 98; const pts: [number, number, "above" | "below"][] = [[cx - 210, t4, "above"], [cx + 210, t4, "above"], [cx + 210, b4, "below"], [cx - 210, b4, "below"]]; [x, y] = pts[i]; pos.set(e.id, { x, y, lab: pts[i][2] }); return; }
+        if (n === 4) { const t4 = itemR!.y + 78, b4 = itemR!.y + itemR!.h - 82; const pts: [number, number, "above" | "below"][] = [[cx - 225, t4, "above"], [cx + 225, t4, "above"], [cx + 225, b4, "below"], [cx - 225, b4, "below"]]; [x, y] = pts[i]; pos.set(e.id, { x, y, lab: pts[i][2] }); return; }
         const a = -Math.PI / 2 + (i / n) * Math.PI * 2, rx = Math.min(340, itemR!.w / 2 - 120), ry = (bot - top) / 2;
         x = cx + Math.cos(a) * rx; y = cyy + Math.sin(a) * ry; pos.set(e.id, { x, y, lab: Math.sin(a) < -0.3 ? "above" : "below" }); return;
       } else { const cols = Math.ceil(n / 2), row = Math.floor(i / cols), col = i % cols, inRow = row === 0 ? cols : n - cols; x = itemR!.x + ((col + 0.5) * itemR!.w) / inRow; y = itemR!.y + (row === 0 ? itemR!.h * 0.22 : itemR!.h * 0.7); }
@@ -67,7 +67,7 @@ export function layoutScene(sc: SceneT): Map<string, Pos> {
   for (const e of items) {
     const p = pos.get(e.id); if (!p || p.lab === "above") continue;
     const txt = e.type === "node" ? e.text : "", sub = e.type === "node" && e.sub ? 46 : 0;
-    const lines = e.type === "node" ? estLines(txt, e.glyph ? 230 : 250) : 0;
+    const lines = e.type === "node" ? estLines(txt, e.glyph ? 210 : 250) : 0;
     const bottom = e.type === "node" ? (e.glyph ? p.y + 46 + 12 + lines * 44 + sub : p.y + (lines * 46 + 26) / 2 + sub) : p.y + ((e as { size?: number }).size ?? 160) / 2;
     if (bottom > 518) p.y -= bottom - 518;
   }
@@ -171,7 +171,7 @@ function create(api: EngineApi, spec: SceneSpec): EngineInstance {
       ctx.restore();
       drawGlyph(ctx, e.glyph, x, y, 62 * s, C.ink, hexA(col, 0.35), a);
       const above = P(e.id)?.lab === "above";
-      const lines = wrap(api, ctx, label, 230, { size: 38, weight: 600 }, 2), lh = 44, bh = lines.length * lh + (e.sub ? 46 : 0);
+      const lines = wrap(api, ctx, label, 210, { size: 38, weight: 600 }, 2), lh = 44, bh = lines.length * lh + (e.sub ? 46 : 0);
       const ly0 = above ? y - r - 14 - bh : y + r + 12;
       lines.forEach((ln, li) => api.text(ctx, ln, x, ly0 + lh * (li + 0.5), { size: 38, weight: 600, color: C.ink, align: "center", baseline: "middle", alpha: a, maxWidth: 236 }));
       if (e.sub) api.text(ctx, e.sub, x, ly0 + lines.length * lh + 22, { size: 38, color: C.ink3, align: "center", baseline: "middle", alpha: a, maxWidth: 240 });
