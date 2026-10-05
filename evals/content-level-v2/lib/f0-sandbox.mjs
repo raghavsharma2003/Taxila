@@ -38,14 +38,20 @@ export async function loadF0Sandbox({ mergedKits = false, kitsDir } = {}) {
     mergedDir = S("kits-merged");
     mergeDir(join(REPO, "data/kits"), join(REPO, "data/kits-relevel"), mergedDir);
   }
-  const prevKits = process.env.TAXILA_KITS_DIR;
-  // The copied kits.js resolves its default dir relative to the temp copy, so always point it at real kits or the merge.
-  process.env.TAXILA_KITS_DIR = kitsDir || mergedDir || join(REPO, "data/kits");
+  // The copied kits.js resolves its default dir relative to the temp copy, so pin it to real kits or the merge. Pinned in
+  // the COPY, never via process.env.TAXILA_KITS_DIR: npm test runs every file in one process (tests/index.js), so an env
+  // write here raced kit-pin.test.mjs and the other rs6 sandboxes (one cleanup deleted the var mid-run of another and
+  // every kitFromFile returned null: 6 rs6 failures in the 2026-10-05 Day 0 full run, 0 when run alone).
+  const pinned = pathToFileURL(join(kitsDir || mergedDir || join(REPO, "data/kits"), "/")).href;
+  const kitsSrc = readFileSync(S("server/content/kits.js"), "utf8");
+  const kitsPinned = kitsSrc.replace(/^const kitsDir = \(\) => .*$/m, `const kitsDir = () => new URL(${JSON.stringify(pinned)});`);
+  if (kitsPinned === kitsSrc) throw new Error("f0-sandbox: kits.js kitsDir line not found; cannot pin the kit dir");
+  writeFileSync(S("server/content/kits.js"), kitsPinned);
   const u = (rel) => pathToFileURL(S(rel)).href;
   const items = await import(u("server/director/items.js"));
   const nextTopic = await import(u("server/content/next-topic.js"));
   const kits = await import(u("server/content/kits.js"));
   const curriculum = await import(pathToFileURL(join(REPO, "server/content/curriculum.js")).href);
   return { root, items, nextTopic, kits, curriculum, mergedDir,
-    cleanup() { if (prevKits === undefined) delete process.env.TAXILA_KITS_DIR; else process.env.TAXILA_KITS_DIR = prevKits; rmSync(root, { recursive: true, force: true }); } };
+    cleanup() { rmSync(root, { recursive: true, force: true }); } };
 }
