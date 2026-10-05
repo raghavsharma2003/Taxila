@@ -5310,3 +5310,7 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-day0-live-stop-building-2026-10-05` (2026-10-05): Day 0 + Wave 2 are live (web and worker 7ce6033, prod migrations 016-020, backup branch pre-day0-deploy-2026-10-05). Per the owner directive, no new build streams start; the owner tests taxila.dev and the next plan is written from the findings. Reverse if: the owner asks for a specific build before testing.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `owner-ship-five-2026-10-05` (2026-10-05): Owner (2026-10-05, after Day 0 went live): build all five priorities end to end and deploy them: duplex two-way teacher, the 2D face (ship it; blind judge score 3.75 accepted by the owner), voice-signal knowledge states, live-built content with speculative stagecraft, natural student-tutor interaction. Supersedes the build-then-wait-for-owner-test pause. Implies approval of the on-device onnxruntime-web dependency the voice signals need. VALUES-100 honesty rule still holds: a voice state below precision 0.80 on children acts in shadow and the status page says so. Reverse if: the owner's own test finds a shipped priority makes the lesson worse; it goes back behind its flag.
