@@ -5306,3 +5306,7 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-test-hooks-file-scoped-2026-10-05` (2026-10-05): Test files that swap global state in hooks keep those hooks inside a describe. npm test runs every file in one process, so a top-level beforeEach wraps every other file's tests. Capturing fetch at module load was not enough: the stub was already installed when studio-router.test.mjs loaded (gated deploy of 37247c4 failed the same way). classify.test.mjs and avatar-tutor-routes.test.mjs now scope their hooks in a describe. Reverse if: tests run with process isolation.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-day0-live-stop-building-2026-10-05` (2026-10-05): Day 0 + Wave 2 are live (web and worker 7ce6033, prod migrations 016-020, backup branch pre-day0-deploy-2026-10-05). Per the owner directive, no new build streams start; the owner tests taxila.dev and the next plan is written from the findings. Reverse if: the owner asks for a specific build before testing.

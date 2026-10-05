@@ -53,9 +53,9 @@ a{color:var(--brand)}
 
 <main>
   <header style="display:grid;gap:10px">
-    <span class="eyebrow">Taxila · status as of 5 Oct 2026, morning IST</span>
+    <span class="eyebrow">Taxila · status as of 5 Oct 2026, 22:30 IST · deploy 7ce6033</span>
     <h1>Where Taxila stands</h1>
-    <p class="lede">The live site has not changed since you rated it 0/100. A large amount has been built since then, and almost none of it is live yet. Wave 2 is in its final merge step; after it come the 10 fixes for your complaints, a deploy, and then your five priorities in order.</p>
+    <p class="lede">Wave 2 and the Day 0 fixes are now live on taxila.dev. That fixes part of what you rated 0/100, not all of it. Your five priorities are built but not switched on. Nothing new is being built until you have tested this and we agree a plan from what you find.</p>
     <div class="legend">
       <span><span class="chip LIVE">LIVE</span> on taxila.dev now</span>
       <span><span class="chip BUILT">BUILT</span> code exists and is tested, not live</span>
@@ -65,32 +65,35 @@ a{color:var(--brand)}
   </header>
 
   <section>
-    <h2>If you open taxila.dev today</h2>
+    <h2>Please test these on taxila.dev</h2>
     <div class="cols">
       <div class="card">
-        <h3>What will happen</h3>
+        <h3>Should now work</h3>
         <ul>
-          <li>Classes 1 to 9 offered, with cartoon and baby-animal visuals.</li>
-          <li>Click to speak, with replies taking about 3.9 s.</li>
-          <li>The old robotic voice (gpt-4o-mini-tts). Diya is not live yet.</li>
-          <li>A flat, static drawn face.</li>
-          <li>A dice-level first question for class 4.</li>
-          <li>"End the lesson" or "talk about something else" ends it at once.</li>
-          <li>"Show me a diagram" produces nothing.</li>
-          <li>Quiz-style activities, sometimes graded wrong.</li>
-          <li>The time picker is broken on phones.</li>
+          <li><strong>The voice is Diya</strong>, with Hindi numbers said right.</li>
+          <li><strong>Saying goodbye ends the lesson.</strong> Saying "stop" or "bas" gets one warm check-in, not an instant end.</li>
+          <li><strong>A day after a lesson, the next one should open by re-checking yesterday's skill.</strong> Production test: this did not happen (17 of 22 checks passed). Please try it.</li>
+          <li><strong>A first question at your level</strong>, picked by the school calendar (about chapter 7 to 8 in October).</li>
+          <li><strong>"Show me a diagram" or "draw it"</strong> puts something on the board: 10 of 12 requests in the production test.</li>
+          <li><strong>Steering</strong> like "explain with cricket" or "slowly please": 11 of 16 acted on in the next turn.</li>
+          <li><strong>The safety floor:</strong> helplines, never denying she is an AI, and distress caught even when speech is misheard (recall 99.9% in tests).</li>
         </ul>
       </div>
       <div class="card">
-        <h3>What still works</h3>
+        <h3>Known still wrong (please confirm or add)</h3>
         <ul>
-          <li>Helplines (1098, 14416), saying she is an AI, and the safeguarding hand-off.</li>
-          <li>Speech recognition is accurate (11 of 11 test clips).</li>
-          <li>Delayed checks and re-teaching run, and parent letters arrive.</li>
-          <li>Requests like "explain it with cricket" work.</li>
+          <li><strong>Grading:</strong> 1 of 48 typed answers graded wrong, and the server still believes 8 of 9 forged "correct" claims from activities. One activity cannot be answered at all.</li>
+          <li><strong>Confusing replies:</strong> 38 defects in 90 turns: bare questions, repeats, loops, cut-off sentences.</li>
+          <li><strong>"Example do" and "story ki tarah batao"</strong> are often ignored. "Can we talk about something else" is treated as a break, which is against your rule.</li>
+          <li><strong>Animations:</strong> asked-for animations failed twice. The board arrives about 4.7 s after she starts talking (target 1.5 s).</li>
+          <li><strong>Old look:</strong> still click to speak, the old static face and the old design.</li>
         </ul>
-        <p class="muted">Every one of your 16 complaints should still reproduce on the live site. Fixes for all of them exist in the code but are not deployed.</p>
       </div>
+    </div>
+    <div class="card">
+      <h3>Not in this deploy (built, switched off)</h3>
+      <p>The hands-free two-way teacher, the 2D face, voice signals, the new game and animation engines with parallel building, and the new design. The plan after your test decides their order.</p>
+      <p class="muted">Production test run, 5 Oct evening: all API suites pass. Most browser checks timed out here because this test machine's connection was slow (even example.com took 15 s), so they say nothing about the site. Your own test on a phone is the real check.</p>
     </div>
   </section>
 
@@ -100,10 +103,10 @@ a{color:var(--brand)}
       <thead><tr><th>Priority</th><th>Status</th><th>Built so far</th><th>Measured</th><th>What is left</th></tr></thead>
       <tbody>
         <tr><td>1. Two-way (Griffin-style) teacher</td><td><span class="chip BUILT">BUILT</span></td><td>A decision engine that re-decides about every 100 ms, listens while she speaks, and handles backchannels and barge-in. Tested in simulation only.</td><td class="num">Cuts off a thinking child 0% (silence-wait 83%, today 25%); decides 0.36 s after the child stops</td><td>Stopping when interrupted: 0.76 s against a 0.2 s target. Talking through "haan haan": 70% against 90%. Never tested on real speech. Needs the India speech lane (your Azure ticket).</td></tr>
-        <tr><td>2. 2D teacher face</td><td><span class="chip BUILT">BUILT</span></td><td>In-house style-C puppet that talks, listens, thinks and emotes. Art and runtime are done; it is not wired into the app.</td><td class="num">Judge score 4.0/5 at round 7 (r4 3.8). 3D was abandoned at 2/5.</td><td>0.5 below your 4.5 bar. Polishing continues. Wiring into the lesson tile is one function call once you accept a score.</td></tr>
+        <tr><td>2. 2D teacher face</td><td><span class="chip BUILT">BUILT</span></td><td>In-house style-C puppet that talks, listens, thinks and emotes. Art and runtime are done; it is not wired into the app.</td><td class="num">Blind judges 3.75/5 (n=4); our own AI reviewers said 4.0 to 4.1. 3D was abandoned at 2/5.</td><td>Below your 4.0 ship bar on the blind score. Lip-sync to Diya is built; wiring it into the lesson waits on the plan.</td></tr>
         <tr><td>3. Voice features (did the child understand)</td><td><span class="chip BUILT">BUILT</span></td><td>On-phone hesitation detector (45 KB), per-child baselines, knowledge-state rules. Runs in test mode only.</td><td class="num">Hesitation detection 0.94 on adult speech. Nothing measured on children.</td><td>Needs real children's recordings (pilot of about 200) and your OK on one small library.</td></tr>
-        <tr><td>4. Live-built content shown to the student</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>16 real-time game and animation engines, a whiteboard planner, a picture lane. The parallel "build several, show the right one" engine is being researched and built now.</td><td class="num">0 visible failures in 16,000 broken specs; 43–59 fps (container, not a phone). Live site: 0 of 12 picture requests shown.</td><td>Engines cover 48 of 385 class 4–7 topics. Whiteboard arrives up to 3.2 s late. A child's request still triggers nothing until fix 09 is applied.</td></tr>
-        <tr><td>5. Student–teacher conversation</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>10 fixes for your exact complaints (listening, steering, stop check-in, grading). A new conversation system with 47 kinds of child intent, as a prototype.</td><td class="num">Live: 39% of 345 conversation tests pass (target 85%); 19% of turns broken</td><td>Apply the 10 fixes after the merge, then move the new conversation system into the server.</td></tr>
+        <tr><td>4. Live-built content shown to the student</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>16 real-time game and animation engines, a whiteboard planner, a picture lane. The parallel "build several, show the right one" engine is being researched and built now.</td><td class="num">0 visible failures in 16,000 broken specs; 43–59 fps (container, not a phone). Live: 10 of 12 picture and board requests shown.</td><td>Engines cover 48 of 385 class 4–7 topics. Whiteboard arrives about 4.7 s after she starts (target 1.5 s). Asked-for animations failed 2 of 2.</td></tr>
+        <tr><td>5. Student–teacher conversation</td><td><span class="chip BUILT">BUILT</span> <span class="chip DESIGN">DESIGNED</span></td><td>The 10 fixes for your complaints are live. A new conversation system with 47 kinds of child intent exists as a prototype.</td><td class="num">Live: 39% of 345 conversation tests pass (target 85%); 19% of turns broken</td><td>Live production test: 38 defects in 90 turns, steering 11/16. Your test decides what comes first.</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -112,10 +115,10 @@ a{color:var(--brand)}
     <h2>The values we sell</h2>
     <p class="muted">How far each one is from your bar. These are estimates, from the audit.</p>
     <div class="cols">
-      <div class="card score"><div class="row"><h3>Knowing whether the child learnt it, and moving on accordingly</h3><span class="pct">~45% done</span></div><div class="bar"><i style="width:45%"></i></div><p class="muted">The most mature part: delayed checks and re-teaching work live (63/63, 22/22). Held back by wrong grading (a wrong answer marked right 16/16), too-easy first questions, and a placement test that is built but has never run.</p></div>
+      <div class="card score"><div class="row"><h3>Knowing whether the child learnt it, and moving on accordingly</h3><span class="pct">~45% done</span></div><div class="bar"><i style="width:45%"></i></div><p class="muted">The most mature part: delayed checks and re-teaching work live (63/63, 22/22). Held back by grading that still believes forged activity answers (8/9), and a next-day check that did not open the next lesson in the production test.</p></div>
       <div class="card score"><div class="row"><h3>Understanding learning behaviour automatically</h3><span class="pct">~20% done</span></div><div class="bar"><i style="width:20%"></i></div><p class="muted">Text and behaviour signals are built (42 tests) but nothing reads them yet. Voice signals are proven on adults only. Needs real children's data.</p></div>
       <div class="card score"><div class="row"><h3>World-class content on the go, asked or not</h3><span class="pct">~15% done</span></div><div class="bar"><i style="width:15%"></i></div><p class="muted">The engines are real games, not quizzes, but none are in the app yet. The parallel content engine is starting now.</p></div>
-      <div class="card score"><div class="row"><h3>Human-like teacher</h3><span class="pct">~25–30% done</span></div><div class="bar"><i style="width:28%"></i></div><p class="muted">Voice chosen (Diya 3.5/5) and a fix so she says Hindi numbers right (87% → 98%). The face is at 4.0/5. Neither is live.</p></div>
+      <div class="card score"><div class="row"><h3>Human-like teacher</h3><span class="pct">~25–30% done</span></div><div class="bar"><i style="width:28%"></i></div><p class="muted">Diya is live, with Hindi numbers said right (87% → 98%). The face scores 3.75 from blind judges and is not live.</p></div>
       <div class="card score"><div class="row"><h3>Natural conversation</h3><span class="pct">~20% done</span></div><div class="bar"><i style="width:20%"></i></div><p class="muted">Two-way engine proven in simulation; steering and parking off-topic questions are prototypes. Live is still click-to-speak at 39%.</p></div>
     </div>
   </section>
@@ -128,13 +131,13 @@ a{color:var(--brand)}
         <tr><td>Design for ages 9–15</td><td><span class="chip NONE">old look</span></td><td><span class="chip BUILT">BUILT</span> New design system and every screen, 106 screenshots with 0 layout faults</td><td>Not connected to real data yet</td></tr>
         <tr><td>Onboarding and scheduling</td><td><span class="chip LIVE">LIVE</span> with defects</td><td><span class="chip BUILT">BUILT</span> Classes 4–7 only; a time picker that works 20/20</td><td>Waits on the new design being wired in</td></tr>
         <tr><td>Content level and placement</td><td><span class="chip LIVE">LIVE</span> too easy</td><td><span class="chip BUILT">BUILT</span> Placement test, harder questions for all 385 topics</td><td>Too-easy first questions still 30% (target 0)</td></tr>
-        <tr><td>Grading correctness</td><td><span class="chip LIVE">LIVE</span> wrong</td><td><span class="chip BUILT">BUILT</span> Server checks every answer against the key</td><td>Fix not applied yet</td></tr>
+        <tr><td>Grading correctness</td><td><span class="chip LIVE">LIVE</span> partly fixed</td><td><span class="chip BUILT">BUILT</span> Server re-check of activity answers (needs rework)</td><td>8 of 9 forged activity answers still accepted</td></tr>
         <tr><td>Voice in (listening)</td><td><span class="chip LIVE">LIVE</span> click to speak</td><td><span class="chip BUILT">BUILT</span> Hands-free two-way engine</td><td>India speech lane (your ticket)</td></tr>
-        <tr><td>Voice out</td><td><span class="chip LIVE">LIVE</span> old voice</td><td><span class="chip BUILT">BUILT</span> Diya + Hindi-script step</td><td>Pace tuning after the Hindi-script step</td></tr>
+        <tr><td>Voice out</td><td><span class="chip LIVE">LIVE</span> Diya</td><td>Hindi-script step</td><td>Pace tuning by ear on the live product</td></tr>
         <tr><td>Teacher face</td><td><span class="chip LIVE">LIVE</span> static drawing</td><td><span class="chip BUILT">BUILT</span> 2D puppet at 4.0/5; 3D dropped at 2/5</td><td>0.5 below your bar; not wired in</td></tr>
         <tr><td>Relationship layer</td><td><span class="chip NONE">none</span></td><td><span class="chip BUILT">BUILT</span> Bond tracking, never-rules, safe openings</td><td>Long-term memory and rituals only designed</td></tr>
         <tr><td>Parent corner and reports</td><td><span class="chip LIVE">LIVE</span> inconsistent counts</td><td><span class="chip BUILT">BUILT</span> One-truth parent data, EN/HI reports</td><td>Waits on the merge</td></tr>
-        <tr><td>Safety floor</td><td><span class="chip LIVE">LIVE</span></td><td><span class="chip BUILT">BUILT</span> Distress detection that survives speech errors (recall 70.6% → 99.9%, 0 new false alarms)</td><td>Live misses 16 of 84 distress lines when speech is misheard; fix ships with the next deploy</td></tr>
+        <tr><td>Safety floor</td><td><span class="chip LIVE">LIVE</span></td><td><span class="chip BUILT">BUILT</span> Distress detection that survives speech errors (recall 70.6% → 99.9%, 0 new false alarms)</td><td>Robust detection is live; the model read runs on every turn</td></tr>
         <tr><td>India hosting</td><td><span class="chip LIVE">LIVE</span> US East</td><td><span class="chip BUILT">BUILT</span> South India staging rehearsed</td><td>Database ticket and quota (yours)</td></tr>
         <tr><td>Android app</td><td><span class="chip NONE">NOT STARTED</span></td><td>Web app works on phones</td><td>Not planned yet</td></tr>
       </tbody>
@@ -142,29 +145,18 @@ a{color:var(--brand)}
   </section>
 
   <section>
-    <h2>The road to your next test</h2>
+    <h2>What happens next</h2>
     <ol>
-      <li><strong>Finish the Wave 2 merge,</strong> with all checks passing, the database updates, and a deploy.</li>
-      <li><strong>Day 0:</strong> the 10 fixes for your complaints, no more easy openers, the safety upgrade, then deploy. This is the cheapest visible win: grading, "end the lesson", "show me" and the dice question all get fixed.</li>
-      <li><strong>Your priorities in order, behind switches:</strong>
-        <ol>
-          <li>two-way teacher;</li>
-          <li>2D face plus Diya;</li>
-          <li>voice features (test mode);</li>
-          <li>live content with the parallel engine;</li>
-          <li>new conversation;</li>
-          <li>the new design wired in.</li>
-        </ol>
-      </li>
-      <li><strong>Full experience test:</strong> 30 child-like sessions, the conversation test at 85% or more, and all 187 defects re-checked on the live site.</li>
-      <li><strong>Your own test.</strong> The plan estimates about 3 weeks from the merge. That is an estimate, and Wave 2 took longer than its plan.</li>
+      <li><strong>You test taxila.dev,</strong> ideally on a phone, as a class 4 to 7 child would.</li>
+      <li><strong>You tell me what is wrong,</strong> in any form: voice notes, screenshots or a list.</li>
+      <li><strong>We write one plan from your findings</strong> and agree it before any more building.</li>
     </ol>
     <div class="card">
       <h3>What I need from you</h3>
       <ul>
-        <li><strong>2D face:</strong> ship at 4.0/5 now and keep polishing, or wait for 4.5?</li>
-        <li><strong>Two-way teacher:</strong> its plan asks for 2 weeks of internal testing before children use it. Keep that, or shorten it?</li>
-        <li><strong>Azure tickets:</strong> the South India database and the speech quota. These unblock the fast two-way teacher.</li>
+        <li><strong>2D face:</strong> blind judges score it 3.75. The 4.0 and 4.1 came from our own AI reviewers. Ship it at 3.75, or polish it first?</li>
+        <li><strong>Your test findings,</strong> in any form. They decide the plan.</li>
+        <li><strong>Azure:</strong> the South India database ticket is filed and open. The model quota form, one submission per model (gpt-5.6-luna, grok-4-1-fast-non-reasoning, MAI-Transcribe-2-Streaming first), is still to send.</li>
         <li><strong>Approvals:</strong> the small on-phone voice library, a ₹10k test phone, and recruiting the real-child pilot.</li>
       </ul>
     </div>

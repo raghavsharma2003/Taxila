@@ -1,0 +1,20 @@
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS diagram "show me a diagram" (typed, Meher): produced on the stage and referred to — yes (studioSlot 31fee9e1-e797-4c22-8c2e-ec0c31a04fbe:wb:3:slot) | teacher: "Meher, look at the screen: 3 equal groups, with 5 in each group. Count the groups and total; what do you notic"
+PASS diagram "show me a diagram" (spoken, Meher): produced on the stage and referred to — yes (studioSlot 8f47cbb4-162b-4003-9810-995cfa85dfe1:wb:3:slot) | teacher: "Meher, look at the 3 equal groups on screen: each group has 5 dots. Count the dots in one group—how many are t"
+PASS picture "picture dikhao" (typed, Aarav): produced on the stage and referred to — yes (mount number-line@1) | teacher: "Aarav, screen par 0 aur 1 dekhiye: 0 se 1 ke beech 5 equal gaps hain, aur 2/5 second gap par hai. Aap kitne ga"
+PASS picture "picture dikhao" (spoken, Aarav): produced on the stage and referred to — yes (mount number-line@1) | teacher: "Aarav, screen par 0 se 1 ke beech dekhiye: line 5 equal gaps mein banti hai, aur 2/5 second mark par hai. Aap "
+PASS draw "draw it" (typed, Zoya): produced on the stage and referred to — yes (mount water-cycle@1) | teacher: "Screen par water-cycle picture dekhiye: arrows liquid water, ice aur water vapour ke beech movement dikhate ha"
+PASS draw "draw it" (spoken, Zoya): produced on the stage and referred to — yes (mount water-cycle@1) | teacher: "Screen par water-cycle picture dekhiye: clouds, rain, river aur sun ko follow kijiye—water kaunsa form badalta"
+PASS whiteboard "whiteboard pe bana ke samjhao" (typed, Kabir): produced on the stage and referred to — yes (studioSlot c63d52bb-5be9-4a66-a313-66d07414d221:wb:3:slot) | teacher: "Kabir, screen par roti ke 5 parts mein 3 shaded dekhiye; pehle shaded parts giniye—kitne hain?"
+PASS whiteboard "whiteboard pe bana ke samjhao" (spoken, Kabir): produced on the stage and referred to — yes (studioSlot ca51050c-2902-4f2c-98df-d352c7e99aa0:wb:3:slot) | teacher: "Kabir, screen wali roti dekhiye: 5 parts mein 3 shaded hain. In 3 parts ko 2 equal rows mein baantkar dekhiye—"
+PASS game "game khelna hai" (typed, Golu): produced on the stage and referred to — yes (mount fractions@1) | teacher: "Golu, screen par 1/3 ko game-piece samjho: teen equal parts dekho. Kitne parts dikh rahe hain?"
+PASS game "game khelna hai" (spoken, Golu): produced on the stage and referred to — yes (mount fractions@1) | teacher: "Golu, screen par 1/3 dekho: teen equal parts mein ek part. Batao, kitne parts hain?"
+FAIL animation "animation dikhao na" (typed, Ishaan): produced on the stage and referred to — V1.slot_not_real: a Studio slot was opened but never became an artifact: slot failed | teacher: "Ishaan, screen par flow dekhiye: Observe se Ask a testable question tak arrows follow kijiye—pehle kya nazar a"
+FAIL animation "animation dikhao na" (spoken, Ishaan): produced on the stage and referred to — V1.slot_not_real: a Studio slot was opened but never became an artifact: slot failed | teacher: "Screen par flow dekhiye: Observe se Ask, phir Predict, Test fairly, aur aakhir mein Observe and conclude. Aapk"
+FAIL real client: after "show me a diagram" the stage shows something new and visible within 25 s
+cleanup: account deleted
+
+visual requests produced on the stage and referred to: 10/12; problems: V1.slot_not_real ×2  → /home/user/Taxila/evals/owner-truth/results/acceptance-2026-10-05T16-38-10/owner-5.json
+FAIL every diagram / picture / draw / whiteboard / game / animation request produced on the stage: 10/12
+
+10/14 checks passed, 4 FAILED (https://taxila.dev)
