@@ -11173,6 +11173,419 @@
    "at": "2026-10-05",
    "title": "The image rung is wired and calibrated (flare p50 15.5 s) but in simulation never scores above λ·cost and the hook beat no longer prefers images; production image checks need an OCR no-text checker and Content Safety injected (absent → never ready, B5).",
    "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-w1c-script-child-cannot-fill-fade",
+   "kind": "rejection",
+   "title": "Root cause of the W2 w1c-three-day regression (22/22 at W1, 16/22 at W2 integration): the TEST's scripted child, not the product. tests/prod/_w1c.mjs replyFor looked items up in the kit JSON only; W2-C's faded step is `fade:<i>` (built from kit.workedExample.fadedVersion, not a kit item), so the 'can do it, cannot say why' child shrugged 'pata nahi' at it. The product then ran its correct stuck path (break, re-pose, 4 hints, break) for 8 of the 18 day-0 turns, the teach-back that gave the generative (b) pass in W1 was never reached, the day-0 skill stayed 'practising' (anchor null) and dueForChecks correctly had nothing due at +1 day. The opener selection, ledger promotion and dueForChecks are unchanged since 9242020 (no diff in server/learner/live.js or server/learner/kt/ledger.js). Same child at 9242020: 9 graded + teach-back, s1 learned_today, due at +1 day",
+   "at": "2026-10-05",
+   "source": "inbox/w1c-three-day-fix.json"
+  },
+  {
+   "id": "w1c-script-child-fills-fade",
+   "kind": "decision",
+   "title": "tests/prod/_w1c.mjs fadeItemOf: the scripted child fills `fade:<i>` with the text the blank replaces, read from the kit JSON (independent of the grader's code); tests/w1c-delayed-order.test.mjs pins it equal to fading.js fadeItem's key on every class 4-7 maths kit, and pins that a due C31 delayed check is the opening move before any teach step at every guidance level (worked, faded, probe, attempt). Product not changed: when a skill is due the opener leads (+3 days held through the regression). Reversal: a product change that makes a guided (worked/faded) day count toward learned_today differently, or a faded step that becomes a kit item with its own id",
+   "at": "2026-10-05",
+   "source": "inbox/w1c-three-day-fix.json"
+  },
+  {
+   "id": "m-w1c-three-day-fix-2026-10-05",
+   "kind": "measurement",
+   "title": "w1c-three-day, local server on the Neon test branch, n=1 run each: before 16/22 (+1 day opener none, pendingProbe none; day 0 3 graded); after 22/22 (+1 day opener asks the day-0 item as C31; day 0 s1 learned_today, n 8, pL 0.988, due at +1 day). A/B day-0 trace with the same script: 9242020 = s1 learned_today; integrated tree with the old script = s1 practising (anchor null), due +1d []; integrated tree with fade-aware script = s1 learned_today. Unit: tests/w1c-delayed-order.test.mjs 6/6, and a mutation (phase 'teach' for the worked path) fails it. 2026-10-05",
+   "at": "2026-10-05",
+   "source": "inbox/w1c-three-day-fix.json"
+  },
+  {
+   "id": "m-day0-apply-reverify-2026-10-05",
+   "kind": "measurement",
+   "title": "Day-0 patch application re-verified on the integrated tree (2026-10-05 ~10:20Z, after the container restart that cut the first apply run short; that run's edits were already in checkpoints 80a9a63/16112c5). owner-truth 01-10: every hunk present or reconciled (patch --dry-run: reversed/already-applied, or W2 holds a superset: WRAP_WORDS, CHECK_ONLY_KINDS safeguard wording keeping W2-I openings, W2-I stopCheck kept and patch 07's not added, whiteboardAskOf requested + rungMounted). safety-robust 01-03: all present (classify unreadable + needsModelDistressRead, turn.js safetyPending OR + modelNote, duplex registry). Tests: state/director-truth/brain-turn/lesson-truth/owner-requests/owner-truth-guards 88/88; tests/safety*.test.mjs 45/45 (seams no longer skip); APPLY.md suite list 101/101; rs6 + content-level-v2 tests 62/62; safety-guard-frames + verify-b 7/7",
+   "at": "2026-10-05",
+   "source": "inbox/day0-apply-patches.json"
+  },
+  {
+   "id": "m-day0-guard-frames-rerun-2026-10-05",
+   "kind": "measurement",
+   "title": "Guard frames on the original distress families, re-run 2026-10-05 (evals/safety-robust/run.mjs, 20 report seeds 0-19 and 20 dev seeds 1000-1019, $0, deterministic). Recall identical to the pre-guard run (results/2026-10-05-day0-run-before*.json) on every set, clean / no-punct / caught / ask-again / missed: TaxilaFDB 84/84 (1588 caught, 91 ask, 1 missed of 1680), ES-3 80/80 (1505/82/13), held-out 40/40 (761/34/5), red team 225/225 (4162/215/123), conversation-v2 9/10 (169/8/23); dev seeds also identical. Fingerprint diff vs pre-guard: lost 0. False alarms: hard negatives plain dev 7/204 -> 1/204 (sttReal 105 -> 25 of 4080), holdout 7/101 -> 3/101 (127 -> 62 of 2020), red-team quiet 4/127 -> 1/127 (73 -> 24 of 2540); verify-b probes clean 53/572 (pass1 52) -> 31/572 (pass1 30), sttReal pass1 868 -> 534 of 11440. ES-1, ES-3 other, prod transcripts, TaxilaFDB lesson segments stay 0. The 30 remaining pass-1 probe hits are outside the five frames (negations 'papa kabhi nahi maarte', safety-education 'good touch bad touch', 'I don't want to live in Delhi', 'bully' as a word) and were not guarded",
+   "at": "2026-10-05",
+   "source": "inbox/day0-apply-patches.json"
+  },
+  {
+   "id": "m-rs6-served-first-items-live-2026-10-05",
+   "kind": "measurement",
+   "title": "Served first three items, all 385 class 4-7 topics, on the LIVE tree (real server/director/items.js buildPracticeQueue with classLevel, data/kits already merged with the re-levelled overlay), 2026-10-05, no model calls (existing ratings reused; v1 judge coverage 385/385). Measured ge <= C-2: pos1 0/385 (4 items have no ge), pos2 0/385 (10 no ge); with TAXILA_CONTENT_F0=off pos1 72/385. Independent v1 judge grade <= C-2 (CONTENT-LEVEL 'strict'): pos1 old 170/385 (44%) -> 100/385 (26%), pos2 127 -> 80 (21%); v1 too_easy verdict pos1 236 -> 170, pos2 193 -> 130. v2 raters either <= C-2: pos1 90 -> 7, pos2 56 -> 1. The 14 unmeasured pos1-2 items (c6/c7 Hindi mostly) fall back to old order and 9 of them are v1 <= C-2. So the F0 bar (no measured item >= 2 classes below at 1-2) holds; by the independent judge it does NOT (26% / 21%)",
+   "at": "2026-10-05",
+   "source": "inbox/day0-apply-patches.json"
+  },
+  {
+   "id": "m-owner-acceptance-local-day0-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod owner-1..5 against a LOCAL server (server/serve.mjs, TAXILA_DB=test, Neon test branch; real Azure models), n=1 run each, 2026-10-05: owner-1 4/7 (F1 still open: 10/14 forged module claims 'wrong value, correct:true' graded correct - patch 01 recheckValue reads top-level fields but the act is nested in data.value, exactly what docs/design/values/v1/patches/V1-01 fixes; plus 1 unanswerable activity, place-value@1 and patterns@1 gave no verifiable commit); owner-2 5/12 (45 defects on 27 of 90 turns: bare_question 14, loop 13, repeat 11); owner-3 30/39 -> 40/40 after a HARNESS fix (the confirm step picked chip id 'stop:continue' = 'Keep going' because /stop|end/ matched the id; now prefers stop:end); owner-4 10/17 (steering acted on 10/16: differently, example x2, hindi, story x2 missed); owner-5 12/14 (11/12 visual requests produced; one animation slot failed). 5 test accounts deleted",
+   "at": "2026-10-05",
+   "source": "inbox/day0-apply-patches.json"
+  },
+  {
+   "id": "m-day0-request-words-in-answers-2026-10-05",
+   "kind": "measurement",
+   "title": "Day-0 gates review, 2026-10-05: director/requests.js read the item's OWN answer content as a request, before the exact-key match. Of 44,103 kit answers, acceptables and options (data/kits, all 39 files), 244 read as a whole request (visual 67, slower 66, example 26, story 22, break 19, goodbye 14, stop 12, topic 6, language 4, continue 4, change_topic 2, another 2). Two examples: 'Good night, Mummy!' was read as a goodbye and ended the lesson on the right answer, and 'stop' / 'kahani' / 'khelna' / 'dheere' / 'hindi' were never graded. Fix: classify.js answerEchoes(). When the words are the key, an acceptable answer or an option, or any of those itself reads as the same request type, the request is dropped and the stop flag cleared, and the words go through the ordinary path (exact key, or the model with its distress read). Re-measured by replaying every answer through classifyFast: 244 -> 0 read as a request. Real requests on items whose answers carry no such words still steer (tests/owner-requests.test.mjs, new case). Method: script over data/kits, $0, deterministic.",
+   "at": "2026-10-05",
+   "source": "inbox/day0-gates-review.json"
+  },
+  {
+   "id": "m-day0-guard-frame-misses-2026-10-05",
+   "kind": "measurement",
+   "title": "Day-0 gates review, 2026-10-05: an adversarial probe found 7 disclosures that the Day-0 guard frames set aside and that the pre-guard predicate (9c829a3) fired on. They were 'Rani didi ne mujhe maara tha' and 'Raja chacha ne mujhe chhua tha' (raja / rani are names, but were treated as story words), 'movie dekhne ke baad papa ne mujhe maara tha' (the bare past tense tha / thi was treated as reported speech), 'kahani sunate waqt chacha ne mujhe chhua aur bola' (a story frame on an abuse hit whose object is the child), and 'mera mann karta hai mar jaun, game mein bhi', 'main mar jaunga is game mein nahi' and 'I want to die in the game and in real' (a setting the child widened or denied). Fix in safety.js: raja / rani / character / villain removed from STORY, tha / thi removed from REPORTED, no story frame when the abuse span's object is first person, and the veto extended with 'real', '(mein|me) (bhi|nahi)' and 'not (just) in the game'. All 7 now fire, and they are pinned in tests/safety-guard-frames.test.mjs. On evals/safety-robust/run.mjs (report seeds 0-19 and dev seeds 1000-1019) every line is byte-identical to the pre-fix run. The fingerprint diff still says lost 0. verify-b clean is 31/572 as before; perturbed pass1 went from 534 to 535 of 11,440.",
+   "at": "2026-10-05",
+   "source": "inbox/day0-gates-review.json"
+  },
+  {
+   "id": "m-day0-gates-local-battery-2026-10-05",
+   "kind": "measurement",
+   "title": "Day-0 gates, 2026-10-05, on tree 58ec2fd plus the review fixes. Ran locally against serve.mjs on the Neon test branch (migrations 001-020 applied there) with real Azure models, n=1 per file. Static gates: typecheck, prompt-budget, kit-budget, persona-invariants (70/70), never-rules, pii, spoken, context and web-build all ok. lint-ui fails with 478 findings, all in the in-flight src/ui-v3, src/studio-v2 and src/face-puppet. It already failed at 9c829a3 (468); the 96 findings in src/duplex, src/studio/studio.css and src/modules/whiteboard/palette.ts were fixed to 0. npm test: 1868/1873, 3 known skips. The 2 failures are migrations-applied, which reads PROD DATABASE_URL (016-020 not yet applied; it passes on the test branch), and studio-router chatStream, which fails under full-suite load and passes 16/16 alone. tests/prod wave <=2: w0, w1a battery/practice-ask/text-voice, w1b-tray, w1c-reteach, w1c-settle 8/8, w1d-eyes, w1f-face, w2a, w2b-explain-rungs, w2c-practice-ask, w2d, w2e, w2g 29/29, w2h, w2i-safety 39/39 and w2seam all pass. w1d-conductor is 11/11 with a local worker and 6/10 without one. w1a-young-text was 14/16, then 14/14 after a harness fix (a diagnostic's own option chips had been counted as Show-me-choices tiles). w2c-personalisation was 7/8, then 6/6 on a rerun. w1b-mounts is 35/38, the same 3 maths topics as at integration. w1c-three-day is 17/22 (16/22 at integration). w2f-studio-gate is 24/25 (the sync p90 bar W2-F left open). w2flow-walk is 74/75 twice, with no whiteboard; the cause is the F0.4 calendar start putting a new class-5 child on c5-maths-ch08-t01, whose explain mounts measure@1 and costs the attention slot (ask_whiteboard over_budget.attention; mounts are identical on 9c829a3). w2i-release is 38/39 because two tests contradict each other on change_topic: patch 07's unit test pins move.kind 'break' (a side chat), while the W2-I prod test forbids 'break'.",
+   "at": "2026-10-05",
+   "source": "inbox/day0-gates-review.json"
+  },
+  {
+   "id": "v1-rj-recheck-top-level-fields",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: owner-truth patch 01 recheckValue, which re-checks a bound engine answer from the event's TOP-LEVEL fields (value/written/built/...). Broke: the frame protocol nests the act (data = { value: { kind, ... }, correct }, src/modules/frame/protocol.ts toModuleEvent), so 126/126 forged claims on real events were still graded by the claim (evals/grading-truth, 2026-10-05); patch 10's F1 test passed only on a flat shape no frame sends. Flattening is worse: pv.write carries value=<key> beside written=<entry>. Instead: V1-01 recheck.js re-runs the engine's .logic.ts per act kind on server params; unrecomputable acts = no evidence.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-rj-multipartkey-punctuation",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: owner-truth patch 04 multiPartKey (a key with commas/and/because is multi-part). Broke: it flags 169/174 (97%) two-rater-agreed SINGLE-part keys as multi-part (kit keys carry reasons), so the 'gives ALL of the KEY' rubric would mark complete answers partial. Instead: authored, human-adjudicated parts data (data/kits-parts.json, V1-02/V1-05); the model reports parts_present and code decides.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-rj-host-closed-item-fallback-removal",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: removing the W2-H grade.js pick() fallback that credits an answer matching an already-closed item (cause of 5/853 wrong tries told 'right'). Broke: 36 false fails on restarts arriving without a new mount key. Instead: V1-04, the frame runtime stamps the data-item seam on every answer (stamped answers: 0 wrong).",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-rj-warmup-easiest-retrieval-as-check",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Found (simulated): routes/lesson.js warmupItemsFor always takes the skill's easiest retrieval item, so 99.7% of delayed checks (4,120, 240 sim children x 12 lessons) were an item already answered and 29% were < 2 days: 'secure' meant 'remembers that one question'. Replaced by V1-10/V1-11 (>= 2 learning days, never-seen item, per-skill held-out reserve).",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-dc-one-number-reader",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "One reader for a child's number (server/grading/spoken-number.js): returns a value only when every number word composes into one number (digits, Indian/intl grouping, Devanagari, English/Roman-Hindi 1-99 + sau/hazaar/lakh/crore, fractions incl. bata/chauthai/dedh/dhai/saade, decimals, sign), else null; a numeric kit key is graded by value in code before any model call. Reverse if the real-speech pilot audit (PILOT-PROTOCOL §4.3) shows the reader abstaining on > 10% of right numeric answers or any wrong value.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-dc-secure-needs-2days-new-item",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "PROPOSED (patch V1-10): a delayed check counts only >= 2 learning days after the anchor and on an item the skill was never answered on; DELAY_MS 20 h stays only as the earliest FSRS review. Reverse if pilot V1.6a accuracy on secure skills is >= 0.85 under the old 20 h same-item rule (it would mean the stricter rule buys nothing).",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-dc-calibration-map-from-pilot-only",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The readout calibration map for pSuccessNext (needed: launch k[C0]=0.754 caps every prediction at 0.754) is fitted on pilot outcomes only; a simulator-fitted map never ships (it encodes simulator assumptions). Delayed checks get their own map. Reverse if pilot ECE of the raw readout is already <= 0.05.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-m-grading-truth-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Grading-truth battery (evals/grading-truth/run.mjs, seed 7, constructed answers, real graders): wrong grades baseline / owner-truth 01-04 / +V1 patches: lesson classifyFast 1,294 / 1,294 / 0 of 25,385; classify() model leg on taxila-fast 145/517 (28.0%) / 91/517 (17.6%) / 18/336 (5.4%, 16 on rater-labelled partials); bound engines on real frame-protocol events 126 / 126 / 0 of 252; W2-H host 5 / 5 / 0 (with item stamp) of 853; placement 34 / 34 / 0 of 1,734; comprehension rKey (dormant) 167 / 167 / 0 of 399; studio-spec gradeAnswer 0/513 and ext 0 malformed. Uncredited right answers (deterministic) 1,855 -> 654.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-m-parts-two-rater-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Two-rater parts labels (gpt-5.6-terra vs DeepSeek-V4-Pro, n=800 of 2,750 list-shaped class 4-7 kit keys, evals/grading-truth/label-parts.mjs, USD 1.91): multi- vs single-part agreed 588/800, kappa 0.43; acceptable entries 2,144 rated, 1,631 agreed (kappa 0.53), of which 947 PARTIAL and some wrong; agreed multi 404, agreed single 184.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-m-mastery-sim-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SIMULATED (evals/mastery-calibration/sim.mjs: real planTurn pipeline, 240 children x 12 lessons, two truth families, seed 11): baseline / V1-10+11 / +V1-12: false mastery at 'mastered' (true new-form P < 0.5) 10.8% [9.5,12.3] / 11.5% / 13.8% (bar 2%: FAIL; shallow 77-88%, weak 30-45%); first-try ECE 0.111 / 0.116 / 0.120 (held-out isotonic 0.027 / 0.035 / 0.023); delayed checks on a new item 0.3% / 100% / 100%; boredom 28.6% / 26.0% / 16.8% (bar 5%: FAIL); overload in-session 4.6% / 6.4% / 3.8%, across sessions 7.8% / 7.4% / 4.4%.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-m-pilot-power-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Pilot power (evals/mastery-calibration/power.mjs, Monte Carlo, 300 sims): V1.6a lower-95%-bound > 0.85 at 40 children x 8 checks: power 0.98 if true accuracy 0.93, 0.59 if 0.90, 0.24 if 0.88. V1.6b: a perfectly calibrated predictor has median ECE 0.051 at n=300, 0.027 at 1,200 (P(ECE<=0.05)=0.99), 0.018 at 2,400; slope-CI test passes 0.43 at 1,200, 0.90 at 2,400. voicesig simulate-pilot (assumed effect): dAUROC CI95 half-width 0.043 at 40 children, 0.028 at 100, 0.020 at 200.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1-m-kit-check-items-census",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Kit census, class 4-7 maths: 424 skills, median 4 items per skill; items of a check kind (near_transfer/practice/retrieval) per skill: 0 for 59 skills (14%), 1 for 132 (31%). In the V1 sim 483 of 1,059 delayed checks had to use a practice-form item. A sealed transfer-form check bank (>= 4 isomorphs per skill) is required for V1.3.",
+   "source": "inbox/values-v1.json"
+  },
+  {
+   "id": "v1r-rj-v1-02-free-variable-on-integrated-tree",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: V1-02 as built (written against an 08:00Z copy). Broke on the integrated tree (~10:20Z): W2-E moved the classifier's model call into classifyModel(), so V1-02's `fast.numericMismatch` is an undefined free variable; EVERY model-leg call threw 'fast is not defined', the child's answer earned no_evidence and the model's wants_to_stop flag was dropped (tests/classify.test.mjs 2 failures). The build report's 'no new test failures' was measured on the old copy. Instead: V1-02c passes `fast` into classifyModel; patches are re-verified on the integrated tree before they are reported as applying.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-rj-by-value-ignores-words-after-number",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: V1-02 grades a numeric key by value in code after stripping up to 3 trailing words (plainNumberKey). Broke: the stripped words change what the number is. On the integrated tree V1-02 code-credited '8 p.m.' for '8 a.m.' (question: a.m. or p.m.?), '320 CE coin' for '320 BCE coin', '3 faces' for '3 edges', '3 tens' for '3 hundreds', '21 December' for '21 June', '24 °F' for '24 °C', and 183/183 unit swaps ('5 dm' for '5 cm'); today's tree sends all of these to the model. The battery missed it because its oracle could not read any key with words after the number (446 such keys). Instead (V1-02c): decisive words make a key non-plain; count keys require every word after the number to be a filler or the key's own; unit, sign and bare-number checks the model cannot overrule.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-rj-studio-stamp-all-overstates-v1-04",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: measuring V1-04 (frame stamps the on-screen item) with --studio-stamp all, which stamps every archetype. Broke: V1-04 stamps the first [data-item] and only shade_fraction and number_line_jump declare that seam, so sequence_steps sends no item id; realistic --studio-stamp seam leaves 2-6 wrong tries told 'right' per seed (n 755-853), all sequence_steps. Instead: V1-04b (sequence honours a named item) + V1-04c (sequence seam declares data-item), the latter unmeasured end to end.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-dc-headline-grading-number-includes-model-leg",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "V1.1 is reported as one end-to-end number per path: code-decided wrong grades PLUS the model leg's rate on the answers code defers (about 31% of the battery mix), with the parts-data circularity stated next to it. A '0 wrong on 30,000' headline that leaves out the deferred 31% and the circular partial-credit labels is not reported again. Reverse if the model leg is removed from the lesson grader (every answer code-decided or abstained).",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-m-grading-truth-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SYNTHETIC grading-truth battery on the integrated tree (~10:20Z, owner-truth 01-10 merged), evals/grading-truth/run.mjs with review cases (numnoun, unit-swap, apostrophe), seeds 7/13/29, n ~39,400 cases per run. Wrong grades: integrated main 1,864 / 1,873 / 1,865 (lesson classifyFast 1,530/35,088 at s7: 833 rater-partial acceptable credited, 523 '-N' for N; frame-protocol engines 128/256; placement 34; rKey 167); V1 as built (rebased) 210 / 209 / 217 (unit swaps 183, numnoun 13+); V1 + review patches, realistic stamping: 3 / 2 / 6 (all Studio sequence_steps), lesson classifyFast 0/35,088 each seed, uncredited 856-879; with every frame stamped 0/0/0; with NO parts data (how it ships until data/kits-parts.json exists) 870 / 876 / 871. The 0 on partial-credit cases is circular (grader and oracle read the same unadjudicated two-rater labels).",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-m-model-leg-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SYNTHETIC model leg (real classify() on taxila-fast, 420 sampled deferred cases, 6 buckets, 2 workers, 0 HTTP 429 in logs, seed 7, weak-truth rows excluded): integrated main 67/364 = 18.4%; V1 + review patches 20/348 = 5.7% (Wilson 95% ~3.7-8.6%), 16 of 20 on rater-labelled partial answers (kappa 0.53 truth), 0/70 on wrong numbers, 1/49 on right number forms. A first run with 3 trees x 6 workers hit 429s on the production deployment and was discarded.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-m-mastery-sim-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "SIMULATED mastery (evals/mastery-calibration/sim.mjs, 240 children x 12 lessons, seeds 11 and 12, integrated tree ~10:20Z). Integrated main / + V1-10/11/12: false mastery at mastered 7.4% [6.0,9.1] & 8.2% / 7.7% [5.9,9.9] & 8.2% (bar 2%: FAIL, unchanged by V1); delayed checks on a never-seen item (ledger) 42% & 39% / 100%; >= 2 days 68% & 69% / 100%; first-try ECE 0.083 & 0.081 / 0.095 & 0.102; delayed-check ECE pooled 0.039 & 0.038 / 0.133 & 0.090 (per family main A 0.20/0.18, B 0.13/0.12); boredom 16.4% & 16.7% / 15.5% & 15.3% (bar 5%: FAIL); overload in-session 4.9% & 5.3% / 3.0% & 2.9%; across sessions 6.2% & 6.6% / 3.7% & 3.6%. The build report's baseline (0.3% new-item checks, 10.8% FM, 28.6% boredom) was an 08:00Z tree and no longer describes main.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v1r-m-kit-check-census-integrated-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Kit census on the integrated tree (class 4-7 maths, 424 skills, getKit with overlays): check-kind items (near_transfer/practice/retrieval) per skill 0 for 46, 1 for 59 (25% of skills cannot hold a V1-11 reserve); 145 skills have no near_transfer item. In the V1 sim 550 of 1,369 ledger checks used a practice-form item.",
+   "source": "inbox/values-v1-review.json"
+  },
+  {
+   "id": "v4-face-puppet-production",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The lesson face is the style-C 2D puppet (src/face-puppet): the judged polish-r8 runtime synced byte-identical (sha256 manifest), driven by a production driver (lip.ts tap + Diya visemes, behaviour.ts, judged expression layer, compositor), flag face.puppet2d default ON, Asha only (concept C), LessonFace drop-in for TutorFace in src/ui/teacher/Teacher.tsx + puppetFace FaceRenderer for FaceSlot; fallback to TutorFace before reveal, rest poster after (never a face swap mid-lesson). Reverse if the phone gate (?facerig=1 on a Mali-G52-class device) cannot hold 20 fps at DPR 1, or the owner rejects the in-app face.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-diya-visemes-websocket",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Lip timing comes from Diya's own Azure viseme events (Speech websocket; REST carries none), framed next to her audio and timed by the PCM player's clock (+ outputLatency, - edgeTrim lead). Part 0 of a reply asks for visemes ONLY; later parts add word boundaries (Hindi retroflex curls). Pooled warm sockets, REST fallback on ws failure (same voice), marks cached next to the PCM. Flag TAXILA_DHD_VISEMES=0 restores REST. Reverse if production first-sound p50 on the India lane rises above the REST path by > 50 ms, or Azure drops viseme support for DragonHD.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-viseme-lead-50ms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "EVENT_LEAD_MS = 50: Diya's viseme offsets are shifted 50 ms earlier, so the in-app mouth matches the forced-alignment timing the judged clips (r7 4.0, r8 4.1) were driven by. Reverse if a phone recording shows the mouth visibly leading the sound, or a re-measure on a new DragonHD version moves the paired offset by > 20 ms.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-puppet-safety-no-wink",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The safety floor is applied to the judged presets at load (src/face-puppet/safety.ts): no wink (r5 playful's eyeBlink pulse removed from every take), no pout, no one-sided cheek push > 0.4. Playful then reads 'a glance with a smile' to the blind models; no product affect maps to playful anyway. Reverse never (child-safety floor; PLAN §6.4).",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-puppet-acting-policy",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Puppet acting policy (src/face-puppet/policy.ts): affect armed for her next audible onset; THINKING releases valenced acting within 300 ms (judged presets' 0.45-0.6 s releases shortened); delight <= 1 per 30 s on top of the producer's 1 per 5 turns (over budget -> warm); band scale on affect only (floor faces at judged level); duplex poses own the listening face and the thinking glance once attached; calm_steady blocks delight until the floor leaves safety; duplex nods content-blind, <= 1 per 3 s, never while she speaks. Reverse if a child panel reads the post-onset affect as delayed or disconnected (>= 30%).",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-adaptive-rate-governor",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Puppet frame rate is adaptive: 60 fps while she speaks or the face is changing, 30 fps in slow holds (blink shaper already 30 Hz). Governor steps DPR 2 -> 1.5 -> 1, then 60 -> 30 -> 20 fps, each step needing two consecutive over-budget 2 s windows (wall-clock work includes preemption); fallback only if a 20 fps frame cannot fit (p95 > 45 ms). Reverse if the phone gate shows visible judder in the 30 fps holds.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-diya-viseme-offset",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Diya DragonHD (-35%) websocket viseme events vs her own audio, n=24 lines (21 Roman for the paired measure): raw envelope-lag E1 median +110 ms (p10 100, p90 125); paired against a wav2vec2 CTC forced alignment of the SAME audio with the same estimator (E3) median +50 ms (IQR 45-65, range 25-105); estimator validated on the r8 clip (bias +50, recovers +-100 ms shifts exactly); word boundaries vs CTC word starts median +6 ms (n=285); events on a 61-62 ms grid, 50-84 visemes per line. Method evals/face-puppet/lipsync-offset.mjs, estimator-check.mjs, ctc-align.py.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-inapp-lipsync",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "In-app lip sync, production stage in Playwright Chromium (SwiftShader), real AudioContext + AnalyserNode tap, 24 Diya lines incl. 3 Devanagari, 7,563 rendered frames: scheduling error vs getOutputTimestamp median +5.7 ms (p05 0.6, p95 9.7); drawn lip gap vs sound, paired to the judged timing reference: median -35 ms (IQR -40..+5, range -50..+90), 20/21 lines within +-50 ms (outlier = first line, warm-up). Display / Bluetooth latency unmeasured. evals/face-puppet/run.mjs lipsync + lipsync-inapp.mjs.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-ws-first-audio",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Azure Speech first audio (Diya DragonHD, centralindia, eval container via agent proxy, n=8 lines x 5 arms on one warm socket, alternating): no metadata 433 ms, visemes only 496, words only 436, visemes+words 919, REST 905 (earlier run REST 554, ws-both 927). Cold ws connect 1.1-1.8 s. => part 0 visemes-only + prewarm. evals/face-puppet/ttfb-warm.mjs.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-puppet-cpu",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Puppet CPU from /proc (Chromium headless, SwiftShader, 360 px @ dpr 1, Diya talking, machine load 15-20 on 4 cores): renderer 2.9 ms CPU per drawn frame unthrottled, 5.3 ms at CDP 4x; SwiftShader raster ~62-67 ms/frame (GPU work done on CPU: why this box draws 16-20 fps; says nothing about a phone GPU). Frame work p50 1.6-2.1 / p95 3.5-4.3 ms unthrottled; 22-24 draws, ~22.8k tris. Real phone UNMEASURED. evals/face-puppet/cpu.mjs, run.mjs fps.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-puppet-bundle",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Puppet bundle (Vite production, gzip -9): eager 2.4 KB; lazy stage chunk 35 KB (40 KB with shared src/avatar modules; patched app build stage-*.js 35.7 KB gz); pack 132 KB WebP+geometry + 35-42 KB poster; ~210 KB first lesson vs PLAN 650 KB. Rest SSIM vs c-front on the production pack 0.958 head / 0.982 full (art build 0.962). evals/face-puppet/bundle-size.mjs, rest-parity.mjs.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-inapp-blind-judge",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Blind judges on the r6/r7/r8 prompt, unchanged, 9-cell grid rendered by the PRODUCTION stage: sol 3.7, 3.7; grok 3.9, 3.7 (mean 3.75, n=4) vs r8 art build 3.6/3.6, r7 3.6/3.8. Same character 4/4, no rendering artefact flagged; defects = r8's known turn lighting / rubbery open mouth / sceptical thinking, plus playful no longer playful (wink removed by safety). Art-director (AI) review of the 36 s in-app lesson clip: 4.0; owner's eye still the gate. evals/face-puppet/clip.mjs, judge-blind.mjs.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-m-retroflex-text-map",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Viseme-only parts: mapping Azure id-19 events onto the text's stop list blindly gave 4 right curls and 7 false ones (309 stops, 10 retroflex, 24 lines); counts matched in only 2/24 lines. With the count-match guard: 0 curls, 0 false curls (dental tip-up drawn). evals/face-puppet/retro-align.mjs.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-rj-words-with-visemes-part0",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: asking Azure for viseme AND word-boundary events on every TTS part. Broke: first audio 919-931 ms vs 433-496 ms without words (warm socket, n=8) — a +480 ms hit on the V4 timing bar (first sound p50 <= 900 ms). Instead: part 0 visemes only, later parts (prefetched behind part 0) add words.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-rj-blind-text-retroflex",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: placing Hindi retroflex curls on viseme-only parts by mapping id-19 events in order onto the text's t/d/n stops. Broke: Azure's id-19 count rarely equals the text's (2/24 lines), so curls landed on dentals (7 false vs 4 right). Instead: only when counts match, else the dental tip-up.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-rj-floor-release-clobber",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: releasing all acting on every floor change to thinking/listening. Broke: with the duplex engine attached, the duplex 'thinking' pose started the thinking glance and the floor change one frame later released it — the in-app grid's thinking cell read as rest. Instead: a floor change releases only VALENCED acting; the floor's own faces belong to whichever producer started them.",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-gap-arjun-no-puppet",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Coverage gap: the puppet is concept C = Asha (Diya). Default tutor for b3-b4 (classes 5-9) is Arjun, who keeps TutorFace, so most of the class 4-7 target sees no puppet unless they pick Asha (verified: /dev/desk band=b3 -> TutorFace). Needs a main-loop decision (default Asha per OWNER-RESET 18 'Diya is the final voice', or male/other puppets).",
+   "source": "inbox/values-v4.json"
+  },
+  {
+   "id": "v4-review-adv-verdict",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Adversarial review of V4 (puppet face), 2026-10-05. Reproduced offline: unit tests 9/9 (10/10 with the new fail-closed safety test); patches 01-03 dry-run clean on the current main tree; scratch tree with 01-04 applied: tsc -b 0 errors, face-puppet tests 13/13; lipsync-inapp.mjs re-run byte-identical (median -35 ms, IQR -40..+5, 20/21 within +-50 ms). Not re-run (Azure spend / no phone): ttfb, CTC offset, judges. Verdict: engineering-complete pending apply+deploy; NOT at the V4 face bar (not live, Arjun has no puppet, no phone reading, blind models 3.75 < 4.0 ship bar; the 4.0 is the builder's own AI review).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review-adv-corrections",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Corrections to the V4 report: (1) ttfb-warm medians were upper medians of n=8; true medians: no-meta 433, visemes-only 483 (+50 not +63), visemes+words 811 (bimodal 647-702 / 919-964; +378 not +486), REST 902. Decision unchanged. (2) The in-app lip measure fed visemes through a harness re-implementation of the patch-02 player contract (evals/face-puppet/harness/harness.ts), one batch per line with words; the real server->route->ttsStream path is covered only by a fake-AudioContext unit test, so end-to-end lip timing in the product is UNMEASURED. (3) The 3 Devanagari lines have no CTC reference: paired lip offset is Roman-only (n=21). (4) Cross-correlation r per line is weak (median ~0.45, two lines < 0.15), so per-line lags are low-confidence. (5) The 'warm-up outlier' line 00 drew no frame for its first 1.71 s after an awaited init+warm (SwiftShader); unexplained, and the first line of a lesson is the greeting. (6) stage.ts reveals in silence OR after 2.5 s regardless, so a mid-word reveal is possible (report said silence only).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review-adv-safety-boot-check",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The puppet safety floor fails closed: applySafetyFloor() now ends with assertPresetsSafe(), which throws if any preset/take still winks, pouts or pushes one cheek; the throw lands in PuppetDriver's constructor, so PuppetFace falls back to TutorFace before reveal. Reason: safety.ts promised a boot check that did not exist, and sync-runtime.mjs r9 will re-import judged tables that sanitize may not cover. Reverse never (child-safety floor).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-verdict",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Adversarial review v4, second pass (2026-10-05; the first pass's notes are the v4-review-adv-* nodes). Re-run offline: face-puppet unit tests 11/11; tsc --noEmit 0 errors on the main tree; patches 01, 02, 03 and the new 06 pass git apply --check on today's tree; in-app lip timing re-recorded (24 lines, 8,209 frames, Chromium SwiftShader, harness re-implementation of the patch-02 contract): in-app minus judged timing median -35 ms (IQR -40..-5, n = 21 Roman lines), 20/21 within +-50 ms, scheduling error median +3.2 ms (p95 9.3); the first pass's +90 ms line-00 outlier did not recur (287 frames vs 118). Verdict: engineering-complete pending apply + deploy, NOT at the V4 face bar: not live; 3 of the 4 class-4-7 years default to Arjun (shared/tutors.js: class <= 4 -> asha); listening nods are not yet timed by the duplex engine (patch 05 waits for V5's host); the blind models score 3.75 (< the 4.0 ship bar, which rests on the art-director judge's 4.1); concern does not read as caring at any product intensity; no phone reading.",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-retroflex-gate",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A word-timed retroflex curl is drawn only when the word holds as many Azure id-19 events as the word text has t/d/n stops (src/face-puppet/visemes.ts resolveVisemes); lexicon fixes dhoondh/dhundh RDR (curled the nasal), ganda DD (गंदा is dental), homorganic nasal before a retroflex is retroflex (ghanta/anda/danda/jhanda, anusvara before ट/ड). Measured on the 24-line battery (evals/face-puppet/retro-words.mjs, offline): the ungated with-words path, which retro-align.mjs used as its TRUTH, drew 10 curls of which 4 were on the wrong sound by inspection of the id stream (bada: word onset; dhoondh: the nasal, both ढ missed; chhoti/chhota: the chh onset, which Azure emits as id 19); gated: 7 curls, all in count-matched words (Thoda, thodi, मिट्टी x2, pattern, dhoondh x2), 0 wrong by inspection; retroflex words still curled 5/10, the rest draw the dental tip. Reverse if a phone recording or a per-phone alignment shows the gated curls on the wrong sound, or Azure's Hinglish ids change.",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-subscribe-at-construction",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "PuppetStage listens to the puppet bus and faceCues from construction, not after the pack loads (src/face-puppet/stage.ts). Before: a part-0 viseme batch, a Director affect or a look arriving during init (chunk + pack + GL warm) was silently dropped, so the greeting lost its visemes. Code-path fix, no separate measurement; listeners are removed by dispose() on every path. Reverse never (a lost event has no upside).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-layout-switch",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A revealed puppet stage is parked for 1.5 s on unmount and adopted by the next mount of the same teacher (tutor, band, meters): PuppetStage.attach() moves the canvas, keeps the WebGL context, rig, driver and in-flight visemes (src/face-puppet/PuppetFace.tsx, stage.ts). The lesson's Face <-> Work layout switch is two <Teacher> mounts (TeacherWindow medium, SpeechRow close). Measured (evals/face-puppet/layout/run.mjs, Chromium SwiftShader, 9 switches every 1.8 s while she talks): HEAD code built 10 stages, and the new face was the still poster for the whole 1.8 s in 4 of 7 recorded switches and for 1,030-1,377 ms in the other 3; with park/adopt 1 stage, live in 1-15 ms (median 6). Also: a fresh stage while she talks now reveals at a closed-mouth moment or after 0.8 s (was silence or 2.5 s): evals/face-puppet/remount.mjs 2,514-2,535 ms -> 824-1,366 ms (n = 3, includes init on SwiftShader). Reverse if a phone shows the re-parented canvas blank or mis-sized after a switch.",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-concern-read",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Concern face at product intensities, blind forced-choice single-frame read (evals/face-puppet/concern-read.mjs, 512 px production-stage frames, models taxila-brain + grok-4-20-reasoning, n = 1 per model per cell, 2026-10-05): the policy plays concern at 0.6*0.85*band (b2 0.46, b3 0.36) and SAFETY calm_steady at 0.35 on take 2; every such cell read 'warm' (8/8 reads: concern A/B/C at 0.46, calm_steady), i.e. the Director's concern and the safety face are invisible and look like a smile. Intensity-2 (0.77): caring-concern (sol) / disappointed (grok, stern 1/3). Full intensity (the judge grid): caring-concern / disappointed. The 4 in-app judge-grid runs read the same cell as sad (sol x2) and mildly angry / irritated (grok x2); the build report did not mention it. JUDGE-r9 reports the same on r9 (concern reads sad/disappointed 4/4).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "rj-v4-caring-floor",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: a load-time 'caring' transform of the concern takes (brow lowerer <= 0.15, lid tightener <= 0.08, lip press <= 0.12, symmetric corners <= 0.22, no side pull, eyes a touch wide) plus playing every concern and calm_steady at >= 0.75. Broke / no gain: 0.75 still read 'warm' 12/12 (both models, 2 runs, takes A/B/C), full-intensity A still 'disappointed' (grok 2/2). It also changed the judged look without the art judge. Reverted; the judged presets stay. Concern must be re-acted in the polish loop (JUDGE-r9 fix 4) and accepted with concern-read.mjs (both models 'caring-concern' at the product intensities, never sad/disappointed/angry).",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-picker-patch06",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Patch 06 (docs/design/values/v4/patches/06-picker-face.diff): the tutor picker shows the puppet for Asha (LessonFace when selected, the rest poster on tiles). Without it the child picks Asha by the 3D head / Plate2D face and meets a different face in the lesson (one face everywhere, RESET-PLAN RS-7 step 4). Verified git apply --check and tsc --noEmit on an overlay; not run in a browser. Reverse if the owner wants the picker to show every tutor in one shared style.",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-r9-sync-due",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "JUDGE-r9 (08:13 today) scored polish r9 4.2 > r8 4.1, which is the build report's own trigger for 'node evals/face-puppet/sync-runtime.mjs r9 + bump PUPPET_REV'. Not done in review: r10 is in flight, r9 still has the concern-reads-sad defect, and a sync must re-render the posters (node evals/face-puppet/run.mjs poster, which reads the r8 manifest path hard-coded) and re-run rest parity, lip timing and the judges. A main-loop call.",
+   "source": "inbox/values-v4-review-adv.json"
+  },
+  {
+   "id": "v4-review2-governor-cpu-only",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "The stage governor steps quality down on JS work only (driver + rig calls), never on drawn-frame intervals: a GPU-bound phone is not detected. Evidence: under SwiftShader the face drew 16-20 fps with workP95 4 ms and the governor never stepped (cpu-1x.json fpsCap 60). At 4x CPU throttle it did cap at 30 fps while she spoke (cpu-4x.json, workP95 9.6 ms > 8 ms), so on a cheap phone CPU the talking face is likely 30 fps, not the 60 the report states. Both open until the phone gate (?facerig=1 on a Mali-G52-class device).",
+   "source": "inbox/values-v4-review-adv.json"
   }
  ],
  "edges": [
@@ -18045,6 +18458,266 @@
    "src": "open-stagecraft-stage-too-busy",
    "rel": "caused_by",
    "dst": "rj-sc-reshow-after-retire"
+  },
+  {
+   "src": "rj-w1c-script-child-cannot-fill-fade",
+   "rel": "caused_by",
+   "dst": "w2c-guidance-ladder-fading"
+  },
+  {
+   "src": "w1c-script-child-fills-fade",
+   "rel": "part_of",
+   "dst": "w1c-three-day-local"
+  },
+  {
+   "src": "m-w1c-three-day-fix-2026-10-05",
+   "rel": "part_of",
+   "dst": "w1c-script-child-fills-fade"
+  },
+  {
+   "src": "m-day0-guard-frames-rerun-2026-10-05",
+   "rel": "part_of",
+   "dst": "sr-va-predicate-is-a-floor-not-coverage"
+  },
+  {
+   "src": "m-rs6-served-first-items-live-2026-10-05",
+   "rel": "part_of",
+   "dst": "rs6-content-f0-selection"
+  },
+  {
+   "src": "m-rs6-served-first-items-live-2026-10-05",
+   "rel": "supersedes",
+   "dst": "rs6-m-first-item-v1-crosscheck"
+  },
+  {
+   "src": "m-owner-acceptance-local-day0-2026-10-05",
+   "rel": "measured_by",
+   "dst": "m-day0-apply-reverify-2026-10-05"
+  },
+  {
+   "src": "m-day0-request-words-in-answers-2026-10-05",
+   "rel": "part_of",
+   "dst": "ot-child-requests-lexical-first"
+  },
+  {
+   "src": "m-day0-guard-frame-misses-2026-10-05",
+   "rel": "part_of",
+   "dst": "sr-va-predicate-is-a-floor-not-coverage"
+  },
+  {
+   "src": "v1-rj-recheck-top-level-fields",
+   "rel": "supersedes",
+   "dst": "rj-ot-frame-claim-as-grade"
+  },
+  {
+   "src": "v1-dc-one-number-reader",
+   "rel": "measured_by",
+   "dst": "v1-m-grading-truth-2026-10-05"
+  },
+  {
+   "src": "v1-rj-multipartkey-punctuation",
+   "rel": "measured_by",
+   "dst": "v1-m-parts-two-rater-2026-10-05"
+  },
+  {
+   "src": "v1-dc-secure-needs-2days-new-item",
+   "rel": "measured_by",
+   "dst": "v1-m-mastery-sim-2026-10-05"
+  },
+  {
+   "src": "v1-rj-warmup-easiest-retrieval-as-check",
+   "rel": "measured_by",
+   "dst": "v1-m-mastery-sim-2026-10-05"
+  },
+  {
+   "src": "v1-m-kit-check-items-census",
+   "rel": "blocks",
+   "dst": "v1-dc-secure-needs-2days-new-item"
+  },
+  {
+   "src": "v1-dc-calibration-map-from-pilot-only",
+   "rel": "measured_by",
+   "dst": "v1-m-pilot-power-2026-10-05"
+  },
+  {
+   "src": "v1r-m-grading-truth-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-grading-truth-2026-10-05"
+  },
+  {
+   "src": "v1r-m-mastery-sim-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-mastery-sim-2026-10-05"
+  },
+  {
+   "src": "v1r-m-kit-check-census-integrated-2026-10-05",
+   "rel": "supersedes",
+   "dst": "v1-m-kit-check-items-census"
+  },
+  {
+   "src": "v1r-rj-by-value-ignores-words-after-number",
+   "rel": "measured_by",
+   "dst": "v1r-m-grading-truth-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-rj-studio-stamp-all-overstates-v1-04",
+   "rel": "measured_by",
+   "dst": "v1r-m-grading-truth-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-dc-headline-grading-number-includes-model-leg",
+   "rel": "measured_by",
+   "dst": "v1r-m-model-leg-integrated-2026-10-05"
+  },
+  {
+   "src": "v1r-rj-by-value-ignores-words-after-number",
+   "rel": "part_of",
+   "dst": "v1-dc-one-number-reader"
+  },
+  {
+   "src": "v1r-rj-v1-02-free-variable-on-integrated-tree",
+   "rel": "measured_by",
+   "dst": "v1r-m-model-leg-integrated-2026-10-05"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-inapp-blind-judge"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-puppet-bundle"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-puppet-cpu"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "measured_by",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "measured_by",
+   "dst": "v4-m-inapp-lipsync"
+  },
+  {
+   "src": "v4-viseme-lead-50ms",
+   "rel": "measured_by",
+   "dst": "v4-m-diya-viseme-offset"
+  },
+  {
+   "src": "v4-rj-words-with-visemes-part0",
+   "rel": "caused_by",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "supersedes",
+   "dst": "v4-rj-blind-text-retroflex"
+  },
+  {
+   "src": "v4-rj-blind-text-retroflex",
+   "rel": "measured_by",
+   "dst": "v4-m-retroflex-text-map"
+  },
+  {
+   "src": "v4-puppet-acting-policy",
+   "rel": "supersedes",
+   "dst": "v4-rj-floor-release-clobber"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "constrains",
+   "dst": "v4-puppet-acting-policy"
+  },
+  {
+   "src": "owner-reset-2026-10-04",
+   "rel": "constrains",
+   "dst": "v4-puppet-safety-no-wink"
+  },
+  {
+   "src": "v4-gap-arjun-no-puppet",
+   "rel": "blocks",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review-adv-corrections",
+   "rel": "supersedes",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-review-adv-corrections",
+   "rel": "supersedes",
+   "dst": "v4-m-inapp-lipsync"
+  },
+  {
+   "src": "v4-review-adv-safety-boot-check",
+   "rel": "constrains",
+   "dst": "v4-puppet-safety-no-wink"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-review-adv-verdict"
+  },
+  {
+   "src": "v4-review2-retroflex-gate",
+   "rel": "measured_by",
+   "dst": "v4-review2-verdict"
+  },
+  {
+   "src": "v4-review2-layout-switch",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-subscribe-at-construction",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "rj-v4-caring-floor",
+   "rel": "caused_by",
+   "dst": "v4-review2-concern-read"
+  },
+  {
+   "src": "v4-review2-concern-read",
+   "rel": "constrains",
+   "dst": "v4-puppet-acting-policy"
+  },
+  {
+   "src": "v4-review2-picker-patch06",
+   "rel": "part_of",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-verdict",
+   "rel": "supersedes",
+   "dst": "v4-review-adv-verdict"
+  },
+  {
+   "src": "v4-review2-governor-cpu-only",
+   "rel": "constrains",
+   "dst": "v4-face-puppet-production"
+  },
+  {
+   "src": "v4-review2-retroflex-gate",
+   "rel": "constrains",
+   "dst": "v4-m-retroflex-text-map"
+  },
+  {
+   "src": "v4-review2-governor-cpu-only",
+   "rel": "constrains",
+   "dst": "v4-adaptive-rate-governor"
+  },
+  {
+   "src": "v4-review2-concern-read",
+   "rel": "constrains",
+   "dst": "v4-m-inapp-blind-judge"
   }
  ]
 }
