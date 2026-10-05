@@ -107,7 +107,10 @@ await withTestAccount(async ({ api, child, password }) => {
       if (!r) { warn(`turn ${turns}: no response`); break; }
       if (r.ui?.verdict) commits += 1;
       if (process.env.W1A_VERBOSE) console.log(`  turn ${turns}: ${r.move?.kind} item=${r.move?.itemId ?? "-"} form=${r.ui?.answerForm} chips=${r.ui?.chips?.length ?? 0} verdict=${r.ui?.verdict ?? "-"} phase=${r.ui?.phase} | ${String(r.teacherReply ?? "").slice(0, 90)}`);
-      if (choicesAsked && r.ui?.chips?.length && !ui.chips?.length && ui.ask?.itemId) {
+      // a spoken diagnostic (item id "diag:…") carries its OWN option chips: those are the question, not "Show me choices"
+      // tiles for the card before it (Day-0 gates review: content F0 moved the diagnostic later in the queue, after the ask)
+      const diagnostic = String(r.move?.itemId ?? "").startsWith("diag:");
+      if (choicesAsked && r.ui?.chips?.length && !ui.chips?.length && ui.ask?.itemId && !diagnostic) {
         tilesShown += 1;
         await page.waitForTimeout(400);
         const labels = await page.locator('[data-testid="choices"] button').allInnerTexts().catch(() => []);

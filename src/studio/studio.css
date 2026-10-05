@@ -10,20 +10,20 @@
 
 /* making: the sketch draws itself (pencil, accent ink), a watercolour wash breathes in behind it */
 .st-making .st-art { filter: saturate(.2); }
-.st-wash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 50% 45%, var(--nib-soft, #E4E8F4), transparent 75%);
+.st-wash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 60% at 50% 45%, var(--nib-soft), transparent 75%);
   opacity: .0; animation: st-wash 2.4s ease-in-out .6s infinite alternate; }
 .st-veil { position: absolute; left: 0; top: 0; border: 0; opacity: .6; filter: saturate(.35); pointer-events: none; }
 @keyframes st-wash { to { opacity: .55; } }
 .sk.is-pencil { pointer-events: none; }
-.sk.is-pencil :is(path, rect, circle, line, polyline, polygon) { stroke: var(--studio-pencil, #4A6FB5); stroke-width: 1.6; fill: transparent;
+.sk.is-pencil :is(path, rect, circle, line, polyline, polygon) { stroke: var(--studio-pencil); stroke-width: 1.6; fill: transparent;
   stroke-dasharray: 900; stroke-dashoffset: 900; animation: st-pencil .6s ease-out forwards; }
-.sk.is-pencil text { fill: var(--studio-pencil, #4A6FB5); opacity: 0; animation: st-fade .4s ease-out .45s forwards; }
+.sk.is-pencil text { fill: var(--studio-pencil); opacity: 0; animation: st-fade .4s ease-out .45s forwards; }
 @keyframes st-pencil { to { stroke-dashoffset: 0; } }
 @keyframes st-fade { to { opacity: 1; } }
 
 /* ready: one quiet sparkle at the corner (no sound) */
-.st-sparkle { position: absolute; right: 10px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: var(--nib, #24346E);
-  box-shadow: 0 0 0 4px var(--nib-soft, #E4E8F4); animation: st-spark 1.6s ease-in-out infinite; }
+.st-sparkle { position: absolute; right: 10px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: var(--nib);
+  box-shadow: 0 0 0 4px var(--nib-soft); animation: st-spark 1.6s ease-in-out infinite; }
 @keyframes st-spark { 50% { transform: scale(.6); opacity: .5; } }
 
 /* revealed: the veil lifts, scale .98 → 1, the first target pulses once */
@@ -54,7 +54,7 @@
   border: 1px solid var(--line); box-shadow: 0 8px 24px rgba(26,28,34,.16); }
 .st-menu button { min-height: 44px; padding: 0 12px; text-align: left; border: 0; border-radius: 8px; background: transparent; color: var(--ink);
   font: 500 15px/1.2 var(--font-ui, system-ui, sans-serif); cursor: pointer; }
-.st-menu button:hover { background: var(--nib-soft, #E4E8F4); }
+.st-menu button:hover { background: var(--nib-soft); }
 
 .st-frame { position: relative; overflow: hidden; }
 
@@ -62,34 +62,34 @@
 .sk { display: block; font-family: var(--font-ui, system-ui, sans-serif); user-select: none; -webkit-user-select: none; }
 .sk text { fill: var(--ink); }
 .sk .sk-title { font-size: 16px; font-weight: 600; }
-.sk .sk-big { font-size: 30px; font-weight: 700; fill: var(--nib, #24346E); }
+.sk .sk-big { font-size: 30px; font-weight: 700; fill: var(--nib); }
 .sk .sk-small { font-size: 12px; fill: var(--ink-2); }
 .sk .sk-label { font-size: 14px; font-weight: 600; }
 .sk .sk-fb { font-size: 14px; font-weight: 600; }
 .sk .sk-fb.is-wrong { fill: var(--ink-2); }
 .sk .sk-axis { stroke: var(--ink); stroke-width: 2; fill: none; }
 .sk .sk-tick { stroke: var(--ink); stroke-width: 2; }
-.sk .sk-grid { stroke: var(--tray, #ECE6DA); stroke-width: 1; fill: var(--tray, #ECE6DA); }
+.sk .sk-grid { stroke: var(--tray); stroke-width: 1; fill: var(--tray); }
 .sk .sk-part { fill: var(--paper); stroke: var(--ink); stroke-width: 2; cursor: pointer; transition: fill .15s ease; }
-.sk .sk-part.is-on { fill: var(--nib, #24346E); }
-.sk .sk-part:focus-visible, .sk [role="button"]:focus-visible { outline: none; stroke: var(--nib, #24346E); stroke-width: 3; }
-.sk .sk-btn rect { fill: var(--nib, #24346E); }
-.sk .sk-btn text { fill: var(--on-nib, #fff); font-size: 15px; font-weight: 600; }
+.sk .sk-part.is-on { fill: var(--nib); }
+.sk .sk-part:focus-visible, .sk [role="button"]:focus-visible { outline: none; stroke: var(--nib); stroke-width: 3; }
+.sk .sk-btn rect { fill: var(--nib); }
+.sk .sk-btn text { fill: var(--on-nib); font-size: 15px; font-weight: 600; }
 .sk .sk-btn.is-on rect { fill: var(--ink); }
 .sk .sk-btn.is-off { opacity: .45; }
 .sk .sk-btn { cursor: pointer; }
 .sk .sk-btn:active rect { transform: scale(.97); transform-box: fill-box; transform-origin: center; }
 .sk .sk-col, .sk .sk-row, .sk .sk-bin { cursor: pointer; }
 .sk .sk-hit { fill: transparent; }
-.sk .sk-col:hover .sk-hit, .sk .sk-row:hover .sk-hit { fill: var(--nib-soft, #E4E8F4); }
-.sk .sk-col.is-on .sk-hit, .sk .sk-row.is-on .sk-hit { fill: var(--nib-soft, #E4E8F4); stroke: var(--nib, #24346E); stroke-width: 2; }
-.sk .sk-bar { fill: var(--nib, #24346E); }
-.sk .sk-sym { fill: var(--nib, #24346E); }
-.sk .sk-marker path { fill: var(--nib, #24346E); }
+.sk .sk-col:hover .sk-hit, .sk .sk-row:hover .sk-hit { fill: var(--nib-soft); }
+.sk .sk-col.is-on .sk-hit, .sk .sk-row.is-on .sk-hit { fill: var(--nib-soft); stroke: var(--nib); stroke-width: 2; }
+.sk .sk-bar { fill: var(--nib); }
+.sk .sk-sym { fill: var(--nib); }
+.sk .sk-marker path { fill: var(--nib); }
 .sk .sk-stage rect { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
-.sk .sk-stage.is-ask rect { stroke: var(--nib, #24346E); stroke-width: 3; }
+.sk .sk-stage.is-ask rect { stroke: var(--nib); stroke-width: 3; }
 .sk .sk-arrow, .sk .sk-flow line, .sk .sk-flow path { stroke: var(--ink); stroke-width: 2; fill: none; }
-.sk .sk-hub { fill: var(--nib-soft, #E4E8F4); stroke: var(--nib, #24346E); stroke-width: 2; }
+.sk .sk-hub { fill: var(--nib-soft); stroke: var(--nib); stroke-width: 2; }
 .sk .sk-weight rect { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
-.sk .sk-bin rect { fill: var(--tray, #ECE6DA); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
-.sk .sk-bin.is-armed rect { stroke: var(--nib, #24346E); stroke-width: 2.5; }
+.sk .sk-bin rect { fill: var(--tray); stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.sk .sk-bin.is-armed rect { stroke: var(--nib); stroke-width: 2.5; }

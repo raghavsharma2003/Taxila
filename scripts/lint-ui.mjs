@@ -46,6 +46,7 @@ export const ALLOW = {
     ["src/styles/tokens.css", "the palette is defined here"],
     ["src/modules/frame/", "the sandboxed engine frame is its own document with its own kit palette"],
     ["src/avatar/three/", "WebGL material and shader colours (not CSS)"],
+    ["src/modules/whiteboard/palette.ts", "the board's drawing palette (chalk / paper inks), drawn inside the sandboxed engine frame (engines/explainer.tsx) like the frame's own kit palette"],
     ["src/pages/LessonDev.tsx", "dev route only (/dev/lesson, VITE_DEV_ROUTES=1): never in a production build"],
     ["src/pages/AvatarDev.tsx", "dev route only (/dev/avatar, VITE_DEV_ROUTES=1): never in a production build"],
   ],
@@ -80,9 +81,11 @@ export function stripContent(line) {
   return l;
 }
 /** Where L-DEVA and L-HING look: every rendered file and every string table under src/, except the speech pipeline
- *  (src/lesson, src/voice: what she says and hears is processed there, never shown as chrome) and dev-only routes. */
+ *  (src/lesson, src/voice: what she says and hears is processed there, never shown as chrome; src/duplex, its .ts
+ *  transcript readers: numerals, the answer-form grammar, turn markers and overlap read the CHILD's words and render
+ *  nothing — Day-0 gates review 2026-10-05) and dev-only routes. A .tsx under src/duplex would still be scanned. */
 export const LANG_SCOPE = (file) => /\.(tsx|ts)$/.test(file) && !/\.d\.ts$/.test(file) &&
-  !/^src\/(lesson|voice)\//.test(file) && !/(^|\/)dev\//.test(file) && !/^src\/pages\/(LessonDev|AvatarDev)\.tsx$/.test(file);
+  !/^src\/(lesson|voice)\//.test(file) && !/^src\/duplex\/[^/]+\.ts$/.test(file) && !/(^|\/)dev\//.test(file) && !/^src\/pages\/(LessonDev|AvatarDev)\.tsx$/.test(file);
 /** Not text anyone reads: a regex character class holding Devanagari (a range or the danda: code that detects or
  *  splits the script; no quote inside, so a string array never matches) and a string of Devanagari digits only (a
  *  numeral lookup table). */

@@ -419,7 +419,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // The child's own request in words (director/requests.js; OWNER TEST 2026-10-04 items 3-5): never evidence. A steering
   // request that is the whole turn is decided here (no model call); a stop or goodbye still goes to the model for its
   // distress read (the floor's backup is never skipped), and classify() then applies the request over the model's flags.
-  const request = !chipId && !moduleAnswer ? requestOf(text) : null;
+  let request = !chipId && !moduleAnswer ? requestOf(text) : null;
+  // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
+  // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
+  // lesson on the right answer; "stop", "kahani", "khelna", "dheere", "hindi", "for example a samosa" were never graded).
+  // The words then take the ordinary path (exact key, or the model with its distress read); a stop / goodbye in the key's
+  // own words is not a stop either (the stop chip and Pause → End still end the lesson at once).
+  if (request && target.mode === "item" && answerEchoes(target, text, request.type)) {
+    if (FLOW_REQUESTS.has(request.type)) flags.wantsToStop = false;
+    request = null;
+  }
   if (request?.whole && !FLOW_REQUESTS.has(request.type)) {
     flags.wantsToStop = false;
     return done("no_evidence", "request", { request });
@@ -452,6 +461,18 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   if ((target.mode === "item" || target.mode === "why") && !/\d/.test(text)
     && (read.dontKnow && read.words <= 4 || read.asksForAnswer && read.words <= 8)) return done("no_evidence", "lexical");
   return { result: null, flags, text };
+}
+
+/**
+ * Do the child's words echo the item's own answer content as the same request type? True when the words ARE the key, an
+ * acceptable answer or an option, or when any of those itself reads as that request type ("good night" for a bedtime
+ * item, "Hindi" for a which-language item). PURE. Exported for tests.
+ */
+export function answerEchoes(target, text, type) {
+  const t = norm(text);
+  const answers = [target?.key, ...(target?.also || []), ...((target?.options || []).map((o) => o?.text))]
+    .filter((a) => typeof a === "string" || typeof a === "number").map(String);
+  return answers.some((a) => norm(a) === t || requestOf(a)?.type === type);
 }
 
 /**

@@ -246,3 +246,28 @@ test("the compiled instructions stay inside the budget with every new request sh
   }
   assert.ok(typeof compile === "function");
 });
+
+// Day-0 gates review (2026-10-05): the item's own answer content is graded, never read as a request. 244 of 44,103 kit
+// answers / acceptables / options read as a whole request before this ("Good night, Mummy!" ended the lesson on the right
+// answer). A real request on an item whose answers say nothing of the kind still steers.
+test("an answer in request words is graded: good night, stop, kahani, Hindi", () => {
+  const item = (answer, acceptable = [], options) => ({ mode: "item", item: { id: "x", answer }, key: answer, also: acceptable, ideas: [], misconceptions: [], options });
+  for (const [t, target] of [
+    ["good night mummy", item("Good night, Mummy!", ["good night", "good night mummy"])],
+    ["stop", item("stop", ["stop!"])],
+    ["kahani", item("kahani")],
+    ["hindi", item("Hindi", ["hindi"])],
+    ["it is for saying bye at night", item("for bedtime", ["it is for saying bye at night"])],
+  ]) {
+    const r = classifyFast({ target, childText: t, typed: true, heard: "" });
+    assert.equal(r.request ?? r.result?.request ?? null, null, t);
+    assert.equal(r.flags.wantsToStop, false, t);
+  }
+  const r = classifyFast({ target: item("Good night, Mummy!", ["good night"]), childText: "good night mummy", typed: true, heard: "" });
+  assert.equal(r.result?.outcome, "correct");
+  // a request that the item's answers do not carry still steers
+  const s = classifyFast({ target: item("47"), childText: "example do", typed: true, heard: "" });
+  assert.equal(s.result?.request?.type, "example");
+  const g = classifyFast({ target: item("47"), childText: "bye, mujhe jaana hai", typed: true, heard: "" });
+  assert.equal(g.request?.type, "goodbye");
+});

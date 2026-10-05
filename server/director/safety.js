@@ -161,8 +161,10 @@ const FAMILIES = {
 // frame is pinned by evals/safety-robust/fingerprint.mjs: no recall draw (TaxilaFDB 84, ES-3 80, held-out 40, red team
 // 225, conversation-v2; clean, no-punct, report seeds 0-19, dev seeds 1000-1019) may change. Reverse any frame if a real
 // session miss traces to it.
-/** Anything that makes a frame unsafe to apply, anywhere in the turn: harm detail, repetition, cause, secrecy, fear, "really". */
-const GUARD_VETO = /(?<![\p{L}\p{M}])(?:sach(?:\s+mein|\s+me|mu?ch)?|really|seriously|for\s+real|real\s+life|actually|asli|roz|rozana|daily|every\s*day|har\s+(?:din|roz|raat)|gussa|gusse|angry|belt|chappal|danda|dande|stick|blood|khoon|chot|zakhm|nishaan|nishan|bruise|injur\w*|dard|hurts?|darr?\s+lag\w*|scared|afraid|darta|darti|mat\s+batana|don'?t\s+tell|secret|kapde|private|galat\s+jagah|gandi|gande|kyunki|kyuki|because|coz|cuz|jab|when|whenever|zinda|jeena|jeene|jine|khud\s+ko|myself|suicid\w*|pills?|zeher|poison|chhat|roof|jump\w*|akela|akeli|alone|raat\s+ko|at\s+night|ghar\s+(?:pe|par|mein|me)|at\s+home|mere\s+saath|with\s+me|bhi\s+(?:aisa|waisa|wahi)|me\s+too)(?![\p{L}\p{M}])/iu;
+/** Anything that makes a frame unsafe to apply, anywhere in the turn: harm detail, repetition, cause, secrecy, fear, "really".
+ *  Day-0 gates review: also "real" ("die in the game and in real") and a setting the child widens or denies ("game mein
+ *  bhi", "is game mein nahi", "not just in the game"): each of those read as ideation set aside as play. */
+const GUARD_VETO = /(?<![\p{L}\p{M}])(?:sach(?:\s+mein|\s+me|mu?ch)?|really|seriously|for\s+real|real\s+life|actually|asli|roz|rozana|daily|every\s*day|har\s+(?:din|roz|raat)|gussa|gusse|angry|belt|chappal|danda|dande|stick|blood|khoon|chot|zakhm|nishaan|nishan|bruise|injur\w*|dard|hurts?|darr?\s+lag\w*|scared|afraid|darta|darti|mat\s+batana|don'?t\s+tell|secret|kapde|private|galat\s+jagah|gandi|gande|kyunki|kyuki|because|coz|cuz|jab|when|whenever|zinda|jeena|jeene|jine|khud\s+ko|myself|suicid\w*|pills?|zeher|poison|chhat|roof|jump\w*|akela|akeli|alone|raat\s+ko|at\s+night|ghar\s+(?:pe|par|mein|me)|at\s+home|mere\s+saath|with\s+me|bhi\s+(?:aisa|waisa|wahi)|me\s+too|real|(?:mein|me|main)\s+(?:bhi|nahi|nahin|nhi)|not\s+(?:just\s+|only\s+)?in\s+(?:the\s+|a\s+)?games?|nahi\s+(?:sach|asli|real))(?![\p{L}\p{M}])/iu;
 /** Sports and games as the SETTING of a hit / beat / die line ("beats me at chess", "chess mein maarte", "in the game"). */
 const SPORT_WORDS = "games?|chess|ludo|carrom|cricket|match|matches|race|kabaddi|badminton|football|pillow\\s*fight|free\\s*fire|pubg|bgmi|minecraft|roblox|levels?|video\\s*games?|khel";
 const SPORT_SETTING = new RegExp(`(?<![\\p{L}\\p{M}])(?:(?:in|at|during)\\s+(?:every\\s+|the\\s+|a\\s+|this\\s+)?(?:${SPORT_WORDS})|(?:${SPORT_WORDS})\\s+(?:mein|me|main|mai)|respawn\\w*|headshot)(?![\\p{L}\\p{M}])`, "iu");
@@ -176,8 +178,11 @@ const WEATHER_IDIOM = /(?<![\p{L}\p{M}])(?:thand|thandi|sardi|garmi|dhoop|boriya
 /** A distress word in another sense: "die my hair" (dye), "life science", "live stream" (verify-b; the fuzzy layer's guard). */
 const WORD_SENSE = /(?<![\p{L}\p{M}])(?:die\s+(?:my|her|his|the)\s+hair|life\s+(?:science|skills?|cycle|processes)|live\s*stream\w*)(?![\p{L}\p{M}])/iu;
 /** A story, poem or film being retold ("kahani ke raja ne kaha", "kavita mein kavi kehta hai", "in the story"). */
-const STORY = /(?<![\p{L}\p{M}])(?:kahani|kahaani|kavita|kavi|story|stories|poem|poet|film|movie|cartoon|character|raja|rani|villain|chapter\s+mein)(?![\p{L}\p{M}])/iu;
-const REPORTED = /(?<![\p{L}\p{M}])(?:kaha|kehta|kehti|kehte|bola|boli|said|says|in\s+the\s+(?:story|poem|film|movie|book)|kahani\s+(?:mein|me|ke)|kavita\s+(?:mein|me)|was\s+[A-Z]\w+|tha|thi)(?![\p{L}\p{M}])/u;
+// Day-0 gates review: "raja", "rani", "character", "villain" left the story words (Raja / Rani are children's and
+// relatives' NAMES: "Rani didi ne mujhe maara tha" was set aside as a story), and the bare past tense "tha" / "thi" left the
+// reported-speech words (it is how a child reports what happened: "movie ke baad papa ne mujhe maara tha" was set aside).
+const STORY = /(?<![\p{L}\p{M}])(?:kahani|kahaani|kavita|kavi|story|stories|poem|poet|film|movie|cartoon|chapter\s+mein)(?![\p{L}\p{M}])/iu;
+const REPORTED = /(?<![\p{L}\p{M}])(?:kaha|kehta|kehti|kehte|bola|boli|said|says|in\s+the\s+(?:story|poem|film|movie|book)|kahani\s+(?:mein|me|ke)|kavita\s+(?:mein|me)|was\s+[A-Z]\w+)(?![\p{L}\p{M}])/u;
 /** A touch for praise or care: "kandhe pe chhua aur shabash bola", "chhua aur bukhaar check kiya". */
 const PRAISE_TOUCH = /(?<![\p{L}\p{M}])(?:shabash|shabaash|well\s+done|good\s+job|bukhaar|bukhar|fever|temperature|aashirwad|ashirwad|blessing|high\s*five)(?![\p{L}\p{M}])/iu;
 const TOUCH_WORD = /(?<![\p{L}\p{M}])(?:chhua|chua|chhuaa|chhoo\w*|chhu\w*|touch\w*|छुआ|छू\w*)(?![\p{L}\p{M}])/iu;
@@ -196,10 +201,11 @@ function clauseOf(t, a, b) {
  */
 export function guardFrameOf(kind, t, span, clause) {
   if (GUARD_VETO.test(t)) return null;
-  if (STORY.test(clause) && REPORTED.test(clause)) return "story";
+  // a story never explains an abuse hit whose object is the child ("kahani sunate waqt chacha ne mujhe chhua aur bola")
+  const childHit = kind === "abuse" && (FIRST_PERSON_OBJECT.test(span) || /(?<![\p{L}\p{M}])se\s+(?:maar|mar|peet|pit)/iu.test(span));
+  if (!(kind === "abuse" && FIRST_PERSON_OBJECT.test(span)) && STORY.test(clause) && REPORTED.test(clause)) return "story";
   if (kind === "abuse") {
     // a sport / pest OBJECT explains the hit only when the child is not the one hit and it is not the instrument ("ball se")
-    const childHit = FIRST_PERSON_OBJECT.test(span) || /(?<![\p{L}\p{M}])se\s+(?:maar|mar|peet|pit)/iu.test(span);
     if (SPORT_SETTING.test(clause) || (SPORT_OBJECT.test(span) && !childHit)) return "sports";
     if (PEST.test(clause) && !childHit) return "pest";
     if (THING_SUBJECT.test(clause)) return "idiom";

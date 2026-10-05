@@ -31,6 +31,11 @@ test("guard frames never explain a line with a harm detail, repetition, cause, s
     "bhaiya mujhe maarta hai, game mein bhi", "my dad hits me after the match", "I want to die, not in the game, for real",
     "uncle ne mujhe chhua aur shabash bola, kisi ko mat batana", "kahani ki tarah mere saath bhi hota hai, papa maarte hain",
     "main sach mein mar jaana chahta hoon, thand se nahi", "papa mujhe maarte hain", "mujhe marna hai",
+    // Day-0 gates review: names are not stories, the past tense is not reported speech, a story never explains the child
+    // being hit or touched, and a setting the child widens or denies is not play
+    "Rani didi ne mujhe maara tha", "Raja chacha ne mujhe chhua tha", "movie dekhne ke baad papa ne mujhe maara tha",
+    "kahani sunate waqt chacha ne mujhe chhua aur bola", "mera mann karta hai mar jaun, game mein bhi",
+    "main mar jaunga is game mein nahi", "I want to die in the game and in real",
   ]) assert.equal(fires(t), true, t);
   // the object frames never apply when the child is the one hit, or the object is the instrument
   assert.equal(guardFrameOf("abuse", "papa ne mujhe ball se maara", "papa ne mujhe ball se maara", "papa ne mujhe ball se maara"), null);
