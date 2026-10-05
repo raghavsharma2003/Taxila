@@ -328,10 +328,16 @@ try {
   if (await okKey.isVisible().catch(() => false)) await okKey.click();
   await pause(2500);
   await shoot("parent-home");
-  const lessonLink = page.locator('a[href*="/parent/lessons"], a[href*="lesson"]').first();
-  if (await lessonLink.isVisible().catch(() => false)) { await lessonLink.click(); await pause(2500); await shoot("parent-lessons"); }
-  const card = page.locator('a[href*="/parent/lesson/"], [data-testid^="lesson-card"]').first();
-  if (await card.isVisible().catch(() => false)) { await card.click(); await pause(2500); await shoot("parent-lesson-card"); }
+  ok(/\/parent/.test(page.url()) && !(await btn(/^\s*OK\s*$/).isVisible().catch(() => false)), "the parent corner opens with the PIN");
+  await page.goto(`${BASE}/parent/lessons`, { waitUntil: "networkidle" });
+  await pause(2000);
+  await shoot("parent-lessons");
+  const card = page.locator('a[href*="/parent/lessons/"]').first();
+  ok(await card.isVisible().catch(() => false), "the lesson is listed for the parent");
+  if (await card.isVisible().catch(() => false)) { await card.click(); await pause(3000); await shoot("parent-lesson-card"); }
+  await page.goto(`${BASE}/parent/progress`, { waitUntil: "networkidle" });
+  await pause(2000);
+  await shoot("parent-progress");
   ok(errors.length === 0, `no uncaught page errors (${errors.slice(0, 3).join(" | ") || "none"})`);
 } catch (e) {
   ok(false, `walk threw: ${String(e?.message ?? e).split("\n")[0]}`);

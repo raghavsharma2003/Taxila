@@ -48,7 +48,7 @@ export const HL = {
     "(?:mummy|papa|sab) (?:ke )?so(?:ne)? (?:ke baad|jaane ke baad|jaane par)",
   ],
   goodbye: [
-    "(?:mummy|mumma|papa|maa|didi|bhaiya|dadi|nani) bula (?:rahi|rahe|raha) (?:hai|hain|h)", "mujhe ja(?:a)?na (?:hai|padega|h)(?: abhi)?$", "(?:main|mai) ja (?:raha|rahi) (?:hoon|hu|hun)",
+    "(?:mummy|mumma|papa|maa|didi|bhaiya|dadi|nani) bula (?:rahi|rahe|raha) (?:hai|hain|h)", "mujhe ja(?:a)?na (?:hai|padega|hoga|h)(?: abhi)?(?: (?:mummy|mumma|papa|maa|didi|bhaiya|dadi|nani|guests?|mehmaan|bus|van) (?:aa (?:gaye|gayi|gaya|gai)|bula (?:rahe|rahi|raha))(?: hain| hai| h)?)?$", "(?:main|mai) ja (?:raha|rahi) (?:hoon|hu|hun)",
     "tuition (?:jaana|ka time|jana)", "khana khane (?:jaana|ja raha|ja rahi|jana)",
     // "main roz school chalta hoon" is walking, not leaving: only bare, or after a closing word
     "(?:^|(?:ok|okay|acha|achha|accha|ab|abhi|toh|to|main|mai|bye|chalo|theek hai|thik hai) )(?:chal|jaa?)(?:ta|ti) (?:hoon|hu|hun)",

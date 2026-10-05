@@ -264,7 +264,18 @@ const STORY = guardSet(("kahani kahaani story stories villain hero heroine ravan
   "chapter kavita poem natak drama novel कहानी रावण कंस राजा रानी राक्षस फिल्म कविता नाटक").split(" "));
 const storyTalk = (c) => c.toks.some((t) => STORY.test(t.raw));
 /** a game or a story around a kill / die word ("i died three times in level 2"). */
-const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol)$/u);
+// (Verify B, 2026-10-05: board games and sports added — "my brother eats me alive in chess", "my mom beat me at ludo")
+const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol|chess|ludo|carrom|cricket|football|badminton|kabaddi|race|quiz)$/u);
+/**
+ * Verify B (2026-10-05): Hindi "baad" (after) canonicalises to "bad", so "uske baad touch karo blue" (a tablet instruction) read
+ * as BAD TOUCH. Off when the token is written "baad" / "बाद" AND it is the "after" frame (ke / uske / iske before it, or an
+ * imperative touch after it). "bad touch", "uncle bad touch karte hain", and "baad touch karte hain" still fire.
+ */
+const baadAfter = (c) => {
+  const b = c.toks[c.start]?.raw;
+  if (b !== "baad" && b !== "बाद") return false;
+  return /^(?:ke|uske|iske|unke|is|us|kuch|thodi|der|के|उसके|इसके|कुछ)$/u.test(c.toks[c.start - 1]?.raw ?? "") || /^(?:karo|karna|kariye|karein|karenge|करो|करना|करिए|करें)$/u.test(c.toks[c.end]?.raw ?? "");
+};
 
 /**
  * KEY slots (Verify B, 2026-10-05): the slot that carries the distress meaning of a shape (live, life, die, gone, the hit /
@@ -277,7 +288,14 @@ const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|for
  * "i don't want to lie anymore"). The price is "I don't want to lie" in lesson talk (Verify B residual, logged).
  */
 const KEY = new Set(["MARNA", "MAR", "JEENA", "JEENE", "ZINDA", "HARMV", "GAYAB", "BEAT_HI", "BEAT_PAST", "TOUCH_HI", "BEAT_EN", "DAR", "CHIDHA", "NAFRAT",
-  "BHAAG", "PYAAR", "HERE", "NOTICE", "GONE", "DIE", "LIVE", "WAKE", "KILL", "HATE", "LIFE", "BORN", "SCARED", "LOVES", "HATES", "TOUCH"]);
+  "BHAAG", "PYAAR", "HERE", "NOTICE", "GONE", "DIE", "LIVE", "WAKE", "KILL", "HATE", "LIFE", "BORN", "SCARED", "LOVES", "HATES", "TOUCH", "BAD", "HOME", "AWAY",
+  "RAHUN", "REHNA"]);
+/**
+ * Tokens that never fill a group even though they are one dropped letter from a word of it (Verify B, 2026-10-05): "har" /
+ * "हर" is "every" ("main khud ko har baar check karta hoon" read as KHUD KO HARM), "maa" / "माँ" is "mother". The critic's
+ * garble never makes them either (it drops an INTERIOR letter: "harm" -> "hrm" / "ham", "maar" -> "mar").
+ */
+const NEVER_FILL = { HARMV: new Set(["har", "हर", "maa", "ma", "मां", "मा"]), KILL: new Set(["har", "हर"]), MAR: new Set(["maa", "ma", "मां", "मा"]) };
 const SHAPES = [
   // self-harm (FAMILIES.self_harm's shapes as slots; a longer variant of a shape exists so a garble has budget to land in)
   ["self_harm", "mujhe_marna_hai", "I_OBJ ?bas MARNA AUX"],
@@ -330,7 +348,7 @@ const SHAPES = [
   ["abuse", "gandi_tarah_chhua", "GANDI TARAH ?se/से ?pe/par/पर ~1 TOUCH_HI"],
   ["abuse", "actor_beats_me", "ACTOR_EN BEAT_EN ME_EN", { guard: gameTalk }],
   ["abuse", "my_actor_beats_me", "MY_EN ACTOR_EN BEAT_EN ME_EN", { guard: gameTalk }],
-  ["abuse", "bad_touch", "BAD TOUCH"],
+  ["abuse", "bad_touch", "BAD TOUCH", { guard: baadAfter }],
   // fear (FAMILIES.fear's shapes)
   ["fear", "ghar_se_dar", "GHAR ?JANA SE DAR"],
   ["fear", "ghar_se_dar_lagta", "GHAR ?JANA SE DAR LAG"],
@@ -464,11 +482,12 @@ function prep(text) {
 }
 const costOf = (t, g) => costsOf(t).get(g.name) ?? Infinity;
 
-/** Is token t a slot word of g with exactly one letter (code point) dropped — on the spelling or the canonical key? */
+/** Is token t a slot word of g with exactly one interior letter (code point) dropped — on the spelling or the canonical key? */
 function droppedLetterOf(t, g) {
   const memo = (t.drop ??= new Map());
   if (memo.has(g.name)) return memo.get(g.name);
-  const one = (a, w) => { const A = cps(a), W = cps(w); if (W.length !== A.length + 1) return false; for (let k = 0; k < W.length; k++) if (W.slice(0, k).concat(W.slice(k + 1)).join("") === a) return true; return false; };
+  // an INTERIOR letter only (as the critic's garble drops): "eats" is not "beats", "har" is not "harm"
+  const one = (a, w) => { const A = cps(a), W = cps(w); if (W.length !== A.length + 1) return false; for (let k = 1; k < W.length - 1; k++) if (W.slice(0, k).concat(W.slice(k + 1)).join("") === a) return true; return false; };
   const r = [...g.folded].some((w) => one(t.raw, w)) || (!!t.canon && g.canonList.some((w) => one(t.canon, w)));
   memo.set(g.name, r);
   return r;
@@ -478,10 +497,13 @@ function droppedLetterOf(t, g) {
 function* walk(toks, steps, si, i, fuzz, budget) {
   if (si === steps.length) { yield { end: i, fuzz }; return; }
   const s = steps[si];
-  if (s.gap !== undefined) { for (let k = 0; k <= s.gap && i + k <= toks.length; k++) yield* walk(toks, steps, si + 1, i + k, fuzz, budget); return; }
+  // a gap never skips across a clause mark the child's transcript carries (Verify B, 2026-10-05: "galat tarah se kiya, sach
+  // mein" bridged the comma into the touch slot); the slots themselves may still sit in different clauses ("papa, mujhe ...")
+  if (s.gap !== undefined) { for (let k = 0; k <= s.gap && i + k <= toks.length; k++) { if (k > 0 && i + k < toks.length && i > 0 && toks[i + k].clause !== toks[i - 1].clause) break; yield* walk(toks, steps, si + 1, i + k, fuzz, budget); } return; }
   if (i < toks.length) {
     let c = costOf(toks[i], s.g);
     if (c === 2 && s.key && !droppedLetterOf(toks[i], s.g)) c = Infinity;   // a different real word in the meaning slot (KEY above)
+    if (c > 0 && NEVER_FILL[s.g.name]?.has(toks[i].raw)) c = Infinity;
     if (fuzz + c <= budget) yield* walk(toks, steps, si + 1, i + 1, fuzz + c, budget);
   }
   if (s.opt) yield* walk(toks, steps, si + 1, i, fuzz, budget);

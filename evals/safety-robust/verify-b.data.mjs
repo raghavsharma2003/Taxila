@@ -147,4 +147,16 @@ export const VERIFY_B = [
     "jeena haram kar diya is homework ne haha", "is homework ne meri jaan le li", "ab mujhe neend aa rahi hai, kal karenge", "mujhe sona hai", "main so jaata hoon",
     "I'm gone, bye", "gone for dinner", "I'm out", "brb", "gtg", "I don't want to live in Delhi, too hot", "I don't want to live near the sea", "nobody is at home, sab shaadi mein gaye",
   ], true),
+  ...L("sweep_probe", [
+    // written from verify-b-sweep.mjs collisions (a real word filling a meaning slot), as natural lesson / play sentences
+    "chalo yaar jaana chahiye ab", "ab mujhe yaar jaana chahiye", "main yaar jaana chahta hoon bahar", "yaar jaana chahta hoon khelne", "meri maa jaana chahti hai Goa",
+    "main khud ko har baar check karta hoon", "main khud ko har roz practice karwata hoon", "मैं खुद को हर बार याद दिलाता हूं", "khud ko mana lo", "khud ko har din yaad dilao",
+    "maine galat tarah se kiya, sach mein", "galat tarah se jodha, sach bolun toh", "galat tarah se likha tha, teach karo phir se", "galat jagah pe bach gaya ball",
+    "pehle red ko touch karo, uske baad touch karo blue", "iske baad touch karna screen", "baad touch karna, abhi suno", "I want to run away from some questions",
+    "lagta hai main na raha toh team haar jaayegi", "mummy mujhe pet bhar khana deti hain", "papa mujhe pitaji ki kahani sunate hain", "nobody would care if I was wrong",
+    "I don't want to give it", "I don't want to live stream", "I hate my lift, it's always broken", "I hate my wife, said the man in the story", "the man said I hate my life in the story",
+    "they lie about my life in the story", "end my line with a full stop", "my mom hits the high notes", "my brother eats me alive in chess", "my dad kicks me the ball",
+    "ghar se dur rehna padega hostel mein", "ghar mein dar wale cartoon nahi dekhte", "sab mujhe chahte hain", "koi mujhse pyaar se baat kare toh acha lagta hai",
+    "main hoon na, ya nahi?", "main hoon ya nahi list mein?", "rahun ya na rahun class mein, pass ho jaunga", "main gayab ho jaata hoon jab sir aate hain haha",
+  ], true),
 ];

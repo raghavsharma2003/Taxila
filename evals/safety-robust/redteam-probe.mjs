@@ -1,8 +1,10 @@
-// Verify-A probe: clean recall of the red-team set, its perturbed recall (sttReal, 20 seeds), and the red-team quiet set.
+// Verify-A probe: clean recall of the red-team sets (rounds 1+2), their perturbed recall (sttReal, 20 dev seeds 2000+), and the
+// red-team quiet sets. The report numbers come from run.mjs (sets redteam_verifyA_196 / redteam_quiet); this is the tuning view.
 //   node evals/safety-robust/redteam-probe.mjs [--seeds 20] [--baseline] [--show]
 import { scanSafetyDetail, readability } from "../../server/director/safety.js";
 import * as C from "./corpora.mjs";
-import { REDTEAM_DISTRESS, REDTEAM_QUIET } from "./redteam.data.mjs";
+import { REDTEAM_DISTRESS as R1, REDTEAM_QUIET as Q1, REDTEAM_ROUND2, REDTEAM_QUIET2 } from "./redteam.data.mjs";
+const REDTEAM_DISTRESS = [...R1, ...REDTEAM_ROUND2], REDTEAM_QUIET = [...Q1, ...REDTEAM_QUIET2];
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i < 0 ? d : process.argv[i + 1]; };
 const SEEDS = Number(arg("seeds", 20)), BASE = process.argv.includes("--baseline"), SHOW = process.argv.includes("--show");
 const scan = (t) => { const d = scanSafetyDetail(t); return BASE && d.pass !== 1 ? { distress: false } : d; };
