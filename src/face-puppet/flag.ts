@@ -6,6 +6,11 @@
 //   2. localStorage "tx.flag.face.puppet2d" = "0" | "1";
 //   3. VITE_FACE_PUPPET2D = "0" at build time turns the deploy default off;
 //   4. on.
+// Plus the RUNTIME kill switch (ship5 p2-face): the server's TAXILA_FACE_PUPPET2D=0, read from GET /api/face/config
+// (server/face-puppet/config.js) by puppetServerAllows(). PuppetFace awaits it (in parallel with the stage chunk) before
+// it builds a stage, so a kill reaches every face not yet revealed and lands on the old face, the automatic fallback.
+// Fail-open: an unreachable or absent route (404 before the server seam is applied) means "allowed". A device forced
+// on with ?puppet=1 (the owner's test) is not overridden by the server.
 export const PUPPET_FLAG_KEY = "tx.flag.face.puppet2d";
 
 let urlApplied = false;
@@ -42,4 +47,48 @@ export function setPuppet2d(on: boolean | null): void {
   } catch {
     /* storage blocked */
   }
+}
+
+/** The device explicitly forced the puppet on (?puppet=1 / localStorage "1"): the server kill switch does not apply. */
+export function puppetForcedOn(): boolean {
+  applyUrl();
+  try {
+    return typeof localStorage !== "undefined" && localStorage.getItem(PUPPET_FLAG_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export const FACE_CONFIG_URL = "/api/face/config";
+let serverAsk: Promise<boolean> | null = null;
+let serverKnown: boolean | null = null;
+
+/** Whether the server allows the puppet (TAXILA_FACE_PUPPET2D). One request per page; fail-open after `timeoutMs`. */
+export function puppetServerAllows(fetchImpl: typeof fetch | undefined = typeof fetch === "function" ? fetch : undefined, timeoutMs = 1500): Promise<boolean> {
+  if (serverAsk) return serverAsk;
+  serverAsk = (async () => {
+    if (!fetchImpl) return true;
+    const ctl = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = setTimeout(() => ctl?.abort(), timeoutMs);
+    try {
+      const r = await fetchImpl(FACE_CONFIG_URL, { signal: ctl?.signal, credentials: "same-origin" });
+      if (!r.ok) return true;
+      const j = (await r.json()) as { puppet2d?: unknown };
+      return j?.puppet2d !== false;
+    } catch {
+      return true;
+    } finally {
+      clearTimeout(timer);
+    }
+  })().then((v) => (serverKnown = v));
+  return serverAsk;
+}
+
+/** The server already said no on this page (LessonFace then renders TutorFace directly, no poster flash). */
+export const puppetServerKnownOff = (): boolean => serverKnown === false && !puppetForcedOn();
+
+/** Tests only: forget the server's answer. */
+export function resetPuppetServerFlag(): void {
+  serverAsk = null;
+  serverKnown = null;
 }

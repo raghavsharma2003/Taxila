@@ -20,15 +20,32 @@ export interface TtsVisemeFrame {
 export const isVisemeFrame = (d: unknown): d is TtsVisemeFrame =>
   !!d && typeof d === "object" && (d as { t?: unknown }).t === "visemes" && Array.isArray((d as { v?: unknown }).v) && Number.isFinite((d as { atSample?: unknown }).atSample);
 
+type OutCtx = Pick<BaseAudioContext, "currentTime"> & { outputLatency?: number; baseLatency?: number; getOutputTimestamp?: () => { contextTime?: number; performanceTime?: number } };
+
 /**
- * performance.now() ms at which this part's first synthesised sample sounds, from the player's anchor: reply sample
- * `fromSample` is scheduled at AudioContext time `startAt`. Output latency (the device buffer between scheduling and the
- * speaker) is added: the face must move with the sound the child HEARS (measured scheduling error on Chromium with it:
- * median +5.7 ms, p95 +9.7 ms, evals/face-puppet/out/lipsync-inapp.json).
+ * performance.now() ms at which AudioContext time `ctxTime` SOUNDS at the output (the face must move with the sound the
+ * child hears). Prefers getOutputTimestamp() (the browser's own output-clock estimate: contextTime is being played at
+ * performanceTime), which is smooth; falls back to currentTime + outputLatency, which steps by the audio callback size
+ * (~10 ms on desktop Linux, 20-40 ms on Android). Ship5 p2-face: computed ONCE per player anchor (anchorPerfTime + the
+ * caller's cache), because recomputing it per batch put the batches of one part up to 8 ms apart on the product path and
+ * the scheduler split them into separate tracks.
  */
-export function visemePlayAt(f: Pick<TtsVisemeFrame, "atSample" | "leadMs">, fromSample: number, startAt: number, ctx: Pick<BaseAudioContext, "currentTime"> & { outputLatency?: number; baseLatency?: number }, nowMs = performance.now()): number {
+export function anchorPerfTime(ctxTime: number, ctx: OutCtx, nowMs = performance.now()): number {
+  const ts = ctx.getOutputTimestamp?.();
+  if (ts && ts.contextTime && ts.performanceTime && ts.performanceTime <= nowMs + 50 && nowMs - ts.performanceTime < 1000) {
+    return ts.performanceTime + (ctxTime - ts.contextTime) * 1000;
+  }
   const outLat = (ctx.outputLatency || ctx.baseLatency || 0) * 1000;
-  return nowMs + (startAt - ctx.currentTime) * 1000 + ((f.atSample - fromSample) / PCM_RATE) * 1000 + outLat - (f.leadMs ?? 0);
+  return nowMs + (ctxTime - ctx.currentTime) * 1000 + outLat;
+}
+
+/** playAt of a framed part from its anchor: the anchor's sample `fromSample` sounds at performance time `anchorPerf`. */
+export const partPlayAt = (f: Pick<TtsVisemeFrame, "atSample" | "leadMs">, fromSample: number, anchorPerf: number): number =>
+  anchorPerf + ((f.atSample - fromSample) / PCM_RATE) * 1000 - (f.leadMs ?? 0);
+
+/** One-shot form (tests, the harness): the part's playAt with the anchor converted now. */
+export function visemePlayAt(f: Pick<TtsVisemeFrame, "atSample" | "leadMs">, fromSample: number, startAt: number, ctx: OutCtx, nowMs = performance.now()): number {
+  return partPlayAt(f, fromSample, anchorPerfTime(startAt, ctx, nowMs));
 }
 
 /** Emit one framed batch on the puppet bus (the scheduler merges batches of the same part). */

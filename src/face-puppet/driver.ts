@@ -65,6 +65,11 @@ class NodSpring {
 
 const lowpass = (cur: number, target: number, dt: number, tau: number) => cur + (1 - Math.exp(-dt / tau)) * (target - cur);
 
+/** R6 (policy.ts): the soft-neutral mouth of a safety turn. mouthSmile 0.012 sits at the rig's effective smile ~0.28
+ *  (lips.js lift(): 0.22 = soft neutral, 0.45 = c-front's resting warm smile at behaviour's idle ~0.045); no cheek push,
+ *  no frown (the concern frown read as sad / disappointed). Eased in and out over ~150 ms (no corner pop). */
+export const SAFETY_NEUTRAL = { mouthSmile: 0.012, cheekSquint: 0.03 } as const;
+
 export class PuppetDriver {
   readonly policy: ActingPolicy;
   readonly visemes = new VisemeScheduler();
@@ -88,6 +93,8 @@ export class PuppetDriver {
   private vis: Record<string, number> = {};
   private reduced: boolean;
   private calm = false;
+  /** 0..1, the eased safety-neutral blend (R6). */
+  private calmK = 0;
   /** Until when (s) the face needs the full frame rate: speech, a state change, an expression's ramp, a nod, a look. */
   busyUntil = 0;
   /** Eval-only: a head offset added after everything (the judge grid's ±20° turn cell). Never set by product code. */
@@ -126,6 +133,17 @@ export class PuppetDriver {
   }
   voiceEvent(kind: "laugh" | "breath" | "hum"): void {
     if (!this.calm) this.behaviour.voiceEvent(kind);
+  }
+  /** R6: the Director marked this turn a safety turn (calm_steady): neutral face for it and for her reply. */
+  safetyTurn(nowMs: number): void {
+    this.run(this.policy.safetyTurn(nowMs / 1000), nowMs / 1000);
+  }
+  /** The duplex host went away: the floor state and the mic-level Listener own the floor faces and nods again. */
+  detachDuplex(nowMs: number): void {
+    this.run(this.policy.detachDuplex(nowMs / 1000), nowMs / 1000);
+  }
+  get inSafety(): boolean {
+    return this.calm;
   }
   /** A duplex pose. */
   pose(p: AvatarPose, nowMs: number): void {
@@ -185,7 +203,8 @@ export class PuppetDriver {
     // nods: the duplex engine's content-blind continuers when it is attached; else the judged mic-level Listener
     if (this.policy.duplexAttached) head[0] += this.nod.step(dt) * (this.reduced ? 0.3 : 1);
     else {
-      const ls = this.listener.update(t, dt, st === "listening", inp.childLevel);
+      // R6: no listening nods or listening smile in a safety turn (a still, attentive face; duplex nods obey the same rule)
+      const ls = this.listener.update(t, dt, st === "listening" && !this.calm, inp.childLevel);
       head[0] += ls.pitch * (this.reduced ? 0.3 : 1);
       beh.mouthSmileLeft = (beh.mouthSmileLeft ?? 0) + ls.smile;
       beh.mouthSmileRight = (beh.mouthSmileRight ?? 0) + ls.smile;
@@ -199,6 +218,16 @@ export class PuppetDriver {
     this.exprLean = lowpass(this.exprLean, this.exprs.lean, dt, 0.15);
     this.poseLean = lowpass(this.poseLean, st === "listening" || st === "your_turn" ? this.poseLeanTarget : 0, dt, 0.4);
     const bs = this.comp.compose(beh, lipL, dt);
+    this.calmK = lowpass(this.calmK, this.calm ? 1 : 0, dt, 0.05);
+    if (this.calmK > 0.001) {
+      const k = this.calmK;
+      const cap = (key: string, max: number) => { const v = bs[key] ?? 0; if (v > max) bs[key] = v + (max - v) * k; };
+      cap("mouthSmileLeft", SAFETY_NEUTRAL.mouthSmile);
+      cap("mouthSmileRight", SAFETY_NEUTRAL.mouthSmile);
+      cap("cheekSquintLeft", SAFETY_NEUTRAL.cheekSquint);
+      cap("cheekSquintRight", SAFETY_NEUTRAL.cheekSquint);
+      for (const key of ["mouthFrownLeft", "mouthFrownRight", "mouthShrugLower"]) if (bs[key]) bs[key] *= 1 - k;
+    }
     let lipSource: DriverFrame["lipSource"] = tap.buf ? "tap" : tap.level > 0 ? "level" : "none";
     if (visOn) {
       // visemes and tongue keys bypass the compositor's anti-snap (they are lip keys, as in the judged clip); the jaw

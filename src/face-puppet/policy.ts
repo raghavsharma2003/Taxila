@@ -12,7 +12,13 @@
 //      producer's 1-per-5-child-turns gate (faceCues ReactionGate).
 //   R3 band scale on amplitude only: b1 1.0, b2 0.9, b3 0.7, b4 0.55 (avatar-behaviour-controller).
 //   R4 never a sad face, a head shake, mimicry or a wink (the safety floor; safety.ts strips the wink from the tables).
-//      "concerned" is the gentle-concern face (inner brows up, soft mouth), never a frown-cry; in SAFETY it is calm.
+//      "concerned" is the gentle-concern face (inner brows up, soft mouth), never a frown-cry.
+//   R6 safety turns are NEUTRAL (ship5 p2-face, 2026-10-05): a safety turn (the Director's calm_steady display, or the
+//      duplex engine's calm_steady pose / safety_attend) releases every expression, plays NO preset, drops every affect
+//      (concern included) and the driver holds a soft-neutral mouth (no smile, no frown, no cheek push). Reason: the
+//      judged concern face at product intensity read "warm" (a smile) 8/8 and at full read sad / disappointed to the blind
+//      models (evals/face-puppet/concern-read.mjs, Review v4), so neither belongs on a child's distress turn. Without the
+//      duplex engine the calm ends at her next spoken onset after a child turn with no fresh calm_steady cue.
 //   R5 floor acting is not affect: the listening face, the thinking glance and the check-in look are the floor's, driven
 //      by the duplex engine when it is attached, else by the floor state.
 import type { Emotion, FaceState } from "../avatar/behaviour.ts";
@@ -48,6 +54,8 @@ export class ActingPolicy {
   private lastBig = -Infinity;
   private duplex = false;
   private calm = false;
+  /** A calm_steady cue arrived since the child last held the floor (no duplex): her next onset keeps the calm. */
+  private calmFresh = false;
   /** The preset this policy last started (null after a release): a floor change releases only VALENCED acting, never the
    *  floor's own listening / thinking face that the duplex engine may have just started. */
   private current: PresetName | null = null;
@@ -65,10 +73,26 @@ export class ActingPolicy {
 
   /** The Director asked for an affect (already verdict-blind and turn-gated upstream). Armed for her next onset. */
   affect(emotion: Emotion, intensity: 1 | 2, t: number): ActCommand[] {
-    if (this.calm && emotion !== "concerned") { this.note(`${t.toFixed(2)} affect ${emotion} dropped: safety calm`); return []; }
+    if (this.calm) { this.note(`${t.toFixed(2)} affect ${emotion} dropped: safety turn is neutral`); return []; }
     this.armed = { emotion, intensity, at: t };
     this.note(`${t.toFixed(2)} affect ${emotion}/${intensity} armed`);
     return this.state === "speaking" ? this.fireArmed(t) : [];
+  }
+
+  /** R6: the Director marked this turn a safety turn (display calm_steady): neutral now, and for her reply. */
+  safetyTurn(t: number): ActCommand[] {
+    this.calmFresh = true;
+    this.armed = null;
+    this.note(`${t.toFixed(2)} safety turn: neutral`);
+    const out: ActCommand[] = [];
+    if (!this.calm) { this.calm = true; out.push({ op: "calm", on: true, why: "safety turn" }); }
+    this.current = null;
+    out.push({ op: "release", why: "safety turn: neutral" });
+    return out;
+  }
+
+  get inSafety(): boolean {
+    return this.calm;
   }
 
   private fireArmed(t: number): ActCommand[] {
@@ -101,6 +125,16 @@ export class ActingPolicy {
     const out: ActCommand[] = [];
     const floorFace = this.current === "thinking" || this.current === "listening";
     const rel = (why: string): ActCommand => { this.current = null; return { op: "release", why }; };
+    if (this.calm && !this.duplex) {
+      // R6 without the duplex engine: the child's turn consumes the cue; her next onset with no fresh cue leaves safety
+      if (state === "listening") this.calmFresh = false;
+      else if (state === "speaking" && !this.calmFresh) { this.calm = false; out.push({ op: "calm", on: false, why: "left safety: a normal turn" }); }
+    }
+    if (this.calm) {
+      // R6: in safety the floor's own faces are not played either (no listening smile, no thinking glance): neutral
+      if (this.current) out.push(rel(`safety: ${state}`));
+      return out;
+    }
     if (state === "speaking") {
       if (this.armed) out.push(...this.fireArmed(t));
       else if (was === "listening" || was === "thinking") out.push(rel("onset"));
@@ -120,9 +154,20 @@ export class ActingPolicy {
   pose(p: AvatarPose, t: number): ActCommand[] {
     this.duplex = true;
     this.note(`${t.toFixed(2)} pose ${p}`);
-    const pre: ActCommand[] = [];
-    if (this.calm && p !== "calm_steady") { this.calm = false; pre.push({ op: "calm", on: false, why: `left safety: ${p}` }); }
-    return [...pre, ...this.poseActs(p)];
+    if (this.calm && p !== "calm_steady") {
+      // R6: the safety calm outlives her safeguarding reply. A child-floor pose (a normal child turn: the engine sends
+      // calm_steady instead while safety_attend holds) consumes the cue; her next onset without a fresh one leaves calm.
+      if (p === "listening" || p === "listen_lean" || p === "your_turn" || p === "still_with_you" || p === "checkin_look") this.calmFresh = false;
+      if (p === "speaking" && !this.calmFresh) {
+        this.calm = false;
+        return [{ op: "calm", on: false, why: "left safety: a normal turn" }, ...this.poseActs(p)];
+      }
+      // still in safety: no floor preset either (neutral), only the release / lean parts of the pose
+      const acts = this.poseActs(p).filter((a) => a.op !== "emote");
+      this.current = null;
+      return acts;
+    }
+    return this.poseActs(p);
   }
 
   private poseActs(p: AvatarPose): ActCommand[] {
@@ -141,12 +186,22 @@ export class ActingPolicy {
       case "checkin_look": return [{ op: "release", why: p }, this.emote("listening", 0.6, 1.2, "duplex:checkin")];
       case "your_turn": return [{ op: "release", why: p }, { op: "lean", value: 0.3, why: p }];
       case "calm_steady":
-        // SAFETY_ATTEND (TA8): calm, steady, attentive; nothing playful or delighted until the floor leaves it
+        // SAFETY_ATTEND (TA8): calm, steady, attentive. R6: NEUTRAL, no preset (the judged concern read as a smile at 0.35)
         this.calm = true;
+        this.calmFresh = true;
         this.armed = null;
-        return [{ op: "calm", on: true, why: p }, { op: "release", why: p }, this.emote("concern", 0.35, 30, "duplex:calm_steady", 2)];
+        return [{ op: "calm", on: true, why: p }, { op: "release", why: p }];
       case "speaking": return [{ op: "release", why: "speaking" }];
     }
+  }
+
+  /** The duplex host was disposed (or never really drove the face): the floor state owns the floor faces again and the
+   *  mic-level Listener nods again. Any calm it set stays until the next normal turn (R6). */
+  detachDuplex(t: number): ActCommand[] {
+    if (!this.duplex) return [];
+    this.duplex = false;
+    this.note(`${t.toFixed(2)} duplex detached`);
+    return [];
   }
 
   get faceState(): FaceState {

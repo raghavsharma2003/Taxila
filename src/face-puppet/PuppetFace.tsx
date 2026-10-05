@@ -13,6 +13,8 @@ import { p as copy } from "../avatar/picker/copy.ts";
 import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
 import type { TapSource } from "../avatar/tap.ts";
 import { puppetPoster } from "./assets.ts";
+import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
+import { puppetBus } from "./bus.ts";
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
 
 export interface PuppetFaceProps {
@@ -75,7 +77,12 @@ function adopt(key: string): PuppetStage | null {
   return s;
 }
 
-/** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face. */
+/** The tutors the puppet IS: concept C is Asha (look "teal", Diya's voice). Any other tutor keeps their own face.
+ *  Arjun (ship5 p2-face decision, 2026-10-05): no puppet art exists for him, and the style-C rig is one painted woman's
+ *  layer stack (bun, locks, bindi, kurta; no glasses layer), judged over 8 polish rounds; a male variant "from the same
+ *  rig" is new art to that bar, not a reskin. So Arjun keeps TutorFace (his 3D head / plate), and no lesson ever swaps
+ *  faces. Consequence, stated plainly: class 5-9 children default to Arjun (shared/tutors.js defaultTutorFor), so they
+ *  see the puppet only if they pick Asha. */
 export const PUPPET_TUTORS: ReadonlySet<string> = new Set(["asha"]);
 
 export function PuppetFace(p: PuppetFaceProps) {
@@ -133,9 +140,12 @@ export function PuppetFace(p: PuppetFaceProps) {
       micTimer = window.setInterval(() => kept.set({ childLevel: live.current.mic?.value ?? 0 }), 50);
       return cleanup;
     }
-    import("./stage.ts")
-      .then(async ({ PuppetStage }) => {
+    // the stage chunk and the server's kill switch (TAXILA_FACE_PUPPET2D) in parallel: a kill lands on TutorFace, the
+    // same automatic fallback as any pre-reveal failure (ship5 p2-face)
+    Promise.all([import("./stage.ts"), puppetServerAllows()])
+      .then(async ([{ PuppetStage }, allowed]) => {
         if (cancelled) return;
+        if (!allowed && !puppetForcedOn()) { fail("off: server kill switch (TAXILA_FACE_PUPPET2D=0)"); return; }
         const s = new PuppetStage(el, {
           band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
@@ -147,7 +157,8 @@ export function PuppetFace(p: PuppetFaceProps) {
         s.set({ status: live.current.status, reducedMotion: live.current.reducedMotion });
         s.start();
         micTimer = window.setInterval(() => s.set({ childLevel: live.current.mic?.value ?? 0 }), 50);
-        if (import.meta.env?.DEV || (typeof location !== "undefined" && /[?&]facerig=1/.test(location.search))) (window as unknown as { __puppet?: PuppetStage }).__puppet = s;
+        // the owner's ?facerig=1 read-out and the acceptance test: the live stage and the puppet bus on window
+        if (import.meta.env?.DEV || (typeof location !== "undefined" && /[?&]facerig=1/.test(location.search))) Object.assign(window as object, { __puppet: s, __puppetBus: puppetBus });
       })
       .catch((err: unknown) => fail(`puppet failed: ${String(err).slice(0, 160)}`));
     return cleanup;

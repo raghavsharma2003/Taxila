@@ -19,7 +19,12 @@ import type { FloorStatus } from "../avatar/behaviour.ts";
 
 export type PuppetStageEvent =
   | { type: "loaded"; ms: number }
-  | { type: "reveal"; ms: number }
+  /** `why`: the reveal rule that fired (silence | closed | bound), so the "never mid-word" claim is measured, not assumed. */
+  | { type: "reveal"; ms: number; why: "silence" | "closed" | "bound" }
+  /** The first live frame was drawn (ms since the stage was constructed), revealed or not. */
+  | { type: "firstDraw"; ms: number }
+  /** A drawn-frame gap over STALL_MS while the stage was running and the page visible (telemetry; ship5 p2-face). */
+  | { type: "stall"; ms: number; speaking: boolean }
   | { type: "fallback"; reason: string }
   | { type: "contextlost" }
   | { type: "governor"; step: string; workP95: number }
@@ -41,6 +46,9 @@ export interface PuppetStageOptions {
   now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
 }
+
+/** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
+export const STALL_MS = 180;
 
 const pct = (a: number[], q: number) => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 
@@ -66,6 +74,7 @@ export class PuppetStage {
   private rigMs: number[] = [];
   private intervals: number[] = [];
   private frames = 0;
+  private stalls = 0;
   private revealed = false;
   private losses = 0;
   private lastStep = 0;
@@ -92,9 +101,19 @@ export class PuppetStage {
     // arrived in that window was silently dropped, so the greeting (the first line of every lesson) lost its visemes.
     // dispose() removes these listeners on every path, including a failed init.
     this.subscribe();
+    // a hidden tab stops rAF: the gap on return is not a stall
+    if (typeof document !== "undefined") {
+      const onVis = () => { this.lastNow = 0; };
+      document.addEventListener("visibilitychange", onVis);
+      this.offs.push(() => document.removeEventListener("visibilitychange", onVis));
+    }
   }
 
+  /** The last 64 non-stats events with their performance.now() (the owner's ?facerig read-out and the acceptance test). */
+  readonly log: Array<PuppetStageEvent & { at: number }> = [];
+
   private emit(e: PuppetStageEvent): void {
+    if (e.type !== "stats") { this.log.push({ ...e, at: Math.round(performance.now()) }); if (this.log.length > 64) this.log.shift(); }
     try {
       this.o.onEvent?.(e);
     } catch {
@@ -120,14 +139,14 @@ export class PuppetStage {
   private subscribe(): void {
     this.offs.push(puppetBus.on((e) => {
       const now = (this.o.now ?? (() => performance.now()))();
-      if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], now, e.text);
+      if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], now, e.text, e.reqId);
       else if (e.kind === "cut") this.driver.cut();
       else if (e.kind === "duplex") {
         const c = e.cue;
         if (c.kind === "pose") this.driver.pose(c.pose, now);
         else if (c.kind === "nod") this.driver.nodCue(c.peakDeg, now);
         // "clip" cues are audio (the mm bank): the face does not invent a mouth for a sound it was not given
-      }
+      } else if (e.kind === "duplex-detach") this.driver.detachDuplex(now);
     }));
     this.offs.push(faceCues.on((cue: FaceCue) => this.onCue(cue)));
   }
@@ -135,6 +154,8 @@ export class PuppetStage {
   private onCue(cue: FaceCue): void {
     const now = (this.o.now ?? (() => performance.now()))();
     if (cue.kind === "affect") {
+      // R6 (policy.ts): a safety turn is neutral, never the concern preset (which read as a smile, or as disappointed)
+      if (cue.display === "calm_steady") { this.driver.safetyTurn(now); return; }
       const a = faceAffectOf(cue.display, this.o.band);
       if (a) this.driver.affect(a.emotion, a.intensity, now);
     } else if (cue.kind === "gaze") {
@@ -178,6 +199,7 @@ export class PuppetStage {
   start(): void {
     if (this.running || this.disposed) return;
     this.running = true;
+    this.lastNow = 0; // a stop/start (park, context restore) is not a stall
     const loop = (now: number) => {
       if (!this.running) return;
       this.raf = requestAnimationFrame(loop);
@@ -202,7 +224,8 @@ export class PuppetStage {
     this.curFps = want;
     if (!force && want < 60 && now - this.lastDraw < 1000 / want - 2) return;
     // intervals between DRAWN frames (the rate the child sees), not rAF callbacks
-    if (this.lastNow) this.intervals.push(now - this.lastNow);
+    const gap = this.lastNow ? now - this.lastNow : 0;
+    if (gap) this.intervals.push(gap);
     this.lastNow = now;
     this.lastDraw = now;
     const w0 = performance.now();
@@ -218,6 +241,11 @@ export class PuppetStage {
     if (this.work.length > 120) { this.work.shift(); this.rigMs.shift(); }
     if (this.intervals.length > 120) this.intervals.shift();
     this.frames++;
+    if (this.frames === 1) this.emit({ type: "firstDraw", ms: Math.round(performance.now() - this.t0) });
+    else if (gap > STALL_MS && (typeof document === "undefined" || document.visibilityState !== "hidden")) {
+      this.stalls++;
+      this.emit({ type: "stall", ms: Math.round(gap), speaking: f.state === "speaking" });
+    }
     // reveal in her silence, or while she talks at a moment her live mouth is closed (the poster under it is the same face
     // with the mouth closed, so the 220 ms fade shows no jump), or after 0.8 s regardless. Review v4 (2026-10-05): the
     // rule was "silence or 2.5 s", and every Face <-> Work layout switch (TeacherWindow medium <-> SpeechRow close are two
@@ -227,10 +255,16 @@ export class PuppetStage {
     // fade from the poster's closed lips shows no jump. Bounded at 800 ms of talking: a still mouth over her voice is the
     // worse failure, and the face is the same either side of the fade.
     const closedMouth = (f.mouth.jawOpen ?? 0) < 0.12 && (f.mouth.viseme_aa ?? 0) < 0.5 && (f.mouth.viseme_O ?? 0) < 0.5;
-    if (!this.revealed && this.frames > 2 && (f.state !== "speaking" || closedMouth || now - this.t0 > 800)) {
-      this.revealed = true;
-      this.canvas.style.opacity = "1";
-      this.emit({ type: "reveal", ms: Math.round(now - this.t0) });
+    // The rule, exactly (ship5 p2-face: the earlier write-up said "only during her silence", which was never true): the
+    // FIRST of (a) she is not speaking, (b) she is speaking and her live mouth is near-closed, (c) 800 ms of frames. The
+    // event names which one fired; (c) is the only case where the fade can start on an open mouth.
+    if (!this.revealed && this.frames > 2) {
+      const why = f.state !== "speaking" ? "silence" : closedMouth ? "closed" : now - this.t0 > 800 ? "bound" : null;
+      if (why) {
+        this.revealed = true;
+        this.canvas.style.opacity = "1";
+        this.emit({ type: "reveal", ms: Math.round(now - this.t0), why });
+      }
     }
     if (this.frames % 60 === 0) {
       this.govern(now);
@@ -289,15 +323,15 @@ export class PuppetStage {
   };
 
   /** The live rig's mouth state (evals: the rendered lip gap in rest-space px, p.g). */
-  mouthProbe(): { gap: number; name: string } | null {
+  mouthProbe(): { gap: number; name: string; lip: string; state: string; revealed: boolean } | null {
     const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string } } | null;
-    return r ? { gap: r.solver?.p?.g ?? 0, name: r.mouth?.name ?? "" } : null;
+    return r ? { gap: r.solver?.p?.g ?? 0, name: r.mouth?.name ?? "", lip: this.lipSource, state: this.driver.policy.faceState, revealed: this.revealed } : null;
   }
 
   /** Stats for the evals and the owner's ?facerig read-out. */
   snapshot() {
     const st = this.rig?.stats() ?? { triangles: 0, meshes: 0 };
-    return { frames: this.frames, fpsP50: 1000 / Math.max(1, pct(this.intervals, 0.5)), intervalP95: pct(this.intervals, 0.95), workP50: pct(this.work, 0.5), workP95: pct(this.work, 0.95), rigP95: pct(this.rigMs, 0.95), dpr: this.dpr, fpsCap: this.fpsCap, draws: st.meshes, tris: st.triangles, lipSource: this.lipSource, curFps: this.curFps, revealed: this.revealed, state: this.driver.policy.faceState };
+    return { frames: this.frames, fpsP50: 1000 / Math.max(1, pct(this.intervals, 0.5)), intervalP95: pct(this.intervals, 0.95), workP50: pct(this.work, 0.5), workP95: pct(this.work, 0.95), rigP95: pct(this.rigMs, 0.95), dpr: this.dpr, fpsCap: this.fpsCap, draws: st.meshes, tris: st.triangles, lipSource: this.lipSource, curFps: this.curFps, revealed: this.revealed, state: this.driver.policy.faceState, stalls: this.stalls };
   }
 
   dispose(): void {

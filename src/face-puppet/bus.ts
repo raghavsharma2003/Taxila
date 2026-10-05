@@ -3,7 +3,8 @@
 //   - the PCM player (src/lesson/ttsStream.ts) → "visemes": Diya's viseme + word events for one TTS part, with `playAt`
 //     = performance.now() ms at which that part's FIRST sample sounds (the player is the clock, as for clause events);
 //   - the player / duplex voice port → "cut": her audio stopped early (barge-in yield): the mouth closes now;
-//   - the duplex host (src/duplex/host.ts emit {to: "face"}) → "duplex": pose / nod / clip cues (src/duplex/face.ts).
+//   - the duplex host (src/duplex/host.ts emit {to: "face"}) → "duplex": pose / nod / clip cues (src/duplex/face.ts), and
+//     "duplex-detach" when the host goes away (duplexBridge.ts is the one seam).
 // The existing faceCues bus (src/avatar/faceCues.ts: affect, gaze, voice) is read directly by the driver; nothing here
 // duplicates it. Every live puppet on the page hears every event (there is one teacher).
 import type { FaceCue as DuplexCue } from "../duplex/face.ts";
@@ -14,7 +15,9 @@ export interface WordEvent { ms: number; durMs: number; text: string }
 export type PuppetEvent =
   | { kind: "visemes"; part: number; playAt: number; visemes: VisemeEvent[]; words?: WordEvent[]; text?: string; reqId?: string }
   | { kind: "cut"; at: number }
-  | { kind: "duplex"; cue: DuplexCue; at: number };
+  | { kind: "duplex"; cue: DuplexCue; at: number }
+  /** The duplex host was torn down (duplexBridge.puppetDuplexDetach): floor faces and nods go back to the floor state. */
+  | { kind: "duplex-detach"; at: number };
 
 type Fn = (e: PuppetEvent) => void;
 const subs = new Set<Fn>();

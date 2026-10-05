@@ -7,11 +7,11 @@
 //   otherwise → the live puppet, which falls back to TutorFace itself if it cannot run.
 import { TutorFace, faceTutor, type TutorFaceProps } from "../avatar/TutorFace.tsx";
 import { PuppetFace, PUPPET_TUTORS } from "./PuppetFace.tsx";
-import { puppet2dEnabled } from "./flag.ts";
+import { puppet2dEnabled, puppetServerKnownOff } from "./flag.ts";
 
 export function LessonFace(p: TutorFaceProps) {
   const tutor = faceTutor(p.tutorId, String(p.band));
-  if (!puppet2dEnabled() || !PUPPET_TUTORS.has(tutor.id) || p.tier === "E" || p.voiceOnly) return <TutorFace {...p} />;
+  if (!puppet2dEnabled() || puppetServerKnownOff() || !PUPPET_TUTORS.has(tutor.id) || p.tier === "E" || p.voiceOnly) return <TutorFace {...p} />;
   return (
     <PuppetFace tutorId={tutor.id} band={String(p.band)} status={p.status} teacher={p.teacher} mic={p.mic} reducedMotion={p.reducedMotion}
       gentle={p.gentle} affect={p.affect ?? null} framing={p.framing ?? "medium"} still={p.tier === "D"} lang={p.lang} className={p.className} />
