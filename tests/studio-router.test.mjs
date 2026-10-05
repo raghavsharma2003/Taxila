@@ -296,7 +296,7 @@ test("azure chatStream: SSE deltas, usage and cost; a cancel and a stall abort t
     const deltas = [];
     const { endpoint } = await import("../server/azure.js");
     const ok = await chatStream("gpt-5.6-terra", [{ role: "system", content: "s" }, { role: "user", content: "ok" }], { onDelta: (d) => deltas.push(d), quotaLane: "background" })
-      .catch((e) => { throw new Error(`${e.code}: endpoint ${endpoint("CHAT")} hits ${JSON.stringify(hits)} nonce ${NONCE} diag ${JSON.stringify(e.diag ?? null)}`); });
+      .catch((e) => { throw new Error(`${e.code}: endpoint ${endpoint("CHAT")} hits ${JSON.stringify(hits)} nonce ${NONCE} diag ${JSON.stringify(e.diag ?? null)} fetch ${String(globalThis.fetch).slice(0, 200)} random ${String(Math.random).slice(0, 80)}`); });
     assert.equal(ok.text, "<style></style>");
     assert.deepEqual(deltas, ["<style>", "</style>"]);
     assert.equal(ok.usage.in, 100);
