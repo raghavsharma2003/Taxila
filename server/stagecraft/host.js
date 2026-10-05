@@ -6,6 +6,21 @@
 // Never throws into the turn path: every builder error becomes a `landed ok:false` input.
 import { config, initPortfolio, step } from "./conductor.js";
 
+// REVIEW 2026-10-05: the conductor's quota buckets live in each lesson's portfolio, so N lessons on one process used to
+// draw N x 120 RPM from one deployment. This bucket is shared by every host in the process; a launch it refuses never
+// reaches Foundry and comes back as a local 429 (the chain then fails over, or "do not build").
+const GLOBAL = new Map();
+export function _resetGlobalQuota() { GLOBAL.clear(); }
+export function globalTake(dep, rpm, now) {
+  if (!rpm) return { ok: true };
+  let b = GLOBAL.get(dep);
+  if (!b) { b = { tokens: rpm, at: now }; GLOBAL.set(dep, b); }
+  b.tokens = Math.min(rpm, b.tokens + (Math.max(0, now - b.at) / 60_000) * rpm); b.at = now;
+  if (b.tokens < 1) return { ok: false, retryAfterMs: Math.ceil(((1 - b.tokens) / rpm) * 60_000) };
+  b.tokens -= 1;
+  return { ok: true };
+}
+
 export class StagecraftHost {
   /**
    * @param {{ lessonId: string, mode?: "off"|"shadow"|"on", cfg?: object, catalog: object, builders: ReturnType<import("./builders.js").createBuilders>,
@@ -55,16 +70,24 @@ export class StagecraftHost {
     return outcome;
   }
   /** The seam asks at a reveal point (synchronous, in-memory). shadow → null (decided and logged, never shown). */
-  outcomeAt(point) {
+  outcomeAt(point) { return this.decide(point).shown; }
+  /** The decided outcome in every mode (shadow logs it and the kernel tracks it) and what may be shown (on only). */
+  decide(point) {
     const o = this.input({ t: "reveal_point", point });
-    return this.mode === "on" ? o : null;
+    return { decided: o, shown: this.mode === "on" ? o : null };
   }
   noteQuota(deployment, status, retryAfterMs) { this.input({ t: "quota", deployment, status, retryAfterMs, at: this.clock() }); }
 
   launch(e) {
     const c = this.state.candidates.find((x) => x.id === e.candidateId);
     if (!c) return;
-    const key = this.state.meta.current;
+    // build against the candidate's own premise (what isFresh checks at the reveal), not whatever is current now
+    const key = { ...(this.state.meta.current ?? {}), ...(c.premise ?? {}) };
+    const g = e.deployment ? globalTake(e.deployment, this.cfg.globalRpm?.[e.deployment], this.clock()) : { ok: true };
+    if (!g.ok) {
+      queueMicrotask(() => { this.noteQuota(e.deployment, 429, g.retryAfterMs); this.input({ t: "landed", candidateId: c.id, ok: false, retryable: true, costUsd: 0, at: this.clock() }); });
+      return;
+    }
     const ctl = new AbortController();
     this.ctl.set(c.id, ctl);
     const B = this.builders;

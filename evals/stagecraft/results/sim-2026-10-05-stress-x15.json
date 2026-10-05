@@ -1,0 +1,195 @@
+{
+ "date": "2026-10-05",
+ "n": 120,
+ "calibrated": false,
+ "method": "evals/stagecraft/sim.mjs: virtual-clock replay of scripted lessons (scripts.mjs, classes 4-7 maths/science, real kit topic and misconception ids) through server/stagecraft/conductor.js step() and policy.js wantAt(); build times lognormal from config.js BUILD_MS (RS-4 spec bench n=30/archetype, router bench n=30/archetype, flare 15.1 s)",
+ "arms": {
+  "sc_on": {
+   "lessons": 120,
+   "points": 2603,
+   "readyWhenNeededRate": 0.8482520169035728,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 452,
+     "rate": 0.838495575221239
+    },
+    "plan_lookahead": {
+     "n": 1213,
+     "rate": 0.7831821929101401
+    },
+    "board_state": {
+     "n": 607,
+     "rate": 0.9802306425041186
+    },
+    "child_signal": {
+     "n": 269,
+     "rate": 0.8810408921933085
+    },
+    "partial_intent": {
+     "n": 62,
+     "rate": 0.7580645161290323
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 1228,
+     "p50": 8412,
+     "p90": 12176
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 59,
+     "p50": 49833,
+     "p90": 71150
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 374,
+    "p50": 2759,
+    "p95": 3313
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 32.06297256704397,
+    "image": 0,
+    "live": 1.0004348397040999
+   },
+   "usdPerLessonHour": {
+    "total": 0.06913159328579632,
+    "wasted": 0.03848965051211845,
+    "liveTotalUsd": 3.729
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 16.45986220434984,
+   "stageMomentsPer25": 34.95083420665609,
+   "specsLaunchedPer25": 24.22946531337744,
+   "stageActiveShare": 0.8476869544665793,
+   "medianGapBetweenPiecesMs": 31463,
+   "childInitiatedShare": 0.1736457933154053,
+   "quota429": 986,
+   "failovers": 86,
+   "mountFailures": 10,
+   "staleStageTurns": 3,
+   "held": {
+    "no_want": 4562,
+    "same_piece": 1400,
+    "stuck_productive": 178,
+    "no_reference_in_line": 77,
+    "safety": 40
+   }
+  }
+ },
+ "lossless": {
+  "pointsCompared": 0,
+  "agree": 0,
+  "rate": null,
+  "lessonsIdentical": 0,
+  "lessons": 120
+ },
+ "calibration": {
+  "reliability": [
+   {
+    "source": "board_state",
+    "bin": 3,
+    "n": 2465,
+    "meanP": 0.35,
+    "observed": 0.443
+   },
+   {
+    "source": "board_state",
+    "bin": 5,
+    "n": 1019,
+    "meanP": 0.5,
+    "observed": 0.651
+   },
+   {
+    "source": "child_request",
+    "bin": 9,
+    "n": 483,
+    "meanP": 1,
+    "observed": 0.82
+   },
+   {
+    "source": "child_signal",
+    "bin": 3,
+    "n": 168,
+    "meanP": 0.35,
+    "observed": 0.53
+   },
+   {
+    "source": "child_signal",
+    "bin": 4,
+    "n": 420,
+    "meanP": 0.45,
+    "observed": 0.238
+   },
+   {
+    "source": "child_signal",
+    "bin": 5,
+    "n": 764,
+    "meanP": 0.5,
+    "observed": 0.518
+   },
+   {
+    "source": "child_signal",
+    "bin": 6,
+    "n": 524,
+    "meanP": 0.6,
+    "observed": 0.63
+   },
+   {
+    "source": "partial_intent",
+    "bin": 4,
+    "n": 1479,
+    "meanP": 0.45,
+    "observed": 0.345
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 3,
+    "n": 7774,
+    "meanP": 0.3,
+    "observed": 0.187
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 5,
+    "n": 8218,
+    "meanP": 0.5,
+    "observed": 0.277
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 8,
+    "n": 8680,
+    "meanP": 0.8,
+    "observed": 0.621
+   }
+  ],
+  "ece": {
+   "plan_lookahead": 0.173,
+   "partial_intent": 0.105,
+   "child_request": 0.18,
+   "child_signal": 0.079,
+   "board_state": 0.11
+  },
+  "hitAtK": {
+   "n": 2358,
+   "h1": 0.265,
+   "h3": 0.835,
+   "h5": 0.93
+  }
+ },
+ "safetyBattery": null,
+ "stormBattery": null,
+ "sweeps": {},
+ "seconds": 32
+}

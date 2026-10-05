@@ -117,6 +117,8 @@ async function capture() {
     at(ms: number) { while (clock < ms) { clock = Math.min(ms, clock + 1000 / 60); stage.tick(clock); } stage.canvas.style.opacity = "1"; return stage.snapshot(); },
     /** at(ms), then the frame's pixels read straight from the drawing buffer in the same task (no compositor round trip). */
     shot(ms: number, type = "image/png") { H.at(ms); stage.tick(clock + 0.001, true); return stage.canvas.toDataURL(type, 0.92); },
+    /** The rig alone at rest (no driver): view 0,0,1024, as the polish rounds restssim.py measures it. */
+    rawRest() { const r = (stage as any).rig; r.view = [0, 0, 1024]; r.life.still = true; for (let i = 0; i < 6; i++) { r.clock = 1000 + i / 60; r.resetPhysics(); r.frame({}, [0, 0, 0], [0, 0], 0, 0); } return stage.canvas.toDataURL("image/png"); },
     emote(name: string, variant?: number) { stage.driver.evalEmote(name, clock, variant); },
     release() { stage.driver.evalRelease(clock); },
     head(h: [number, number, number] | null) { stage.driver.evalHead = h; },

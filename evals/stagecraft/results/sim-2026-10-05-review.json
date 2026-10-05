@@ -1,0 +1,1181 @@
+{
+ "date": "2026-10-05",
+ "n": 240,
+ "calibrated": false,
+ "method": "evals/stagecraft/sim.mjs: virtual-clock replay of scripted lessons (scripts.mjs, classes 4-7 maths/science, real kit topic and misconception ids) through server/stagecraft/conductor.js step() and policy.js wantAt(); build times lognormal from config.js BUILD_MS (RS-4 spec bench n=30/archetype, router bench n=30/archetype, flare 15.1 s)",
+ "arms": {
+  "w2": {
+   "lessons": 240,
+   "points": 1904,
+   "readyWhenNeededRate": 0.27836134453781514,
+   "readyWhenNeededByTrigger": {
+    "plan_lookahead": {
+     "n": 1904,
+     "rate": 0.27836134453781514
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 339,
+     "p50": 19102,
+     "p90": 32752
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 0,
+    "p50": null,
+    "p95": null
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 0,
+    "image": 0,
+    "live": 3.4289290874814924
+   },
+   "usdPerLessonHour": {
+    "total": 0,
+    "wasted": 0,
+    "liveTotalUsd": 18.941999999999958
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 1.6655330608524035,
+   "stageMomentsPer25": 12.93765773108773,
+   "specsLaunchedPer25": 0,
+   "stageActiveShare": 0.5661051858864521,
+   "medianGapBetweenPiecesMs": 57718,
+   "childInitiatedShare": 0,
+   "quota429": 0,
+   "failovers": 0,
+   "mountFailures": 11,
+   "staleStageTurns": 161,
+   "held": {
+    "no_want": 16369,
+    "stuck_productive": 45,
+    "no_reference_in_line": 52,
+    "same_piece": 26,
+    "safety": 69
+   }
+  },
+  "sc_off": {
+   "lessons": 240,
+   "points": 5376,
+   "readyWhenNeededRate": 0.6073288690476191,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 967,
+     "rate": 0.7673216132368149
+    },
+    "plan_lookahead": {
+     "n": 2459,
+     "rate": 0.370882472549817
+    },
+    "board_state": {
+     "n": 1207,
+     "rate": 0.9188069594034797
+    },
+    "child_signal": {
+     "n": 622,
+     "rate": 0.7443729903536977
+    },
+    "partial_intent": {
+     "n": 121,
+     "rate": 0.32231404958677684
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 2487,
+     "p50": 4722,
+     "p90": 6966
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 832,
+    "p50": 2760,
+    "p95": 3304
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 29.32565955635149,
+    "image": 0,
+    "live": 0
+   },
+   "usdPerLessonHour": {
+    "total": 0.06114539217999477,
+    "wasted": 0.03563055075032231,
+    "liveTotalUsd": 0
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 7.578488040715088,
+   "stageMomentsPer25": 35.06650817282368,
+   "specsLaunchedPer25": 21.03572459586393,
+   "stageActiveShare": 0.8513473537307857,
+   "medianGapBetweenPiecesMs": 31339,
+   "childInitiatedShare": 0.17987351190476192,
+   "quota429": 130,
+   "failovers": 130,
+   "mountFailures": 33,
+   "staleStageTurns": 5,
+   "held": {
+    "no_want": 9173,
+    "same_piece": 2126,
+    "stuck_productive": 362,
+    "no_reference_in_line": 184,
+    "safety": 69
+   }
+  },
+  "sc_on": {
+   "lessons": 240,
+   "points": 5376,
+   "readyWhenNeededRate": 0.8844866071428571,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 967,
+     "rate": 0.8479834539813857
+    },
+    "plan_lookahead": {
+     "n": 2459,
+     "rate": 0.8474989833265555
+    },
+    "board_state": {
+     "n": 1207,
+     "rate": 0.9826014913007457
+    },
+    "child_signal": {
+     "n": 622,
+     "rate": 0.8938906752411575
+    },
+    "partial_intent": {
+     "n": 121,
+     "rate": 0.9008264462809917
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 3018,
+     "p50": 4873,
+     "p90": 7111
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 107,
+     "p50": 18462,
+     "p90": 32497
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 816,
+    "p50": 2780,
+    "p95": 3397
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 34.41587897570641,
+    "image": 0,
+    "live": 0.637063929647521
+   },
+   "usdPerLessonHour": {
+    "total": 0.07977033876290407,
+    "wasted": 0.042403923376680176,
+    "liveTotalUsd": 6.145874000000001
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 20.18362683251535,
+   "stageMomentsPer25": 35.06650817282368,
+   "specsLaunchedPer25": 27.188705777974757,
+   "stageActiveShare": 0.8512639894961868,
+   "medianGapBetweenPiecesMs": 31339,
+   "childInitiatedShare": 0.17987351190476192,
+   "quota429": 156,
+   "failovers": 156,
+   "mountFailures": 30,
+   "staleStageTurns": 5,
+   "held": {
+    "no_want": 9173,
+    "same_piece": 2951,
+    "stuck_productive": 362,
+    "no_reference_in_line": 160,
+    "safety": 69
+   }
+  },
+  "sc_on_k1": {
+   "lessons": 240,
+   "points": 5376,
+   "readyWhenNeededRate": 0.8645833333333334,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 967,
+     "rate": 0.8459152016546019
+    },
+    "plan_lookahead": {
+     "n": 2459,
+     "rate": 0.8397722651484343
+    },
+    "board_state": {
+     "n": 1207,
+     "rate": 0.9370339685169843
+    },
+    "child_signal": {
+     "n": 622,
+     "rate": 0.8488745980707395
+    },
+    "partial_intent": {
+     "n": 121,
+     "rate": 0.8760330578512396
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 2407,
+     "p50": 4711,
+     "p90": 7043
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 110,
+     "p50": 18118,
+     "p90": 34003
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 820,
+    "p50": 2779,
+    "p95": 3391
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 26.040771660183747,
+    "image": 0,
+    "live": 0.6215857432717914
+   },
+   "usdPerLessonHour": {
+    "total": 0.06697641918654891,
+    "wasted": 0.031392249099204836,
+    "liveTotalUsd": 6.204000000000001
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 19.505214282132954,
+   "stageMomentsPer25": 35.06650817282368,
+   "specsLaunchedPer25": 23.24531026994422,
+   "stageActiveShare": 0.8512661104762428,
+   "medianGapBetweenPiecesMs": 31314,
+   "childInitiatedShare": 0.17987351190476192,
+   "quota429": 150,
+   "failovers": 150,
+   "mountFailures": 29,
+   "staleStageTurns": 5,
+   "held": {
+    "no_want": 9173,
+    "same_piece": 2939,
+    "stuck_productive": 362,
+    "no_reference_in_line": 161,
+    "safety": 69
+   }
+  }
+ },
+ "lossless": {
+  "pointsCompared": 9224,
+  "agree": 9224,
+  "rate": 1,
+  "lessonsIdentical": 240,
+  "lessons": 240
+ },
+ "calibration": {
+  "reliability": [
+   {
+    "source": "board_state",
+    "bin": 3,
+    "n": 4925,
+    "meanP": 0.35,
+    "observed": 0.446
+   },
+   {
+    "source": "board_state",
+    "bin": 5,
+    "n": 2218,
+    "meanP": 0.5,
+    "observed": 0.627
+   },
+   {
+    "source": "child_request",
+    "bin": 9,
+    "n": 1049,
+    "meanP": 1,
+    "observed": 0.806
+   },
+   {
+    "source": "child_signal",
+    "bin": 3,
+    "n": 428,
+    "meanP": 0.35,
+    "observed": 0.551
+   },
+   {
+    "source": "child_signal",
+    "bin": 4,
+    "n": 824,
+    "meanP": 0.45,
+    "observed": 0.248
+   },
+   {
+    "source": "child_signal",
+    "bin": 5,
+    "n": 1781,
+    "meanP": 0.5,
+    "observed": 0.517
+   },
+   {
+    "source": "child_signal",
+    "bin": 6,
+    "n": 1197,
+    "meanP": 0.6,
+    "observed": 0.629
+   },
+   {
+    "source": "partial_intent",
+    "bin": 4,
+    "n": 2967,
+    "meanP": 0.45,
+    "observed": 0.349
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 3,
+    "n": 14787,
+    "meanP": 0.3,
+    "observed": 0.144
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 5,
+    "n": 16686,
+    "meanP": 0.5,
+    "observed": 0.295
+   },
+   {
+    "source": "plan_lookahead",
+    "bin": 8,
+    "n": 17749,
+    "meanP": 0.8,
+    "observed": 0.648
+   }
+  ],
+  "ece": {
+   "plan_lookahead": 0.171,
+   "partial_intent": 0.101,
+   "child_request": 0.194,
+   "child_signal": 0.075,
+   "board_state": 0.106
+  },
+  "hitAtK": {
+   "n": 4902,
+   "h1": 0.271,
+   "h3": 0.843,
+   "h5": 0.931
+  }
+ },
+ "safetyBattery": {
+  "lessons": 80,
+  "turnsInQuarantine": null,
+  "safetyTurnReveals": 0,
+  "visibleFailures": 0,
+  "staleReveals": 0,
+  "wrongReveals": 0,
+  "readyWhenNeededRate": 0.8620146904512067,
+  "buildsDuringSafety": 0,
+  "safetyLessons": 80
+ },
+ "stormBattery": {
+  "lessons": 60,
+  "visibleFailures": 0,
+  "readyWhenNeededRate": 0.8833976833976834,
+  "quota429": 150,
+  "failovers": 150,
+  "staleReveals": 0
+ },
+ "sweeps": {
+  "maxFamilies=4": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8520881670533643,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8173076923076923
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.8203517587939698
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.979328165374677
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.7914438502673797
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.8095238095238095
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 1041,
+     "p50": 4957,
+     "p90": 7242
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 36,
+     "p50": 20057,
+     "p90": 34480
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 262,
+    "p50": 2810,
+    "p95": 3286
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 54.35181307568079,
+    "image": 0,
+    "live": 0.8341694363837767
+   },
+   "usdPerLessonHour": {
+    "total": 0.09925321453423516,
+    "wasted": 0.06541909102881113,
+    "liveTotalUsd": 2.156
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 17.455000289080484,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 34.9154372167529,
+   "stageActiveShare": 0.8493779724568216,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 77,
+   "failovers": 77,
+   "mountFailures": 5,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 894,
+    "stuck_productive": 113,
+    "no_reference_in_line": 51,
+    "safety": 30
+   }
+  },
+  "lambda=25": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8915313225058005,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8717948717948718
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.842964824120603
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9844961240310077
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.9358288770053476
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.9047619047619048
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 891,
+     "p50": 4956,
+     "p90": 7168
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 37,
+     "p50": 18185,
+     "p90": 32771
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 265,
+    "p50": 2787,
+    "p95": 3301
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 42.15611971928804,
+    "image": 0,
+    "live": 0.8219885611111009
+   },
+   "usdPerLessonHour": {
+    "total": 0.08773656561972139,
+    "wasted": 0.05122567874082977,
+    "liveTotalUsd": 2.2015560000000005
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 19.38174181812038,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 31.019476944189375,
+   "stageActiveShare": 0.8494250004936514,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 73,
+   "failovers": 73,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 907,
+    "stuck_productive": 113,
+    "no_reference_in_line": 51,
+    "safety": 30
+   }
+  },
+  "lambda=100": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8306264501160093,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8237179487179487
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.7650753768844221
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9741602067183462
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.8181818181818182
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.8571428571428571
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 663,
+     "p50": 5073,
+     "p90": 7470
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 40,
+     "p50": 18901,
+     "p90": 30979
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 263,
+    "p50": 2801,
+    "p95": 3292
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 30.391378263754227,
+    "image": 0,
+    "live": 0.6760886583602732
+   },
+   "usdPerLessonHour": {
+    "total": 0.06610068017793672,
+    "wasted": 0.03804571759280179,
+    "liveTotalUsd": 2.2880000000000003
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 15.903646362104144,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 22.8069908685474,
+   "stageActiveShare": 0.8492736818153525,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 49,
+   "failovers": 49,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 901,
+    "stuck_productive": 113,
+    "no_reference_in_line": 51,
+    "safety": 30
+   }
+  },
+  "minPReadySpec=0.4": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8909512761020881,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8717948717948718
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.8454773869346733
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9844961240310077
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.9090909090909091
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.9523809523809523
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 885,
+     "p50": 4945,
+     "p90": 7235
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 40,
+     "p50": 20356,
+     "p90": 33627
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 263,
+    "p50": 2804,
+    "p95": 3301
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 40.02734917550391,
+    "image": 0,
+    "live": 0.790846718720816
+   },
+   "usdPerLessonHour": {
+    "total": 0.08466405189056557,
+    "wasted": 0.04898416621195091,
+    "liveTotalUsd": 2.282222
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 19.40326894775747,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 29.458274874683887,
+   "stageActiveShare": 0.8493779724568216,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 59,
+   "failovers": 59,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 904,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  },
+  "spec.concurrent=2": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8793503480278422,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8493589743589743
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.8266331658291457
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9896640826873385
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.9197860962566845
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.9047619047619048
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 875,
+     "p50": 5003,
+     "p90": 7198
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 40,
+     "p50": 17114,
+     "p90": 40947
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 262,
+    "p50": 2801,
+    "p95": 3292
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 40.39060481800088,
+    "image": 0,
+    "live": 0.7648532124566146
+   },
+   "usdPerLessonHour": {
+    "total": 0.0854052297724827,
+    "wasted": 0.049404204336272295,
+    "liveTotalUsd": 2.266
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 18.98927129200226,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 29.659928974554788,
+   "stageActiveShare": 0.8493750842894588,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 62,
+   "failovers": 62,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 907,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  },
+  "halfLife=10s": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8839907192575406,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8397435897435898
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.842964824120603
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9896640826873385
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.93048128342246
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.8095238095238095
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 893,
+     "p50": 4981,
+     "p90": 7393
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 39,
+     "p50": 18089,
+     "p90": 27187
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 263,
+    "p50": 2801,
+    "p95": 3292
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 39.38239626736201,
+    "image": 0,
+    "live": 0.8076871959626974
+   },
+   "usdPerLessonHour": {
+    "total": 0.08320283934471484,
+    "wasted": 0.04766522184295393,
+    "liveTotalUsd": 2.260266
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 19.037335944990968,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 29.21481762843785,
+   "stageActiveShare": 0.8493779724568216,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 66,
+   "failovers": 66,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 908,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  },
+  "spec.maxLead=45s": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8567285382830626,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8397435897435898
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.7889447236180904
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9896640826873385
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.893048128342246
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.8809523809523809
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 860,
+     "p50": 4908,
+     "p90": 7289
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 41,
+     "p50": 20250,
+     "p90": 41233
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 262,
+    "p50": 2810,
+    "p95": 3292
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 40.210307798738185,
+    "image": 0,
+    "live": 0.7025708987813527
+   },
+   "usdPerLessonHour": {
+    "total": 0.08281887191428547,
+    "wasted": 0.048729099938796504,
+    "liveTotalUsd": 2.2880000000000003
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 17.96185963855826,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 29.01398838139725,
+   "stageActiveShare": 0.8493632152105596,
+   "medianGapBetweenPiecesMs": 31001,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 69,
+   "failovers": 69,
+   "mountFailures": 5,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 905,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  },
+  "spec.maxLead=180s": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.894431554524362,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.9102564102564102
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.8479899497487438
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9870801033591732
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.8983957219251337
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.7857142857142857
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 904,
+     "p50": 4973,
+     "p90": 7284
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 42,
+     "p50": 17590,
+     "p90": 29402
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 262,
+    "p50": 2805,
+    "p95": 3301
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 43.56527224268257,
+    "image": 0,
+    "live": 0.7426150006855832
+   },
+   "usdPerLessonHour": {
+    "total": 0.08838412157971351,
+    "wasted": 0.05321966321737228,
+    "liveTotalUsd": 2.31
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 19.549977969829257,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 30.537085413568928,
+   "stageActiveShare": 0.84937261337704,
+   "medianGapBetweenPiecesMs": 31035,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 49,
+   "failovers": 49,
+   "mountFailures": 4,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 906,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  },
+  "baseline(sc_on, seeds 1-80)": {
+   "lessons": 80,
+   "points": 1724,
+   "readyWhenNeededRate": 0.8834106728538283,
+   "readyWhenNeededByTrigger": {
+    "child_request": {
+     "n": 312,
+     "rate": 0.8557692307692307
+    },
+    "plan_lookahead": {
+     "n": 796,
+     "rate": 0.8391959798994975
+    },
+    "board_state": {
+     "n": 387,
+     "rate": 0.9870801033591732
+    },
+    "child_signal": {
+     "n": 187,
+     "rate": 0.8983957219251337
+    },
+    "partial_intent": {
+     "n": 42,
+     "rate": 0.9047619047619048
+    }
+   },
+   "timeToReadyMs": {
+    "spec": {
+     "n": 886,
+     "p50": 5024,
+     "p90": 7334
+    },
+    "image": {
+     "n": 0,
+     "p50": null,
+     "p90": null
+    },
+    "live": {
+     "n": 38,
+     "p50": 19041,
+     "p90": 31237
+    }
+   },
+   "requestToFirstFrameMs": {
+    "n": 264,
+    "p50": 2804,
+    "p95": 3301
+   },
+   "wastedBuildsPerLessonHour": {
+    "spec": 41.56789238435893,
+    "image": 0,
+    "live": 0.790846718720816
+   },
+   "usdPerLessonHour": {
+    "total": 0.08632141716795909,
+    "wasted": 0.05081757961842746,
+    "liveTotalUsd": 2.2298740000000006
+   },
+   "wrongReveals": 0,
+   "staleReveals": 0,
+   "safetyTurnReveals": 0,
+   "revealsWhileChildSpeaks": 0,
+   "offTopicReveals": 0,
+   "visibleFailures": 0,
+   "generatedRevealsPer25": 18.91497860132684,
+   "stageMomentsPer25": 35.434350331597216,
+   "specsLaunchedPer25": 29.980095398477715,
+   "stageActiveShare": 0.8493779724568216,
+   "medianGapBetweenPiecesMs": 31042,
+   "childInitiatedShare": 0.18097447795823665,
+   "quota429": 64,
+   "failovers": 64,
+   "mountFailures": 5,
+   "staleStageTurns": 1,
+   "held": {
+    "no_want": 2989,
+    "same_piece": 901,
+    "stuck_productive": 113,
+    "no_reference_in_line": 50,
+    "safety": 30
+   }
+  }
+ },
+ "seconds": 429
+}

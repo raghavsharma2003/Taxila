@@ -4,7 +4,7 @@
 //
 // The field mapping below is the best reading of turn.js on 2026-10-05; W2-E (owner of turn.js) confirms it when P4 is
 // applied. Every read is defensive: a missing field yields a want of null (nothing new on stage), never a throw.
-import { hostFor, setOutcomeHook } from "./seam-bridge.js";
+import { hostFor, setOutcomeHook, setRetireHook } from "./seam-bridge.js";
 import { revealPoint } from "./adapters.js";
 import { requestFromText } from "./sources.js";
 
@@ -57,4 +57,10 @@ export function noteOutcome(lessonId, point, outcome) {
   }
 }
 
+/** The seam retired the piece: the policy sees an empty stage (the simulator's kernel does the same). */
+export function noteKernelRetired(lessonId) { const v = views.get(lessonId); if (v) { v.onStage = null; v.wrong = 0; v.right = 0; } }
+/** The host graded an answer on the piece on stage (gradeAnswer, verified key): feeds the board reteach rule (>= 2 wrong). */
+export function noteBoardVerdict(lessonId, verdict) { const v = views.get(lessonId); if (!v?.onStage) return; if (verdict === "wrong") v.wrong++; else if (verdict === "right") v.right++; }
+
 setOutcomeHook(noteOutcome);
+setRetireHook(noteKernelRetired);

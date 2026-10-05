@@ -17,7 +17,7 @@ function refill(b, now) {
 export function pickDeployment(quota, tier, cfg, now) {
   const chain = cfg.chains?.[tier] ?? [];
   for (const dep of chain) {
-    if (cfg.absent?.includes(dep) || cfg.replyLanes?.includes(dep)) continue;
+    if (cfg.absent?.includes(dep) || cfg.replyLanes?.includes(dep) || cfg.livePathLanes?.includes(dep)) continue;
     const b = quota[dep] ?? (quota[dep] = bucket(dep, cfg));
     refill(b, now);
     if (now < b.coolUntil) continue;

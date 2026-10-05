@@ -148,7 +148,11 @@ export const DEFAULT_CONFIG = Object.freeze({
     // O-1 pending: taxila-stagecraft does not exist yet. taxila-fast-bg is the reply deployment's BACKGROUND twin (own
     // quota; the spec bench's deployment). taxila-gpt6-luna carries the live whiteboard (w2f-luna-reserved-for-whiteboard),
     // so it is the second link, not the first.
-    spec: ["taxila-stagecraft", "taxila-fast-bg", "taxila-gpt6-luna", "taxila-mistral-m35"],
+    // REVIEW 2026-10-05: no failover onto a live-path deployment. luna carries the live whiteboard and mistral-m35 is
+    // the live-reply AND classifier fallback (context/decisions.md 2026-10-04), so a fast-bg storm used to move all
+    // speculation onto exactly the lanes a reply storm would need. Every link cooling = do not build (the engine
+    // default keeps serving). Re-measured in the storm battery (REVIEW-2026-10-05.md).
+    spec: ["taxila-stagecraft", "taxila-fast-bg"],
     image: ["taxila-image25-flare", "taxila-image"],
     live: ["race"],
   }),
@@ -158,6 +162,13 @@ export const DEFAULT_CONFIG = Object.freeze({
   absent: Object.freeze(["taxila-stagecraft"]),
   /** The reply lane: never called by Stagecraft; its 429s pause spec launches. */
   replyLanes: Object.freeze(["taxila-fast"]),
+  /** Deployments on the live teaching path (reply, reply fallback, classifier fallback, whiteboard, distress): never
+   *  picked by any Stagecraft tier, even if a chain names them (quota.pickDeployment refuses them). */
+  livePathLanes: Object.freeze(["taxila-fast", "taxila-gpt6-luna", "taxila-mistral-m35", "taxila-realtime", "taxila-brain"]),
+  /** Process-wide requests per minute per deployment for ALL lessons on this process (host.js). The per-lesson buckets
+   *  above live in each lesson's portfolio and are not process-wide; this is the real ceiling. [E] fast-bg is 500k TPM;
+   *  a spec call is ~5-8k tokens, so 60 RPM keeps Stagecraft under ~480k TPM even at the top of the range. */
+  globalRpm: Object.freeze({ "taxila-stagecraft": 60, "taxila-fast-bg": 60, "taxila-image25-flare": 3, "taxila-image": 3, race: 6 }),
   swapSpacingTurns: 2,
   firstRevealTurn: 3,
 });

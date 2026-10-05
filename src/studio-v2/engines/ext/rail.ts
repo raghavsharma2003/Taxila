@@ -13,7 +13,7 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap } from "./kit.ts";
+import { taskPill, RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock, voltBox, wrap } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
 
 const LOCO_X = 520, FRONT = 130, MAIN_Y = 500, CARD_W = 410, CARD_H = 108, BOARD_X = 640, BOARD_W = 340, BOARD_H = 116;
@@ -30,6 +30,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
   let fontOk = !devaNeeded; if (devaNeeded) void devaReady().then(() => { fontOk = true; });
   const g = { s: 0, v: 132, speedK: 1, steps: [] as Step[], i: 0, items: new Map<string, Item>(), right: 0, n: 0, streak: 0, best: 0, coachA: 1, coachGone: false, locoY: MAIN_Y, wheel: 0, steamT: 0, roundRes: [] as string[] };
   const botR = rng(api.seed * 41 + 3);
+  const task = taskPill(api);
   const hud = api.hud([{ key: "round", label: T.round }, { key: "picked", label: T.picked }, { key: "streak", label: T.streak }]);
   const rd = (): RailRoundT => spec.rounds[Math.max(0, flow.round)];
   const flow = new RoundFlow(api, spec.rounds.length, {
@@ -46,7 +47,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
       sfx.blip({ f: 196, f2: 392, dur: 0.35, type: "triangle", gain: 0.12 });
     },
     onEnd(k) { api.event("round_end", { round: k + 1, right: g.roundRes.filter((v) => v === "right").length, of: g.roundRes.length }); },
-    onFinal() { api.task("", T.runDone, "done"); api.done({ right: g.right, picks: g.n, bestStreak: g.best }); },
+    onFinal() { task("", T.runDone, "done"); api.done({ right: g.right, picks: g.n, bestStreak: g.best }); },
   });
   const prompt = () => (rd().mode === "sequence" ? T.next : rd().mode === "cause" ? T.effect : T.who);
   const step = () => g.steps[g.i];
@@ -88,7 +89,7 @@ function create(api: EngineApi, spec: RailSpec): EngineInstance {
     const st = step();
     if (flow.state === "play" && st) {
       st.inT += dt;
-      api.task(`${T.round} ${flow.round + 1}`, prompt());
+      task(`${T.round} ${flow.round + 1}`, prompt());
       if (!st.locked && front() >= st.sw) lock(st);
       const ly = LANES[nL(st)][Math.max(0, st.choice)];
       const up = ease.inOutSine(clamp((front() - st.sw) / 220, 0, 1)), down = ease.inOutSine(clamp((front() - (st.sw + MERGE0)) / (MERGE1 - MERGE0), 0, 1));

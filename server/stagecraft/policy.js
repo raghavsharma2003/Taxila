@@ -36,9 +36,15 @@ export function wantAt(x, cfg) {
   if (x.safety) return null;
   if (NO_STAGE_BEATS.includes(x.beat)) return null;
   const catalog = cfg.catalog;
-  const on = x.board?.onStage ?? null;
+  // REVIEW 2026-10-05: a piece of another skill still on stage (the topic changed under it) is stale: it is treated as
+  // absent and its replacement is exempt from spacing, so the old topic never stays up while she teaches the new one.
+  const onRaw = x.board?.onStage ?? null;
+  const staleOn = !x.beatOnly && !!onRaw && String(onRaw.family).split("|")[0] !== x.skillId;
+  const on = staleOn ? null : onRaw;
   const spacing = x.beatOnly ? 4 : (cfg.swapSpacingTurns ?? 2);
-  const spaced = x.turnSeq >= (cfg.firstRevealTurn ?? 3) && x.turnSeq - (x.lastPolicyRevealTurn ?? -99) >= spacing;
+  const spaced = x.turnSeq >= (cfg.firstRevealTurn ?? 3) && (staleOn || x.turnSeq - (x.lastPolicyRevealTurn ?? -99) >= spacing);
+  // an accepted offer is honoured only for this skill's idea
+  if (x.offerAccepted && String(x.offerAccepted).split("|")[0] !== x.skillId) x = { ...x, offerAccepted: null };
   const W = (o) => ({ childRequested: false, archetype: null, ...o });
 
   // W2 today: beat-only, one piece per beat boundary, no request / signal / misconception-led wants

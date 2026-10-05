@@ -30,9 +30,11 @@ export const hostFor = (lessonId) => hosts.get(lessonId) ?? null;
 export function augmentView(lessonId, view, point) {
   const host = hosts.get(lessonId);
   if (!host || !point) return view;
-  let outcome = null;
-  try { outcome = host.outcomeAt(point); } catch { return view; }       // never throws into the turn
-  if (host.mode === "on") { try { outcomeHook?.(lessonId, point, outcome); } catch { /* the kernel view is advisory */ } }
+  let outcome = null, decided = null;
+  try { ({ decided, shown: outcome } = host.decide(point)); } catch { return view; }       // never throws into the turn
+  // REVIEW 2026-10-05: the kernel's stage view tracks the DECIDED outcome in shadow too; before, shadow never updated
+  // it (onStage null, lastReveal -99 forever) so shadow-mode wants would not be the wants "on" would make
+  try { outcomeHook?.(lessonId, point, decided); } catch { /* the kernel view is advisory */ }
   if (host.mode !== "on") return view;                                 // shadow: decided and logged, never shown
   const L = _lesson(lessonId);
   const out = { statuses: view?.statuses ?? [], onScreen: view?.onScreen ?? null, ...(view?.outcome ? { outcome: view.outcome } : {}), ...(view?.suggest ? { suggest: view.suggest } : {}) };
@@ -64,6 +66,9 @@ export function stagecraftSlot(p, state = p.state) {
   return { slotId: p.slotId, intentId: p.intentId, state: st, artifact: { kind: "stagecraft", stagecraft: p.stagecraft } };
 }
 export function noteRevealed(lessonId, candidateId) { const h = hosts.get(lessonId); if (h && candidateId) h.input({ t: "revealed", candidateId, at: h.clock() }); }
-export function noteRetired(lessonId) { const h = hosts.get(lessonId); if (h) h.input({ t: "retired", at: h.clock() }); }
+let retireHook = null;
+/** kernel-point.js registers its stage-view retire here (a retired piece is no longer on stage for the policy either). */
+export const setRetireHook = (f) => { retireHook = f; };
+export function noteRetired(lessonId) { const h = hosts.get(lessonId); if (h) h.input({ t: "retired", at: h.clock() }); try { retireHook?.(lessonId); } catch { /* advisory */ } }
 export function noteSafety(lessonId, open) { const h = hosts.get(lessonId); if (h) h.input({ t: "safety", open: !!open, at: h.clock() }); }
 export function noteMountFailed(lessonId, candidateId) { const h = hosts.get(lessonId); if (h) h.input({ t: "mount_failed", candidateId, at: h.clock() }); }

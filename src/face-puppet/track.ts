@@ -19,7 +19,7 @@ import type { VisemeEvent, WordEvent } from "./bus.ts";
  */
 export const EVENT_LEAD_MS = 50;
 
-interface Part { part: number; playAt: number; end: number; track: TimedViseme[]; cursor: number }
+interface Part { part: number; playAt: number; end: number; track: TimedViseme[]; cursor: number; rawV: VisemeEvent[]; rawW: WordEvent[]; text?: string }
 
 export class VisemeScheduler {
   private parts: Part[] = [];
@@ -28,15 +28,20 @@ export class VisemeScheduler {
   received = 0;
   stale = 0;
 
-  push(part: number, playAt: number, visemes: readonly VisemeEvent[], words: readonly WordEvent[] = [], nowMs = performance.now()): void {
+  push(part: number, playAt: number, visemes: readonly VisemeEvent[], words: readonly WordEvent[] = [], nowMs = performance.now(), text?: string): void {
     if (!visemes.length) return;
-    const track = resolveVisemes(visemes, words);
+    // a part's events stream in as Azure synthesises it: later batches for the same part MERGE (deduped by offset)
+    const same = this.parts.find((p) => p.part === part && Math.abs(p.playAt - playAt) < 5);
+    const rawV = same ? [...same.rawV, ...visemes] : [...visemes];
+    const rawW = same ? [...same.rawW, ...words] : [...words];
+    rawV.sort((a, b) => a.ms - b.ms);
+    const dv = rawV.filter((v, i) => i === 0 || v.ms !== rawV[i - 1].ms || v.id !== rawV[i - 1].id);
+    const track = resolveVisemes(dv, rawW, text ?? same?.text);
     const end = playAt + track[track.length - 1].ms + 200;
     if (end < nowMs) { this.stale++; return; } // the part already finished sounding (a late event): never replay it
     this.received++;
-    // a re-sent part (same index, same start) replaces the old one
-    this.parts = this.parts.filter((p) => !(p.part === part && Math.abs(p.playAt - playAt) < 5));
-    this.parts.push({ part, playAt, end, track, cursor: 0 });
+    if (same) Object.assign(same, { end, track, rawV: dv, rawW, text: text ?? same.text });
+    else this.parts.push({ part, playAt, end, track, cursor: 0, rawV: dv, rawW, text });
     this.parts.sort((a, b) => a.playAt - b.playAt);
   }
 

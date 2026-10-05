@@ -1,0 +1,173 @@
+{
+ "nodes": [
+  {
+   "id": "v4-face-puppet-production",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The lesson face is the style-C 2D puppet (src/face-puppet): the judged polish-r8 runtime synced byte-identical (sha256 manifest), driven by a production driver (lip.ts tap + Diya visemes, behaviour.ts, judged expression layer, compositor), flag face.puppet2d default ON, Asha only (concept C), LessonFace drop-in for TutorFace in src/ui/teacher/Teacher.tsx + puppetFace FaceRenderer for FaceSlot; fallback to TutorFace before reveal, rest poster after (never a face swap mid-lesson). Reverse if the phone gate (?facerig=1 on a Mali-G52-class device) cannot hold 20 fps at DPR 1, or the owner rejects the in-app face."
+  },
+  {
+   "id": "v4-diya-visemes-websocket",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Lip timing comes from Diya's own Azure viseme events (Speech websocket; REST carries none), framed next to her audio and timed by the PCM player's clock (+ outputLatency, - edgeTrim lead). Part 0 of a reply asks for visemes ONLY; later parts add word boundaries (Hindi retroflex curls). Pooled warm sockets, REST fallback on ws failure (same voice), marks cached next to the PCM. Flag TAXILA_DHD_VISEMES=0 restores REST. Reverse if production first-sound p50 on the India lane rises above the REST path by > 50 ms, or Azure drops viseme support for DragonHD."
+  },
+  {
+   "id": "v4-viseme-lead-50ms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "EVENT_LEAD_MS = 50: Diya's viseme offsets are shifted 50 ms earlier, so the in-app mouth matches the forced-alignment timing the judged clips (r7 4.0, r8 4.1) were driven by. Reverse if a phone recording shows the mouth visibly leading the sound, or a re-measure on a new DragonHD version moves the paired offset by > 20 ms."
+  },
+  {
+   "id": "v4-puppet-safety-no-wink",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The safety floor is applied to the judged presets at load (src/face-puppet/safety.ts): no wink (r5 playful's eyeBlink pulse removed from every take), no pout, no one-sided cheek push > 0.4. Playful then reads 'a glance with a smile' to the blind models; no product affect maps to playful anyway. Reverse never (child-safety floor; PLAN §6.4)."
+  },
+  {
+   "id": "v4-puppet-acting-policy",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Puppet acting policy (src/face-puppet/policy.ts): affect armed for her next audible onset; THINKING releases valenced acting within 300 ms (judged presets' 0.45-0.6 s releases shortened); delight <= 1 per 30 s on top of the producer's 1 per 5 turns (over budget -> warm); band scale on affect only (floor faces at judged level); duplex poses own the listening face and the thinking glance once attached; calm_steady blocks delight until the floor leaves safety; duplex nods content-blind, <= 1 per 3 s, never while she speaks. Reverse if a child panel reads the post-onset affect as delayed or disconnected (>= 30%)."
+  },
+  {
+   "id": "v4-adaptive-rate-governor",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Puppet frame rate is adaptive: 60 fps while she speaks or the face is changing, 30 fps in slow holds (blink shaper already 30 Hz). Governor steps DPR 2 -> 1.5 -> 1, then 60 -> 30 -> 20 fps, each step needing two consecutive over-budget 2 s windows (wall-clock work includes preemption); fallback only if a 20 fps frame cannot fit (p95 > 45 ms). Reverse if the phone gate shows visible judder in the 30 fps holds."
+  },
+  {
+   "id": "v4-m-diya-viseme-offset",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Diya DragonHD (-35%) websocket viseme events vs her own audio, n=24 lines (21 Roman for the paired measure): raw envelope-lag E1 median +110 ms (p10 100, p90 125); paired against a wav2vec2 CTC forced alignment of the SAME audio with the same estimator (E3) median +50 ms (IQR 45-65, range 25-105); estimator validated on the r8 clip (bias +50, recovers +-100 ms shifts exactly); word boundaries vs CTC word starts median +6 ms (n=285); events on a 61-62 ms grid, 50-84 visemes per line. Method evals/face-puppet/lipsync-offset.mjs, estimator-check.mjs, ctc-align.py."
+  },
+  {
+   "id": "v4-m-inapp-lipsync",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "In-app lip sync, production stage in Playwright Chromium (SwiftShader), real AudioContext + AnalyserNode tap, 24 Diya lines incl. 3 Devanagari, 7,563 rendered frames: scheduling error vs getOutputTimestamp median +5.7 ms (p05 0.6, p95 9.7); drawn lip gap vs sound, paired to the judged timing reference: median -35 ms (IQR -40..+5, range -50..+90), 20/21 lines within +-50 ms (outlier = first line, warm-up). Display / Bluetooth latency unmeasured. evals/face-puppet/run.mjs lipsync + lipsync-inapp.mjs."
+  },
+  {
+   "id": "v4-m-ws-first-audio",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Azure Speech first audio (Diya DragonHD, centralindia, eval container via agent proxy, n=8 lines x 5 arms on one warm socket, alternating): no metadata 433 ms, visemes only 496, words only 436, visemes+words 919, REST 905 (earlier run REST 554, ws-both 927). Cold ws connect 1.1-1.8 s. => part 0 visemes-only + prewarm. evals/face-puppet/ttfb-warm.mjs."
+  },
+  {
+   "id": "v4-m-puppet-cpu",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Puppet CPU from /proc (Chromium headless, SwiftShader, 360 px @ dpr 1, Diya talking, machine load 15-20 on 4 cores): renderer 2.9 ms CPU per drawn frame unthrottled, 5.3 ms at CDP 4x; SwiftShader raster ~62-67 ms/frame (GPU work done on CPU: why this box draws 16-20 fps; says nothing about a phone GPU). Frame work p50 1.6-2.1 / p95 3.5-4.3 ms unthrottled; 22-24 draws, ~22.8k tris. Real phone UNMEASURED. evals/face-puppet/cpu.mjs, run.mjs fps."
+  },
+  {
+   "id": "v4-m-puppet-bundle",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Puppet bundle (Vite production, gzip -9): eager 2.4 KB; lazy stage chunk 35 KB (40 KB with shared src/avatar modules; patched app build stage-*.js 35.7 KB gz); pack 132 KB WebP+geometry + 35-42 KB poster; ~210 KB first lesson vs PLAN 650 KB. Rest SSIM vs c-front on the production pack 0.958 head / 0.982 full (art build 0.962). evals/face-puppet/bundle-size.mjs, rest-parity.mjs."
+  },
+  {
+   "id": "v4-m-inapp-blind-judge",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Blind judges on the r6/r7/r8 prompt, unchanged, 9-cell grid rendered by the PRODUCTION stage: sol 3.7, 3.7; grok 3.9, 3.7 (mean 3.75, n=4) vs r8 art build 3.6/3.6, r7 3.6/3.8. Same character 4/4, no rendering artefact flagged; defects = r8's known turn lighting / rubbery open mouth / sceptical thinking, plus playful no longer playful (wink removed by safety). Art-director (AI) review of the 36 s in-app lesson clip: 4.0; owner's eye still the gate. evals/face-puppet/clip.mjs, judge-blind.mjs."
+  },
+  {
+   "id": "v4-m-retroflex-text-map",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Viseme-only parts: mapping Azure id-19 events onto the text's stop list blindly gave 4 right curls and 7 false ones (309 stops, 10 retroflex, 24 lines); counts matched in only 2/24 lines. With the count-match guard: 0 curls, 0 false curls (dental tip-up drawn). evals/face-puppet/retro-align.mjs."
+  },
+  {
+   "id": "v4-rj-words-with-visemes-part0",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: asking Azure for viseme AND word-boundary events on every TTS part. Broke: first audio 919-931 ms vs 433-496 ms without words (warm socket, n=8) — a +480 ms hit on the V4 timing bar (first sound p50 <= 900 ms). Instead: part 0 visemes only, later parts (prefetched behind part 0) add words."
+  },
+  {
+   "id": "v4-rj-blind-text-retroflex",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: placing Hindi retroflex curls on viseme-only parts by mapping id-19 events in order onto the text's t/d/n stops. Broke: Azure's id-19 count rarely equals the text's (2/24 lines), so curls landed on dentals (7 false vs 4 right). Instead: only when counts match, else the dental tip-up."
+  },
+  {
+   "id": "v4-rj-floor-release-clobber",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: releasing all acting on every floor change to thinking/listening. Broke: with the duplex engine attached, the duplex 'thinking' pose started the thinking glance and the floor change one frame later released it — the in-app grid's thinking cell read as rest. Instead: a floor change releases only VALENCED acting; the floor's own faces belong to whichever producer started them."
+  },
+  {
+   "id": "v4-gap-arjun-no-puppet",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Coverage gap: the puppet is concept C = Asha (Diya). Default tutor for b3-b4 (classes 5-9) is Arjun, who keeps TutorFace, so most of the class 4-7 target sees no puppet unless they pick Asha (verified: /dev/desk band=b3 -> TutorFace). Needs a main-loop decision (default Asha per OWNER-RESET 18 'Diya is the final voice', or male/other puppets)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-inapp-blind-judge"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-puppet-bundle"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-m-puppet-cpu"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "measured_by",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "measured_by",
+   "dst": "v4-m-inapp-lipsync"
+  },
+  {
+   "src": "v4-viseme-lead-50ms",
+   "rel": "measured_by",
+   "dst": "v4-m-diya-viseme-offset"
+  },
+  {
+   "src": "v4-rj-words-with-visemes-part0",
+   "rel": "caused_by",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-diya-visemes-websocket",
+   "rel": "supersedes",
+   "dst": "v4-rj-blind-text-retroflex"
+  },
+  {
+   "src": "v4-rj-blind-text-retroflex",
+   "rel": "measured_by",
+   "dst": "v4-m-retroflex-text-map"
+  },
+  {
+   "src": "v4-puppet-acting-policy",
+   "rel": "supersedes",
+   "dst": "v4-rj-floor-release-clobber"
+  },
+  {
+   "src": "design-v2-face-verdict-neutral",
+   "rel": "constrains",
+   "dst": "v4-puppet-acting-policy"
+  },
+  {
+   "src": "owner-reset-2026-10-04",
+   "rel": "constrains",
+   "dst": "v4-puppet-safety-no-wink"
+  },
+  {
+   "src": "v4-gap-arjun-no-puppet",
+   "rel": "blocks",
+   "dst": "v4-face-puppet-production"
+  }
+ ]
+}

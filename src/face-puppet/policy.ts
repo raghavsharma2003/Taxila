@@ -48,6 +48,9 @@ export class ActingPolicy {
   private lastBig = -Infinity;
   private duplex = false;
   private calm = false;
+  /** The preset this policy last started (null after a release): a floor change releases only VALENCED acting, never the
+   *  floor's own listening / thinking face that the duplex engine may have just started. */
+  private current: PresetName | null = null;
   /** Bounded log of decisions (tests, the stage's debug read-out). */
   readonly log: string[] = [];
 
@@ -82,8 +85,11 @@ export class ActingPolicy {
   }
 
   private emote(name: PresetName, intensity: number, hold: number, why: string, variant?: number): ActCommand {
-    const I = Math.max(0, Math.min(1, intensity * BAND_SCALE[this.band]));
+    // R3 band scale applies to AFFECT only; the floor's own faces (listening, the thinking glance) play at the judged level
+    const floorFace = why.startsWith("floor:") || why.startsWith("duplex:");
+    const I = Math.max(0, Math.min(1, intensity * (floorFace ? 1 : BAND_SCALE[this.band])));
     this.note(`emote ${name} ${I.toFixed(2)} (${why})`);
+    this.current = name;
     return { op: "emote", name, intensity: I, hold, variant, why };
   }
 
@@ -93,18 +99,20 @@ export class ActingPolicy {
     const was = this.state;
     this.state = state;
     const out: ActCommand[] = [];
+    const floorFace = this.current === "thinking" || this.current === "listening";
+    const rel = (why: string): ActCommand => { this.current = null; return { op: "release", why }; };
     if (state === "speaking") {
       if (this.armed) out.push(...this.fireArmed(t));
-      else if (was === "listening" || was === "thinking") out.push({ op: "release", why: "onset" });
+      else if (was === "listening" || was === "thinking") out.push(rel("onset"));
     } else if (state === "thinking") {
       // R1: everything valenced goes within 300 ms; the thinking glance is the floor's (the duplex engine sends its own
       // `thinking` pose; without it the floor state is the trigger). Held until the state changes.
-      out.push({ op: "release", why: "thinking: verdict-neutral" });
-      if (!this.duplex) out.push(this.emote("thinking", 0.85, 30, "floor:thinking"));
+      if (this.duplex) { if (this.current && !floorFace) out.push(rel("thinking: verdict-neutral")); }
+      else out.push(rel("thinking: verdict-neutral"), this.emote("thinking", 1, 30, "floor:thinking"));
     } else if (state === "listening") {
-      out.push({ op: "release", why: "listening" });
-      if (!this.duplex) out.push(this.emote("listening", 0.8, 30, "floor:listening"));
-    } else if (was === "listening" || was === "thinking") out.push({ op: "release", why: state });
+      if (this.duplex) { if (this.current && !floorFace) out.push(rel("listening")); }
+      else out.push(rel("listening"), this.emote("listening", 1, 30, "floor:listening"));
+    } else if (was === "listening" || was === "thinking") out.push(rel(state));
     return out;
   }
 
@@ -118,11 +126,17 @@ export class ActingPolicy {
   }
 
   private poseActs(p: AvatarPose): ActCommand[] {
+    const acts = this.poseActs0(p);
+    if (acts.some((a) => a.op === "release") && !acts.some((a) => a.op === "emote")) this.current = null;
+    return acts;
+  }
+
+  private poseActs0(p: AvatarPose): ActCommand[] {
     switch (p) {
-      case "listening": return [{ op: "release", why: p }, this.emote("listening", 0.75, 30, "duplex:listening")];
+      case "listening": return [{ op: "release", why: p }, this.emote("listening", 1, 30, "duplex:listening")];
       case "listen_lean": return [this.emote("listening", 0.9, 30, "duplex:listen_lean"), { op: "lean", value: 0.35, why: p }];
       case "still_with_you": return [{ op: "lean", value: 0.2, why: p }];
-      case "thinking": return [{ op: "release", why: "thinking: verdict-neutral" }, this.emote("thinking", 0.85, 30, "duplex:thinking_glance")];
+      case "thinking": return [{ op: "release", why: "thinking: verdict-neutral" }, this.emote("thinking", 1, 30, "duplex:thinking_glance")];
       case "hold_pose": return []; // the child asked her to wait: hold whatever face she has, no new motion
       case "checkin_look": return [{ op: "release", why: p }, this.emote("listening", 0.6, 1.2, "duplex:checkin")];
       case "your_turn": return [{ op: "release", why: p }, { op: "lean", value: 0.3, why: p }];

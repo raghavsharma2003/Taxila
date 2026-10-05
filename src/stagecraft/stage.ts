@@ -63,6 +63,9 @@ export function failed(s: StageState, id: string, at: number): StageState {
     if (twin.id === s.showing.id) return push({ ...s, incoming: null, phase: "steady" }, { at, e: "failed", id });   // its twin is already showing
     return push({ ...s, incoming: twin, phase: "mounting" }, { at, e: "failed", id });
   }
+  // REVIEW 2026-10-05: the showing piece died while the next one mounts: the next one is what her line names, so it is
+  // kept (it replaces the dead piece as soon as it paints; the host already crossfaded the dead engine to its own board)
+  if (s.showing.id === id && s.incoming) return push(s, { at, e: "failed", id });
   if (s.showing.id === id && s.showing.kind !== "board") return push({ ...s, incoming: twinOf(s.showing), phase: "mounting" }, { at, e: "failed", id });
   return s;
 }

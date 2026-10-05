@@ -2296,8 +2296,8 @@ var qe = class {
 			let a = r[t * 2], d = r[t * 2 + 1];
 			if (o) this.faceOffW(e.FW, t, !1, u), a += u[0], d += u[1];
 			else if (e.kind === "brow") {
-				let n = e.colOf[t], r = d - e.cyc[n];
-				a += e.cdx[n] - r * e.cs[n], d += e.cdy[n] + r * (e.cc[n] - 1);
+				let n = e.colOf[t], r = d - e.cyc[n], i = r > 13 ? 13 : r < -13 ? -13 : r;
+				a += e.cdx[n] - i * e.cs[n], d += e.cdy[n] + i * (e.cc[n] - 1);
 			} else if (s) {
 				let t = H((d - e.y0) / e.len) ** 1.4;
 				a += (e.sx || 0) * t, d += (e.sy || 0) * t * .3;
@@ -2317,20 +2317,20 @@ var qe = class {
 			inner: 53 * r + 3 * c,
 			arch: 38 * i,
 			knit: 21 * a,
-			peak: 9 * s * i
+			peak: 6.5 * s * i
 		};
 	}
 	browOffset(e, t, n) {
 		let r = this.g.brows[e], i = r.x[0], a = r.x[1], o = this.browCh[e], s = (t) => {
 			let n = H(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), r = Math.exp(-(((n - .62) / .3) ** 2));
-			return 5 * Math.max(this.blinkDip || 0, U(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 - (o.peak || 0) * Math.exp(-(((n - .52) / .34) ** 2)) + o.knit * (1 - .6 * n);
+			return 5 * Math.max(this.blinkDip || 0, U(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 - (o.peak || 0) * Math.exp(-(((n - .52) / .45) ** 2)) + o.knit * (1 - .6 * n);
 		}, c = s(t), l = V(t - 3, i, a - 6), u = l + 6, d = Math.atan((s(u) - s(l)) / 6), f = r.cl, p = n - (f ? f.y[V(Math.round(t - f.x0), 0, f.y.length - 1)] : n);
 		return [(e === "L" ? 1 : -1) * (o.knit * .3 + o.inner * .05) - p * Math.sin(d), c + p * (Math.cos(d) - 1)];
 	}
 	browColumns(e) {
 		let t = e.name.slice(4), n = this.g.brows[t], r = n.x[0], i = n.x[1], a = this.browCh[t], o = n.cl, s = 5 * Math.max(this.blinkDip || 0, U(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)), c = (e) => {
 			let n = H(t === "L" ? (i - e) / (i - r) : (e - r) / (i - r)), o = Math.exp(-(((n - .62) / .3) ** 2));
-			return s - a.lift - a.inner * (1 - n) ** 1.3 - a.arch * (.35 + .65 * o) * n ** .5 - (a.peak || 0) * Math.exp(-(((n - .52) / .34) ** 2)) + a.knit * (1 - .6 * n);
+			return s - a.lift - a.inner * (1 - n) ** 1.3 - a.arch * (.35 + .65 * o) * n ** .5 - (a.peak || 0) * Math.exp(-(((n - .52) / .45) ** 2)) + a.knit * (1 - .6 * n);
 		}, l = (t === "L" ? 1 : -1) * (a.knit * .3 + a.inner * .05);
 		for (let t = 0; t < e.colX.length; t++) {
 			let n = e.colX[t], a = V(n - 3, r, i - 6), s = Math.atan((c(a + 6) - c(a)) / 6);
@@ -2833,7 +2833,7 @@ var qe = class {
 	}), r;
 }, Ze = {
 	bs: {
-		browOuterUpLeft: 1,
+		browOuterUpLeft: .92,
 		browInnerUp: .32,
 		eyeWideLeft: .05,
 		eyeWideRight: .03,
@@ -3169,31 +3169,44 @@ var at = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), ot = class {
 			let e = Math.min(.004, o);
 			this.bounce.v += (-160 * this.bounce.x - 1 * Math.sqrt(160) * this.bounce.v) * e, this.bounce.x += this.bounce.v * e, o -= e;
 		}
-		if (r[0] += this.bounce.x, this.lean = 0, this.prev) {
-			let t = this.prev, o = t.e0 * (1 - at((e - t.t0) / t.fade));
-			o <= .001 ? this.prev = null : this._mix(t.c, o, e, n, r, i, a);
+		r[0] += this.bounce.x, this.lean = 0;
+		let s = {
+			pos: {},
+			sup: {},
+			lip: {},
+			gz: [0, 0],
+			w: 0
+		};
+		if (this.prev) {
+			let t = this.prev, n = t.e0 * (1 - at((e - t.t0) / t.fade));
+			n <= .001 ? this.prev = null : this._mix(t.c, n, e, r, s);
 		}
-		let s = this.level(e);
-		return !this.cur || s <= 0 ? 0 : (this._mix(this.cur, s, e, n, r, i, a), s);
+		let c = this.level(e);
+		if (this.cur && c > 0 && this._mix(this.cur, c, e, r, s), s.w <= 0) return 0;
+		for (let [e, t] of Object.entries(s.pos)) n[e] = Math.max(n[e] ?? 0, t);
+		for (let [e, t] of Object.entries(s.sup)) n[e] = (n[e] ?? 0) * (1 - Math.min(1, t));
+		if (a) for (let [e, t] of Object.entries(s.lip)) a[e] = Math.max(a[e] ?? 0, t);
+		let l = Math.min(1, s.w), u = s.w > 1 ? 1 / s.w : 1;
+		return i[0] = i[0] * (1 - l) + s.gz[0] * u, i[1] = i[1] * (1 - l) + s.gz[1] * u, c;
 	}
-	_mix(e, t, n, r, i, a, o) {
-		let s = e.P || Y[e.name], c = s.pulse, l = n - e.t0 - (c ? c.delay : 0), u = c ? l < 0 ? 0 : l < c.a ? at(l / c.a) : l < c.a + c.hold ? 1 : 1 - at((l - c.a - c.hold) / c.r) : 1, d = n - e.t0;
-		for (let [n, i] of Object.entries(s.bs)) {
-			let a = c && c.keys.includes(n) ? i * u : i;
-			if (s.wob && s.wob[n]) for (let [t, r] of s.wob[n]) a += t * Math.sin(2 * Math.PI * r * d + (e.ph || 0) + r);
+	_mix(e, t, n, r, i) {
+		let a = e.P || Y[e.name], o = a.pulse, s = n - e.t0 - (o ? o.delay : 0), c = o ? s < 0 ? 0 : s < o.a ? at(s / o.a) : s < o.a + o.hold ? 1 : 1 - at((s - o.a - o.hold) / o.r) : 1, l = n - e.t0;
+		for (let [n, r] of Object.entries(a.bs)) {
+			let s = o && o.keys.includes(n) ? r * c : r;
+			if (a.wob && a.wob[n]) for (let [t, r] of a.wob[n]) s += t * Math.sin(2 * Math.PI * r * l + (e.ph || 0) + r);
 			if (rt.has(n)) {
-				o && (o[n] = Math.max(o[n] ?? 0, a * t));
+				i.lip[n] = (i.lip[n] ?? 0) + Math.max(0, s) * t;
 				continue;
 			}
-			r[n] = a < 0 ? (r[n] ?? 0) * (1 - t) : Math.max(r[n] ?? 0, a * t);
+			s < 0 ? i.sup[n] = (i.sup[n] ?? 0) + t : i.pos[n] = (i.pos[n] ?? 0) + s * t;
 		}
-		for (let e = 0; e < 3; e++) i[e] += s.head[e] * t;
-		if (s.act && nt[s.act]) {
-			let e = nt[s.act](d), n = s.mir ? -1 : 1;
-			i[0] += e.head[0] * t, i[1] += n * e.head[1] * t, i[2] += n * e.head[2] * t, this.lean += e.lean * t;
+		for (let e = 0; e < 3; e++) r[e] += a.head[e] * t;
+		if (a.act && nt[a.act]) {
+			let e = nt[a.act](l), n = a.mir ? -1 : 1;
+			r[0] += e.head[0] * t, r[1] += n * e.head[1] * t, r[2] += n * e.head[2] * t, this.lean += e.lean * t;
 		}
-		let f = it(d, e.ph || 0, s.search);
-		a[0] = a[0] * (1 - t) + (s.gaze[0] + f[0]) * t, a[1] = a[1] * (1 - t) + (s.gaze[1] + f[1]) * t;
+		let u = it(l, e.ph || 0, a.search);
+		i.gz[0] += (a.gaze[0] + u[0]) * t, i.gz[1] += (a.gaze[1] + u[1]) * t, i.w += t;
 	}
 }, st = class {
 	constructor(e = 3) {

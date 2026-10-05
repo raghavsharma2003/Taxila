@@ -5,7 +5,7 @@
 import { serve, open } from "./shoot.mjs";
 const rate = +(process.argv[2] || 4), secs = +(process.argv[3] || 20), dpr = +(process.argv[4] || 1);
 const srv = await serve();
-const { browser, page } = await open(srv, "", { viewport: { width: +(process.env.VW || 720), height: 900 }, deviceScaleFactor: dpr });
+const { browser, page } = await open(srv, process.env.P2D_FQ || "", { viewport: { width: +(process.env.VW || 720), height: 900 }, deviceScaleFactor: dpr });
 const cdp = await page.context().newCDPSession(page);
 await cdp.send("Emulation.setCPUThrottlingRate", { rate });
 await page.evaluate(() => { const s = window.P2D.stats; s.intervals.length = 0; s.work.length = 0; });

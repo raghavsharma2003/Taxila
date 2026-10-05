@@ -17,13 +17,15 @@ async function env() {
   const pool = topicPool(S.ENGINE_SPECS);
   const catalog = buildCatalog(S.ENGINE_SPECS, { w2Topics: pool.w2Topics, w2Kinds: pool.w2Kinds, library: ["slice-at@1", "food-web@1", "area-claim@1"] });
   let cdf = null;
+  const stress = arg("stress", null) ? JSON.parse(arg("stress")) : null;
+  if (stress?.sampleCalibrated) stress.sampleCdf = JSON.parse(fs.readFileSync(path.join(HERE, "calibration.json"), "utf8"));
   if (has("calibrated") && fs.existsSync(path.join(HERE, "calibration.json"))) cdf = JSON.parse(fs.readFileSync(path.join(HERE, "calibration.json"), "utf8"));
-  return { S, pool, catalog, cdf };
+  return { S, pool, catalog, cdf, stress };
 }
 
 // ───────────── worker: one arm over a seed range ─────────────
 if (has("worker")) {
-  const { S, pool, catalog, cdf } = await env();
+  const { S, pool, catalog, cdf, stress } = await env();
   const { makeLesson } = await import("./scripts.mjs");
   const { simulate } = await import("./sim.mjs");
   const arm = arg("worker"), [a, b] = arg("seeds").split("-").map(Number), flags = arg("flags", "");
@@ -32,7 +34,7 @@ if (has("worker")) {
   for (let seed = a; seed <= b; seed++) {
     const L = makeLesson(seed, { pool, forceSafety: flags.includes("safety"), forceStorm: flags.includes("storm") });
     let rows = null;
-    const r = simulate(L, arm, { catalog, engineSpecs: S.ENGINE_SPECS, cdf, onRows: (x) => { rows = x; } });
+    const r = simulate(L, arm, { catalog, engineSpecs: S.ENGINE_SPECS, cdf, stress, onRows: (x) => { rows = x; } });
     if (arm === "sc_on" && !flags) calibrate(rows, cal);
     out.push({ seed, ...r });
   }
@@ -67,7 +69,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "stagecraft-"));
 function runWorker(arm, a, b, flags = "") {
   const out = path.join(tmp, `${arm.replace(/[^a-z0-9_]/gi, "_").slice(0, 60)}-${a}-${b}-${flags || "x"}.json`);
   return new Promise((res, rej) => {
-    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, "--worker", arm, "--seeds", `${a}-${b}`, "--out", out, "--flags", flags, ...(has("calibrated") ? ["--calibrated"] : [])], { stdio: ["ignore", "ignore", "inherit"] });
+    const p = spawn(process.execPath, [new URL(import.meta.url).pathname, "--worker", arm, "--seeds", `${a}-${b}`, "--out", out, "--flags", flags, ...(has("calibrated") ? ["--calibrated"] : []), ...(arg("stress") ? ["--stress", arg("stress")] : [])], { stdio: ["ignore", "ignore", "inherit"] });
     p.on("exit", (c) => (c === 0 ? res(JSON.parse(fs.readFileSync(out, "utf8"))) : rej(new Error(`${arm} ${a}-${b} exit ${c}`))));
   });
 }
@@ -129,7 +131,7 @@ const out = {
 };
 function pick(o, ks) { return Object.fromEntries(ks.map((k) => [k, o[k]])); }
 fs.mkdirSync(path.join(HERE, "results"), { recursive: true });
-const file = path.join(HERE, "results", `sim-${DATE}${has("calibrated") ? "-calibrated" : ""}.json`);
+const file = path.join(HERE, "results", `sim-${DATE}${has("calibrated") ? "-calibrated" : ""}${arg("tag") ? "-" + arg("tag") : ""}.json`);
 fs.writeFileSync(file, JSON.stringify(out, null, 1));
 fs.rmSync(tmp, { recursive: true, force: true });
 
@@ -146,6 +148,7 @@ row("spec time-to-ready p50 / p90 (ms)", null, (c) => `${f(c.timeToReadyMs.spec.
 row("live time-to-ready p50 / p90 (ms)", null, (c) => `${f(c.timeToReadyMs.live.p50, 0)} / ${f(c.timeToReadyMs.live.p90, 0)} (n ${c.timeToReadyMs.live.n})`);
 row("speculative $ / lesson-hour (wasted)", null, (c) => `${f(c.usdPerLessonHour.total, 4)} (${f(c.usdPerLessonHour.wasted, 4)})`);
 row("wasted spec builds / lesson-hour", null, (c) => f(c.wastedBuildsPerLessonHour.spec, 1));
+row("stale-stage turns (old-topic piece left up)", "staleStageTurns", (c) => f(c.staleStageTurns, 0));
 row("wrong / stale / safety / child-speaking reveals", null, (c) => `${c.wrongReveals} / ${c.staleReveals} / ${c.safetyTurnReveals} / ${c.revealsWhileChildSpeaks}`);
 row("off-topic reveals / visible failures", null, (c) => `${c.offTopicReveals} / ${c.visibleFailures}`);
 row("generated pieces / 25 min", "generatedRevealsPer25", (c) => f(c.generatedRevealsPer25, 1));

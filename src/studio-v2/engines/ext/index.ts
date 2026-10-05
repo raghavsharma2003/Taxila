@@ -7,6 +7,17 @@ import { beat } from "./beat.ts";
 import { era } from "./era.ts";
 import { sort } from "./sort.ts";
 import { fair } from "./fair.ts";
+import { dukaan } from "./dukaan.ts";
+import { instrument } from "./instrument.ts";
+import { sieve } from "./sieve.ts";
+import { rule } from "./rule.ts";
+import { geo } from "./geo.ts";
+import { mirror } from "./mirror.ts";
+import { picto } from "./picto.ts";
+import { fracops } from "./fracops.ts";
+import { zero } from "./zero.ts";
+import { map } from "./map.ts";
+import { motion } from "./motion.ts";
 
-const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair] as EngineDef<never>[];
+const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair, dukaan, instrument, sieve, rule, geo, mirror, picto, fracops, zero, map, motion] as EngineDef<never>[];
 export const ENGINES_EXT: Record<string, EngineDef<never>> = Object.fromEntries(list.map((d) => [d.archetype, d]));

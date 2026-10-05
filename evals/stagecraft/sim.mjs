@@ -57,11 +57,18 @@ class Heap {
  */
 export function simulate(L, arm, env) {
   const C = armConfig(arm, env);
+  // REVIEW 2026-10-05 stress knobs (all off by default = the original simulator):
+  //   sampleCdf   build times are DRAWN from this CDF while the conductor keeps planning with C.cdf (prior ≠ reality)
+  //   buildScale  multiplies every drawn build time; tailP/tailX: with prob tailP a build takes tailX × longer
+  //   planNoise   the plan's beat timing uses EXPECTED turn counts (not the script's actual ones) and lists the optional
+  //               explore beat even when the lesson skips it (the Director deviates from the plan)
+  //   replyStorm  reply-lane 429s are actually fed to the conductor (the original sim dropped them), every 5 s in-window
+  const ST = env.stress ?? {};
   const beatOnly = arm === "w2";
   let S = initPortfolio(L.id, 0);
   const H = new Heap();
   const rows = [];
-  const X = { buildsDuringSafety: 0, wrongReveals: 0, staleReveals: 0, safetyTurnReveals: 0, revealsWhileChildSpeaks: 0, offTopicReveals: 0, visibleFailures: 0, mountFailures: 0, requestFirstFrameMs: [], gapsMs: [] };
+  const X = { buildsDuringSafety: 0, wrongReveals: 0, staleReveals: 0, safetyTurnReveals: 0, revealsWhileChildSpeaks: 0, offTopicReveals: 0, visibleFailures: 0, staleStageTurns: 0, mountFailures: 0, requestFirstFrameMs: [], gapsMs: [] };
   const wants = [];               // the lossless stream: (turn, point kind, family, archetype, premise)
   const aborted = new Set();
   // the kernel's view (what production's kernel knows; never the portfolio)
@@ -95,8 +102,9 @@ export function simulate(L, arm, env) {
     if (K.safety) X.buildsDuringSafety++;
     const r = streamRng(L.seed, `build:${arm}:${e.candidateId}`);
     const u = r(), uFail = r(), u429 = r(), uNet = r();
-    const dist = buildDist(e.rung, e.archetype, C.cdf);
+    const dist = buildDist(e.rung, e.archetype, ST.sampleCdf ?? C.cdf);
     let ms = Math.max(50, sampleBuild(dist, u));
+    if (e.rung !== "library") { ms = Math.round(ms * (ST.buildScale ?? 1)); if (ST.tailP && r() < ST.tailP) ms = Math.round(ms * (ST.tailX ?? 3)); }
     if (e.rung === "library") ms = Math.round(200 + 800 * u);
     const storm = L.storms.find((s) => !s.reply && s.dep === e.deployment && now >= s.from && now <= s.to);
     if (storm || (e.rung === "image" && u429 < L.image429)) {
@@ -175,11 +183,14 @@ export function simulate(L, arm, env) {
   // ── schedule the script ──
   const turns = L.turns;
   const avgTurn = L.lessonMs / Math.max(1, turns.length);
+  const EXPECT = { arrive: 2.5, hook: 1.5, explain: 8.5, worked_example: 6.5, contrast: 5.5, practice_set: 16, probe: 4, explore_question: 4, recap: 2.5, wrap: 2 };
+  const planTurns = (j) => (ST.planNoise ? Math.round(EXPECT[L.beats[j].beat] ?? 4) : L.beats[j].turns);
+  const avgTurnPlan = ST.planNoise ? 9000 : avgTurn;
   const beatOpenAt = (bi, now, k) => {
     // estimate when beat bi opens: the remaining turns of the beats before it × the average turn
     let rem = 0;
-    for (let j = turns[k].beatIdx; j < bi; j++) rem += j === turns[k].beatIdx ? L.beats[j].turns - (k - firstTurnOfBeat(j)) : L.beats[j].turns;
-    return now + rem * avgTurn;
+    for (let j = turns[k].beatIdx; j < bi; j++) rem += j === turns[k].beatIdx ? Math.max(1, planTurns(j) - (k - firstTurnOfBeat(j))) : planTurns(j);
+    return now + rem * avgTurnPlan;
   };
   const firstIdx = new Map();
   turns.forEach((t, i) => { if (!firstIdx.has(t.beatIdx)) firstIdx.set(t.beatIdx, i); });
@@ -192,6 +203,16 @@ export function simulate(L, arm, env) {
       const misKnown = (() => { for (const [m, st] of K.ledger) if (m.startsWith(topic.topicId) && st === "active") return m; return null; })();
       return { beat: b.beat, skillId: topic.skillIds[0] ?? `${topic.topicId}-s1`, topicId: topic.topicId, misconceptionId: misKnown, openAt: bi > t.beatIdx ? beatOpenAt(bi, now, k) : now };
     });
+    if (ST.planNoise) {
+      // the plan still lists the optional explore beat the lesson skipped: insert it before each recap that lacks one
+      const out = [];
+      let cursor = t.beatIdx;
+      beats.forEach((b, i) => {
+        if (b.beat === "recap" && L.beats[i - 1]?.beat !== "explore_question") { if (i <= t.beatIdx) cursor++; out.push({ ...b, beat: "explore_question" }); }
+        out.push(b);
+      });
+      return fromPlan({ beats: out, cursor }, now);
+    }
     return fromPlan({ beats, cursor: t.beatIdx }, now);
   };
 
@@ -211,6 +232,8 @@ export function simulate(L, arm, env) {
     } else for (const n of planNoms(0, 0)) inp({ t: "nominate", n });
   });
   for (let at = 500; at <= L.lessonMs + 5000; at += 500) H.push(at, () => inp({ t: "timer", at }));
+  if (ST.replyStorm) for (const s of L.storms.filter((x) => x.reply)) for (let at = s.from; at <= s.to; at += 5000) H.push(at, () => inp({ t: "quota", deployment: "taxila-fast", status: 429, at: S.meta.now }));
+  if (ST.replyStormEvery) for (let at = ST.replyStormEvery; at < L.lessonMs; at += ST.replyStormEvery) H.push(at, () => inp({ t: "quota", deployment: "taxila-fast", status: 429, at: S.meta.now }));
 
   for (const turn of turns) {
     truth.childSpeech.push([turn.childStart, turn.childEnd]);
@@ -273,6 +296,8 @@ export function simulate(L, arm, env) {
       env.onPoint?.({ turn: turn.k, kOn: K.onStage?.family ?? null, scOn: S.meta.onStageCand?.family ?? null, want: want?.family ?? null, kind });
       inp({ t: "reveal_point", point });
       env.onPoint?.({ after: turn.k, kOn: K.onStage?.family ?? null, scOn: S.meta.onStageCand?.family ?? null, req: K.request?.kind ?? null });
+      // REVIEW: a piece of another skill (old topic) left on stage while she teaches this one
+      if (K.onStage && String(K.onStage.family).split("|")[0] !== turn.skillId) X.staleStageTurns++;
     });
     H.push(turn.herEnd, () => inp({ t: "phase", phase: "handover", turnSeq: turn.k, at: S.meta.now }));
   }

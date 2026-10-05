@@ -97,7 +97,9 @@ const THINK_UP = {
   // narrower), the upper-lip roll 0.2 -> 0.08; gaze 3 px higher (23 -> 28 deg). The inner-brow lift stays (it removed
   // the sceptical read in r8).
   // r9 i2 (sol 1/3: 'mismatched brows plus pursed lips -> suspicion'): inner-brow lift 0.2 -> 0.32 (wonder, effort), pucker 0.18 -> 0.12
-  bs: { browOuterUpLeft: 1.0, browInnerUp: 0.32, eyeWideLeft: 0.05, eyeWideRight: 0.03,
+  // r9 i4 (blind 4/6 on the clip grid: the raised brow 'too high / too steep -> sceptical'): 1.0 -> 0.92 with a rounder,
+  // lower peak (rig: 6.5 px over sigma 0.45): ~+28% over r8 at the arch's top instead of +44%
+  bs: { browOuterUpLeft: 0.92, browInnerUp: 0.32, eyeWideLeft: 0.05, eyeWideRight: 0.03,
     mouthLeft: 0.45, mouthPressLeft: 0.28, mouthRollUpper: 0.08, mouthShrugLower: 0.22, mouthPucker: 0.12, mouthFrownRight: 0.22, mouthSmileLeft: -1, mouthSmileRight: -1 },
   head: [-3, -3, 7], gaze: [14, 28], env: [0.35, 0, 0.45], act: "thinkUp", search: [2.4, 1.8],
 };
@@ -238,18 +240,27 @@ export class Expressions {
     while (left > 1e-6) { const h = Math.min(0.004, left); this.bounce.v += (-160 * this.bounce.x - 2 * 0.5 * Math.sqrt(160) * this.bounce.v) * h; this.bounce.x += this.bounce.v * h; left -= h; }
     head[0] += this.bounce.x;
     this.lean = 0;
-    // r9: the outgoing take (crossfade), mixed first so the incoming one wins where both set a key
+    // r9: the two takes of a crossfade ACCUMULATE (weights sum to ~1 through the blend): r9 i3 mixed them by max() and by
+    // sequential suppression, so mid-blend each counted half, the brows sagged toward neutral and behaviour's smile leaked
+    // back (a smile flash between concern A and B)
+    const A = { pos: {}, sup: {}, lip: {}, gz: [0, 0], w: 0 };
     if (this.prev) {
       const pv = this.prev, ep = pv.e0 * (1 - smooth01((t - pv.t0) / pv.fade));
       if (ep <= 0.001) this.prev = null;
-      else this._mix(pv.c, ep, t, bs, head, gaze, lip);
+      else this._mix(pv.c, ep, t, head, A);
     }
     const e = this.level(t);
-    if (!this.cur || e <= 0) return 0;
-    this._mix(this.cur, e, t, bs, head, gaze, lip);
+    if (this.cur && e > 0) this._mix(this.cur, e, t, head, A);
+    if (A.w <= 0) return 0;
+    for (const [k, v] of Object.entries(A.pos)) bs[k] = Math.max(bs[k] ?? 0, v);
+    for (const [k, w] of Object.entries(A.sup)) bs[k] = (bs[k] ?? 0) * (1 - Math.min(1, w));
+    if (lip) for (const [k, v] of Object.entries(A.lip)) lip[k] = Math.max(lip[k] ?? 0, v);
+    const wg = Math.min(1, A.w), nz = A.w > 1 ? 1 / A.w : 1;
+    gaze[0] = gaze[0] * (1 - wg) + A.gz[0] * nz;
+    gaze[1] = gaze[1] * (1 - wg) + A.gz[1] * nz;
     return e;
   }
-  _mix(cur, e, t, bs, head, gaze, lip) {
+  _mix(cur, e, t, head, A) {
     const P = cur.P || EXPRESSIONS[cur.name];
     const pu = P.pulse, pt = t - cur.t0 - (pu ? pu.delay : 0);
     const pw = pu ? (pt < 0 ? 0 : pt < pu.a ? smooth01(pt / pu.a) : pt < pu.a + pu.hold ? 1 : 1 - smooth01((pt - pu.a - pu.hold) / pu.r)) : 1;
@@ -260,9 +271,9 @@ export class Expressions {
       if (P.wob && P.wob[k]) for (const [amp, hz] of P.wob[k]) v += amp * Math.sin(2 * Math.PI * hz * u + (cur.ph || 0) + hz);
       // r8: every LIP-layer key of a preset goes to the lip layer (the compositor drops behaviour's lip keys, so r7's
       // presets lost mouthPucker / mouthFunnel in the clip while the sheet stills showed them)
-      if (LIPK.has(k)) { if (lip) lip[k] = Math.max(lip[k] ?? 0, v * e); continue; }
-      if (v < 0) bs[k] = (bs[k] ?? 0) * (1 - e);
-      else bs[k] = Math.max(bs[k] ?? 0, v * e) ;
+      if (LIPK.has(k)) { A.lip[k] = (A.lip[k] ?? 0) + Math.max(0, v) * e; continue; }
+      if (v < 0) A.sup[k] = (A.sup[k] ?? 0) + e;
+      else A.pos[k] = (A.pos[k] ?? 0) + v * e;
     }
     for (let i = 0; i < 3; i++) head[i] += P.head[i] * e;
     // r7: the acting layer (head + body curves); a mirrored take mirrors yaw and roll
@@ -273,8 +284,7 @@ export class Expressions {
     }
     // gaze: blend toward the preset (an averted expression look replaces behaviour's micro-saccades while held)
     const sr = searchAt(u, cur.ph || 0, P.search);
-    gaze[0] = gaze[0] * (1 - e) + (P.gaze[0] + sr[0]) * e;
-    gaze[1] = gaze[1] * (1 - e) + (P.gaze[1] + sr[1]) * e;
+    A.gz[0] += (P.gaze[0] + sr[0]) * e; A.gz[1] += (P.gaze[1] + sr[1]) * e; A.w += e;
   }
 }
 

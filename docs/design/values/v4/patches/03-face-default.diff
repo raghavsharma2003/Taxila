@@ -1,0 +1,25 @@
+--- a/src/ui/teacher/Teacher.tsx
++++ b/src/ui/teacher/Teacher.tsx
+@@ -10,7 +10,8 @@
+ //  - label="none":  only when the caller prints the label itself.
+ // The 3D canvas is aria-hidden behind the role="img" host (TutorFace), and her state is exposed through the dock.
+ import type { CSSProperties } from "react";
+-import { TutorFace } from "../../avatar/TutorFace.tsx";
++// V4 (face.puppet2d, default on): the style-C 2D puppet where the puppet is the tutor; TutorFace otherwise.
++import { LessonFace as TutorFace } from "../../face-puppet/LessonFace.tsx";
+ import type { Emotion, FloorStatus } from "../../avatar/behaviour.ts";
+ import type { FaceTier } from "../../avatar/tier.ts";
+ import type { TapSource } from "../../avatar/tap.ts";
+--- a/src/ui-v3/V3Root.tsx
++++ b/src/ui-v3/V3Root.tsx
+@@ -6,6 +6,10 @@
+ import { prefersReducedMotion } from "./motion.ts";
+ import { ToastRegion } from "./Toast.tsx";
+ import type { ThemeName } from "./tokens.ts";
++import { installPuppetFace } from "../face-puppet/adapter.tsx";
++
++// V4: every FaceSlot shows the style-C 2D puppet (face.puppet2d, default on; a tutor the puppet is not keeps inHouseFace)
++installPuppetFace();
+ 
+ interface V3Ctx {
+   theme: ThemeName;

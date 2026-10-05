@@ -95,3 +95,59 @@ export async function synthWs(ssml, { region, key, format = "raw-24khz-16bit-mon
     sock.on("error", (e) => done(e));
   });
 }
+
+/**
+ * A persistent connection that synthesises several documents in turn (the Speech SDK reuses its socket the same way).
+ * The server patch keeps one warm per region so a reply's first part pays no TLS + upgrade round trips.
+ */
+export class AzureTtsSocket {
+  constructor({ region, key, format = "raw-24khz-16bit-mono-pcm" }) { Object.assign(this, { region, key, format }); this.sock = null; this.buf = Buffer.alloc(0); this.turn = null; this.configured = false; }
+  async open() {
+    const host = `${this.region}.tts.speech.microsoft.com`;
+    const sock = await connectTunnel(host, 443);
+    await new Promise((r, j) => { sock.once("secureConnect", r); sock.once("error", j); });
+    sock.write(`GET /cognitiveservices/websocket/v1?X-ConnectionId=${uuid()} HTTP/1.1\r\nHost: ${host}\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: ${crypto.randomBytes(16).toString("base64")}\r\nSec-WebSocket-Version: 13\r\nOcp-Apim-Subscription-Key: ${this.key}\r\n\r\n`);
+    await new Promise((resolve, reject) => {
+      let up = false;
+      sock.on("data", (d) => {
+        this.buf = Buffer.concat([this.buf, d]);
+        if (!up) { const e = this.buf.indexOf("\r\n\r\n"); if (e < 0) return; const st = this.buf.slice(0, e).toString().split("\r\n")[0]; if (!/ 101 /.test(st)) return reject(new Error(`upgrade: ${st}`)); up = true; this.buf = this.buf.slice(e + 4); resolve(); }
+        this.pump();
+      });
+      sock.on("error", (e) => { reject(e); this.turn?.reject(e); this.sock = null; });
+      sock.on("close", () => { this.turn?.reject(new Error("socket closed")); this.sock = null; });
+    });
+    this.sock = sock;
+  }
+  pump() {
+    for (;;) {
+      const buf = this.buf;
+      if (buf.length < 2) return;
+      const op = buf[0] & 15; let n = buf[1] & 127, off = 2;
+      if (n === 126) { if (buf.length < 4) return; n = buf.readUInt16BE(2); off = 4; } else if (n === 127) { if (buf.length < 10) return; n = Number(buf.readBigUInt64BE(2)); off = 10; }
+      if (buf.length < off + n) return;
+      const p = buf.slice(off, off + n); this.buf = buf.slice(off + n);
+      const T = this.turn;
+      if (op === 9) { this.sock.write(frame(10, p)); continue; }
+      if (op === 8) { T?.reject(new Error("closed by server")); this.sock?.destroy(); this.sock = null; return; }
+      if (!T) continue;
+      if (op === 1) {
+        const s = p.toString("utf8"), i = s.indexOf("\r\n\r\n"), path = /Path:\s*([^\r\n]+)/i.exec(s.slice(0, i))?.[1]?.trim();
+        if (path === "audio.metadata") for (const m of JSON.parse(s.slice(i + 4)).Metadata || []) { if (m.Type === "Viseme") T.visemes.push({ ms: m.Data.Offset / 1e4, id: m.Data.VisemeId }); else if (m.Type === "WordBoundary") T.words.push({ ms: m.Data.Offset / 1e4, durMs: (m.Data.Duration || 0) / 1e4, text: m.Data.text?.Text ?? "" }); }
+        else if (path === "turn.end") { this.turn = null; T.resolve({ pcm: Buffer.concat(T.audio), visemes: T.visemes, words: T.words, ttfbMs: T.ttfb }); }
+      } else if (op === 2) { const hl = p.readUInt16BE(0); if (/Path:\s*audio/i.test(p.slice(2, 2 + hl).toString())) { const a = p.slice(2 + hl); if (a.length) { if (!T.ttfb) T.ttfb = performance.now() - T.t0; T.audio.push(a); } } }
+    }
+  }
+  async synth(ssml, { meta = true } = {}) {
+    if (!this.sock) { await this.open(); this.configured = false; }
+    if (this.turn) throw new Error("busy");
+    const reqId = uuid();
+    const t0 = performance.now();
+    const pr = new Promise((resolve, reject) => { this.turn = { t0, ttfb: 0, audio: [], visemes: [], words: [], resolve, reject }; });
+    if (!this.configured) { this.sock.write(frame(1, Buffer.from(msg("speech.config", reqId, "application/json", JSON.stringify({ context: { system: { name: "SpeechSDK", version: "1.43.0", build: "JavaScript", lang: "JavaScript" }, os: { platform: "Node", name: "taxila", version: "1" } } }))))); this.configured = true; }
+    this.sock.write(frame(1, Buffer.from(msg("synthesis.context", reqId, "application/json", JSON.stringify({ synthesis: { audio: { metadataOptions: { bookmarkEnabled: false, punctuationBoundaryEnabled: "false", sentenceBoundaryEnabled: "false", sessionEndEnabled: true, visemeEnabled: meta === true || meta === "vis", wordBoundaryEnabled: meta === true || meta === "word" ? "true" : "false" }, outputFormat: this.format }, language: { autoDetection: false } } })))));
+    this.sock.write(frame(1, Buffer.from(msg("ssml", reqId, "application/ssml+xml", ssml))));
+    return pr;
+  }
+  close() { try { this.sock?.write(frame(8, Buffer.alloc(0))); this.sock?.end(); } catch {} this.sock = null; }
+}

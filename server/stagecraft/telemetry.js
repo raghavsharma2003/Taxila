@@ -74,7 +74,7 @@ export function foldArm(lessons) {
     generatedRevealsPer25: per25("generatedReveals"), stageMomentsPer25: per25("stageMoments"), specsLaunchedPer25: per25("specsLaunched"),
     stageActiveShare: mean(lessons.map((l) => l.stageActiveShare)), medianGapBetweenPiecesMs: q(all("gapsMs"), 0.5),
     childInitiatedShare: sum("childInitiated") / Math.max(1, sum("stageMoments")),
-    quota429: sum("quota429"), failovers: sum("failovers"), mountFailures: sum("mountFailures"),
+    quota429: sum("quota429"), failovers: sum("failovers"), mountFailures: sum("mountFailures"), staleStageTurns: sum("staleStageTurns"),
     held: lessons.reduce((m, l) => { for (const [k, v] of Object.entries(l.held)) m[k] = (m[k] ?? 0) + v; return m; }, {}),
   };
 }

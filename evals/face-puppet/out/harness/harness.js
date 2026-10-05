@@ -3322,6 +3322,7 @@ var ot = {
 	lastBig = -Infinity;
 	duplex = !1;
 	calm = !1;
+	current = null;
 	log = [];
 	constructor(e) {
 		this.band = ot[e] ? e : "b2";
@@ -3348,11 +3349,11 @@ var ot = {
 		return [this.emote(n.name, r * n.k, st, `affect:${t.emotion}`)];
 	}
 	emote(e, t, n, r, i) {
-		let a = Math.max(0, Math.min(1, t * ot[this.band]));
-		return this.note(`emote ${e} ${a.toFixed(2)} (${r})`), {
+		let a = r.startsWith("floor:") || r.startsWith("duplex:"), o = Math.max(0, Math.min(1, t * (a ? 1 : ot[this.band])));
+		return this.note(`emote ${e} ${o.toFixed(2)} (${r})`), this.current = e, {
 			op: "emote",
 			name: e,
-			intensity: a,
+			intensity: o,
 			hold: n,
 			variant: i,
 			why: r
@@ -3362,20 +3363,11 @@ var ot = {
 		if (e === this.state) return [];
 		let n = this.state;
 		this.state = e;
-		let r = [];
-		return e === "speaking" ? this.armed ? r.push(...this.fireArmed(t)) : (n === "listening" || n === "thinking") && r.push({
-			op: "release",
-			why: "onset"
-		}) : e === "thinking" ? (r.push({
-			op: "release",
-			why: "thinking: verdict-neutral"
-		}), this.duplex || r.push(this.emote("thinking", .85, 30, "floor:thinking"))) : e === "listening" ? (r.push({
-			op: "release",
-			why: "listening"
-		}), this.duplex || r.push(this.emote("listening", .8, 30, "floor:listening"))) : (n === "listening" || n === "thinking") && r.push({
+		let r = [], i = this.current === "thinking" || this.current === "listening", a = (e) => (this.current = null, {
 			op: "release",
 			why: e
-		}), r;
+		});
+		return e === "speaking" ? this.armed ? r.push(...this.fireArmed(t)) : (n === "listening" || n === "thinking") && r.push(a("onset")) : e === "thinking" ? this.duplex ? this.current && !i && r.push(a("thinking: verdict-neutral")) : r.push(a("thinking: verdict-neutral"), this.emote("thinking", 1, 30, "floor:thinking")) : e === "listening" ? this.duplex ? this.current && !i && r.push(a("listening")) : r.push(a("listening"), this.emote("listening", 1, 30, "floor:listening")) : (n === "listening" || n === "thinking") && r.push(a(e)), r;
 	}
 	pose(e, t) {
 		this.duplex = !0, this.note(`${t.toFixed(2)} pose ${e}`);
@@ -3387,11 +3379,15 @@ var ot = {
 		})), [...n, ...this.poseActs(e)];
 	}
 	poseActs(e) {
+		let t = this.poseActs0(e);
+		return t.some((e) => e.op === "release") && !t.some((e) => e.op === "emote") && (this.current = null), t;
+	}
+	poseActs0(e) {
 		switch (e) {
 			case "listening": return [{
 				op: "release",
 				why: e
-			}, this.emote("listening", .75, 30, "duplex:listening")];
+			}, this.emote("listening", 1, 30, "duplex:listening")];
 			case "listen_lean": return [this.emote("listening", .9, 30, "duplex:listen_lean"), {
 				op: "lean",
 				value: .35,
@@ -3405,7 +3401,7 @@ var ot = {
 			case "thinking": return [{
 				op: "release",
 				why: "thinking: verdict-neutral"
-			}, this.emote("thinking", .85, 30, "duplex:thinking_glance")];
+			}, this.emote("thinking", 1, 30, "duplex:thinking_glance")];
 			case "hold_pose": return [];
 			case "checkin_look": return [{
 				op: "release",
@@ -3561,51 +3557,122 @@ var ot = {
 	.2,
 	.35,
 	0
-], ft = /[टठडढणड़ढ़]/u, pt = /[तथदधन]/u, mt = /व/u, ht = /* @__PURE__ */ new Set(/* @__PURE__ */ "baanta.baant.baantte.baantna.thoda.thodi.thode.dabba.dibba.ghanta.ghante.tukda.tukde.tukdon.ladka.ladki.bada.badi.bade.pedh.ped.kitab.dar.dhoondh.dhundh.pattern.lattoo.chhota.chhoti.chhote.mota.moti.gaadi.ganda.anda.danda.jhanda.pahad.sadak.ude.ud".split("."));
+], ft = /[टठडढण]/u, pt = /[तथदधन]/u, mt = /व/u, ht = {
+	baanta: "DR",
+	baant: "DR",
+	baantte: "DR",
+	baantna: "DRD",
+	thoda: "DR",
+	thodi: "DR",
+	thode: "DR",
+	dabba: "R",
+	dibba: "R",
+	ghanta: "DR",
+	ghante: "DR",
+	tukda: "RR",
+	tukde: "RR",
+	tukdon: "RRD",
+	ladka: "R",
+	ladki: "R",
+	bada: "R",
+	badi: "R",
+	bade: "R",
+	ped: "R",
+	pedh: "R",
+	dar: "R",
+	dhoondh: "DR",
+	dhundh: "DR",
+	pattern: "RD",
+	chhota: "R",
+	chhoti: "R",
+	chhote: "R",
+	mota: "R",
+	moti: "R",
+	gaadi: "R",
+	ganda: "DR",
+	anda: "DR",
+	danda: "RDR",
+	jhanda: "DR",
+	pahad: "R",
+	sadak: "R",
+	ude: "R",
+	ud: "R",
+	tota: "DD"
+};
 function gt(e) {
-	let t = e.normalize("NFC");
-	if (/[ऀ-ॿ]/u.test(t)) {
-		let e = [...t];
-		return {
-			retroflex: e.filter((e) => ft.test(e)).length,
-			dental: e.some((e) => pt.test(e)),
-			va: mt.test(t)
-		};
+	let t = ht[e], n = [];
+	for (let r = 0; r < e.length; r++) {
+		let i = e[r], a = e[r + 1] ?? "";
+		(i === "t" || i === "d" || i === "n") && (i !== "n" || a !== "k" && a !== "g") && ((a === i || a === "h") && r++, n.push(t ? t[n.length] === "R" : !1));
 	}
-	let n = t.toLowerCase().replace(/[^a-z]/g, "");
+	return n;
+}
+function _t(e) {
+	let t = [...e], n = [];
+	for (let e = 0; e < t.length; e++) {
+		let r = t[e];
+		ft.test(r) ? n.push(!0) : (pt.test(r) || r === "ं" && pt.test(t[e + 1] ?? "")) && n.push(!1);
+	}
+	return n;
+}
+function vt(e) {
+	let t = e.normalize("NFC"), n = /[ऀ-ॿ]/u.test(t), r = n ? t : t.toLowerCase().replace(/[^a-z]/g, ""), i = n ? _t(t) : gt(r);
 	return {
-		retroflex: +!!ht.has(n),
-		dental: !0,
-		va: /^v|[aeiou]v/.test(n) && !/ve?$/.test(n)
+		stops: i,
+		retroflex: i.filter(Boolean).length,
+		va: n ? mt.test(t) : /^v|[aeiou]v/.test(r) && !/ve?$/.test(r)
 	};
 }
-function _t(e, t = []) {
-	let n = [], r = t.map((e) => ({
+function yt(e) {
+	let t = [];
+	for (let n of e.normalize("NFC").split(/[\s,.;:!?।"'()\-]+/u)) n && t.push(...vt(n).stops);
+	return t;
+}
+function bt(e, t = [], n) {
+	let r = [], i = t.map((e) => ({
 		...e,
-		f: gt(e.text),
-		curls: 0
-	}));
+		f: vt(e.text),
+		k: 0
+	})), a = !t.length && n ? yt(n) : null;
+	a && a.length !== e.filter((e) => e.id === 19).length && (a = null);
+	let o = 0;
 	for (let t of e) {
-		let e = ut[t.id] ?? ut[0], i = r.find((e) => t.ms >= e.ms - 10 && t.ms < e.ms + e.durMs + 10);
-		i && (t.id === 19 && i.curls < i.f.retroflex ? (e = {
+		if (a && t.id === 19) {
+			let e = a[o++] === !0;
+			r.push({
+				ms: t.ms,
+				id: t.id,
+				target: e ? {
+					v: "viseme_DD",
+					w: 1,
+					tongue: {
+						tongueCurl: .9,
+						tongueTipUp: 0
+					}
+				} : ut[19]
+			});
+			continue;
+		}
+		let e = ut[t.id] ?? ut[0], n = i.find((e) => t.ms >= e.ms - 10 && t.ms < e.ms + e.durMs + 10);
+		n && (t.id === 19 ? n.f.stops[n.k++] === !0 && (e = {
 			v: "viseme_DD",
 			w: 1,
 			tongue: {
 				tongueCurl: .9,
 				tongueTipUp: 0
 			}
-		}, i.curls++) : t.id === 18 && i.f.va && (e = {
+		}) : t.id === 18 && n.f.va && (e = {
 			v: "viseme_FF",
 			w: .6
-		})), n.push({
+		})), r.push({
 			ms: t.ms,
 			id: t.id,
 			target: e
 		});
 	}
-	return n;
+	return r;
 }
-function vt(e, t, n, r = 0) {
+function xt(e, t, n, r = 0) {
 	for (let e in n) delete n[e];
 	let i = r, a = e.length;
 	for (; i < a;) {
@@ -3627,24 +3694,35 @@ function vt(e, t, n, r = 0) {
 	}
 	return n.jawOpen = o * .62, i;
 }
-var yt = class {
+var St = class {
 	parts = [];
 	lead = 50;
 	received = 0;
 	stale = 0;
-	push(e, t, n, r = [], i = performance.now()) {
+	push(e, t, n, r = [], i = performance.now(), a) {
 		if (!n.length) return;
-		let a = _t(n, r), o = t + a[a.length - 1].ms + 200;
-		if (o < i) {
+		let o = this.parts.find((n) => n.part === e && Math.abs(n.playAt - t) < 5), s = o ? [...o.rawV, ...n] : [...n], c = o ? [...o.rawW, ...r] : [...r];
+		s.sort((e, t) => e.ms - t.ms);
+		let l = s.filter((e, t) => t === 0 || e.ms !== s[t - 1].ms || e.id !== s[t - 1].id), u = bt(l, c, a ?? o?.text), d = t + u[u.length - 1].ms + 200;
+		if (d < i) {
 			this.stale++;
 			return;
 		}
-		this.received++, this.parts = this.parts.filter((n) => !(n.part === e && Math.abs(n.playAt - t) < 5)), this.parts.push({
+		this.received++, o ? Object.assign(o, {
+			end: d,
+			track: u,
+			rawV: l,
+			rawW: c,
+			text: a ?? o.text
+		}) : this.parts.push({
 			part: e,
 			playAt: t,
-			end: o,
-			track: a,
-			cursor: 0
+			end: d,
+			track: u,
+			cursor: 0,
+			rawV: l,
+			rawW: c,
+			text: a
 		}), this.parts.sort((e, t) => e.playAt - t.playAt);
 	}
 	cut() {
@@ -3658,29 +3736,29 @@ var yt = class {
 			return !1;
 		}
 		let r = e - n.playAt + this.lead;
-		return n.cursor = vt(n.track, r, t, 0), !0;
+		return n.cursor = xt(n.track, r, t, 0), !0;
 	}
 	get active() {
 		return this.parts.length;
 	}
-}, bt = ["eyeBlinkLeft", "eyeBlinkRight"], xt = .4;
-function St(e) {
-	for (let t of bt) delete e.bs[t];
+}, Ct = ["eyeBlinkLeft", "eyeBlinkRight"], wt = .4;
+function Tt(e) {
+	for (let t of Ct) delete e.bs[t];
 	delete e.pulse;
 	let t = e.bs.cheekSquintLeft ?? 0, n = e.bs.cheekSquintRight ?? 0;
-	Math.abs(t - n) > xt && (t > n ? e.bs.cheekSquintLeft = n + xt : e.bs.cheekSquintRight = t + xt), (e.bs.mouthShrugLower ?? 0) > .3 && (e.bs.mouthShrugLower = 0);
+	Math.abs(t - n) > wt && (t > n ? e.bs.cheekSquintLeft = n + wt : e.bs.cheekSquintRight = t + wt), (e.bs.mouthShrugLower ?? 0) > .3 && (e.bs.mouthShrugLower = 0);
 }
-var Ct = !1;
-function wt() {
-	if (Ct) return;
-	Ct = !0;
+var Et = !1;
+function Dt() {
+	if (Et) return;
+	Et = !0;
 	let e = /* @__PURE__ */ new Set();
-	for (let t of Object.values(G)) e.has(t) || (e.add(t), St(t));
-	for (let t of Object.values(K)) for (let n of t) e.has(n) || (e.add(n), St(n));
+	for (let t of Object.values(G)) e.has(t) || (e.add(t), Tt(t));
+	for (let t of Object.values(K)) for (let n of t) e.has(n) || (e.add(n), Tt(n));
 }
 //#endregion
 //#region src/face-puppet/driver.ts
-var Tt = class {
+var Ot = class {
 	x = 0;
 	v = 0;
 	last = -Infinity;
@@ -3696,14 +3774,14 @@ var Tt = class {
 		}
 		return this.x;
 	}
-}, Et = (e, t, n, r) => e + (1 - Math.exp(-n / r)) * (t - e), Dt = class {
+}, kt = (e, t, n, r) => e + (1 - Math.exp(-n / r)) * (t - e), At = class {
 	policy;
-	visemes = new yt();
+	visemes = new St();
 	behaviour;
 	comp = new Ke(.85);
 	exprs = new it(21);
 	listener = new at(3);
-	nod = new Tt();
+	nod = new Ot();
 	lip = null;
 	lipRate = 0;
 	win = /* @__PURE__ */ new Float32Array(1024);
@@ -3739,7 +3817,7 @@ var Tt = class {
 		}], e / 1e3);
 	}
 	constructor(e) {
-		wt();
+		Dt();
 		let t = [
 			"b1",
 			"b2",
@@ -3830,8 +3908,8 @@ var Tt = class {
 			p[2]
 		];
 		this.exprs.apply(r, i, f, p, m, h);
-		for (let e = 0; e < 3; e++) this.exprHead[e] = Et(this.exprHead[e], p[e] - g[e], i, .12), p[e] = g[e] + this.exprHead[e] * (this.reduced ? .3 : 1);
-		this.exprLean = Et(this.exprLean, this.exprs.lean, i, .15), this.poseLean = Et(this.poseLean, u === "listening" || u === "your_turn" ? this.poseLeanTarget : 0, i, .4);
+		for (let e = 0; e < 3; e++) this.exprHead[e] = kt(this.exprHead[e], p[e] - g[e], i, .12), p[e] = g[e] + this.exprHead[e] * (this.reduced ? .3 : 1);
+		this.exprLean = kt(this.exprLean, this.exprs.lean, i, .15), this.poseLean = kt(this.poseLean, u === "listening" || u === "your_turn" ? this.poseLeanTarget : 0, i, .4);
 		let _ = this.comp.compose(f, h, i), v = a.buf ? "tap" : a.level > 0 ? "level" : "none";
 		if (c) {
 			let e = this.vis.jawOpen;
@@ -3849,25 +3927,25 @@ var Tt = class {
 			workMs: b
 		};
 	}
-}, Ot = /* @__PURE__ */ new Set(), Z = {
+}, jt = /* @__PURE__ */ new Set(), Z = {
 	emit(e) {
-		for (let t of [...Ot]) try {
+		for (let t of [...jt]) try {
 			t(e);
 		} catch (e) {
 			console.warn("face-puppet: a bus listener failed", e);
 		}
 	},
 	on(e) {
-		return Ot.add(e), () => Ot.delete(e);
+		return jt.add(e), () => jt.delete(e);
 	},
 	get listeners() {
-		return Ot.size;
+		return jt.size;
 	}
-}, kt = "/face-puppet/r8/", At = [
+}, Mt = "/face-puppet/r8/", Nt = [
 	251.4 / 255,
 	229.4 / 255,
 	188.6 / 255
-], jt = {
+], Pt = {
 	medium: [
 		60,
 		8,
@@ -3878,7 +3956,7 @@ var Tt = class {
 		70,
 		744
 	]
-}, Mt = {
+}, Ft = {
 	delight: {
 		emotion: "excited",
 		intensity: 2
@@ -3912,34 +3990,34 @@ var Tt = class {
 		emotion: "concerned",
 		intensity: 1
 	}
-}, Nt = /* @__PURE__ */ new Set(["delight", "playful"]);
-function Pt(e, t = "b2") {
+}, It = /* @__PURE__ */ new Set(["delight", "playful"]);
+function Lt(e, t = "b2") {
 	if (!e) return null;
-	let n = Mt[e];
+	let n = Ft[e];
 	if (!n) return null;
 	let r = n.intensity;
-	return t === "b3" && Nt.has(e) && --r, t === "b4" && e !== "gentle_concern" && e !== "calm_steady" && --r, {
+	return t === "b3" && It.has(e) && --r, t === "b4" && e !== "gentle_concern" && e !== "calm_steady" && --r, {
 		emotion: n.emotion,
 		intensity: r >= 2 ? 2 : 1
 	};
 }
-var Ft = /* @__PURE__ */ new Set(), It = {
+var Rt = /* @__PURE__ */ new Set(), zt = {
 	emit(e) {
-		for (let t of [...Ft]) try {
+		for (let t of [...Rt]) try {
 			t(e);
 		} catch (e) {
 			console.warn("face: a cue listener failed", e);
 		}
 	},
 	on(e) {
-		return Ft.add(e), () => Ft.delete(e);
+		return Rt.add(e), () => Rt.delete(e);
 	}
 };
-function Lt(e, t) {
+function Bt(e, t) {
 	let n = e.x + e.w / 2, r = e.y + e.h * .42, i = t.x + t.w / 2, a = t.y + t.h / 2, o = Math.max(80, e.w), s = Math.atan2(i - n, o) * 180 / Math.PI, c = -Math.atan2(a - r, o) * 180 / Math.PI, l = (e, t, n) => Math.max(t, Math.min(n, e));
 	return [l(s, -25, 25), l(c, -25, 20)];
 }
-var Rt = {
+var Vt = {
 	tray: ["[data-testid=\"studio-stage\"]", "[data-testid=\"tray\"]"],
 	board: [
 		"[data-testid=\"studio-stage\"][data-kind=\"whiteboard\"]",
@@ -3948,8 +4026,8 @@ var Rt = {
 		"[data-testid=\"tray\"]"
 	]
 };
-function zt(e, t) {
-	for (let n of Rt[e]) {
+function Ht(e, t) {
+	for (let n of Vt[e]) {
 		let e = t.querySelector(n);
 		if (e && (typeof e.getBoundingClientRect != "function" || e.getBoundingClientRect().width > 0)) return e;
 	}
@@ -3961,7 +4039,7 @@ var Q = (e, t) => {
 	if (!e.length) return 0;
 	let n = [...e].sort((e, t) => e - t);
 	return n[Math.min(n.length - 1, Math.floor(t * n.length))];
-}, Bt = class {
+}, Ut = class {
 	canvas;
 	driver;
 	host;
@@ -3976,6 +4054,7 @@ var Q = (e, t) => {
 	dpr;
 	fpsCap = 60;
 	curFps = 60;
+	strikes = 0;
 	lastDraw = 0;
 	lastNow = 0;
 	work = [];
@@ -3990,7 +4069,7 @@ var Q = (e, t) => {
 	timers = /* @__PURE__ */ new Set();
 	t0 = performance.now();
 	constructor(e, t) {
-		this.host = e, this.o = t, this.dpr = Math.min(2, typeof devicePixelRatio == "number" ? devicePixelRatio : 1), this.driver = new Dt({
+		this.host = e, this.o = t, this.dpr = Math.min(2, typeof devicePixelRatio == "number" ? devicePixelRatio : 1), this.driver = new At({
 			band: t.band,
 			seed: t.seed,
 			reducedMotion: t.reducedMotion,
@@ -4008,11 +4087,11 @@ var Q = (e, t) => {
 		let e = performance.now();
 		if (typeof WebGL2RenderingContext > "u") throw Error("no WebGL2");
 		this.host.appendChild(this.canvas);
-		let t = [...jt[this.o.framing ?? "medium"]], n = he.load(this.canvas, this.o.base ?? kt, {
+		let t = [...Pt[this.o.framing ?? "medium"]], n = he.load(this.canvas, this.o.base ?? Mt, {
 			ext: "webp",
 			dpr: this.dpr,
 			view: t,
-			clear: At,
+			clear: Nt,
 			reducedMotion: this.o.reducedMotion
 		}), r = new Promise((e, t) => {
 			let n = window.setTimeout(() => t(/* @__PURE__ */ Error("puppet load timeout")), this.o.loadTimeoutMs ?? 8e3);
@@ -4030,26 +4109,26 @@ var Q = (e, t) => {
 	subscribe() {
 		this.offs.push(Z.on((e) => {
 			let t = (this.o.now ?? (() => performance.now()))();
-			if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], t);
+			if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], t, e.text);
 			else if (e.kind === "cut") this.driver.cut();
 			else if (e.kind === "duplex") {
 				let n = e.cue;
 				n.kind === "pose" ? this.driver.pose(n.pose, t) : n.kind === "nod" && this.driver.nodCue(n.peakDeg, t);
 			}
-		})), this.offs.push(It.on((e) => this.onCue(e)));
+		})), this.offs.push(zt.on((e) => this.onCue(e)));
 	}
 	onCue(e) {
 		let t = (this.o.now ?? (() => performance.now()))();
 		if (e.kind === "affect") {
-			let n = Pt(e.display, this.o.band);
+			let n = Lt(e.display, this.o.band);
 			n && this.driver.affect(n.emotion, n.intensity, t);
 		} else if (e.kind === "gaze") {
 			if (e.target === "child") return;
-			let t = zt(e.target, document);
+			let t = Ht(e.target, document);
 			if (!t) return;
 			let n = this.host.getBoundingClientRect(), r = t.getBoundingClientRect();
 			if (!n.width || !r.width) return;
-			let [i, a] = Lt({
+			let [i, a] = Bt({
 				x: n.left,
 				y: n.top,
 				w: n.width,
@@ -4122,20 +4201,28 @@ var Q = (e, t) => {
 	govern(e) {
 		if (this.work.length < 90 || e - this.lastStep < 2e3) return;
 		let t = this.o.budgetMs ?? 8, n = Q(this.work, .95);
-		if (n <= (this.fpsCap < 60 ? t * 2.5 : t)) return;
-		this.lastStep = e, this.work.length = 0, this.rigMs.length = 0;
+		if (n <= (this.fpsCap >= 60 ? t : this.fpsCap >= 30 ? t * 2.5 : t * 3.75)) {
+			this.strikes = 0;
+			return;
+		}
+		if (++this.strikes < 2) {
+			this.work.length = 0, this.rigMs.length = 0;
+			return;
+		}
+		this.strikes = 0, this.lastStep = e, this.work.length = 0, this.rigMs.length = 0;
 		let r;
 		if (this.dpr > 1.5) this.dpr = 1.5, r = "dpr 1.5";
 		else if (this.dpr > 1) this.dpr = 1, r = "dpr 1";
 		else if (this.fpsCap > 30) this.fpsCap = 30, r = "30 fps";
-		else if (n > t * 3.5) {
+		else if (this.fpsCap > 20) this.fpsCap = 20, r = "20 fps";
+		else if (n > t * 5.6) {
 			r = "floor", this.emit({
 				type: "governor",
 				step: r,
 				workP95: n
 			}), this.emit({
 				type: "fallback",
-				reason: `slow: work p95 ${n.toFixed(1)} ms at 30 fps, dpr 1`
+				reason: `slow: work p95 ${n.toFixed(1)} ms at 20 fps, dpr 1`
 			}), this.stop();
 			return;
 		} else return;
@@ -4163,12 +4250,12 @@ var Q = (e, t) => {
 	onRestored = () => {
 		if (this.disposed || this.losses > 1) return;
 		this.rig = null;
-		let e = [...jt[this.o.framing ?? "medium"]];
-		he.load(this.canvas, this.o.base ?? kt, {
+		let e = [...Pt[this.o.framing ?? "medium"]];
+		he.load(this.canvas, this.o.base ?? Mt, {
 			ext: "webp",
 			dpr: this.dpr,
 			view: e,
-			clear: At,
+			clear: Nt,
 			reducedMotion: this.o.reducedMotion
 		}).then((e) => {
 			if (this.disposed) return e.dispose();
@@ -4214,8 +4301,8 @@ var Q = (e, t) => {
 		for (let e of this.timers) window.clearTimeout(e);
 		this.timers.clear(), this.tap.dispose(), this.canvas.removeEventListener("webglcontextlost", this.onLost), this.canvas.removeEventListener("webglcontextrestored", this.onRestored), this.rig?.dispose(), this.rig = null, this.canvas.remove();
 	}
-}, $ = new URLSearchParams(location.search), Vt = $.get("mode") || "rt", Ht = +($.get("px") || 720);
-async function Ut(e) {
+}, $ = new URLSearchParams(location.search), Wt = $.get("mode") || "rt", Gt = +($.get("px") || 720);
+async function Kt(e) {
 	let [t, n] = await Promise.all([fetch(`/diya/${e}.pcm`).then((e) => e.arrayBuffer()), fetch(`/diya/${e}.json`).then((e) => e.json())]), r = new Int16Array(t), i = new Float32Array(r.length);
 	for (let e = 0; e < r.length; e++) i[e] = r[e] / 32768;
 	return {
@@ -4223,12 +4310,12 @@ async function Ut(e) {
 		meta: n
 	};
 }
-function Wt() {
+function qt() {
 	let e = document.createElement("div");
-	return e.id = "host", e.style.cssText = `position:relative;width:${Ht}px;height:${Ht}px;overflow:hidden;background:rgb(251,229,189)`, document.body.appendChild(e), e;
+	return e.id = "host", e.style.cssText = `position:relative;width:${Gt}px;height:${Gt}px;overflow:hidden;background:rgb(251,229,189)`, document.body.appendChild(e), e;
 }
-async function Gt() {
-	let e = Wt(), t = new AudioContext({ sampleRate: 48e3 }), n = t.createAnalyser();
+async function Jt() {
+	let e = qt(), t = new AudioContext({ sampleRate: 48e3 }), n = t.createAnalyser();
 	n.fftSize = 2048, n.connect(t.destination);
 	let r = {
 		get value() {
@@ -4237,7 +4324,7 @@ async function Gt() {
 		onTap(e) {
 			return e(n), () => e(null);
 		}
-	}, i = [], a = new Bt(e, {
+	}, i = [], a = new Ut(e, {
 		band: "b2",
 		sources: [r],
 		budgetMs: $.get("budget") ? +$.get("budget") : void 0,
@@ -4255,7 +4342,7 @@ async function Gt() {
 		stats: i
 	};
 	for (let e of o) {
-		let r = await Ut(e), i = t.createBuffer(1, r.pcm.length, 24e3);
+		let r = await Kt(e), i = t.createBuffer(1, r.pcm.length, 24e3);
 		i.copyToChannel(r.pcm, 0);
 		let o = t.createBufferSource();
 		o.buffer = i, o.connect(n), a.set({ status: "speaking" });
@@ -4287,8 +4374,8 @@ async function Gt() {
 	}
 	window.H.done = !0;
 }
-async function Kt() {
-	let e = Wt(), t = null, n = 0, r = 0, i = {
+async function Yt() {
+	let e = qt(), t = null, n = 0, r = 0, i = {
 		fftSize: 2048,
 		context: { sampleRate: 24e3 },
 		getFloatTimeDomainData(e) {
@@ -4307,7 +4394,7 @@ async function Kt() {
 		},
 		connect() {},
 		disconnect() {}
-	}, o = new Bt(e, {
+	}, o = new Ut(e, {
 		band: "b2",
 		sources: [{
 			value: 0,
@@ -4323,7 +4410,7 @@ async function Kt() {
 		ready: !0,
 		stage: o,
 		async line(e, r) {
-			return t = await Ut(e), n = r, Z.emit({
+			return t = await Kt(e), n = r, Z.emit({
 				kind: "visemes",
 				part: 0,
 				playAt: r,
@@ -4338,7 +4425,7 @@ async function Kt() {
 			o.set({ childLevel: e });
 		},
 		affect(e) {
-			It.emit({
+			zt.emit({
 				kind: "affect",
 				display: e,
 				seq: Math.random()
@@ -4372,6 +4459,20 @@ async function Kt() {
 		shot(e, t = "image/png") {
 			return s.at(e), o.tick(r + .001, !0), o.canvas.toDataURL(t, .92);
 		},
+		rawRest() {
+			let e = o.rig;
+			e.view = [
+				0,
+				0,
+				1024
+			], e.life.still = !0;
+			for (let t = 0; t < 6; t++) e.clock = 1e3 + t / 60, e.resetPhysics(), e.frame({}, [
+				0,
+				0,
+				0
+			], [0, 0], 0, 0);
+			return o.canvas.toDataURL("image/png");
+		},
 		emote(e, t) {
 			o.driver.evalEmote(e, r, t);
 		},
@@ -4387,10 +4488,10 @@ async function Kt() {
 	};
 	window.H = s;
 }
-async function qt() {
-	await Gt();
+async function Xt() {
+	await Jt();
 }
-(Vt === "capture" ? Kt() : Vt === "idle" ? qt() : Gt()).catch((e) => {
+(Wt === "capture" ? Yt() : Wt === "idle" ? Xt() : Jt()).catch((e) => {
 	window.H = { error: String(e && e.stack || e) }, document.body.insertAdjacentHTML("beforeend", `<pre style="color:red">${String(e)}</pre>`);
 });
 //#endregion

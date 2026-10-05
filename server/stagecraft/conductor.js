@@ -550,6 +550,9 @@ function decide(S, point, C, eff) {
   if (S.meta.control === "off") return hold("parent_off");
   const want = point.want;
   if (!want) return hold("no_want");
+  // REVIEW 2026-10-05: a want for another skill (an offer accepted across a topic change, a request from the old topic)
+  // would be built and shown against THIS skill's key and pass isFresh; her line would name the old idea. Never.
+  if (S.meta.current && parseFamily(want.family).skillId !== S.meta.current.skillId) return hold("stale_want");
   if (S.meta.signal?.stepState === "stuck_productive" && !want.childRequested && !want.steer) return hold("stuck_productive");
   if (want.steer) {
     row(S, eff, "point", { family: want.family, servedRung: "steer", readyWhenNeeded: true, origin: want.origin ?? "board_state", childRequested: false });

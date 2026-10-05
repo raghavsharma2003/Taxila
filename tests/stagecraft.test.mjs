@@ -86,7 +86,7 @@ test("quota: buckets, 429 cool-down, failover to the next link, last link is no 
   const cfg = { ...DEFAULT_CONFIG };
   assert.equal(pickDeployment(q, "spec", cfg, 0), "taxila-fast-bg", "an absent deployment (taxila-stagecraft) is skipped");
   onQuota(q, { deployment: "taxila-fast-bg", status: 429, at: 0 }, cfg);
-  assert.equal(pickDeployment(q, "spec", cfg, 1000), "taxila-gpt6-luna");
+  assert.equal(pickDeployment(q, "spec", cfg, 1000), null, "no failover onto a live-path lane (REVIEW 2026-10-05): do not build");
   assert.equal(pickDeployment(q, "spec", cfg, 2500), "taxila-fast-bg", "2 s back-off then back");
   const img = {};
   for (let i = 0; i < 3; i++) take(img, "taxila-image25-flare", cfg, 0);

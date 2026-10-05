@@ -1,0 +1,23 @@
+{
+  "same": true,
+  "score": 3.7,
+  "expressions": {
+    "1,1": "reads as calm rest/neutral smile",
+    "1,2": "reads as talking between syllables",
+    "1,3": "reads as thinking (gaze directed away)",
+    "2,1": "reads as delight/joyful smile",
+    "2,2": "reads as concern/worry",
+    "2,3": "reads as surprise",
+    "3,1": "reads as playful",
+    "3,2": "reads as concern (second take)",
+    "3,3": "reads as head turned with mild smile"
+  },
+  "defects": [
+    "1,3 (eyes/pupils): insufficient upward gaze shift, reads closer to distracted side-eye than thinking",
+    "2,2 (eyebrows and mouth): brow angle and lip tension too severe, reads as irritation/anger instead of soft concern",
+    "2,1 (smile shape): mouth too wide and toothy for premium soft Memoji style, breaks character consistency with REF",
+    "3,3 (hair and neck): zero perspective adjustment or squash on hair volume and neck for the 20deg turn, looks like a static overlay",
+    "2,3 and 3,2 (eye highlights): specular dots on eyes vary wildly in position/intensity across frames, destroying puppet cohesion"
+  ],
+  "top_fix": "Rig consistent 2D-puppet eye highlights, brow arcs, and hair deformation to match REF softness instead of unique 3D renders per pose"
+}

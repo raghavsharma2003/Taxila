@@ -12,7 +12,7 @@ export interface VisemeEvent { ms: number; id: number }
 export interface WordEvent { ms: number; durMs: number; text: string }
 
 export type PuppetEvent =
-  | { kind: "visemes"; part: number; playAt: number; visemes: VisemeEvent[]; words?: WordEvent[]; reqId?: string }
+  | { kind: "visemes"; part: number; playAt: number; visemes: VisemeEvent[]; words?: WordEvent[]; text?: string; reqId?: string }
   | { kind: "cut"; at: number }
   | { kind: "duplex"; cue: DuplexCue; at: number };
 

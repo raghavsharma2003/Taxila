@@ -923,9 +923,12 @@ export class Puppet2DRig {
         x += fo[0];
         y += fo[1];
       } else if (L.kind === "brow") {
-        const c = L.colOf[i], v = y - L.cyc[c];
-        x += L.cdx[c] - v * L.cs[c];
-        y += L.cdy[c] + v * (L.cc[c] - 1);
+        // r9: the rotation's lever arm is clamped to 13 px (the brow body plus centreline error): the rect's transparent rows beyond it
+        // translate rigidly. Under a tight arch (r9 i4's thinking peak) rows 15-25 px below the centreline rotated past each
+        // other, folded, and smeared an edge texel into 1 px specks under the brow
+        const c = L.colOf[i], v = y - L.cyc[c], vr = v > 13 ? 13 : v < -13 ? -13 : v;
+        x += L.cdx[c] - vr * L.cs[c];
+        y += L.cdy[c] + vr * (L.cc[c] - 1);
       } else if (isLock) {
         const v = clamp01((y - L.y0) / L.len);
         const w = Math.pow(v, 1.4);
@@ -969,7 +972,7 @@ export class Puppet2DRig {
     // r4 (judge r3 fix 4): ~35% more range: surprise / concern read as 'mild' at thumbnail size
     // r5: + the stressed-syllable brow flick (life.js), a few px, inner end a touch more
     const fl = this.life ? this.life.flick : 0;
-    return { lift: 14 * wide + 12 * outer + 5 * inner + 4.2 * fl, inner: 53 * inner + 3 * fl, arch: 38 * outer, knit: 21 * down, peak: 9 * asym * outer };
+    return { lift: 14 * wide + 12 * outer + 5 * inner + 4.2 * fl, inner: 53 * inner + 3 * fl, arch: 38 * outer, knit: 21 * down, peak: 6.5 * asym * outer };
   }
 
   browOffset(s, x, y) {
@@ -983,7 +986,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.34) ** 2)) + c.knit * (1 - 0.6 * ui);
+      return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.45) ** 2)) + c.knit * (1 - 0.6 * ui);
     };
     const dy = dyAt(x);
     // r9: beyond either end the ribbon continues RIGIDLY at the end's slope (the clamped ui made the slope 0 there, so the
@@ -1003,7 +1006,7 @@ export class Puppet2DRig {
     const dyAt = (xx) => {
       const ui = s === "L" ? clamp01((x1 - xx) / (x1 - x0)) : clamp01((xx - x0) / (x1 - x0));
       const peak = Math.exp(-(((ui - 0.62) / 0.3) ** 2));
-      return dipA - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.34) ** 2)) + c.knit * (1 - 0.6 * ui);
+      return dipA - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.45) ** 2)) + c.knit * (1 - 0.6 * ui);
     };
     const dxT = (s === "L" ? 1 : -1) * (c.knit * 0.3 + c.inner * 0.05);
     for (let k = 0; k < L.colX.length; k++) {

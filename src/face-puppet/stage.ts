@@ -59,6 +59,7 @@ export class PuppetStage {
   private dpr: number;
   private fpsCap = 60;
   private curFps = 60;
+  private strikes = 0;
   private lastDraw = 0;
   private lastNow = 0;
   private work: number[] = [];
@@ -115,7 +116,7 @@ export class PuppetStage {
   private subscribe(): void {
     this.offs.push(puppetBus.on((e) => {
       const now = (this.o.now ?? (() => performance.now()))();
-      if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], now);
+      if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], now, e.text);
       else if (e.kind === "cut") this.driver.cut();
       else if (e.kind === "duplex") {
         const c = e.cue;
@@ -214,10 +215,15 @@ export class PuppetStage {
 
   private govern(now: number): void {
     if (this.work.length < 90 || now - this.lastStep < 2000) return;
-    // budget per frame interval: 8 ms of JS at 60 fps (half the frame left for GL, compositing and the page), 20 ms at 30
+    // budget per frame interval: 8 ms of JS at 60 fps (half the frame left for GL, compositing and the page), 20 ms at
+    // 30 fps, 30 ms at 20 fps. A step needs TWO consecutive over-budget windows (~4 s sustained): wall-clock work includes
+    // preemption, and one busy moment on the phone must not cost the child the smooth face for the rest of the page.
     const budget = this.o.budgetMs ?? 8;
     const p95 = pct(this.work, 0.95);
-    if (p95 <= (this.fpsCap < 60 ? budget * 2.5 : budget)) return;
+    const limit = this.fpsCap >= 60 ? budget : this.fpsCap >= 30 ? budget * 2.5 : budget * 3.75;
+    if (p95 <= limit) { this.strikes = 0; return; }
+    if (++this.strikes < 2) { this.work.length = 0; this.rigMs.length = 0; return; }
+    this.strikes = 0;
     this.lastStep = now;
     this.work.length = 0;
     this.rigMs.length = 0;
@@ -225,8 +231,9 @@ export class PuppetStage {
     if (this.dpr > 1.5) { this.dpr = 1.5; step = "dpr 1.5"; }
     else if (this.dpr > 1) { this.dpr = 1; step = "dpr 1"; }
     else if (this.fpsCap > 30) { this.fpsCap = 30; step = "30 fps"; }
-    else if (p95 > budget * 3.5) { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 30 fps, dpr 1` }); this.stop(); return; }
-    else return; // at the 30 fps / dpr 1 floor and still inside a 30 fps frame: hold
+    else if (this.fpsCap > 20) { this.fpsCap = 20; step = "20 fps"; }
+    else if (p95 > budget * 5.6) { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 20 fps, dpr 1` }); this.stop(); return; }
+    else return; // at the 20 fps / dpr 1 floor and still inside a 20 fps frame: hold
     this.emit({ type: "governor", step, workP95: p95 });
   }
 

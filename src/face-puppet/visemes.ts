@@ -46,25 +46,65 @@ export const AZURE_TO_CONTRACT: readonly MouthTarget[] = [
 /** Mouth openness per Azure id, 0..1 (the eval's E1 estimator and the jaw drive use the same table). */
 export const OPENNESS: readonly number[] = [0, 0.6, 1, 0.8, 0.6, 0.45, 0.35, 0.3, 0.7, 0.9, 0.75, 0.9, 0.4, 0.35, 0.3, 0.15, 0.2, 0.2, 0.1, 0.2, 0.35, 0];
 
-const RETRO_DEV = /[टठडढणड़ढ़]/u;
+// NFC keeps ड़ / ढ़ decomposed (ड / ढ + nukta U+093C): the base letter is matched, the nukta is never a stop
+const RETRO_DEV = /[टठडढण]/u;
 const DENTAL_DEV = /[तथदधन]/u;
 const VA_DEV = /व/u;
-/** Roman Hinglish words whose t/d is retroflex (ट/ड) in common school speech. Small, honest list: a word not here keeps
- *  the dental shape, which is the commoner Hindi stop and the safe default (a curl on a dental reads wrong). */
-const RETRO_ROMAN = new Set(["baanta", "baant", "baantte", "baantna", "thoda", "thodi", "thode", "dabba", "dibba", "ghanta", "ghante", "tukda", "tukde", "tukdon", "ladka", "ladki", "bada", "badi", "bade", "pedh", "ped", "kitab", "dar", "dhoondh", "dhundh", "pattern", "lattoo", "chhota", "chhoti", "chhote", "mota", "moti", "gaadi", "ganda", "anda", "danda", "jhanda", "pahad", "sadak", "ude", "ud"]);
+/** Roman Hinglish words with a retroflex (ट/ड) stop in common school speech, and WHICH of their t/d/n stops it is
+ *  ("R" retroflex, "D" dental, one letter per stop in reading order; th/dh and geminates are one stop, n before k/g is
+ *  not a stop). Small, honest list: a word not here keeps the dental shape, the commoner Hindi stop and the safe default. */
+const RETRO_ROMAN: Record<string, string> = {
+  baanta: "DR", baant: "DR", baantte: "DR", baantna: "DRD", thoda: "DR", thodi: "DR", thode: "DR", dabba: "R", dibba: "R",
+  ghanta: "DR", ghante: "DR", tukda: "RR", tukde: "RR", tukdon: "RRD", ladka: "R", ladki: "R", bada: "R", badi: "R", bade: "R",
+  ped: "R", pedh: "R", dar: "R", dhoondh: "DR", dhundh: "DR", pattern: "RD", chhota: "R", chhoti: "R", chhote: "R", mota: "R",
+  moti: "R", gaadi: "R", ganda: "DR", anda: "DR", danda: "RDR", jhanda: "DR", pahad: "R", sadak: "R", ude: "R", ud: "R", tota: "DD",
+};
 
-/** Per-word hints from the word text (Devanagari or Roman): how its id-19 / id-18 visemes should be drawn. */
-export function wordFlags(text: string): { retroflex: number; dental: boolean; va: boolean } {
-  const w = text.normalize("NFC");
-  if (/[ऀ-ॿ]/u.test(w)) {
-    // count retroflex letters so only that many id-19 events of the word curl (in order of appearance)
-    // only the word's retroflex letters curl; its dentals keep the tip-up (order is not tracked: a word mixing both,
-    // e.g. ठंडा, curls its first N stops, an accepted approximation logged in the V4 report)
-    const chars = [...w];
-    return { retroflex: chars.filter((c) => RETRO_DEV.test(c)).length, dental: chars.some((c) => DENTAL_DEV.test(c)), va: VA_DEV.test(w) };
+/** The t/d/n stops of one Roman word in reading order, with their retroflex flags (lexicon, else all dental). */
+function romanStops(w: string): boolean[] {
+  const pat = RETRO_ROMAN[w];
+  const out: boolean[] = [];
+  for (let i = 0; i < w.length; i++) {
+    const c = w[i], n = w[i + 1] ?? "";
+    if (c !== "t" && c !== "d" && c !== "n") continue;
+    if (c === "n" && (n === "k" || n === "g")) continue;      // ŋ: a velar, Azure id 20
+    if (n === c || n === "h") i++;                              // a geminate, th, dh: one stop
+    out.push(pat ? pat[out.length] === "R" : false);
   }
-  const r = w.toLowerCase().replace(/[^a-z]/g, "");
-  return { retroflex: RETRO_ROMAN.has(r) ? 1 : 0, dental: true, va: /^v|[aeiou]v/.test(r) && !/ve?$/.test(r) };
+  return out;
+}
+
+/** The t/d/n stops of one Devanagari word in reading order (anusvara before a dental is an n stop). */
+function devStops(w: string): boolean[] {
+  const ch = [...w], out: boolean[] = [];
+  for (let i = 0; i < ch.length; i++) {
+    const c = ch[i];
+    if (RETRO_DEV.test(c)) out.push(true);
+    else if (DENTAL_DEV.test(c)) out.push(false);
+    else if (c === "ं" && DENTAL_DEV.test(ch[i + 1] ?? "")) out.push(false);
+  }
+  return out;
+}
+
+/** Per-word hints from the word text: its stops' retroflex pattern in order, and whether a v is the light व. */
+export function wordFlags(text: string): { stops: boolean[]; retroflex: number; va: boolean } {
+  const w = text.normalize("NFC");
+  const dev = /[ऀ-ॿ]/u.test(w);
+  const r = dev ? w : w.toLowerCase().replace(/[^a-z]/g, "");
+  const stops = dev ? devStops(w) : romanStops(r);
+  return { stops, retroflex: stops.filter(Boolean).length, va: dev ? VA_DEV.test(w) : /^v|[aeiou]v/.test(r) && !/ve?$/.test(r) };
+}
+
+/**
+ * The tongue flag of every alveolar/dental/retroflex stop the TEXT predicts, in reading order (true = retroflex curl).
+ * Used when a part came without word boundaries: Azure's word events cost ~480 ms of first audio together with visemes
+ * (evals/face-puppet/out/ttfb-warm.json), so the first part of a reply asks for visemes only; the list is applied only
+ * when its length equals Azure's id-19 count (resolveVisemes). Accuracy: evals/face-puppet/retro-align.mjs.
+ */
+export function stopFlagsFromText(text: string): boolean[] {
+  const out: boolean[] = [];
+  for (const raw of text.normalize("NFC").split(/[\s,.;:!?।"'()\-]+/u)) if (raw) out.push(...wordFlags(raw).stops);
+  return out;
 }
 
 /** One timed mouth event, ms from the part's first sample. */
@@ -74,18 +114,28 @@ export interface TimedViseme { ms: number; id: number; target: MouthTarget }
  * Resolve a part's raw Azure events into timed mouth targets, applying the word-text Hindi rules. Words are matched to
  * visemes by time (a viseme belongs to the word whose [ms, ms + durMs) holds it).
  */
-export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = []): TimedViseme[] {
+export function resolveVisemes(visemes: ReadonlyArray<{ ms: number; id: number }>, words: ReadonlyArray<{ ms: number; durMs: number; text: string }> = [], text?: string): TimedViseme[] {
   const out: TimedViseme[] = [];
-  const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), curls: 0 }));
+  const flags = words.map((w) => ({ ...w, f: wordFlags(w.text), k: 0 }));
+  // no word events: the text's stop list, consumed in order by the id-19 events, ONLY when its length equals Azure's id-19
+  // count (else the order cannot be trusted: on the battery a blind mapping put 7 curls on dentals for 4 right ones,
+  // evals/face-puppet/out/retro-align.json). A refused mapping draws every stop as the dental tip-up (the commoner stop).
+  let seq = !words.length && text ? stopFlagsFromText(text) : null;
+  if (seq && seq.length !== visemes.filter((v) => v.id === 19).length) seq = null;
+  let k19 = 0;
   for (const v of visemes) {
+    if (seq && v.id === 19) {
+      const curl = seq[k19++] === true;
+      out.push({ ms: v.ms, id: v.id, target: curl ? { v: "viseme_DD", w: 1, tongue: { tongueCurl: 0.9, tongueTipUp: 0 } } : AZURE_TO_CONTRACT[19] });
+      continue;
+    }
     const base = AZURE_TO_CONTRACT[v.id] ?? AZURE_TO_CONTRACT[0];
     let target: MouthTarget = base;
     const w = flags.find((x) => v.ms >= x.ms - 10 && v.ms < x.ms + x.durMs + 10);
     if (w) {
-      if (v.id === 19 && w.curls < w.f.retroflex) {
-        // the first N stops of a retroflex word curl; the curl replaces the tip-up (the tip is back, not at the teeth)
-        target = { v: "viseme_DD", w: 1, tongue: { tongueCurl: 0.9, tongueTipUp: 0 } };
-        w.curls++;
+      if (v.id === 19) {
+        // the word's k-th stop takes the k-th letter's place: retroflex curls (the tip is back, not at the teeth)
+        if (w.f.stops[w.k++] === true) target = { v: "viseme_DD", w: 1, tongue: { tongueCurl: 0.9, tongueTipUp: 0 } };
       } else if (v.id === 18 && w.f.va) target = { v: "viseme_FF", w: 0.6 };
     }
     out.push({ ms: v.ms, id: v.id, target });

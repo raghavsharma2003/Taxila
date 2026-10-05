@@ -133,4 +133,10 @@ export class RoundFlow {
     }
   }
 }
+/** The host's task pill animates on every call, so per-frame callers must dedupe: this returns a setter that only
+ *  forwards a CHANGED pill. */
+export function taskPill(api: EngineApi): (step: string, goal: string, mode?: "done" | "warn" | null) => void {
+  let last = "";
+  return (step, goal, mode) => { const k = `${step}|${goal}|${mode ?? ""}`; if (k === last) return; last = k; api.task(step, goal, mode); };
+}
 export const clampX = (x: number, w = 0) => clamp(x, 70 + w / 2, W - 70 - w / 2);

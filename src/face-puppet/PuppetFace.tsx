@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import { TutorFace, faceTutor } from "../avatar/TutorFace.tsx";
 import { p as copy } from "../avatar/picker/copy.ts";
-import type { FloorStatus } from "../avatar/behaviour.ts";
+import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
 import type { TapSource } from "../avatar/tap.ts";
 import { puppetPoster } from "./assets.ts";
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
@@ -26,6 +26,9 @@ export interface PuppetFaceProps {
   /** Poster only (cards, several faces on one screen): no WebGL context. */
   still?: boolean;
   lang?: string;
+  /** A Director affect window (TutorFace's `affect` prop: ReactionGate-gated upstream), armed for her next onset. */
+  affect?: Emotion | null;
+  gentle?: boolean;
   className?: string;
   onEvent?: (e: PuppetStageEvent) => void;
 }
@@ -97,13 +100,17 @@ export function PuppetFace(p: PuppetFaceProps) {
   }, [p.still, tutor.id, p.framing, p.teacher, phase === "fallback"]);
 
   useEffect(() => {
-    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion });
-  }, [p.status, p.reducedMotion]);
+    stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
+  }, [p.status, p.reducedMotion, p.gentle]);
+
+  useEffect(() => {
+    if (p.affect) stage.current?.driver.affect(p.affect, 1, performance.now());
+  }, [p.affect]);
 
   if (phase === "fallback" && !p.still) {
     return (
       <TutorFace tutorId={p.tutorId} band={p.band} status={p.status} teacher={p.teacher} mic={p.mic} reducedMotion={p.reducedMotion}
-        framing={p.framing} lang={p.lang} className={p.className} />
+        gentle={p.gentle} affect={p.affect ?? null} framing={p.framing} lang={p.lang} className={p.className} />
     );
   }
   return (

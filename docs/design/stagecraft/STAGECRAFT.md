@@ -1,6 +1,6 @@
 # STAGECRAFT: the speculative content conductor
 
-2026-10-05 · architecture · status: **design, not built**. Types: `shared/stagecraft.ts`. Inputs:
+2026-10-05 · architecture · status: **built in new paths and measured in simulation + a small real arm (§12); patches to existing files written, not applied**. Types: `shared/stagecraft.ts`. Inputs:
 `STUDY-PRODUCTS.md` (Study A) and `STUDY-RESEARCH.md` (Study B). The work is built on the duplex v2 engine
 (`docs/research/duplex/ARCHITECTURE.md`), STUDIO-V2, DESIGN-V3 §6, LIVE-STUDIO and Wave 2 Studio
 (`server/studio/**`). No existing file was edited, nothing was committed, and nothing was spent on Azure. Every change
@@ -643,3 +643,93 @@ and log, never reveal) → E-ST5/E-ST6 → `stagecraft=on` → E-ST7.
 | speculation influences the choice (non-lossless drift) | the E-ST1 shadow arm; the kernel API has no portfolio input |
 | a safety turn while a race is mid-flight | the quarantine aborts it; a late result lands as `discarded(safety)` |
 | the pool grows without bound in a long lesson | the hard bounds in §3.1 + `stale_age` → library |
+
+---
+
+## 12. Built and measured (2026-10-05)
+
+### 12.1 What exists
+
+The code exists in new paths. Patches to existing files exist but are not applied, and nothing is committed.
+
+| path | what |
+|---|---|
+| `server/stagecraft/conductor.js` | `step()`: the pure reducer (portfolio, invalidation, scheduler, quota, reveal policy) |
+| `server/stagecraft/policy.js` | `wantAt()`: the code policy's want (portfolio-free) |
+| `server/stagecraft/sources.js` | the five source adapters and the stage request lexicon |
+| `server/stagecraft/score.js`, `quota.js`, `catalog.js`, `config.js` | scoring, buckets and failover, admissibility, constants |
+| `server/stagecraft/builders.js` | production rung builders: engine default via `validateSpec`; generated spec; image (needs injected OCR and Content Safety checkers, otherwise never ready); live via `router.decide` + `buildRace` + `revealable` |
+| `server/stagecraft/host.js` | per-lesson runner, `STAGECRAFT=off\|shadow\|on` |
+| `server/stagecraft/adapters.js` | duplex `BuildIntents` launcher, safety wrap, signals, W2 rows, the kernel's `revealPoint` |
+| `server/stagecraft/seam-bridge.js` | what patch P3 adds to the seam |
+| `server/stagecraft/kernel-point.js` | P4's turn-state → `RevealPoint` |
+| `server/stagecraft/telemetry.js` | the scorecard fold |
+| `src/stagecraft/stage.ts`, `reveal.ts`, `controller.ts`, `StagecraftRenderer.tsx` | device stage: never empty, never loading, crossfade after first paint, board twin on failure, clause-timed cue |
+| `evals/stagecraft/scripts.mjs`, `sim.mjs`, `run.mjs`, `real-arm.mjs` | E-ST1 to E-ST4 and E-ST6 |
+| `tests/stagecraft*.test.mjs` | E-ST0: 31 tests, including 10,000 random input streams and 5,000 stage event streams |
+| `docs/design/stagecraft/patches/` | P1, P3, P3b, P4, P5, P6/P8, P9, P10 as `git apply --check`-clean diffs; P2 and P7 as snippets; `CONTEXT-WRITEUP.md` |
+
+### 12.2 Measured table (E-ST1, 240 scripted lessons per arm, `evals/stagecraft/results/sim-2026-10-05*.json`)
+
+"Calibrated" means the E-ST4 build-time distributions replace the bench ones.
+
+| metric | target | W2 today | on demand | **Stagecraft** | calibrated |
+|---|---|---|---|---|---|
+| right artifact ready when needed | ≥ 0.85 | 0.28 | 0.61 | **0.89** | 0.88 |
+| ready, plan-led | ≥ 0.95 | 0.28 | 0.37 | **0.85 ✗** | 0.84 |
+| ready, child request (spec or better) | ≥ 0.80 | — | 0.77 | **0.85** | 0.85 |
+| ready, misconception contrast | ≥ 0.75 | — | 0.32 | **0.90** | 0.90 |
+| "show me" → first frame p95 (modelled clock) | ≤ 4 s | — | 3.30 s | **3.40 s** | 3.40 s |
+| wrong / stale / safety-turn / child-speaking / off-topic reveals | 0 | 0 | 0 | **0** | 0 |
+| visible failures | 0 | 0 | 0 | **0** | 0 |
+| lossless (want stream, off vs on) | 100% | — | — | **9208/9208** | 9208/9208 |
+| speculative $ per lesson-hour (wasted) | ≤ 0.15 (≤ 0.08) | 0 | 0.062 (0.036) | **0.081 (0.043)** | 0.081 (0.043) |
+| generated pieces per 25 min | ≥ 6 | 1.7 | 7.7 | **20.3** | 20.1 |
+| stage moments per 25 min | ≥ 12 | 12.9 | 35.0 | **35.0** | 35.0 |
+| specs built per 25 min | 60-150 | 0 | 20.8 | **26.9 ✗** | 26.9 |
+| stage active share | 35-55% | 0.57 | 0.85 | **0.85 ✗** | 0.85 |
+| median gap between pieces | ≤ 4 min | 58 s | 31 s | **31 s** | 31 s |
+| child-initiated share | ≥ 25% | 0 | 0.18 | **0.18 ✗** | 0.18 |
+
+The safety battery (80 lessons with a distress turn) had 0 stage changes and 0 builds during the quarantine. The 429
+storm battery (60 lessons) had 0 visible failures and readiness 0.90. E-ST2: hit@3 0.84, but the pNeed priors are
+miscalibrated (ECE up to 0.19); the fitted values are in the context write-up. E-ST3 sweeps: λ, the
+minimum-readiness threshold, concurrency and half-life are flat around the defaults. Too short a maximum lead (45 s)
+and 4 families both cost readiness.
+
+### 12.3 Real arm (E-ST4, $0.95 of the $25 cap)
+
+| what | result |
+|---|---|
+| 60 specs, 3-wide, production builder | 58/60 usable; p50 5.6 s; **p90 7.9 s (target 6 s ✗)**. `taxila-fast-bg` $0.0013 per spec; `taxila-gpt6-luna` $0.0006 per spec |
+| 10 flare-low images | p50 15.5 s, p90 18.5 s; one 429 failed over to gpt-image-2 |
+| 12 `buildRace` builds + local gate | 12/12 passed; p50 35.7 s, p90 51.8 s; $0.062 per race |
+| reply TTFT, alone → under load | p50 958 → 876 ms; p90 1173 → 1294 ms (n 30 + 30 cannot resolve 50 ms); 0 reply 429s |
+
+### 12.4 Deviations from §0-§11, each measured or argued
+
+1. **Probe, then contrast.** Contrast comes at the point after a misconception is revealed, not at the same point.
+2. **Requests share the idea's family.** A request joins its idea's family instead of getting its own.
+3. **Just-in-time specs.** Specs launch at a lead of 90 s or less.
+4. **Spec launch rule.** Specs use P(ready by deadline + 2.5 s) ≥ 0.15 instead of the strict "lead ≥ p90". A late spec
+   still serves a later point at under $0.002.
+5. **Live is λ-free.** The LIVE-STUDIO caps govern it.
+6. **Family bound.** At most 6 families; the bound of 24 counts speculative candidates only.
+7. **Value gain per archetype.** Gain is computed per (family, archetype).
+8. **Default spec deployment.** `taxila-fast-bg`, not luna (luna carries the whiteboard).
+9. **Hook beat.** Its kinds are animation first; the image rung is wired and calibrated but dormant under λ = 50.
+10. **No re-show.** A family already shown in a beat is not shown again after a retire.
+11. **Request answered by the idea.** A request is answered when its idea is on stage, whatever the rung.
+
+Each deviation has a context entry (`context/inbox/stagecraft.json`).
+
+### 12.5 Not done or open
+
+- **Patches not applied.** P4's field mapping needs W2-E's review.
+- **No real child yet.** Shadow mode in real lessons, E-ST5 (real TTS clause timing) and E-ST7 (learning outcome)
+  have not run.
+- **Stage too busy.** Stage active share is 0.85: a rest rule is needed.
+- **Spec p90.** Needs O-1 or a leaner prompt.
+- **Image rung dormant.** Production image checks need an OCR no-text checker and Content Safety.
+- **Simulation limits.** The simulator's child is scripted, and pNeed calibration and request rates come from the
+  scripts, not from children.
