@@ -3,7 +3,7 @@
 // recognition). The judged runtime's r5 "playful" preset winks (eyeBlinkRight 1.0 pulse); a winking AI teacher is a
 // companion register, so it never reaches a child: the wink keys and the pulse are removed from every preset and take at
 // load, the one-sided cheek push that went with it is cut to a smile's level, and the result is checked by
-// tests/face-puppet-safety (patch) and assertPresetsSafe() at boot. The judged JS is not edited (it is re-synced from the
+// tests/face-puppet.test.mjs (patch 04) and assertPresetsSafe() at boot (called from applySafetyFloor). The judged JS is not edited (it is re-synced from the
 // polish rounds); this transform is applied to its exported tables once.
 import { EXPRESSIONS, VARIANTS, type Preset } from "./runtime/expr.js";
 
@@ -32,6 +32,15 @@ export function applySafetyFloor(): void {
   const seen = new Set<Preset>();
   for (const p of Object.values(EXPRESSIONS)) if (!seen.has(p)) { seen.add(p); sanitize(p); }
   for (const takes of Object.values(VARIANTS)) for (const p of takes) if (!seen.has(p)) { seen.add(p); sanitize(p); }
+  assertPresetsSafe();
+}
+
+/** Boot check (Review v4, 2026-10-05: the header promised it, nothing called it). Fails closed: a re-synced runtime (r9+)
+ *  whose tables still violate the floor after sanitize throws here, inside PuppetDriver's constructor, so the stage never
+ *  starts and PuppetFace falls back to TutorFace before reveal. */
+export function assertPresetsSafe(): void {
+  const v = presetViolations();
+  if (v.length) throw new Error(`puppet safety floor: ${v.slice(0, 5).join("; ")}`);
 }
 
 /** The violations left in the tables (empty = safe). Used by the boot check and the eval. */

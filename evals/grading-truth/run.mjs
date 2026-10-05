@@ -26,6 +26,7 @@ const LABEL = arg("--label", "baseline");
 const SEED = Number(arg("--seed", 7));
 const SCALE = Number(arg("--scale", 1));
 const MODEL_N = Number(arg("--model", 0));
+const STUDIO_STAMP = arg("--studio-stamp", "half");
 const PARTS = arg("--parts", join(HERE, "data/parts-labels.json"));
 const OUT = arg("--out", join(HERE, "results", new Date().toISOString().slice(0, 10)));
 const imp = (rel) => import(pathToFileURL(join(ROOT, rel)).href);
@@ -60,6 +61,28 @@ const formsOf = (q) => (q.d === 1 ? O.intForms(q.n) : O.isTerminating(q) && q.d 
 function wrongOf(q) {
   if (q.d === 1) { const w = O.nearMiss(R, q.n); return { q: O.Q(w.v), why: w.why }; }
   const w = O.nearMissFrac(R, q); return { q: w.v, why: w.why };
+}
+// Review v1: unit families for the unit-swap case (oracle-side; no grader table imported)
+const UNIT_FAM = [["mm", "cm", "dm", "m", "km"], ["sq mm", "sq cm", "sq dm", "sq m", "sq km"], ["g", "kg", "mg"], ["ml", "l"], ["seconds", "minutes", "hours"]];
+function unitSwap(key) {
+  const m = String(key).trim().match(/^(₹|rs\.?\s*)?(-?[\d,]+(?:\.\d+)?(?:\/\d+)?)\s*(sq\.?\s*(?:mm|cm|dm|m|km)|square (?:mm|cm|dm|m|km|metres?|centimetres?)|mm|cm|dm|m|km|kg|mg|g|ml|l|seconds?|minutes?|hours?)\.?$/i);
+  if (!m) return null;
+  let u = m[3].toLowerCase().replace(/^square /, "sq ").replace(/^sq\.?\s*/, "sq ").replace(/metres?$/, "m").replace(/centimetres?$/, "cm");
+  if (/^(second|minute|hour)$/.test(u)) u += "s";
+  const fam = UNIT_FAM.find((f) => f.includes(u));
+  if (!fam) return null;
+  const other = fam[(fam.indexOf(u) + 1) % fam.length];
+  // area <-> length: the classic area/perimeter slip, taken half the time where the family is length or area
+  const cross = u.startsWith("sq ") ? u.slice(3) : UNIT_FAM[1].includes(`sq ${u}`) ? `sq ${u}` : null;
+  const to = cross && R.chance(0.5) ? cross : other;
+  return { text: `${m[2]} ${to}`, from: u, to };
+}
+/** "soldier's" <-> "soldiers'" (the first possessive in the string), else null. */
+function movedApostrophe(a) {
+  const s = String(a);
+  if (/\b(\w+?)s'(?=\s|$|[.,!?])/.test(s)) return s.replace(/\b(\w+?)s'(?=\s|$|[.,!?])/, "$1's");
+  if (/\b(\w+)'s\b/.test(s)) return s.replace(/\b(\w+)'s\b/, "$1s'");
+  return null;
 }
 const partsLabels = existsSync(PARTS) ? JSON.parse(readFileSync(PARTS, "utf8")) : { items: {} };
 
@@ -103,6 +126,10 @@ for (const { kit, cls, subject } of kits) {
       const dec = O.decimalStr(q);
       if (dec && dec.includes(".")) run(dec.replace(".", " "), "incorrect-or-abstain", "num-ambiguous:decimal-point-as-space");
       run(O.hedge(O.qStr(q), O.qStr(wv.q)), "hedge", "num-hedge");
+      // Review v1 (2026-10-05): the SAME number with a different unit of the same dimension ("15 sq m" for "15 sq dm",
+      // "24 m" for "24 sq m") is never the full key. Truth "unit-wrong": a wrong grade only if credited as correct.
+      const sw = unitSwap(String(item.answer));
+      if (sw) run(sw.text, "unit-wrong", `num-wrong:unit-swap(${sw.from}->${sw.to})`);
       run(O.selfCorrect(O.qStr(wv.q), O.qStr(q)), "correct", "num-self-correct");
     } else {
       const key = String(item.answer);
@@ -115,6 +142,12 @@ for (const { kit, cls, subject } of kits) {
         // the same words inside a sentence: the exact path cannot match, so the MODEL decides (this is where a rubric that
         // reads every key as multi-part would call a complete single-part answer partial)
         if (lab) run(`mujhe lagta hai ${a}`, lab === "partial" ? "partial" : lab === "wrong" ? "incorrect" : "correct", `text:acceptable-in-sentence(${lab}, 2-rater)`, { tag: { truthSource: "two-rater" } });
+      }
+      // Review v1: an apostrophe item ("Add an apostrophe where needed") is graded on WHERE the apostrophe goes; the
+      // other placement ("soldiers'" for "soldier's") is the misconception, never the key
+      if (/apostrophe|possessive/i.test(item.prompt_en ?? "")) for (const a of [key, ...(item.acceptable ?? [])]) {
+        const moved = movedApostrophe(a);
+        if (moved && norm0(moved) !== "" && moved !== a) run(moved, "incorrect", "text-wrong:apostrophe-moved");
       }
       // a different answer from the same topic (never the same words)
       const other = R.shuffle(kit.items).find((o) => o.id !== item.id && norm0(o.answer) !== norm0(key) && ![key, ...(item.acceptable ?? [])].some((a) => norm0(a) === norm0(o.answer)) && !norm0(key).includes(norm0(o.answer)) && !norm0(o.answer).includes(norm0(key)));
@@ -280,6 +313,10 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
     const steps = oracleStudio(id, p);
     if (!steps) break;
     made++;
+    // Review v1: validateParams accepts repeated step keys in sequence_steps (no unique() check there), and the schema's
+    // random keys can repeat. Such params are content the validator SHOULD reject; tagged so they are never mistaken for
+    // a grader fault on valid content (see patches/V1-07).
+    const dupKeys = id === "sequence_steps" && new Set(p.shown).size !== p.shown.length;
     // (a) in order, right first time; (b) a wrong try then the right one; (c) a remount mid-way, then the screen restarts at
     // step 1 and the child answers what is on screen; (d) malformed frame payloads
     const sess = SG.createGradeSession(id, p);
@@ -289,18 +326,20 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
       const g = sess.grade(act, hint);
       const verdict = g.correct ? "correct" : "incorrect";
       const truth = truthRight ? "correct" : "incorrect";
-      rec({ grader: "studio.w2h", path: "server/studio/grade.js createGradeSession", archetype: id, itemId: steps[screen]?.itemId, input: JSON.stringify(act)?.slice(0, 80), truth, kind, verdict, wrong: wrongKind(truth, verdict) });
+      rec({ grader: "studio.w2h", path: "server/studio/grade.js createGradeSession", archetype: id, itemId: steps[screen]?.itemId, input: JSON.stringify(act)?.slice(0, 80), truth, kind: dupKeys ? `${kind}:invalid-dup-keys` : kind, verdict, wrong: wrongKind(truth, verdict) });
       return g.correct;
     };
     for (let s = 0; s < steps.length; s++) {
       screen = s;
-      const st = steps[s], frame = R.chance(0.5) ? {} : { itemId: st.itemId };
+      // --studio-stamp all: the V1-04 world, where the frame stamps the on-screen item on every answer. Default: half
+      // the answers carry no id (today's frames). The coin is drawn either way so the RNG stream stays paired.
+      const coin = R.chance(0.5), st = steps[s], frame = coin && STUDIO_STAMP !== "all" ? {} : { itemId: st.itemId };
       const tag = frame.itemId ? "item-stamped" : "no-item-id";
       if (R.chance(0.4) && st.wrongAct !== undefined && st.wrongAct !== null) answer(st.wrongAct, frame, st.right(st.wrongAct), `wrong-try:${tag}`);
       answer(st.rightAct, frame, true, `${st.tie ? "right:tie-member" : "right"}:${tag}`);
       if (s === Math.floor(steps.length / 2) && steps.length > 1 && R.chance(0.5)) {
         sess.mount(`k${rep}-${s}`);
-        for (let t = 0; t <= s; t++) { screen = t; answer(steps[t].rightAct, {}, true, "right:after-remount"); }
+        for (let t = 0; t <= s; t++) { screen = t; answer(steps[t].rightAct, STUDIO_STAMP === "all" ? { itemId: steps[t].itemId } : {}, true, "right:after-remount"); }
       }
     }
     // a restart the host was NOT told about (no new mount key): the screen is back at step 1 and the child answers it right.
@@ -309,7 +348,7 @@ for (const id of ARCH.FRAME_ARCHETYPES) {
     if (steps.length > 1) {
       const g3 = SG.createGradeSession(id, p); g3.mount("r");
       for (let s2 = 0; s2 < steps.length - 1; s2++) g3.grade(steps[s2].rightAct, {});
-      const v = g3.grade(steps[0].rightAct, {}).correct ? "correct" : "incorrect";
+      const v = g3.grade(steps[0].rightAct, STUDIO_STAMP === "all" ? { itemId: steps[0].itemId } : {}).correct ? "correct" : "incorrect";
       rec({ grader: "studio.w2h", path: "server/studio/grade.js createGradeSession", archetype: id, itemId: steps[0].itemId, input: JSON.stringify(steps[0].rightAct)?.slice(0, 80), truth: "correct", kind: "restart-without-mount-key", verdict: v, wrong: wrongKind("correct", v) });
     }
     for (const m of R.shuffle(MALFORMED).slice(0, 3)) {
@@ -357,6 +396,9 @@ for (const arch of SS.ARCHETYPES_V2) {
   // every archetype: a malformed raw act on every item id it can name is never "right"
   const ids = new Set(cs.map((c) => c.itemId));
   for (const id of ids.size ? ids : ["q", "s1", "r1", "w1:0", "step:s1", "tap_vapour", "place_planet", "third_angle"]) for (const m of R.shuffle(MALFORMED).slice(0, 3)) {
+    // Review v1: a bare number IS a well-formed act for the number archetypes (angle-cannon, catch-on-line, line-runner
+    // take act: <number>), so 42 on an item whose key is 42 is a right answer, not a malformed one
+    if (typeof m === "number" || typeof m === "boolean") continue;
     const v = v2v(SS.gradeAnswer(arch, spec, id, m)); rec({ grader: "studio.v2", path: "shared/studio-spec.ts gradeAnswer", archetype: arch, itemId: id, input: String(JSON.stringify(m)), truth: "malformed", kind: "malformed", verdict: v, wrong: wrongKind("malformed", v) });
   }
 }
@@ -451,7 +493,7 @@ for (const c of all) {
   if (c.verdict === "abstain" && c.truth === "correct") { g.uncredited++; g.byKindUncredited[c.kind] = (g.byKindUncredited[c.kind] ?? 0) + 1; }
   if (c.wrong) { g.wrong++; g[c.wrong]++; const k = `${c.wrong} · ${c.kind}`; g.byKindWrong[k] = (g.byKindWrong[k] ?? 0) + 1; }
 }
-const meta = { label: LABEL, root: ROOT, seed: SEED, scale: SCALE, date: new Date().toISOString(), lessonItems, boundPlans, moduleNoReplay: noReplay, placementBank: bank.length,
+const meta = { label: LABEL, root: ROOT, seed: SEED, scale: SCALE, studioStamp: STUDIO_STAMP, date: new Date().toISOString(), lessonItems, boundPlans, moduleNoReplay: noReplay, placementBank: bank.length,
   ext: EXT?.error ? `not loaded: ${EXT.error}` : `${EXT?.ARCHETYPES_EXT?.length ?? 0} extension archetypes`, modelN: MODEL_N, modelDeploy: MODEL_N ? (process.env.DEPLOY_CLASSIFY || process.env.DEPLOY_FAST || "taxila-fast") : null };
 mkdirSync(OUT, { recursive: true });
 const wrongRows = all.filter((c) => c.wrong);

@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { AZURE_TO_CONTRACT, OPENNESS, resolveVisemes, weightsAt, wordFlags, stopFlagsFromText } from "../src/face-puppet/visemes.ts";
 import { VisemeScheduler, EVENT_LEAD_MS } from "../src/face-puppet/track.ts";
 import { ActingPolicy, BIG_EVERY_S } from "../src/face-puppet/policy.ts";
-import { applySafetyFloor, presetViolations } from "../src/face-puppet/safety.ts";
+import { applySafetyFloor, presetViolations, assertPresetsSafe } from "../src/face-puppet/safety.ts";
 import { PuppetDriver } from "../src/face-puppet/driver.ts";
 import { EXPRESSIONS, VARIANTS } from "../src/face-puppet/runtime/expr.js";
 
@@ -134,4 +134,13 @@ test("driver: Diya visemes drive the mouth on the player clock; duplex nods are 
   assert.equal(d.nodCue(4, 5000), false);
   assert.equal(d.nodCue(4, 7100), true);
   assert.ok(frames.length > 200);
+});
+
+test("safety floor fails closed: a preset that still winks after sanitize throws at boot (PuppetFace then falls back)", () => {
+  applySafetyFloor();
+  assert.doesNotThrow(() => assertPresetsSafe());
+  const p = Object.values(EXPRESSIONS)[0];
+  p.bs.eyeBlinkRight = 1;
+  try { assert.throws(() => assertPresetsSafe(), /puppet safety floor/); } finally { delete p.bs.eyeBlinkRight; }
+  assert.deepEqual(presetViolations(), []);
 });

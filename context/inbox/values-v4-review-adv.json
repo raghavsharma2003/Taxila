@@ -1,0 +1,44 @@
+{
+ "nodes": [
+  {
+   "id": "v4-review-adv-verdict",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Adversarial review of V4 (puppet face), 2026-10-05. Reproduced offline: unit tests 9/9 (10/10 with the new fail-closed safety test); patches 01-03 dry-run clean on the current main tree; scratch tree with 01-04 applied: tsc -b 0 errors, face-puppet tests 13/13; lipsync-inapp.mjs re-run byte-identical (median -35 ms, IQR -40..+5, 20/21 within +-50 ms). Not re-run (Azure spend / no phone): ttfb, CTC offset, judges. Verdict: engineering-complete pending apply+deploy; NOT at the V4 face bar (not live, Arjun has no puppet, no phone reading, blind models 3.75 < 4.0 ship bar; the 4.0 is the builder's own AI review)."
+  },
+  {
+   "id": "v4-review-adv-corrections",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Corrections to the V4 report: (1) ttfb-warm medians were upper medians of n=8; true medians: no-meta 433, visemes-only 483 (+50 not +63), visemes+words 811 (bimodal 647-702 / 919-964; +378 not +486), REST 902. Decision unchanged. (2) The in-app lip measure fed visemes through a harness re-implementation of the patch-02 player contract (evals/face-puppet/harness/harness.ts), one batch per line with words; the real server->route->ttsStream path is covered only by a fake-AudioContext unit test, so end-to-end lip timing in the product is UNMEASURED. (3) The 3 Devanagari lines have no CTC reference: paired lip offset is Roman-only (n=21). (4) Cross-correlation r per line is weak (median ~0.45, two lines < 0.15), so per-line lags are low-confidence. (5) The 'warm-up outlier' line 00 drew no frame for its first 1.71 s after an awaited init+warm (SwiftShader); unexplained, and the first line of a lesson is the greeting. (6) stage.ts reveals in silence OR after 2.5 s regardless, so a mid-word reveal is possible (report said silence only)."
+  },
+  {
+   "id": "v4-review-adv-safety-boot-check",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The puppet safety floor fails closed: applySafetyFloor() now ends with assertPresetsSafe(), which throws if any preset/take still winks, pouts or pushes one cheek; the throw lands in PuppetDriver's constructor, so PuppetFace falls back to TutorFace before reveal. Reason: safety.ts promised a boot check that did not exist, and sync-runtime.mjs r9 will re-import judged tables that sanitize may not cover. Reverse never (child-safety floor)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "v4-review-adv-corrections",
+   "rel": "supersedes",
+   "dst": "v4-m-ws-first-audio"
+  },
+  {
+   "src": "v4-review-adv-corrections",
+   "rel": "supersedes",
+   "dst": "v4-m-inapp-lipsync"
+  },
+  {
+   "src": "v4-review-adv-safety-boot-check",
+   "rel": "constrains",
+   "dst": "v4-puppet-safety-no-wink"
+  },
+  {
+   "src": "v4-face-puppet-production",
+   "rel": "measured_by",
+   "dst": "v4-review-adv-verdict"
+  }
+ ]
+}
