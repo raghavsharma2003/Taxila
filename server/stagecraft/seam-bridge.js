@@ -41,6 +41,7 @@ export function augmentView(lessonId, view, point) {
   if (!outcome || (outcome.act !== "reveal" && outcome.act !== "board")) {
     // a hold / offer / steer: no new piece; a retire Wave 2 proposed still stands
     if (view?.propose?.retire) out.propose = { retire: view.propose.retire };
+    else if (outcome?.retireStale && L?.onScreen) out.propose = { retire: L.onScreen };      // the old topic's piece leaves
     if (outcome?.act === "steer") out.steer = { knob: outcome.knob };
     if (outcome?.act === "offer") out.offer = { family: outcome.family };
     return out;

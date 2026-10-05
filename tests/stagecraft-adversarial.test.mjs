@@ -1,5 +1,5 @@
 // Adversarial review of Stagecraft (2026-10-05): each test constructs a case the first build let through, and pins the
-// fix. $0, no network. See docs/design/stagecraft/REVIEW-2026-10-05.md for the full findings and the re-measured table.
+// fix. $0, no network. Findings and re-measured numbers: context/inbox/stagecraft-review.json.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { ENGINE_SPECS } from "../shared/studio-spec.ts";
@@ -69,4 +69,16 @@ test("A5 stage: an engine dying on stage while the next piece mounts never swall
   assert.equal(s.incoming?.id, "b", "the piece her line names is still the one coming");
   s = tick(painted(s, "b", 1100), 1100 + CROSSFADE_MS);
   assert.equal(s.showing.id, "b");
+});
+
+test("A6 conductor: a hold never leaves the old topic's piece up; it is retired to the calm board", () => {
+  let s = initPortfolio("L1", 0);
+  s = step(s, { t: "state", key: key(), at: 0 }, C).state;
+  const want = { family: familyKey(SKILL, "explain", null, null), need: "explain", kinds: ["game", "animation"], archetype: "slice-at@1", pNeed: 0.9, childRequested: false };
+  s = step(s, { t: "reveal_point", point: { kind: "trp", phase: "her_turn", turnSeq: 5, current: key(), want, safetyOpen: false, childHoldsFloor: false, at: 30_000 } }, C).state;
+  assert.ok(s.meta.onStageCand);
+  const next = key({ topicId: "c4-maths-ch05-t02", skillId: OTHER });
+  const r = step(s, { t: "reveal_point", point: { kind: "trp", phase: "her_turn", turnSeq: 6, current: next, want: null, safetyOpen: false, childHoldsFloor: false, at: 40_000 } }, C);
+  assert.ok(r.effects.some((e) => e.e === "retire"));
+  assert.equal(r.state.meta.onStageCand, null);
 });

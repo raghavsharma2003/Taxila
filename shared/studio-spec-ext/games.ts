@@ -16,5 +16,6 @@ import { fracOpsDef } from "./fracops.ts";
 import { zeroDef } from "./zero.ts";
 import { mapDef } from "./map.ts";
 import { motionDef } from "./motion.ts";
+import { lifeDef } from "./life.ts";
 
-export const EXT_GAMES: ExtSpecDef<never>[] = [railDef, beatDef, eraDef, sortDef, fairDef, dukaanDef, instrumentDef, sieveDef, ruleDef, geoDef, mirrorDef, pictoDef, fracOpsDef, zeroDef, mapDef, motionDef] as unknown as ExtSpecDef<never>[];
+export const EXT_GAMES: ExtSpecDef<never>[] = [railDef, beatDef, eraDef, sortDef, fairDef, dukaanDef, instrumentDef, sieveDef, ruleDef, geoDef, mirrorDef, pictoDef, fracOpsDef, zeroDef, mapDef, motionDef, lifeDef] as unknown as ExtSpecDef<never>[];

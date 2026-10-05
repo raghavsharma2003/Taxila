@@ -23,6 +23,22 @@ function index() {
 }
 /** The kit item a ui.ask.itemId names (diag:<misconception> included), or null. */
 export function kitItem(itemId) { index(); return byItem.get(itemId) ?? null; }
+/**
+ * W2-C's faded step (`fade:<i>`, server/director/fading.js fadeItem) is not a kit item: it is line i of the topic's
+ * worked example with one blank, and the item id does not name the topic. A child who can do the items fills the gap
+ * with the text the blank replaces (the step itself is also an accepted answer). Read from the kit JSON, not from the
+ * server's code, so the scripted child stays independent of the grader. Null when the line has no single blank.
+ */
+export function fadeItemOf(itemId, topicId) {
+  const m = /^fade:(\d+)$/.exec(String(itemId ?? ""));
+  const we = m ? kitTopic(topicId)?.workedExample : null;
+  const step = we?.steps?.[Number(m?.[1])], faded = we?.fadedVersion?.[Number(m?.[1])];
+  if (!step || !faded) return null;
+  const parts = String(faded).split(/_{2,}/);
+  const blank = parts.length === 2 && step.startsWith(parts[0]) && step.endsWith(parts[1])
+    ? step.slice(parts[0].length, step.length - parts[1].length).trim().replace(/[.,;:!।]+$/u, "").trim() : "";
+  return { id: itemId, kind: "practice", fade: true, answer: blank || step, topicId };
+}
 /** The kit topic, or null. */
 export function kitTopic(topicId) { index(); return byTopic.get(topicId) ?? null; }
 /** The topic an item id belongs to (`c5-maths-ch01-t01-i03` → `c5-maths-ch01-t01`). */
@@ -36,7 +52,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * a chip matching the answer, the kit answer typed, the topic's key idea for an open "why" question, or "go on".
  */
 export function replyFor(ui, topicId, { wrong = false, explain = true } = {}) {
-  const item = ui?.ask?.itemId ? kitItem(ui.ask.itemId) : null;
+  const item = ui?.ask?.itemId ? kitItem(ui.ask.itemId) ?? fadeItemOf(ui.ask.itemId, topicId) : null;
   // a child who does the items but cannot say why (the state after a typical first lesson: shallow)
   const SHRUG = "pata nahi, bas aise hi aata hai";
   if (!explain && (!item || item.kind === "why" || item.kind === "teachback") && (ui?.ask?.text || item)) return { text: SHRUG };

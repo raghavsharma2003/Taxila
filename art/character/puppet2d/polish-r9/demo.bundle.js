@@ -2346,7 +2346,7 @@ var qe = class {
 			t.yaw >= 0 ? 530 : 330,
 			t.yaw >= 0 ? 730 : 530,
 			(this.relOn ? .05 : .16) * Math.abs(t.yaw) / 20
-		], r = H(Math.abs(t.yaw) / 20);
+		], r = H(Math.abs(t.yaw) / 20) * U(1.5, 4, Math.abs(t.yaw));
 		e.rel = [
 			t.yaw >= 0 ? 1 : -1,
 			r,
@@ -3170,22 +3170,26 @@ var at = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), ot = class {
 			this.bounce.v += (-160 * this.bounce.x - 1 * Math.sqrt(160) * this.bounce.v) * e, this.bounce.x += this.bounce.v * e, o -= e;
 		}
 		r[0] += this.bounce.x, this.lean = 0;
-		let s = {
-			pos: {},
-			sup: {},
-			lip: {},
+		let s = this._A ||= {
+			pos: /* @__PURE__ */ new Map(),
+			sup: /* @__PURE__ */ new Map(),
+			lip: /* @__PURE__ */ new Map(),
 			gz: [0, 0],
 			w: 0
 		};
-		if (this.prev) {
+		if (s.pos.clear(), s.sup.clear(), s.lip.clear(), s.gz[0] = s.gz[1] = 0, s.w = 0, this.prev) {
 			let t = this.prev, n = t.e0 * (1 - at((e - t.t0) / t.fade));
 			n <= .001 ? this.prev = null : this._mix(t.c, n, e, r, s);
 		}
 		let c = this.level(e);
 		if (this.cur && c > 0 && this._mix(this.cur, c, e, r, s), s.w <= 0) return 0;
-		for (let [e, t] of Object.entries(s.pos)) n[e] = Math.max(n[e] ?? 0, t);
-		for (let [e, t] of Object.entries(s.sup)) n[e] = (n[e] ?? 0) * (1 - Math.min(1, t));
-		if (a) for (let [e, t] of Object.entries(s.lip)) a[e] = Math.max(a[e] ?? 0, t);
+		s.pos.forEach((e, t) => {
+			n[t] = Math.max(n[t] ?? 0, e);
+		}), s.sup.forEach((e, t) => {
+			n[t] = (n[t] ?? 0) * (1 - Math.min(1, e));
+		}), a && s.lip.forEach((e, t) => {
+			a[t] = Math.max(a[t] ?? 0, e);
+		});
 		let l = Math.min(1, s.w), u = s.w > 1 ? 1 / s.w : 1;
 		return i[0] = i[0] * (1 - l) + s.gz[0] * u, i[1] = i[1] * (1 - l) + s.gz[1] * u, c;
 	}
@@ -3195,10 +3199,10 @@ var at = (e) => e <= 0 ? 0 : e >= 1 ? 1 : e * e * (3 - 2 * e), ot = class {
 			let s = o && o.keys.includes(n) ? r * c : r;
 			if (a.wob && a.wob[n]) for (let [t, r] of a.wob[n]) s += t * Math.sin(2 * Math.PI * r * l + (e.ph || 0) + r);
 			if (rt.has(n)) {
-				i.lip[n] = (i.lip[n] ?? 0) + Math.max(0, s) * t;
+				i.lip.set(n, (i.lip.get(n) ?? 0) + Math.max(0, s) * t);
 				continue;
 			}
-			s < 0 ? i.sup[n] = (i.sup[n] ?? 0) + t : i.pos[n] = (i.pos[n] ?? 0) + s * t;
+			s < 0 ? i.sup.set(n, (i.sup.get(n) ?? 0) + t) : i.pos.set(n, (i.pos.get(n) ?? 0) + s * t);
 		}
 		for (let e = 0; e < 3; e++) r[e] += a.head[e] * t;
 		if (a.act && nt[a.act]) {

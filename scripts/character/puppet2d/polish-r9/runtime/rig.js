@@ -1024,7 +1024,8 @@ export class Puppet2DRig {
     R.setCam(this.view[0], this.view[1], this.view[2]);
     // r9: the far-side darkening now comes from the relight field (REL); the r6 linear ramp stays only as a faint far rim
     const shadeFace = [s.yaw >= 0 ? 1 : -1, s.yaw >= 0 ? 530 : 330, s.yaw >= 0 ? 730 : 530, (this.relOn ? 0.05 : 0.16) * Math.abs(s.yaw) / 20];
-    const relA = clamp01(Math.abs(s.yaw) / 20);
+    // (fps) idle drift under ~1.5 deg changes the light < 1%: the fetch is skipped there (shader early-out), ramped in to 4 deg
+    const relA = clamp01(Math.abs(s.yaw) / 20) * smooth(1.5, 4, Math.abs(s.yaw));
     R.rel = [s.yaw >= 0 ? 1 : -1, relA, 0];
     const skin = (on) => { R.rel[2] = on && this.relOn ? 1 : 0; };
     const shadeHair = [shadeFace[0], s.yaw >= 0 ? 400 : 200, s.yaw >= 0 ? 820 : 660, 0.1 * Math.abs(s.yaw) / 20];

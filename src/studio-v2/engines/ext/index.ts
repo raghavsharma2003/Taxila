@@ -18,6 +18,7 @@ import { fracops } from "./fracops.ts";
 import { zero } from "./zero.ts";
 import { map } from "./map.ts";
 import { motion } from "./motion.ts";
+import { life } from "./life.ts";
 
-const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair, dukaan, instrument, sieve, rule, geo, mirror, picto, fracops, zero, map, motion] as EngineDef<never>[];
+const list: EngineDef<never>[] = [scene, rail, beat, era, sort, fair, dukaan, instrument, sieve, rule, geo, mirror, picto, fracops, zero, map, motion, life] as EngineDef<never>[];
 export const ENGINES_EXT: Record<string, EngineDef<never>> = Object.fromEntries(list.map((d) => [d.archetype, d]));

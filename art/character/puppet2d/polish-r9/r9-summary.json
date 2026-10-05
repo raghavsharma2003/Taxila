@@ -1,0 +1,136 @@
+{
+ "date": "2026-10-05",
+ "round": "polish-r9 of arm P (from r8)",
+ "image_spend_usd": {
+  "r9": 0.0,
+  "ledger_total": 9.98,
+  "cap": 30,
+  "note": "procedural relight matched the keys; the optional painted +-30 shading-overlay pair (USD 1-2) was not needed"
+ },
+ "fix1_relight_METHOD": "REL / relightF (rig.js): a rest-space light-ratio field for the turn, mirrored by turn side, baked to a 128 px texture at load and sampled by the paint AND lip programs (face, ears, lid band, lid keys, lower lid bands, lip shell: one light, no layer seams), amount |yaw|/20 x smooth(1.5,4,|yaw|). FITTED, not guessed: lightfit.py samples each painted 30-deg key at the SAME anatomical point as c-front through the fitted keyfield (geometry cancels) -> mirror-averaged key/c-front: far cheek 0.90-0.93 (u 60-140), far temple ~0.97, far nasolabial/nose base 0.82-0.88, near cheek beside the nose ~1.06, near jaw edge ~0.96; nose flanks inconclusive (keyfield least exact) -> bridge side plane (-8.5%) and far socket occlusion (-6%) per the judge's spec, tuned by eye beside the keys (relcmp.py). Terms: cheek 0.10, temple 0.03, rim 0.05, naso 0.075, bridge 0.085, socket 0.06, near +0.07, nearJaw 0.035; r6's linear far ramp 0.16 -> 0.05 and its nose term retired. ?rel=0 / ?relp= for A/B. NB a screen-space comparison (lightmap.py) gave the OPPOSITE answer (geometry mismatch dominates) - use lightfit.py.",
+ "fix2_lower_face": "lips.js: closed-seam fade beside a rounded opening (the dark corner ticks on the O were c-front's closed lip line stretched between the opening end and the corner), lower-lip contact shadow (UND) and cheek-mound light (PUFF) driven by opening x (joy, surprise), corner crease -35% and -60% on surprise; surprise O: egg top (upper lift prof^(1+1.3 sur)), lower-lip thickness -0.34 sur (was -0.18), lip tint -45% on surprise, upper-teeth sliver 0.45 -> 0.22, low tongue 0.3 -> 0.16, cavity ~30% desaturated + warmer (uSur); rig: cheek narrowing 4.5 -> 3.0 px.",
+ "fix2_bug": "gl.js FS_IN: a HIDDEN teeth row (height 0, T/TL > 0.01) still had coverage wherever db < 0.5 / dt < 0, i.e. in the strip's 2 px extension under the lower lip: a pale grey-lilac second edge under every parted lip (concern B, aa, delight, O). Present since r6. Coverage now gated by the row's visible height; the strip below the lower inner edge is the lip's dark contact line.",
+ "fix3_thinking": "THINK_UP: browOuterUpLeft 0.82 -> 0.92 + a one-sided peak in the rig (asymmetric raises only, 6.5 px, sigma 0.45): ~+28% at the arch top (i2-i4 had +44%: 4/6 blind runs read it 'too high/steep -> sceptical', moderated in i5); browInnerUp 0.2 -> 0.32; MOUE via the new mouthShrugLower support (lower lip up and full, push side full / other 40%, crown light, chin +2.6 px) + mouthPucker 0.12; push-side press 0.6 -> 0.28 (it thinned the side the concept fills); rollUpper 0.2 -> 0.08; gaze 23 -> 28 deg (~3 px higher).",
+ "fix4_concern": "B: inner brow 1.0 -> 0.82, knit 0.22 -> 0.12, outer +0.15 (~25% less brow angle); lower-lip pull rounds the lower edge (profile exponent x(1-0.8 ldW)); worry x pull curls the corner ends 2.6 px; pucker 0.12. A also softened (grok 2/2: 'sharp, angry'): inner 0.86, knit 0.3/0.25, outer 0.1 (A/B sol x3: 3.57 old vs 3.53 new = noise; grok now 'concern as intended' 2/2).",
+ "fix5_bun_edge": "cause measured: the bun's lower-contour alpha was a per-COLUMN ramp (255,237,164,48 in every column, whole-pixel offsets) = a staircase on a diagonal edge. bunedge.py: smoothed contour, 4x supersampled 2D coverage, 0.6 px feather, edge colour from the nearest solid interior pixel (premultiplied-clean). Net coverage change -9.7 px; original kept as layers/bun.r8.png.",
+ "fix6_clip": "concern B scene 34.6-37.4 s (timeline 45.2 -> 48.0 s); emotes now CROSSFADE (expr.js: the two takes accumulate, weights sum to 1; a beat followed by the same emotion holds to the switch). i3 showed a relax-to-smile between A and B; i4 fixed it.",
+ "other_bugs_fixed": [
+  "brow ribbon past its ends: clamped ui gave slope 0 beyond the inner end -> columns sheared and smeared a tip texel into a 1 px speck (seen on softened concern A); now rigid continuation at the end slope",
+  "brow ribbon lever arm clamped to 13 px (transparent rows below a tight arch folded -> 2 specks under i4's thinking peak)"
+ ],
+ "fix7_phone_gate": "NOT MEASURED (needs the owner's cheap Android): open demo.html?facerig=1 and read fps + work p95. Hard gate before Integrate stands.",
+ "fps_proxy_swiftshader_same_session": {
+  "cpu4x_runs": 5,
+  "r9_work_p95_ms": [
+   14.2,
+   18.9,
+   18.2,
+   18.7,
+   15.9
+  ],
+  "r8_work_p95_ms": [
+   14.0,
+   16.4,
+   18.1,
+   26.5,
+   16.4
+  ],
+  "r9_p95_median": 18.2,
+  "r8_p95_median": 16.4,
+  "r9_p50_mean": 10.4,
+  "r8_p50_mean": 10.2,
+  "unthrottled_p95_ms": {
+   "r9": 5.8,
+   "r8": 4.6
+  },
+  "relight_cost": "?rel=0 A/B before the idle gate: p95 16.8 vs 18.9 - SwiftShader emulates the extra texture fetch per skin fragment on the throttled CPU; on a phone GPU it is one fetch",
+  "note": "box busier than r8's session (r8 measured 12.7 then, 14-26 today). NOT a phone reading."
+ },
+ "gates_final_clip_i5": {
+  "teargate_v2_frames": 0,
+  "hairgate_frames": 0,
+  "frames": 1440,
+  "scale_audit_fail": 0,
+  "articulation_strip": "work/gatestrip-r9.png (ch teeth meet, l lobe, O, m closures, U, ee: unchanged)"
+ },
+ "blind_builder": {
+  "clip_grid_i5 (t=0.5,11.4,25,30.5,33.6,38.3,40.2,36.4[concern B in motion],46)": {
+   "grok": {
+    "grok-1": 3.8,
+    "grok-2": 3.7,
+    "grok-3": 3.6
+   },
+   "sol": {
+    "sol-1": 3.8,
+    "sol-2": 3.6,
+    "sol-3": 4.0
+   },
+   "same": "6/6",
+   "notes": "'sceptical thinking' 0/6 (was 4/6 on i4); 'turn slid' 2/6 (sol); grok-3 reads the 20-deg turn as ~35 deg"
+  },
+  "clip_grid_i4": {
+   "grok": {
+    "grok-1": 3.7,
+    "grok-2": 3.6,
+    "grok-3": 3.8
+   },
+   "sol": {
+    "sol-1": 3.7,
+    "sol-2": 3.8,
+    "sol-3": 3.7
+   }
+  },
+  "sheet_grid_same_session_control": {
+   "r8": {
+    "grok": [
+     3.8,
+     3.6
+    ],
+    "sol": [
+     3.6,
+     3.7
+    ]
+   },
+   "r9_i2": {
+    "grok": [
+     3.8,
+     3.7,
+     3.7
+    ],
+    "sol": [
+     3.5,
+     3.5,
+     3.3
+    ]
+   },
+   "r9_i3": {
+    "grok": [
+     3.5,
+     3.9
+    ],
+    "sol": [
+     3.6,
+     3.7
+    ]
+   }
+  },
+  "judge_r8_reference": {
+   "grok": 3.6,
+   "sol": 3.6
+  }
+ },
+ "deliverables": [
+  "demo.html (+demo.bundle.js, pack/, audio/)",
+  "frames-sheet.jpg",
+  "clip-review-r9-1024.mp4 (48.0 s, 30 fps, i5)",
+  "clip-concern-AB-6s-r9.mp4",
+  "clip-turn-6s-r9.mp4",
+  "clip-acting-19s-r9.mp4",
+  "clip-talk-14s-r9.mp4",
+  "motion-{turn,thinking,surprise,concernAB,talk}-r9.jpg",
+  "blind-grid-r9.jpg (sheet)",
+  "blind-grid-clip-r9.jpg (clip i5)"
+ ],
+ "post_clip_changes": "after the i5 clip render: the relight idle gate (amount x smooth(1.5,4,|yaw|): < 1% light change below 4 deg) and the mixer's Map accumulator (behaviour-identical). demo.html runs the final bundle; the clip is i5.",
+ "self_score": 4.3
+}

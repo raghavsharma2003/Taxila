@@ -151,7 +151,7 @@ export const DEFAULT_CONFIG = Object.freeze({
     // REVIEW 2026-10-05: no failover onto a live-path deployment. luna carries the live whiteboard and mistral-m35 is
     // the live-reply AND classifier fallback (context/decisions.md 2026-10-04), so a fast-bg storm used to move all
     // speculation onto exactly the lanes a reply storm would need. Every link cooling = do not build (the engine
-    // default keeps serving). Re-measured in the storm battery (REVIEW-2026-10-05.md).
+    // default keeps serving). Re-measured in the storm battery (context/inbox/stagecraft-review.json).
     spec: ["taxila-stagecraft", "taxila-fast-bg"],
     image: ["taxila-image25-flare", "taxila-image"],
     live: ["race"],

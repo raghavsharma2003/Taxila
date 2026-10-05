@@ -543,7 +543,19 @@ function ensureFamilyFromWant(S, want, point, C, eff) {
 }
 
 function decide(S, point, C, eff) {
-  const hold = (why) => { row(S, eff, "point", { reason: why, servedRung: null, family: point.want?.family }); return { act: "hold", why }; };
+  const hold = (why) => {
+    row(S, eff, "point", { reason: why, servedRung: null, family: point.want?.family });
+    // REVIEW 2026-10-05: a piece of another skill (the topic changed under it) never stays up through a hold: it is
+    // retired to the calm board (her line is about the new topic; the old piece would contradict it)
+    const on = S.meta.onStageCand, cur = S.meta.current;
+    if (on && cur && parseFamily(on.family).skillId !== cur.skillId && why !== "safety" && why !== "child_floor") {
+      eff.push({ e: "retire", reason: "stale_topic" });
+      row(S, eff, "invalidated", { candidateId: on.id, family: on.family, rung: on.rung, reason: "topic_change" });
+      S.onStage = null; S.meta.onStageCand = null;
+      return { act: "hold", why, retireStale: true };
+    }
+    return { act: "hold", why };
+  };
   if (point.current) { const prev = S.meta.current; S.meta.current = { ...point.current, pending: [...(point.current.pending ?? [])] }; if (prev) invalidate(S, prev, S.meta.current, C, eff); }
   if (point.safetyOpen || S.quarantined) return hold("safety");
   if (point.childHoldsFloor || !BOUNDARY.has(point.phase)) return hold("child_floor");

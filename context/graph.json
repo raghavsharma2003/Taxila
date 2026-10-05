@@ -10900,6 +10900,279 @@
    "at": "2026-10-05",
    "title": "verify-A's lexicon shape koi_baat_nahi_karta fires on 'Ghar pe koi mujhse baat nahi karta. Bas aap hi sunte ho.', which tests/relational-policy.test.mjs pins as loneliness -> POINT_OUT, not an emergency (P2). That test fails on the current tree; tests/safety-redteam.test.mjs also fails one garbled line ('papa mummy ko roz maare hain.'). Both predate Verify B's changes (they fail identically with Verify B's files swapped out). Also borderline, left firing: 'mujhe papa se dar lagta hai jab result aata hai' (lexicon dar_actor_se).",
    "source": "inbox/safety-verify-b.json"
+  },
+  {
+   "id": "stagecraft-review-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Adversarial review of Stagecraft. Re-ran E-ST1 (240 lessons/arm, plus the 80-lesson safety, 60-lesson storm and 80-lesson sweep batteries) and reproduced the build report exactly (deterministic). After the fixes (results/sim-2026-10-05-review.json): ready 0.88 (plan 0.85, request 0.85, contrast 0.90), wrong/stale/safety/child-speaking/off-topic/visible failures all 0, lossless 9224/9224, spec $0.080/lesson-hour (wasted $0.042), stale-stage turns 0 (was 24 for sc_on, 161 for W2 today), storm battery ready 0.88 (was 0.90 with failover onto luna). Cost including live builds: sc_on ~$0.18/lesson-hour (spec 0.080 + live ~0.093 at $0.055/build, ~0.105 at the real arm's $0.062) vs W2 today ~$0.29 (live prefetch only). n = 240 simulated lessons, 65.8 lesson-hours; method evals/stagecraft/run.mjs.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-sim-bias-stress",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Simulator bias check. The original sim drew build times from the same CDF the conductor plans with, used the script's ACTUAL beat lengths for plan timing (an oracle), and never fed reply-lane 429s to the conductor. Stress arm (--stress sampleCalibrated, planNoise, replyStorm, 5% builds x3): conductor plans with the bench prior while builds are drawn from the real arm (spec p90 7.9 s), plan timing uses expected beat lengths and lists the optional explore beat even when skipped: ready 0.89 (plan 0.84), lossless 9224/9224, all failure counts 0, $0.082/h; sim-2026-10-05-stress-real.json, n=240. Harsher arm (builds x1.5 over the real arm, plan noise, a reply-lane 429 every 2 min): ready 0.85, plan 0.78, partial-intent contrast 0.76, all failure counts 0, $0.069/h; n=120 (sim-2026-10-05-stress-x15.json). Readiness degrades gracefully; zero-visible-failure does not depend on the build-time assumption because the instant rung and the board always serve. Not modelled still: real conversation text (lexicon/STT misses), cross-lesson contention, the Director re-planning mid-lesson.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-no-livepath-failover",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft's spec chain is taxila-stagecraft -> taxila-fast-bg -> do not build. Removed taxila-gpt6-luna (the live whiteboard) and taxila-mistral-m35 (the live-reply AND classifier fallback) from the chain, and quota.pickDeployment refuses any livePathLanes deployment. Why: under a fast-bg storm all speculation moved onto exactly the deployments a correlated reply storm needs. Cost: storm-battery readiness 0.90 -> 0.88, 0 visible failures either way. Reverse if O-1 lands a dedicated second Stagecraft deployment (add it to the chain) or a load test shows the live lanes have headroom under a fast-bg storm.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-process-wide-quota",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The conductor's quota buckets live in each lesson's portfolio, so they are per-lesson, not process-wide as config.js claimed: N lessons drew N x 120 RPM from fast-bg (500k TPM; a spec call is ~5-8k tokens, so ~60-90 concurrent lessons would saturate it). host.js now holds a process-wide bucket per deployment (config.globalRpm, fast-bg 60 RPM [E]); a refused launch never reaches Foundry and comes back as a local 429. Multi-replica Container Apps still need a shared limiter (Redis or a per-replica share of the TPM). Reverse when Azure-side rate limits are measured per replica.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-stale-topic-piece",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: the first Stagecraft build left the old topic's piece on stage after a topic change whenever the policy had no want (spacing window, below threshold): 24 stage-turns over 240 lessons for sc_on (161 for W2 today). The reveal-truth check never saw it because nothing was revealed. Fix: policy.wantAt treats a piece of another skill as absent and exempts its replacement from spacing; conductor.decide retires it on any hold (effect retire; seam-bridge proposes retire). Now 0. Also an accepted offer or a want for another skill is dropped (decide holds stale_want), which a pick() against the new topic's catalog would otherwise have shown under her old-topic line.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-shadow-kernel-view",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: seam-bridge updated the kernel's stage view only in mode on, and kernel-point never cleared it on retire nor counted board verdicts. In shadow mode the policy therefore saw onStage = null and lastReveal = -99 forever, so shadow logs would not be the wants on makes, and the board-reteach rule (1207 of 5376 simulated points) could never fire in production. Fix: host.decide() returns the decided outcome in every mode and the hook runs in shadow; noteKernelRetired and noteBoardVerdict added (the seam's gradeAnswer path must call noteBoardVerdict: part of P4).",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-stage-failed-swallow",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Tried: src/stagecraft/stage.ts failed() for the SHOWING piece replaced a pending incoming piece with the dying piece's board twin, so her line named piece B while the stage showed A's board. Fix: if a piece is mounting, the dying showing piece is left for the incoming one to replace. tests/stagecraft-adversarial.test.mjs A5.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-open-after-review",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Still open after review (not fixed): stage active share 0.85 vs 35-55% band (needs a rest rule, an owner product call since item 14 asks for frequency); plan-led readiness 0.85 vs 0.95; real spec p90 7.9 s vs 6 s (O-1 or a leaner prompt); the controller draws live_codegen and image reveals as their board twin until W2-H's frame host is wired into src/stagecraft/controller.ts, so the generated-pieces count includes ~5% live reveals that would look like a board; full npm test did not finish in 10 min (unrelated suites, blocked example.test); reply TTFT under load n=30 too small for the 50 ms target.",
+   "source": "inbox/stagecraft-review.json"
+  },
+  {
+   "id": "stagecraft-lossless-reveal",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft: the code policy (server/stagecraft/policy.js wantAt, kernel P4) picks the idea from a portfolio-free input; Stagecraft only serves it at the best fresh, checked rung. Measured lossless 9208/9208 want points identical with speculation off vs on over 240 simulated lessons. Reverse if E-ST7 shows a readiness-aware policy improves host-graded outcomes with 0 stale, off-topic or safety regressions.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-validity-key-at-reveal",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft freshness is the candidate's premise (ValidityKey) re-checked at the reveal point plus invalidation on every state input, not a timer. 0 stale reveals over 5368 served points (240 lessons, incl. topic changes, lang flips, resolved misconceptions). Reverse if stale reveals stay 0 over ≥1000 replayed points with the reveal-time check removed.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-tiered-eagerness",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft tiers: specs launch on weak signals (P(ready by deadline+2.5 s) ≥ 0.15, just-in-time ≤ 90 s lead), images only on stable intent or plan lead ≥ 20 s, live races only from planned lookahead ≥ 90 s (λ=0 for live; LIVE-STUDIO caps govern). Reverse per tier when its measured p90 falls below the median child-turn length.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-board-twin",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Every Stagecraft candidate carries a code-built board twin with identical values; it is the nothing-ready answer and the mount-failure rung (device: src/stagecraft/stage.ts, 5000 random event streams never empty / never unpainted). 0 visible failures over 240 lessons with 1% injected mount failures. Reverse if engine mount failures are 0 over ≥2000 real mounts.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-reply-lane-isolation",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft never calls the reply deployment; spec chain taxila-stagecraft (O-1, absent) → taxila-fast-bg → taxila-gpt6-luna → taxila-mistral-m35 → no build; quiet from committed until 1.5 s into her_turn; a reply 429 pauses spec launches 60 s. Reverse if E-ST4 at n ≥ 200 reply calls shows TTFT p90 regression ≤ 10 ms with no quiet window.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-probe-then-contrast",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Policy: a misconception revealed this lesson is contrasted at the reveal point AFTER the one answering the revealing turn (she probes 'kyun?' first); a misconception known from earlier sessions waits for the contrast beat; a repaired one is not contrasted again. Gives the partial-intent spec ~one turn of lead: contrast readiness 0.90 (n 121) vs 0.32 on demand. Reverse if E-ST7 shows immediate contrast improves host-graded post-items.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-shared-idea-families",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A child request maps to the SAME family (skill|need|mis) as the plan/signal idea it asks for (game → practice, diagram/animation → explain, 'dusre tarike se' → re_represent), so lookahead speculation serves requests: request readiness 0.85 (n 967) vs 0.77 on demand. A newer request un-pins (not kills) a shared family. Reverse if requests are shown to want pieces distinct from the planned idea in ≥20% of E-ST7 picks.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-spec-default-deployment",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Until O-1 (taxila-stagecraft), Stagecraft specs default to taxila-fast-bg, not taxila-gpt6-luna as STAGECRAFT.md first said: luna carries the live whiteboard (w2f-luna-reserved-for-whiteboard). E-ST4: fast-bg 28/30 usable, p50 5373 / p90 7949 ms, $0.0013/spec; luna 30/30, p50 5797 / p90 8216 ms, $0.0006/spec. Reverse when a dedicated whiteboard deployment exists (then luna is cheaper).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-frequency-target",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft frequency target ≥ 6 child-specific generated pieces and ≥ 12 stage moments per 25-minute lesson; simulated 20.3 and 35.0 (W2 today 1.7 and 12.9). Stage active share simulated 0.85, ABOVE the 35-55% band: the band, not the generation rate, is the open risk (seductive detail). Reverse (lower) if E-ST7 shows harm on host-graded post-items; raise if none at 1.5x.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-max-families-6",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Stagecraft keeps ≤ 6 open families (design said 4) and bounds only SPECULATIVE candidates at 24 (instant rungs are code). E-ST3 at 80 lessons: maxFamilies 4 → readiness 0.86 and wasted $0.0675/h vs 0.89 and $0.0528/h at 6 (the next beat's family was evicted by live request/signal families). Reverse if a sweep at ≥200 lessons shows 4 within 0.01 readiness at lower waste.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-sim-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "E-ST1 sim (evals/stagecraft/run.mjs, 240 scripted lessons classes 4-7 maths/science, real kit topic+misconception ids, measured build CDFs, 2026-10-05): right artifact ready when needed W2 today 0.28 / Stagecraft on-demand 0.61 / Stagecraft speculative 0.89 / one candidate per family 0.87 (5368 served points); plan-led 0.85 (n 2451), request 0.85 (n 967), contrast 0.90 (n 121), signal 0.89 (n 623), board reteach 0.98 (n 1206). Wrong/stale/safety/child-speaking/off-topic reveals and visible failures all 0. Speculative $0.081/lesson-hour (wasted $0.043). Generated pieces 20.3 and stage moments 35.0 per 25 min (W2 1.7 and 12.9). Request → first frame p50 2782 / p95 3397 ms (modelled clock). Lossless 9208/9208.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-est2-calibration-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "E-ST2 (240 sim lessons, nomination → served within 90 s): hit@1/3/5 0.272/0.844/0.932 (n 4894 points). Starting pNeed priors are miscalibrated: plan 0.8→0.65, 0.5→0.30, 0.3→0.14; partial 0.45→0.35; request 1.0→0.81; board 0.35→0.45, 0.5→0.63; ECE plan 0.17, request 0.19, signal 0.08. Fitted values are simulator-derived; refit on shadow-mode logs before use.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-est6-safety-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "E-ST6 safety battery: 80 sim lessons each with a distress turn (quarantine open 2-3 turns at a random point): 0 stage changes and 0 builds during quarantine, 0 stale/wrong/visible failures; readiness 0.86 overall. Plus 10,000 random input streams (tests/stagecraft-property.test.mjs): no reveal off-boundary, none while quarantined, none stale, caps held, replay deterministic.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-storm-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "429 storm battery: 60 sim lessons with a 30-90 s 429 storm on the first spec link and image 429s at 35%: 65 429s, 65 failovers, 0 visible failures, readiness 0.90.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-est4-real-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "E-ST4 real-build arm (evals/stagecraft/real-arm.mjs, 2026-10-05, $0.876 + $0.073 smoke): 60 generated specs 3-wide via server/stagecraft/builders.js: 58/60 usable, p50 5577 / p90 7949 ms (design target p90 ≤ 6 s MISSED; the RS-4 bench at 1-wide had p50 3.4-7.0 s); 10 flare-low images p50 15461 / p90 18483 ms, 1 429 failed over to gpt-image-2 low; 12 live races via buildRace + local gate 12/12 passed, p50 35.7 / p90 51.8 s, $0.062/race; reply TTFT on taxila-fast p50 958→876 ms, p90 1173→1294 ms under Stagecraft load (n 30 each: cannot resolve a 50 ms p90 regression), 0 reply 429s.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "stagecraft-est3-sweeps-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "E-ST3 sweeps (80 sim lessons each, sc_on baseline ready 0.89, $0.089/h, wasted $0.053/h): λ 25 0.89/$0.089; λ 100 0.83/$0.069; minPReadySpec 0.4 0.89/$0.086; spec concurrency 2 0.88; half-life 10 s 0.89; spec maxLead 45 s 0.86, 180 s 0.90/$0.090; maxFamilies 4 0.86/$0.102 (waste $0.068).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-family-level-value-gain",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Stagecraft scoring a spec's value gain against the best ready candidate of the whole FAMILY: a ready spec of a sibling archetype zeroed the gain for the archetype the policy actually picks, so no spec of it was built and the engine default served (explain beats in 40-lesson replay). Gain is now per (family, archetype).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-request-own-family",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Keying each child request as its own family (…|req<seq>): the plan's and signals' speculation for the same idea never served the request. Shared idea families raised request readiness.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-unbounded-spec-lead",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Launching specs as soon as a beat appears in lookahead (minutes ahead): ready specs aged past readyUnrevealedMs (4 min) and went to the library before their beat; plan families were rebuilt. Specs now launch just in time (lead ≤ 90 s).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-reshow-after-retire",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Letting the beat policy re-want a family the seam just retired (8 turns): the same piece ping-ponged back, stage moments inflated to 42 per 25 min and stage active share to 0.94. The policy now skips families already shown in the beat.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-request-answered-only-on-reveal",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Clearing a child request only when its outcome was a reveal/board: with speculation a better rung swapped in (reveal) where on-demand held (same_piece), so the kernel's request state, and then its wants, diverged; lossless fell to 0.9974 (2/240 lessons). A request is answered when its idea is on stage, whatever the rung.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-lambda-on-live",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Charging live races λ·cost (λ=50/USD) in the Stagecraft score: every race scored negative, no live build ever launched for no-engine topics. Live tier uses λ=0; LIVE-STUDIO caps, router and breaker govern it.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-luna-default-spec",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "taxila-gpt6-luna as the default Stagecraft spec deployment (STAGECRAFT.md §3.4 first draft): it carries the live whiteboard per line with a 7 s budget; 3-wide specs at ~12/min per lesson would contend with it. Default is taxila-fast-bg until O-1.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-reveal-when-ready",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "By design (STAGECRAFT.md §10, Study B §4): revealing a piece because it became ready. Readiness is never a reason to reveal; only the policy's want at a boundary is.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-model-decides-reveal",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "By design: a model deciding whether/what to show. The reveal is code (thresholds pReveal 0.7 / pOffer 0.4).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-live-build-from-partial",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "By design: starting a live codegen race from a partial or a child request. Live tier minStrength = planned, lead ≥ 90 s (tested).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "rj-sc-same-archetype-k",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "By design: k speculative candidates as variants of one archetype. A family hedges across the top archetype of each kind (SC-2).",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "open-stagecraft-patches-unapplied",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "Stagecraft patches P1-P10 (docs/design/stagecraft/patches) are written and git-apply-checked against 2026-10-05 07:00 but NOT applied; P4 needs W2-E to confirm kernel-point.js field mapping; P2/P7 are snippets. Until applied, Stagecraft runs only in the simulator and tests.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "open-stagecraft-stage-too-busy",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "Simulated stage active share 0.85 vs target band 35-55%: retire/spacing rules keep a piece on stage most of the lesson. Needs a policy rest rule and E-ST7 evidence before stagecraft=on.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "open-stagecraft-spec-p90",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "Real spec p90 7.9 s at 3-wide (target 6 s). Options: O-1 dedicated deployment, smaller prompts (schema+example ~5 kB), or effort none; measure.",
+   "source": "inbox/stagecraft.json"
+  },
+  {
+   "id": "open-stagecraft-image-dormant",
+   "kind": "open",
+   "at": "2026-10-05",
+   "title": "The image rung is wired and calibrated (flare p50 15.5 s) but in simulation never scores above λ·cost and the hook beat no longer prefers images; production image checks need an OCR no-text checker and Content Safety injected (absent → never ready, B5).",
+   "source": "inbox/stagecraft.json"
   }
  ],
  "edges": [
@@ -17682,6 +17955,96 @@
    "src": "open-vb-pass1-lesson-fps",
    "rel": "part_of",
    "dst": "open-sr-pass1-hard-negative-fps"
+  },
+  {
+   "src": "stagecraft-review-2026-10-05",
+   "rel": "measured_by",
+   "dst": "stagecraft-sim-bias-stress"
+  },
+  {
+   "src": "stagecraft-stale-topic-piece",
+   "rel": "measured_by",
+   "dst": "stagecraft-review-2026-10-05"
+  },
+  {
+   "src": "stagecraft-process-wide-quota",
+   "rel": "measured_by",
+   "dst": "stagecraft-review-2026-10-05"
+  },
+  {
+   "src": "stagecraft-lossless-reveal",
+   "rel": "measured_by",
+   "dst": "stagecraft-sim-2026-10-05"
+  },
+  {
+   "src": "stagecraft-validity-key-at-reveal",
+   "rel": "measured_by",
+   "dst": "stagecraft-sim-2026-10-05"
+  },
+  {
+   "src": "stagecraft-board-twin",
+   "rel": "measured_by",
+   "dst": "stagecraft-est6-safety-2026-10-05"
+  },
+  {
+   "src": "stagecraft-reply-lane-isolation",
+   "rel": "measured_by",
+   "dst": "stagecraft-est4-real-2026-10-05"
+  },
+  {
+   "src": "stagecraft-spec-default-deployment",
+   "rel": "measured_by",
+   "dst": "stagecraft-est4-real-2026-10-05"
+  },
+  {
+   "src": "stagecraft-spec-default-deployment",
+   "rel": "caused_by",
+   "dst": "rj-sc-luna-default-spec"
+  },
+  {
+   "src": "stagecraft-max-families-6",
+   "rel": "measured_by",
+   "dst": "stagecraft-est3-sweeps-2026-10-05"
+  },
+  {
+   "src": "stagecraft-tiered-eagerness",
+   "rel": "measured_by",
+   "dst": "stagecraft-est3-sweeps-2026-10-05"
+  },
+  {
+   "src": "stagecraft-tiered-eagerness",
+   "rel": "caused_by",
+   "dst": "rj-sc-unbounded-spec-lead"
+  },
+  {
+   "src": "stagecraft-tiered-eagerness",
+   "rel": "caused_by",
+   "dst": "rj-sc-lambda-on-live"
+  },
+  {
+   "src": "stagecraft-shared-idea-families",
+   "rel": "caused_by",
+   "dst": "rj-sc-request-own-family"
+  },
+  {
+   "src": "stagecraft-lossless-reveal",
+   "rel": "caused_by",
+   "dst": "rj-sc-request-answered-only-on-reveal"
+  },
+  {
+   "src": "stagecraft-frequency-target",
+   "rel": "measured_by",
+   "dst": "stagecraft-sim-2026-10-05"
+  },
+  {
+   "src": "stagecraft-probe-then-contrast",
+   "rel": "measured_by",
+   "dst": "stagecraft-sim-2026-10-05"
+  },
+  {
+   "src": "open-stagecraft-stage-too-busy",
+   "rel": "caused_by",
+   "dst": "rj-sc-reshow-after-retire"
   }
  ]
 }

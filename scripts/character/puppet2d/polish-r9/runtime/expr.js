@@ -243,7 +243,9 @@ export class Expressions {
     // r9: the two takes of a crossfade ACCUMULATE (weights sum to ~1 through the blend): r9 i3 mixed them by max() and by
     // sequential suppression, so mid-blend each counted half, the brows sagged toward neutral and behaviour's smile leaked
     // back (a smile flash between concern A and B)
-    const A = { pos: {}, sup: {}, lip: {}, gz: [0, 0], w: 0 };
+    // (r9 fps: one persistent accumulator of Maps, cleared per frame; no per-frame allocation)
+    const A = this._A || (this._A = { pos: new Map(), sup: new Map(), lip: new Map(), gz: [0, 0], w: 0 });
+    A.pos.clear(); A.sup.clear(); A.lip.clear(); A.gz[0] = A.gz[1] = 0; A.w = 0;
     if (this.prev) {
       const pv = this.prev, ep = pv.e0 * (1 - smooth01((t - pv.t0) / pv.fade));
       if (ep <= 0.001) this.prev = null;
@@ -252,9 +254,9 @@ export class Expressions {
     const e = this.level(t);
     if (this.cur && e > 0) this._mix(this.cur, e, t, head, A);
     if (A.w <= 0) return 0;
-    for (const [k, v] of Object.entries(A.pos)) bs[k] = Math.max(bs[k] ?? 0, v);
-    for (const [k, w] of Object.entries(A.sup)) bs[k] = (bs[k] ?? 0) * (1 - Math.min(1, w));
-    if (lip) for (const [k, v] of Object.entries(A.lip)) lip[k] = Math.max(lip[k] ?? 0, v);
+    A.pos.forEach((v, k) => { bs[k] = Math.max(bs[k] ?? 0, v); });
+    A.sup.forEach((w, k) => { bs[k] = (bs[k] ?? 0) * (1 - Math.min(1, w)); });
+    if (lip) A.lip.forEach((v, k) => { lip[k] = Math.max(lip[k] ?? 0, v); });
     const wg = Math.min(1, A.w), nz = A.w > 1 ? 1 / A.w : 1;
     gaze[0] = gaze[0] * (1 - wg) + A.gz[0] * nz;
     gaze[1] = gaze[1] * (1 - wg) + A.gz[1] * nz;
@@ -271,9 +273,9 @@ export class Expressions {
       if (P.wob && P.wob[k]) for (const [amp, hz] of P.wob[k]) v += amp * Math.sin(2 * Math.PI * hz * u + (cur.ph || 0) + hz);
       // r8: every LIP-layer key of a preset goes to the lip layer (the compositor drops behaviour's lip keys, so r7's
       // presets lost mouthPucker / mouthFunnel in the clip while the sheet stills showed them)
-      if (LIPK.has(k)) { A.lip[k] = (A.lip[k] ?? 0) + Math.max(0, v) * e; continue; }
-      if (v < 0) A.sup[k] = (A.sup[k] ?? 0) + e;
-      else A.pos[k] = (A.pos[k] ?? 0) + v * e;
+      if (LIPK.has(k)) { A.lip.set(k, (A.lip.get(k) ?? 0) + Math.max(0, v) * e); continue; }
+      if (v < 0) A.sup.set(k, (A.sup.get(k) ?? 0) + e);
+      else A.pos.set(k, (A.pos.get(k) ?? 0) + v * e);
     }
     for (let i = 0; i < 3; i++) head[i] += P.head[i] * e;
     // r7: the acting layer (head + body curves); a mirrored take mirrors yaw and roll
