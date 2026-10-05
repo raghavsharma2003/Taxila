@@ -86,7 +86,7 @@ const SHAPES = [
   ["self_harm", "sab_khatam_karna", `(?<!(?:ye|yeh|is|ise|homevork|kam|savaal|saval|level|game|khana) )sab (?:kuch )?khatam (?:karna|kar dena) (?:chahta|chahti|chata|chati|hai|he)`],
   ["self_harm", "nahi_jee_sakta", `${I_S}${g(2)} (?:aur |ab )?(?:nahi|nahin|nai|nhi) (?:ji|je|jiu|jiyu) (?:sakta|sakti|pata|pati|paunga|paungi)|(?:ji|jina) (?:nahi|nahin|nai) (?:sakta|sakti|pa raha|pa rahi)`],
   ["self_harm", "kalai_cut", `(?:kalai|kalaiyon|nas|nasen|nason)(?: pe| par| ki| ko)? (?:kut|kat|kati|kata|kate|blade)`, (m, full) => ACCIDENT.test(full)],
-  ["self_harm", "poison", `(?:jehar|jahar|jehr|jaher|poison)(?: [a-z]+)? (?:kha|pi|pee|kha)(?: [a-z]+)? (?:lun|lunga|lungi|lu|lena|liya|li|jaunga|jaungi)|(?:drink|eat|take|drank|ate|took|swalov\w*) (?:some )?poison`],
+  ["self_harm", "poison", `(?:jehar|jahar|jehr|jaher|poison)(?: [a-z]+)? (?:kha|pi|pee|kha)(?: [a-z]+)? (?:lun|lunga|lungi|lu|lena|liya|li|jaunga|jaungi)|(?:drink|eat|take|drank|ate|took|svalov\\w*) (?:some )?poison`],
   ["self_harm", "train_ke_aage", `(?:train|tren|bus|truk|gadi|kar)(?: ke)? (?:age|niche|samne|samane) (?:kud|a|so|let|chala|chali|jump)(?: [a-z]+)? (?:jaunga|jaungi|jaun|jau|jana|dunga|dungi)|(?:jump|lie dovn|lay dovn) in front of (?:a |the )?(?:train|bus|truk|kar)`],
   ["self_harm", "hang_fansi", `(?:pankhe|pankha|panka|rasi|dupate|dupata|chuni|fanda|fande) se latak|(?:fansi|fasi) (?:laga|lga|le|lagaunga|lagaungi|laga lunga|laga lungi|le lunga|le lungi|lagana)|(?:hang|hanging) ${SELFX}`],
   ["self_harm", "meri_zarurat_nahi", `(?:kisi ko|kisiko) (?:bhi )?(?:meri )?(?:jarurat|jarurt|jrurat) (?:nahi|nahin|nai)|${I_S} (?:chala|chali) (?:jaun|jau|jaunga|jaungi)(?: to| toh)? (?:behtar|acha|achha|thik|beter)`],
@@ -208,9 +208,9 @@ const DEVA_SIGNS = ["ा", "ि", "ी", "ु", "ू", "े", "ै", "ो", "ौ
 /**
  * The turn's canonical readings, clauses joined by " . " (unreadable other-script tokens dropped). The first reading takes
  * every token's garble correction when it is unambiguous; each further reading swaps ONE ambiguous token to one of its
- * candidates (a real transcript garbles about one word in a disclosure, CRITIQUE §2). Exported for tests.
+ * candidates (a real transcript garbles about one word in a disclosure, CRITIQUE §2). (canonicalReadings below returns them as strings for tests.)
  */
-export function canonicalReadings(text) {
+function readingsOf(text) {
   const clauses = foldUnicode(text).split(/[.,!?;:।॥\n]+/u);
   const toks = [];
   for (const cl of clauses) {
@@ -230,20 +230,29 @@ export function canonicalReadings(text) {
   if (toks.length && toks[toks.length - 1].c === ".") toks.pop();
   // the base reading corrects only an unambiguous garble of a token that is neither a lexicon word nor a known real word
   const base = toks.map((t) => (t.alts.length === 1 && !t.known && !VOCAB.has(t.c) ? t.alts[0] : t.c));
-  const out = [base.join(" ")];
-  for (let i = 0; i < toks.length && out.length < 32; i++) for (const a of toks[i].alts) if (a !== base[i]) { const r = base.slice(); r[i] = a; out.push(r.join(" ")); }
+  const out = [{ text: base.join(" "), swapped: null }];
+  for (let i = 0; i < toks.length && out.length < 48; i++) for (const a of toks[i].alts) if (a !== base[i]) { const r = base.slice(); r[i] = a; out.push({ text: r.join(" "), swapped: a }); }
   return out;
 }
-export const canonicalReading = (text) => canonicalReadings(text)[0];
+/** The readings as strings (tests, debugging). */
+export const canonicalReadings = (text) => readingsOf(text).map((r) => r.text);
+export const canonicalReading = (text) => readingsOf(text)[0]?.text ?? "";
+/** word → the shapes whose source carries it: a single-swap variant is tested only against shapes that could use its new word. */
+const BY_WORD = (() => {
+  const m = new Map();
+  for (const s of SHAPES) for (const w of new Set(s.re.source.replace(/\[[^\]]*\]|\\./g, " ").match(/[a-z]{2,}/g) ?? [])) { const a = m.get(w) ?? []; a.push(s); m.set(w, a); }
+  m.set("i", SHAPES.filter((s) => /(?<![a-z])i(?![a-z])/.test(s.re.source.replace(/\[[^\]]*\]|\\./g, " "))));
+  return m;
+})();
 
 /**
  * The lexicon pass over one turn.
  * @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null, shape: string|null }}
  */
 export function lexiconScan(text) {
-  const readings = canonicalReadings(text);
-  if (!readings[0]) return { distress: false, kind: null, shape: null };
-  for (const full of readings) for (const s of SHAPES) {
+  const readings = readingsOf(text);
+  if (!readings.length || !readings[0].text) return { distress: false, kind: null, shape: null };
+  for (const { text: full, swapped } of readings) for (const s of swapped ? (BY_WORD.get(swapped) ?? []) : SHAPES) {
     const m = s.re.exec(full);
     if (!m) continue;
     if (s.guard && s.guard(m[0], full)) continue;

@@ -22,7 +22,7 @@ import { performance } from "node:perf_hooks";
 import { scanSafetyDetail, readability } from "../../server/director/safety.js";
 import * as C from "./corpora.mjs";
 import { HARD_NEGATIVES, HELDOUT_DISTRESS } from "./negatives.data.mjs";
-import { REDTEAM_DISTRESS, REDTEAM_ROUND2, REDTEAM_QUIET, REDTEAM_QUIET2 } from "./redteam.data.mjs";
+import { REDTEAM_DISTRESS, REDTEAM_ROUND2, REDTEAM_ROUND3, REDTEAM_QUIET, REDTEAM_QUIET2, REDTEAM_QUIET3 } from "./redteam.data.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i < 0 ? d : process.argv[i + 1]; };
@@ -107,9 +107,10 @@ const fdb = C.taxilaFdbDistress();
 const es3 = C.es3Distress();
 const held = HELDOUT_DISTRESS.map(([text, kind], i) => ({ id: `held${i}`, segs: [text.split(/\s+/)], text, kind }));
 const cv2 = (await C.conversationV2Distress()).filter((x) => x.text).map((x) => ({ ...x, segs: [x.text.split(/\s+/)] }));
-// verify-A red team (2026-10-05): a second author's 196 disclosures (rounds 1+2). Tuned on (DEV data), so not an unseen estimate.
-const red = [...REDTEAM_DISTRESS, ...REDTEAM_ROUND2].map(([text, kind], i) => ({ id: `red${i}`, segs: [text.split(/\s+/)], text, kind }));
-const distress = [distressSet("taxilafdb_84", fdb), distressSet("es3_80", es3), distressSet("heldout_paraphrase_40", held), distressSet("conversation_v2_offline", cv2), distressSet("redteam_verifyA_196", red)];
+// verify-A red team (2026-10-05): a second author's 226 disclosures (rounds 1-3). Tuned on (DEV data), so not an unseen estimate:
+// the unseen estimates are each round scored once before its fixes (round 2: 18/50, round 3: 14/30; redteam.data.mjs).
+const red = [...REDTEAM_DISTRESS, ...REDTEAM_ROUND2, ...REDTEAM_ROUND3].map(([text, kind], i) => ({ id: `red${i}`, segs: [text.split(/\s+/)], text, kind }));
+const distress = [distressSet("taxilafdb_84", fdb), distressSet("es3_80", es3), distressSet("heldout_paraphrase_40", held), distressSet("conversation_v2_offline", cv2), distressSet("redteam_verifyA_226", red)];
 
 const hn = HARD_NEGATIVES;
 const fp = [
@@ -120,7 +121,7 @@ const fp = [
   fpSet("hard_negatives_plain_dev", hn.filter((x) => x.plain && x.split === "dev"), { perturb: SEEDS }),
   fpSet("hard_negatives_plain_holdout", hn.filter((x) => x.plain && x.split === "holdout"), { perturb: SEEDS }),
   fpSet("hard_negatives_ambiguous", hn.filter((x) => !x.plain)),
-  fpSet("redteam_quiet_96", [...REDTEAM_QUIET, ...REDTEAM_QUIET2].map((text, i) => ({ id: `rq${i}`, text })), { perturb: SEEDS }),
+  fpSet("redteam_quiet_126", [...REDTEAM_QUIET, ...REDTEAM_QUIET2, ...REDTEAM_QUIET3].map((text, i) => ({ id: `rq${i}`, text })), { perturb: SEEDS }),
 ];
 
 // latency: µs per scan on lesson turns (the device runs it on every partial)

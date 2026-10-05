@@ -229,7 +229,11 @@ const LESSON_WORDS = ("answer jawab जवाब sawal savaal सवाल sum q
   "line ball gend गेंद six chhakka छक्का chauka चौका shot goal kite patang game games pubg level zombie creeper character match wicket run machhar machchar " +
   "मच्छर makkhi mosquito fly flies cockroach chuha chuhe keeda keede कीडे insect insects plant plants paudha paudhe पौधे पौधा ped pedon पेड cell cells log " +
   "logon janwar jaanwar animal animals dinosaur dinosaurs saanp sanp सांप snake snakes bacteria germ germs virus machhli मछली fish bird birds chidiya sher " +
-  "शेर hiran हिरण raja राजा ravan रावण villain story kahani कहानी").split(" ");
+  "शेर hiran हिरण raja राजा ravan रावण villain story kahani कहानी " +
+  // Verify B (2026-10-05): the same objects as the live transcriber writes them in Devanagari ("मेरा भाई मुझे मारता है गेम में"
+  // had no guard word to find); nukta-free, as prep() folds
+  "गेम लेवल मैच बॉल विकेट शॉट गोल पतंग जॉम्बी कैरेक्टर कॉकरोच चूहा चूहे कीडा कीडे पौधों पेड पेडों सेल जानवर डायनासोर सांप बैक्टीरिया कीटाणु वायरस " +
+  "चिडिया लूडो शतरंज चेस कैरम क्रिकेट फुटबॉल सवालों नंबर").split(" ");
 const REPORT_WORDS = "bataya batayi batati batate bola boli bole kaha kehte kehti kehta bolte bolti bolta padhaya padhate padhati samjhaya samjhate samjhati बताया बोला कहा कहते पढाया समझाया".split(" ");
 /**
  * A guard word, read with the same tolerance as a slot (a garbled guard word must not switch its guard off: "early" heard as
@@ -265,7 +269,16 @@ const STORY = guardSet(("kahani kahaani story stories villain hero heroine ravan
 const storyTalk = (c) => c.toks.some((t) => STORY.test(t.raw));
 /** a game or a story around a kill / die word ("i died three times in level 2"). */
 // (Verify B, 2026-10-05: board games and sports added — "my brother eats me alive in chess", "my mom beat me at ludo")
-const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol|chess|ludo|carrom|cricket|football|badminton|kabaddi|race|quiz)$/u);
+const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol|chess|ludo|carrom|cricket|football|badminton|kabaddi|race|quiz|गेम|लेवल|कहानी|मूवी|कार्टून|जोक|चेस|लूडो|कैरम|क्रिकेट|फुटबॉल)$/u);
+/** "life science", "life skills", "life cycle", "life jacket": a subject, not a life (Verify B; pass 1 still fires on the English). */
+const lifeNoun = (c) => /^(?:science|sciences|skills|skill|cycle|cycles|processes|process|span|jacket|style|साइंस|स्किल्स|साइकिल|जैकेट)$/u.test(c.toks[c.end]?.raw ?? "");
+/** "I want to die my hair" (dye said as die): a body / cloth object right after (Verify B; pass 1 still fires on the English). */
+const dyeObject = (c) => /^(?:my|the|this|it|hair|clothes|shirt|माय|द|दिस|इट|हेयर|बाल|कपडे|शर्ट)$/u.test(c.toks[c.end]?.raw ?? "") || gameTalk(c);
+/**
+ * "I don't want to leave the class" written in Devanagari ("आई डोंट वांट टू लीव द क्लास") shares the English skeleton "lv" with
+ * live: an object / place / time right after the verb is the leave (or the live-in) reading (Verify B, 2026-10-05).
+ */
+const liveObject = (c) => /^(?:in|at|with|near|here|there|on|the|this|my|you|him|her|them|it|now|school|class|home|stream|streaming|alone|इन|एट|विद|नियर|हियर|देयर|ऑन|द|दिस|माय|यू|हिम|हर|देम|इट|नाउ|स्कूल|क्लास|होम|स्ट्रीम)$/u.test(c.toks[c.end]?.raw ?? "");
 /**
  * Verify B (2026-10-05): Hindi "baad" (after) canonicalises to "bad", so "uske baad touch karo blue" (a tablet instruction) read
  * as BAD TOUCH. Off when the token is written "baad" / "बाद" AND it is the "after" frame (ke / uske / iske before it, or an
@@ -296,13 +309,26 @@ const KEY = new Set(["MARNA", "MAR", "JEENA", "JEENE", "ZINDA", "HARMV", "GAYAB"
  * garble never makes them either (it drops an INTERIOR letter: "harm" -> "hrm" / "ham", "maar" -> "mar").
  */
 const NEVER_FILL = { HARMV: new Set(["har", "हर", "maa", "ma", "मां", "मा"]), KILL: new Set(["har", "हर"]), MAR: new Set(["maa", "ma", "मां", "मा"]) };
+/**
+ * Verify B (2026-10-05): "maarna" / "मारना" (to hit / kill, transitive) canonicalises onto "marna" (to die), and MAR holds "maar"
+ * as a spelling of "mar": "mujhe maarna hai machhar ko", "mujhe bas maarna hai ek six", "main maar jaunga ye level" fired the
+ * self-harm shapes. Off only when the verb is SPELLED long ("maar..." / "मार...") AND the clause names what is hit: an object
+ * marker "ko" / "को", a lesson / game object, or a number within three words after. "mujhe maarna hai" alone, and every
+ * short spelling ("mar jaunga", "marna hai"), still fire.
+ */
+const LONG_MAAR = /^(?:maar|maara|maarna|maarne|maaro|मार|मारना|मारने|मारो)$/u;
+const transitiveMaar = (c) => {
+  if (!c.toks.slice(c.start, c.end).some((t) => LONG_MAAR.test(t.raw))) return false;
+  const cl = c.toks[c.end - 1].clause, after = c.toks.slice(c.end, c.end + 3).filter((t) => t.clause === cl);
+  return after.some((t) => t.raw === "ko" || t.raw === "को" || LESSON_OBJ.test(t.raw) || NUMWORD.test(t.raw)) || lessonTalk(c);
+};
 const SHAPES = [
   // self-harm (FAMILIES.self_harm's shapes as slots; a longer variant of a shape exists so a garble has budget to land in)
-  ["self_harm", "mujhe_marna_hai", "I_OBJ ?bas MARNA AUX"],
-  ["self_harm", "mujhe_mar_jana_hai", "I_OBJ ?bas MAR JANA AUX"],
-  ["self_harm", "mar_jana_chahta", "MAR JANA CHAH"],
-  ["self_harm", "main_mar_jana_chahta", "I_SUBJ ?bas MAR JANA CHAH"],
-  ["self_harm", "main_mar_jaun", "I_SUBJ MAR JAU"],
+  ["self_harm", "mujhe_marna_hai", "I_OBJ ?bas MARNA AUX", { guard: transitiveMaar }],
+  ["self_harm", "mujhe_mar_jana_hai", "I_OBJ ?bas MAR JANA AUX", { guard: transitiveMaar }],
+  ["self_harm", "mar_jana_chahta", "MAR JANA CHAH", { guard: transitiveMaar }],
+  ["self_harm", "main_mar_jana_chahta", "I_SUBJ ?bas MAR JANA CHAH", { guard: transitiveMaar }],
+  ["self_harm", "main_mar_jaun", "I_SUBJ MAR JAU", { guard: transitiveMaar }],
   ["self_harm", "jeena_nahi", "JEENA NEG_HI", { guard: jeenaGuard }],
   ["self_harm", "mujhe_jeena_nahi", "I_OBJ JEENA NEG_HI", { guard: jeenaGuard }],
   ["self_harm", "mujhe_jeena_nahi_hai", "I_OBJ JEENA NEG_HI AUX", { guard: (c) => /^(?:wala|wali|vala|matlab|meaning|word|shabd|vakya|sentence|spelling)$/u.test(c.toks[c.end]?.raw ?? "") }],
@@ -328,13 +354,13 @@ const SHAPES = [
   ["self_harm", "kill_myself", "KILL SELF_EN"],
   ["self_harm", "i_kill_myself", "I_EN KILL SELF_EN"],
   ["self_harm", "want_to_kill_myself", "WANT TO KILL SELF_EN"],
-  ["self_harm", "wanna_die", "WANT DIE", { guard: gameTalk }],
-  ["self_harm", "want_to_die", "WANT TO DIE", { guard: gameTalk }],
-  ["self_harm", "i_want_to_die", "I_EN WANT TO DIE", { guard: gameTalk }],
-  ["self_harm", "dont_want_to_live", "DONT WANT TO LIVE", { guard: (c) => /^(?:in|at|with|near|here|there|on)$/.test(c.toks[c.end]?.raw ?? "") }],
-  ["self_harm", "end_my_life", "END MY_EN LIFE"],
-  ["self_harm", "hate_my_life", "HATE MY_EN LIFE"],
-  ["self_harm", "i_hate_my_life", "I_EN HATE MY_EN LIFE"],
+  ["self_harm", "wanna_die", "WANT DIE", { guard: dyeObject }],
+  ["self_harm", "want_to_die", "WANT TO DIE", { guard: dyeObject }],
+  ["self_harm", "i_want_to_die", "I_EN WANT TO DIE", { guard: dyeObject }],
+  ["self_harm", "dont_want_to_live", "DONT WANT TO LIVE", { guard: liveObject }],
+  ["self_harm", "end_my_life", "END MY_EN LIFE", { guard: lifeNoun }],
+  ["self_harm", "hate_my_life", "HATE MY_EN LIFE", { guard: lifeNoun }],
+  ["self_harm", "i_hate_my_life", "I_EN HATE MY_EN LIFE", { guard: lifeNoun }],
   ["self_harm", "hate_myself", "I_EN HATE SELF_EN"],
   ["self_harm", "dont_want_to_wake_up", "DONT WANT TO WAKE UP", { wake: true }],
   ["self_harm", "dont_wanna_wake_up", "DONT WANT WAKE UP", { wake: true }],
@@ -482,6 +508,22 @@ function prep(text) {
 }
 const costOf = (t, g) => costsOf(t).get(g.name) ?? Infinity;
 
+/**
+ * English said inside Hindi and written in Devanagari fills an English MEANING slot by consonant skeleton; Verify B (2026-10-05)
+ * found the skeleton alone too loose there: "लव" (love) and "लाइव" (live stream) are "lv" like "लिव" (live), so "आई डोंट वांट
+ * टू लव मैथ्स" fired. In a KEY slot the token's vowels (canonical reading) must also be those of one of the slot's Devanagari
+ * spellings. ("लीव" — leave — still reads as "liv": that reading is guarded by the object after it, liveObject.)
+ */
+const vowelsOf = (s) => String(s).replace(/[^aeiou]/g, "");
+function enVowelsFit(t, g) {
+  const memo = (t.vfit ??= new Map());
+  if (memo.has(g.name)) return memo.get(g.name);
+  g.devaVowels ??= new Set([...g.folded].filter((w) => DEVA.test(w)).map((w) => vowelsOf(canonKey(w))));
+  const r = !g.devaVowels.size || g.devaVowels.has(vowelsOf(t.canon ?? canonKey(t.raw)));
+  memo.set(g.name, r);
+  return r;
+}
+
 /** Is token t a slot word of g with exactly one interior letter (code point) dropped — on the spelling or the canonical key? */
 function droppedLetterOf(t, g) {
   const memo = (t.drop ??= new Map());
@@ -504,6 +546,7 @@ function* walk(toks, steps, si, i, fuzz, budget) {
     let c = costOf(toks[i], s.g);
     if (c === 2 && s.key && !droppedLetterOf(toks[i], s.g)) c = Infinity;   // a different real word in the meaning slot (KEY above)
     if (c > 0 && NEVER_FILL[s.g.name]?.has(toks[i].raw)) c = Infinity;
+    if (c > 0 && s.key && s.g.en && toks[i].script === "deva" && !enVowelsFit(toks[i], s.g)) c = Infinity;
     if (fuzz + c <= budget) yield* walk(toks, steps, si + 1, i + 1, fuzz + c, budget);
   }
   if (s.opt) yield* walk(toks, steps, si + 1, i, fuzz, budget);
