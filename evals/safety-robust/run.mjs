@@ -126,14 +126,14 @@ for (const t of lat) scanSafetyDetail(t);
 const usPerScan = ((performance.now() - l0) * 1000) / lat.length;
 
 const res = { id: `safety-robust-${LABEL}`, date: DATE, label: LABEL, baselineOnly: BASE, seeds: SEEDS, seedSet: DEV ? "dev" : "report",
-  method: "scanSafetyDetail on clean and sttReal-perturbed text (evals/duplex/critic/perturb.mjs, critic seed at k=0); FP on lesson corpora", usPerScan: +usPerScan.toFixed(1),
+  method: "scanSafetyDetail on clean and sttReal-perturbed text (evals/duplex/critic/perturb.mjs, critic seed at k=0); FP on lesson corpora", usPerScanWithLru: +usPerScan.toFixed(1),
   distress, fp, wallMs: Math.round(performance.now() - t0) };
 fs.mkdirSync(path.join(HERE, "results"), { recursive: true });
 const file = path.join(HERE, "results", `${DATE}-${LABEL}.json`);
 fs.writeFileSync(file, JSON.stringify(res, null, 1));
 
 const pct = (x) => `${(100 * x).toFixed(2)}%`;
-console.log(`safety-robust ${LABEL} (${SEEDS} seeds, ${res.seedSet}${BASE ? ", PASS 1 ONLY" : ""}) — ${res.wallMs} ms, ${res.usPerScan} µs/scan`);
+console.log(`safety-robust ${LABEL} (${SEEDS} seeds, ${res.seedSet}${BASE ? ", PASS 1 ONLY" : ""}) — ${res.wallMs} ms, ${res.usPerScanWithLru} µs/scan (LRU, corpus repeats)`);
 for (const d of distress) {
   console.log(`  ${d.name.padEnd(26)} clean ${d.clean.caught}/${d.n} (no-punct ${d.clean.cleanNoPunct}) | sttReal recall mean ${pct(d.perturbed.recallMean)} min ${pct(d.perturbed.recallMin)} (readable mean ${pct(d.perturbed.recallReadable)} min ${pct(d.perturbed.recallReadableMin)}) | caught+ask-again mean ${pct(d.perturbed.effectiveMean)} min ${pct(d.perturbed.effectiveMin)} | missed ${d.perturbed.missed}/${d.perturbed.draws} (seg hallucinated ${d.perturbed.distressSegHallucinated})`);
   if (!QUIET) { for (const m of d.clean.missed.slice(0, 10)) console.log(`      clean miss: ${m}`); for (const [t, c] of d.perturbed.topMisses.slice(0, 12)) console.log(`      miss x${c}: ${t}`); }

@@ -3270,16 +3270,27 @@ perfectly unseen.
 - Base: 84/84, except silence-640@D4 at 80/84. That arm's own commit timing is unchanged.
 
 ### `m-sr-latency-2026-10-05`
-Node 22, this container.
+Node 22, this container. Warm, on distinct real transcript child turns (n=548):
 
-| input | n | µs per scan |
+| p50 | p90 | p99 | max |
+|---|---|---|---|
+| 62 µs | 121 µs | 2.15 ms | 3.8 ms |
+
+Long partials (n=300 each):
+- 330-char Hinglish: about 680 µs.
+- 280-char Devanagari: about 720 µs.
+
+The indexed cost path:
+- cut the fuzzy pass from about 910 µs to 315-500 µs;
+- equals the reference `slotCost` on 167,160 (token, group) pairs.
+
+A 512-entry LRU on `scanSafetyDetail` serves repeat scans of one turn: classify, the brain's checks, relational signals
+and repeated duplex partials. Relational AT-U8 (p99 ≤ 3 ms per turn; it calls `scanSafety` through `signalsOf`):
+
+| | runs passed | p99 on failing runs |
 |---|---|---|
-| ES-1 lesson turns | 3,000 | 23-29 (mean) |
-| 330-char Hinglish partial | 300 | about 680 |
-| 280-char Devanagari partial | 300 | about 720 |
-
-- The indexed cost path cut the fuzzy pass from about 910 µs to 315-500 µs.
-- It equals the reference `slotCost` on 167,160 (token, group) pairs.
+| without the LRU | 1/3 | 3.5-3.95 ms |
+| with the LRU | 5/5 | |
 
 ### `m-sr-gates-2026-10-05`
 | tree | check | result |

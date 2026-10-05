@@ -189,6 +189,18 @@ const near1 = (a, b) => {
  */
 export function scanSafetyDetail(text) {
   const t = String(text || "");
+  // pure in its text, and one child turn is scanned by several consumers (classify, the brain's help / consent / opening
+  // checks, relational signals, the duplex slice on repeated partials): a small LRU keeps the second pass off the repeat
+  const hit = SCAN_CACHE.get(t);
+  if (hit) { SCAN_CACHE.delete(t); SCAN_CACHE.set(t, hit); return { ...hit }; }
+  const r = scanUncached(t);
+  if (SCAN_CACHE.size >= 512) SCAN_CACHE.delete(SCAN_CACHE.keys().next().value);
+  SCAN_CACHE.set(t, r);
+  return { ...r };
+}
+const SCAN_CACHE = new Map();
+
+function scanUncached(t) {
   // Devanagari also matched on NFC + nukta dropped + chandrabindu → anusvara ("पड़ता"/"पडता", "रहूँ"/"रहूं").
   const tn = t.normalize("NFC").replace(/़/g, "").replace(/ँ/g, "ं");
   for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t) || (tn !== t && re.test(tn)))) return { distress: true, kind, pass: 1, via: "families" };
