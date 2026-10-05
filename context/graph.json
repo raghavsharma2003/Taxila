@@ -11621,6 +11621,34 @@
    "title": "Owner (2026-10-05, after Day 0 went live): build all five priorities end to end and deploy them: duplex two-way teacher, the 2D face (ship it; blind judge score 3.75 accepted by the owner), voice-signal knowledge states, live-built content with speculative stagecraft, natural student-tutor interaction. Supersedes the build-then-wait-for-owner-test pause. Implies approval of the on-device onnxruntime-web dependency the voice signals need. VALUES-100 honesty rule still holds: a voice state below precision 0.80 on children acts in shadow and the status page says so. Reverse if: the owner's own test finds a shipped priority makes the lesson worse; it goes back behind its flag.",
    "at": "2026-10-05",
    "source": "inbox/owner-ship-five.json"
+  },
+  {
+   "id": "owner-test-voice-slow-face-broken-2026-10-05",
+   "kind": "measurement",
+   "title": "Owner hands-on test of taxila.dev (7ce6033), 2026-10-05 evening, n=1 tester: the voice is very slow; the face is broken. Ship the 4/5 2D puppet. Supporting numbers from the prod battery the same evening (US sandbox, not India): first teacher audio 2245 / 2922 / 2395 ms after the turn request (turn frame 1.4-2.2 s, first PCM about 0.7-0.8 s later), plus speech-to-text after click-to-speak release. The face live was the old TutorFace: v4 patch 03 had never been applied.",
+   "at": "2026-10-05",
+   "source": "inbox/owner-test-1.json"
+  },
+  {
+   "id": "ms-diya-pace-vs-voted-2026-10-05",
+   "kind": "measurement",
+   "title": "Diya speaking speed through the PRODUCTION render path (styleForChild -> expressive plan -> renderParts -> DragonHD, sentence parts + planned pauses) vs the voted final renders, same 3 passages (210-233 words), 2026-10-05, evals/voice-pace-owner/measure.mjs, n=1 render each: baseRate -35 (live): 2.13-2.14 words/s, 60-64% slower than voted (3.42-3.51 w/s). baseRate 0 with the expressive layer: 3.24-3.28 w/s, 5-7% slower. baseRate 0 plain: 3.28-3.37 w/s, 1-5% slower. A speed proxy, not an ear.",
+   "at": "2026-10-05",
+   "source": "inbox/voice-pace-owner.json"
+  },
+  {
+   "id": "rj-chars-per-second-pace-target",
+   "kind": "rejection",
+   "title": "Setting DragonHD baseRate -35% to hit an 11-13 chars/s target (HV-15, evals/tts-pace.mjs) without the owner's ear check made Diya 60-64% slower than the voted renders; the owner heard her as 'extremely slow, like she is drunk, not the version we voted for' (2026-10-05). A pace target from a spec must be checked against the voted audio before shipping.",
+   "at": "2026-10-05",
+   "source": "inbox/voice-pace-owner.json"
+  },
+  {
+   "id": "dc-diya-rate-zero-2026-10-05",
+   "kind": "decision",
+   "title": "Asha (Diya) and Arjun speak at baseRate 0 (the engine's own rate, as in the voted renders); the expressive layer stays on because it carries the safety delivery (helplines digit by digit). Reverse if: the owner's ear check of the live voice at 0% says a different pace, or a blind round prefers another rate.",
+   "at": "2026-10-05",
+   "source": "inbox/voice-pace-owner.json"
   }
  ],
  "edges": [
@@ -18768,6 +18796,16 @@
    "src": "owner-ship-five-2026-10-05",
    "rel": "supersedes",
    "dst": "dc-day0-live-stop-building-2026-10-05"
+  },
+  {
+   "src": "dc-diya-rate-zero-2026-10-05",
+   "rel": "measured_by",
+   "dst": "ms-diya-pace-vs-voted-2026-10-05"
+  },
+  {
+   "src": "rj-chars-per-second-pace-target",
+   "rel": "measured_by",
+   "dst": "ms-diya-pace-vs-voted-2026-10-05"
   }
  ]
 }

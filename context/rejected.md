@@ -2179,3 +2179,7 @@ words are left to read.
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-chatstream-flake-label-2026-10-05` (2026-10-05): Calling the studio-router chatStream failure a load flake was wrong. npm test runs every file in one process, so classify.test.mjs's top-level beforeEach (a canned-reply globalThis.fetch stub) also wrapped this test, which then got that stub's 200 text/plain reply and no SSE events. Proven by logging globalThis.fetch at failure (2026-10-05, full npm test, n=1; same failure on GitHub gates runs 121-131). Fix: the test uses the fetch captured at module load and restores the stub after. Reverse if: tests move to process isolation and the file-level capture becomes unnecessary.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-chars-per-second-pace-target` (2026-10-05): Setting DragonHD baseRate -35% to hit an 11-13 chars/s target (HV-15, evals/tts-pace.mjs) without the owner's ear check made Diya 60-64% slower than the voted renders; the owner heard her as 'extremely slow, like she is drunk, not the version we voted for' (2026-10-05). A pace target from a spec must be checked against the voted audio before shipping.

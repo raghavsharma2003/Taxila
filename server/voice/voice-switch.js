@@ -28,7 +28,7 @@ import { toDevanagari, devanagariOn } from "./translit/index.js";
  * marin 91.0 → 97.6 % (1 take each). It helped all three, so all three rows are on (still behind TAXILA_VOICE_DEVANAGARI).
  */
 export const VOICE_CHOICES = Object.freeze({
-  diya: Object.freeze({ id: "diya", engine: "dhd", voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35, ga: true, devanagari: true, lang: "en-IN" }),
+  diya: Object.freeze({ id: "diya", engine: "dhd", voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: 0, ga: true, devanagari: true, lang: "en-IN" }),
   priya: Object.freeze({ id: "priya", engine: "mai", voice: "hi-IN-Priya:MAI-Voice-2.1", baseRate: 0, ga: false, devanagari: true, lang: "hi-IN",
     styles: Object.freeze(["excited", "softvoice"]) }),
   marin: Object.freeze({ id: "marin", engine: "oai", voice: "marin", baseRate: 0, ga: true, devanagari: true, lang: null }),

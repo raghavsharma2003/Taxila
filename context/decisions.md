@@ -5314,3 +5314,7 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `owner-ship-five-2026-10-05` (2026-10-05): Owner (2026-10-05, after Day 0 went live): build all five priorities end to end and deploy them: duplex two-way teacher, the 2D face (ship it; blind judge score 3.75 accepted by the owner), voice-signal knowledge states, live-built content with speculative stagecraft, natural student-tutor interaction. Supersedes the build-then-wait-for-owner-test pause. Implies approval of the on-device onnxruntime-web dependency the voice signals need. VALUES-100 honesty rule still holds: a voice state below precision 0.80 on children acts in shadow and the status page says so. Reverse if: the owner's own test finds a shipped priority makes the lesson worse; it goes back behind its flag.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-diya-rate-zero-2026-10-05` (2026-10-05): Asha (Diya) and Arjun speak at baseRate 0 (the engine's own rate, as in the voted renders); the expressive layer stays on because it carries the safety delivery (helplines digit by digit). Reverse if: the owner's ear check of the live voice at 0% says a different pace, or a blind round prefers another rate.

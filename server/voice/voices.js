@@ -22,10 +22,13 @@ import { speechConfig } from "../endpoints.js";
  * measured (plain 19.1 / 18.9 chars/s vs 15.9 / 17.5), so the spec's -25 / -28 % gave 15.0 chars/s; -35 % gives
  * 12.3 (Diya) and 12.2 (Arjun), inside the 11-13 band. The owner's ear check is still owed (HV-15).
  * Uma's voice is unmeasured: it starts at Diya's rate until its probe runs.
+ * OWNER EAR CHECK 2026-10-05 overrides the chars/s target: at -35 % (-45 % on slow clauses) Diya sounded "extremely slow,
+ * like she is drunk, not the version we voted for". The voted renders (docs/research/voice/final) were plain DragonHD at the
+ * engine's own rate. Asha and Arjun speak at 0 %.
  */
 export const VOICE_TABLE = Object.freeze({
-  asha: Object.freeze({ dhd: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35, measured: true }),
-  arjun: Object.freeze({ dhd: "en-IN-Arjun:DragonHDLatestNeural", baseRate: -35, measured: true }),
+  asha: Object.freeze({ dhd: "en-IN-Diya:DragonHDLatestNeural", baseRate: 0, measured: true }),
+  arjun: Object.freeze({ dhd: "en-IN-Arjun:DragonHDLatestNeural", baseRate: 0, measured: true }),
   uma: Object.freeze({ dhd: "en-IN-Meera:DragonHDLatestNeural", baseRate: -35, measured: false }),
 });
 const DEFAULT_ID = "asha";

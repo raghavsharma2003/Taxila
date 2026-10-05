@@ -100,7 +100,7 @@ test("voice switch: styleFor maps each choice onto the existing pipeline style",
   const base = { voice: "marin", instructions: "", version: "s1", spoken: { mode: "hinglish" } };
   assert.equal(styleFor(null, base), base);
   const d = styleFor(VOICE_CHOICES.diya, base, ON);
-  assert.deepEqual([d.engine, d.dhd.voice, d.dhd.baseRate, d.spoken.devanagari], ["dhd", "en-IN-Diya:DragonHDLatestNeural", -35, true]);
+  assert.deepEqual([d.engine, d.dhd.voice, d.dhd.baseRate, d.spoken.devanagari], ["dhd", "en-IN-Diya:DragonHDLatestNeural", 0, true]);
   const p = styleFor(VOICE_CHOICES.priya, base, {});
   assert.deepEqual([p.engine, p.dhd.compiler, p.spoken.devanagari], ["dhd", "mai", undefined]);
   const m = styleFor(VOICE_CHOICES.marin, { ...base, engine: "dhd", dhd: { voice: "x", baseRate: 0 } }, ON);
@@ -115,7 +115,7 @@ test("voice switch: documents per engine, the step applied only where the row sa
   const w = "Sochiye, teen aur paanch kitne hue?";
   const sp = { mode: "hinglish", ageBand: "10-15" };
   const d = documentFor(VOICE_CHOICES.diya, w, sp, { env: ON });
-  assert.match(d.ssml, /<prosody rate="-35%"><lang xml:lang="hi-IN">सोचिए, तीन और पाँच कितने हुए<\/lang>\?<\/prosody>/);
+  assert.match(d.ssml, /<prosody rate="\+0%"><lang xml:lang="hi-IN">सोचिए, तीन और पाँच कितने हुए<\/lang>\?<\/prosody>/);
   const dOff = documentFor(VOICE_CHOICES.diya, w, sp, { env: {} });
   assert.match(dOff.ssml, /Sochiye, teen aur paanch kitne hue\?/);
   const p = documentFor(VOICE_CHOICES.priya, w, sp, { env: ON });
