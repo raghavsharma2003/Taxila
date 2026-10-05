@@ -1,4 +1,4 @@
-"""r5 frames sheet (r7 labels: thinking C is take 0, concern B is its own take): c-front beside the puppet's key poses (renders at 1024, view 0,0,1024, cream), labelled; the
+"""r5 frames sheet (r8 labels: thinking UP is take 0, concern B is its own take): c-front beside the puppet's key poses (renders at 1024, view 0,0,1024, cream), labelled; the
 articulation row (aa, O, E/ee, U, m-b-p closure, f/v tuck, l/t/d tongue tip, ch) is new in r4.
 -> art/character/puppet2d/polish-r8/frames-sheet.jpg  (+ the 3x3 blind-judge grid, same cells/order as judge-r3)
     python3 scripts/character/puppet2d/polish-r8/sheet.py"""
@@ -10,11 +10,11 @@ cells = [("c-front (reference)", "art/character/puppet2d/polish-r8/c-front.png")
          ("talk O (rounded)", "talk_O"), ("talk E / ee (spread)", "talk_E"), ("talk U (pucker)", "talk_U"),
          ("talk m / b / p (closure)", "talk_PP"), ("talk f / v (incisors on lip)", "talk_FF"), ("talk l / t / d (tongue tip)", "talk_L"),
          ("talk ch (flared, teeth meet)", "talk_CH"), ("listening", "listening"), ("warm", "warm"),
-         ("thinking C, DEFAULT (eyes down, chin tuck, lips pressed, one brow up)", "thinking"), ("thinking C2 (mirrored take)", "thinking_v1"), ("thinking A, rare (glance up, no smile)", "thinking_v2"),
-         ("concern A (knit, press, one corner down)", "concern"), ("concern B (tilt + lean in, lips parted, corners down)", "concern_v1"), ("concern C (softer, leaning in)", "concern_v2"),
+         ("thinking UP, DEFAULT (c-thinking: eyes up, one brow, one-sided mouth)", "thinking"), ("thinking UP2 (mirrored take)", "thinking_v1"), ("thinking C, rare (eyes down)", "thinking_v2"),
+         ("concern A (knit, press, one corner down)", "concern"), ("concern B r8 (lean in, lips parted, lower lip down, no pout)", "concern_v1"), ("concern C (softer, leaning in)", "concern_v2"),
          ("delight A", "delight"), ("delight B (other take)", "delight_v1"), ("surprise", "surprise"),
          ("playful (wink, her right)", "playful"), ("playful B (wink, her left)", "playful_v1"), ("blink: frame 1 of the real blink (mid key)", "blink_mid"),
-         ("turn yaw -20 (field + nose planes)", "yaw_m20"), ("turn yaw -12", "yaw_m12"), ("turn yaw +12", "yaw_p12"),
+         ("turn yaw -20 (r8: nose / bindi / mouth rotate)", "yaw_m20"), ("turn yaw -12", "yaw_m12"), ("turn yaw +12", "yaw_p12"),
          ("turn yaw +20", "yaw_p20"), ("delight at yaw +20", "delight_yp20"), ("talk O at yaw -16", "talk_O_ym16")]
 S, cols = 400, 6
 rows = (len(cells) + cols - 1) // cols

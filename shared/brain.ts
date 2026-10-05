@@ -100,6 +100,11 @@ export interface StudioAsk {
   /** "continue" while the same explanation beat goes on (draw on the previous board); "fresh" clears it. */
   mode: "fresh" | "continue";
   kit: { topicId: string; kitHash?: string; content: string[]; item?: { id: string; prompt_en: string; prompt_hi: string }; onScreen?: boolean };
+  /**
+   * W2 integration: the Director's template board (explainer@1, already open-item guarded) that the live board replaces.
+   * Shown in the slot when the live board is not drawn, so an accepted ask never leaves the stage empty.
+   */
+  fallback?: { script: unknown };
 }
 /** Studio accepted the ask: the slot the script will stream into (`StudioWire` {t: "script"} on SSE). */
 export interface StudioAskAck { slotId: string; intentId: string; state?: StudioSlot["state"] }

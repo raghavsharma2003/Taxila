@@ -31,7 +31,22 @@ for (const topicId of TOPICS) {
     for (const childText of LINES) {
       const r = await api("POST", "/api/lesson/turn", { lessonId: start.lessonId, childText, asrConfidence: 0.95, typed: true, turnSeq: ++seq });
       track(r.moduleCommands); all.push(...(r.moduleCommands ?? []));
-      if (r.move?.kind === "explain") { explain = { tray: r.ui?.tray, on: [...mounted.values()], ms: r.ms }; break; }
+      if (r.move?.kind === "explain") {
+        explain = { tray: r.ui?.tray, on: [...mounted.values()], ms: r.ms, board: null };
+        // W2 integration: the live Studio whiteboard (W2-E/F) replaces the explainer@1 rung when Studio takes the ask; the
+        // turn answers with the slot "planning" and the script (or, if the live board fails its gate, this rung's template
+        // board as the slot's fallback) follows. Converge on it the way a late-mounting stage does (GET /api/studio/slot).
+        const slot = r.ui?.studioSlot;
+        if (r.ui?.tray === "studio" && slot?.intentId && /:wb:/.test(slot.intentId)) {
+          for (let i = 0; i < 24 && !explain.board; i++) {
+            const got = slot.artifact ? slot : (await api("GET", `/api/studio/slot?lessonId=${start.lessonId}&intentId=${encodeURIComponent(slot.intentId)}`, undefined, [200, 404]).catch(() => null))?.slot;
+            if (got?.artifact?.kind === "whiteboard") explain.board = got.artifact.script;
+            else if (got?.state === "failed") break;
+            else await new Promise((res) => setTimeout(res, 500));
+          }
+        }
+        break;
+      }
       if (r.end) break;
     }
     await api("POST", "/api/lesson/end", { lessonId: start.lessonId }).catch(() => {});
@@ -43,7 +58,12 @@ for (const topicId of TOPICS) {
         `${topicId}: explainer script passes strict normalise + lint, with facts (${n.errors.join(",") || c.params?.template})`);
     }
     const shown = explain?.on.at(-1) ?? null;
-    rows.push({ topicId, explainReached: !!explain, tray: explain?.tray ?? null, engine: shown?.engine ?? null, template: shown?.params?.template ?? null, turnMs: explain?.ms ?? null });
+    if (explain?.board) {
+      const n = normalizeScript(explain.board, { strict: false });
+      ok(n.ok && n.script.ops.length > 0, `${topicId}: the Studio whiteboard slot carries a drawable board (${n.errors.join(",") || `${n.script?.ops?.length} ops`})`);
+    }
+    const engine = explain?.tray === "studio" ? (explain.board ? "studio-whiteboard" : null) : shown?.engine ?? null;
+    rows.push({ topicId, explainReached: !!explain, tray: explain?.tray ?? null, engine, template: explain?.tray === "studio" ? null : shown?.params?.template ?? null, turnMs: explain?.ms ?? null });
     if (!explain) warn(`${topicId}: the lesson never reached an explain move in ${LINES.length} turns`);
   }, { child: { classLevel }, tag: "w2b" });
 }
@@ -51,9 +71,9 @@ for (const topicId of TOPICS) {
 console.table(rows);
 const reached = rows.filter((r) => r.explainReached);
 const rung = reached.filter((r) => r.engine);
-const board = reached.filter((r) => r.engine === "explainer@1");
+const board = reached.filter((r) => r.engine === "explainer@1" || r.engine === "studio-whiteboard");
 ok(rung.length >= 10, `an engine show or the board on the explain move in ≥ 10 of 12 topics (${rung.length}/${rows.length}; board ${board.length}, engine ${rung.length - board.length})`);
 // Rev 2: 0 empty trays: EVERY explain move reached shows something (the key-terms board is the last rung: W2-B fixer)
 ok(reached.every((r) => r.tray && r.tray !== "none" && r.engine), `no explain move with an empty tray (${reached.filter((r) => !r.engine || r.tray === "none").map((r) => r.topicId).join(",") || "none"})`);
-ok(reached.every((r) => r.engine ? r.tray === "module" : true), "the explain move's tray is the module tray whenever something is mounted");
+ok(reached.every((r) => r.engine ? r.tray === (r.engine === "studio-whiteboard" ? "studio" : "module") : true), "the explain move's tray is the module tray for a mount, the studio tray for the live board");
 done();

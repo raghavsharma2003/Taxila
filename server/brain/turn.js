@@ -540,8 +540,11 @@ export async function lessonTurn(req, body) {
     const ask = kernel.arb.accepted.find((p) => p.kind === "ask_whiteboard");
     if (ask && teacherReply && !guard?.replaced) {
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
-        ? studioSeam.requestIntent(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat, next, kit,
-          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }))
+        ? studioSeam.requestIntent({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat, next, kit,
+          item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } }),
+          // W2 integration: the template board it replaces rides along as the slot's fallback, so a live board that fails
+          // the drawing gate shows the guarded template (W2-B, open-item safe) instead of an empty stage
+          ...(ask.payload?.replacesRung && next.module?.engine === RUNG_ENGINE && next.module?.params?.script ? { fallback: { script: next.module.params.script } } : {}) })
         : null), null);
       if (ack?.slotId && ack?.intentId) {
         studioSlot = { slotId: String(ack.slotId), intentId: String(ack.intentId), state: ack.state ?? "planning" };

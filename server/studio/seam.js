@@ -20,6 +20,7 @@
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
 import { seamSafe } from "../seam-safe.js";
+import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
 import { decide as routerDecide, revealable, breaker } from "./router.js";
 import { ARCHETYPES, archetype, buildParams, validateParams } from "./archetypes/index.js";
 import { chooseArchetype, planBuild, q8Strings, planWhiteboard, BY_KIND } from "./plan.js";
@@ -575,6 +576,23 @@ export const studioSeam = {
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     if (ask.mode !== "continue") L.wbBeatHead = null;
+    // W2 integration: the template board this live board replaces (explainer@1, open-item guarded by W2-B). A live board
+    // that fails the drawing gate or times out shows it instead of leaving an accepted slot empty; no fallback → voice.
+    const fb = ask.fallback?.script ? normalizeScript(ask.fallback.script, { strict: false }) : null;
+    const fallbackScript = fb?.ok ? fb.script : null;
+    const showFallbackOrFail = () => {
+      if (fallbackScript && !p.retired && L.onScreen === intentId) {
+        p.artifact = { kind: "whiteboard", stage: { w: fallbackScript.board.w, h: fallbackScript.board.h }, script: fallbackScript };
+        // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
+        p.facts = scriptFacts(fallbackScript, { kind: "whiteboard", archetype: "whiteboard" });
+        p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.source = "template";
+        push(L, { t: "script", intentId, script: fallbackScript });
+        push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts } });
+        return;
+      }
+      p.state = "failed"; p.fallback = "voice";
+      push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
+    };
     deps.planWhiteboard(ask, { kit: L.kit ?? undefined, prev, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -600,14 +618,13 @@ export const studioSeam = {
             dbq("update studio_mount set usd = coalesce(usd, 0) + $2 where id = $1", [head.mountId, add]).catch(() => {});
           }
         } else {
-          p.state = "failed"; p.fallback = "voice";
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
-          console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms`);
-          push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
+          console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template board shown)" : ""}`);
+          showFallbackOrFail();
         }
       })
-      .catch(() => { p.state = "failed"; p.fallback = "voice"; push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } }); });
+      .catch(() => showFallbackOrFail());
     return { slotId: p.slotId, intentId, state: "planning" };
   },
 

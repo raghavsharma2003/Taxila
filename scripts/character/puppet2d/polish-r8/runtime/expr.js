@@ -112,7 +112,7 @@ const CONCERN_B = {
   // and the judge). Same tilt and lean, but the lips PART (jaw ~7 px) with both corners down and the lower lip drawn DOWN,
   // not forward (mouthShrugLower 0, mouthLowerDown 0.2); the upper lip stays put so the upper teeth stay hidden (the
   // solver caps the upper teeth while an expression's lower-lip pull holds); inner brows up: 'oh no, are you okay?'
-  bs: { browInnerUp: 1.0, browDownLeft: 0.22, browDownRight: 0.22, eyeWideLeft: 0.12, eyeWideRight: 0.12,
+  bs: { browInnerUp: 1.0, browDownLeft: 0.22, browDownRight: 0.22,
     jawOpen: 0.27, mouthLowerDownLeft: 0.2, mouthLowerDownRight: 0.2, mouthShrugLower: 0, mouthFrownLeft: 0.42, mouthFrownRight: 0.42, mouthSmileLeft: -1, mouthSmileRight: -1 },
   head: [8, -4, -12], gaze: [-1, 5], env: [0.45, 0, 0.6], act: "concernLean",
 };

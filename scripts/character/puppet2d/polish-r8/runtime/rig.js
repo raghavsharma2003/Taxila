@@ -49,7 +49,10 @@ function zHead(x, y) {
  *  keys/yawR30-0.png and yawL30-0.png at 2/3 of their travel; ?sil=0 turns it off for an A/B. */
 // sideKeep < 1 lets the side-of-head layers lag the face (tried at 0.55: the lock bed, which carries painted ear and
 // earring pixels ABOVE the face, then tore from the cheek as a dark seam; off until the bed is split)
-export const SIL = { far: 20, near: 14, chin: 16, w: 0.4, sideKeep: 1 };
+// r8 (judge r7: 'the far eye sits right on the outline'): far 20 -> -8. Measured against the normalised 30-degree keys
+// (skin extents per row, fitturn notes in r8-summary.json) the r7 far outline sat 18-35 px INSIDE the painted one at
+// y 520-640, so the far eye met the outline and the far lock crossed it; the far cheek now keeps a band beyond the eye
+export const SIL = { far: -8, near: 14, chin: 16, w: 0.4, sideKeep: 1 };
 // r7: the brows' outer ends (rest), where the temple hairline meets them (hairline pin)
 const PIN_AT = [[364, 384], [684, 368]];
 const SIDE_LAYERS = new Set(["hair", "lockbed", "lockL", "lockR", "ears", "hairback"]);
@@ -78,7 +81,7 @@ export function silDx(x, y, sg) {
  *    mouth  the philtrum / lip centre line leads the corners (~0.5x the nose): the near half of the mouth lengthens and
  *           the far half shortens, as on a cylinder
  *  Fitted against keys/yawR30-0 and yawL30-0 normalised into c-front's frame (fitturn.py), like silDx; ?feat=0 = off. */
-export const FEAT = { nose: 12, wing: 3, bindi: 7, mouth: 6 };
+export const FEAT = { nose: 16, wing: 4, bindi: 9, mouth: 8 };   // r8 i2: 12/3/7/6 read too timid beside the keys
 export function featDx(x, y, sg) {
   if (y < 320 || y > 700 || x < 400 || x > 660) return 0;
   let dx = 0;
@@ -548,10 +551,10 @@ export class Puppet2DRig {
       sp: Math.sin(pitch * D2R) * PX.gain, cp: Math.cos(pitch * D2R),
       sr: Math.sin(-roll * D2R), cr: Math.cos(-roll * D2R),
       yaw, pitch, roll,
-      // r8 (judge r7 fix 5, feature-scale lock): the lean's head scale is capped at +-1.4% (r7: 1 + 0.03 * lean grew the head
+      // r8 (judge r7 fix 5, feature-scale lock): the lean's head scale is capped at +-1% (r7: 1 + 0.03 * lean grew the head
       // 3.75% on concern B's 1.25 lean, and every feature with it: sol's 'eye and brow scale drift between cells'); the lean
       // still reads through the 7 px drop and the shoulders
-      bob: -breath * 1.4, leanS: 1 + 0.014 * Math.tanh(lean / 0.7), leanY: 7 * lean, lean,
+      bob: -breath * 1.4, leanS: 1 + 0.01 * Math.tanh(lean / 0.7), leanY: 7 * lean, lean,
     };
     // yaw keyform: side + weight (an ease-in so small drifts stay subtle and the key is reached at +-keyDeg)
     if (this.g.yawKeys) {
@@ -602,8 +605,8 @@ export class Puppet2DRig {
       // a delight squint closes both eyes alike; a deliberate asymmetry (a wink-ish playful squint, > 0.12) is kept
       const sym = (n) => { const a = k(n + "Left"), bb = k(n + "Right"); return Math.abs(a - bb) < 0.12 ? (a + bb) / 2 : k(n + sfx); };
       // r8 (judge r7 fix 5): the eye opening may not grow past ~1.03x of rest except on a surprise-level eyeWide: up to
-      // 0.07 passes (0.41 * 0.07 = +2.9% opening), the rest fades in only as eyeWide climbs from 0.3 to 0.6 (surprise is 0.9)
-      const w0 = k("eyeWide" + sfx), w = w0 <= 0.07 ? w0 : 0.07 + (w0 - 0.07) * smooth(0.3, 0.6, w0);
+      // 0.035 passes (0.41 * 0.035 = +1.4% opening, leaving room for the lean scale), the rest fades in only as eyeWide climbs from 0.3 to 0.6 (surprise is 0.9)
+      const w0 = k("eyeWide" + sfx), w = w0 <= 0.035 ? w0 : 0.035 + (w0 - 0.035) * smooth(0.3, 0.6, w0);
       const b = this.lid[s], q = sym("eyeSquint"), c = sym("cheekSquint");
       const sm = sym("mouthSmile");
       for (let i = 0; i <= E.xb - E.xa; i++) {
@@ -1164,7 +1167,10 @@ export class Puppet2DRig {
       const [dx, dy] = this.faceOffset(x, y, true);
       // the strip's rest point: its column on the rest lip line (the same point the shell's inner edge samples)
       const xr = shell.cols[i >> 1];
-      const p = this.projectTo(x + dx, y + dy, zFast(x, y), this._tmp || (this._tmp = [0, 0]), x + dx, lineYAt(xr));
+      // r8: depth at the strip's REST point (its column on the rest lip line), as the shell's sheets use their rest depth;
+      // r7 sampled the displaced point, so under a head pitch (concern B: ~12 deg) a lowered lower lip and the strip under it
+      // projected ~2 px apart and the face showed through as an orange band along the lower inner lip edge
+      const p = this.projectTo(x + dx, y + dy, zFast(xr, lineYAt(xr)), this._tmp || (this._tmp = [0, 0]), x + dx, lineYAt(xr));
       I.proj[i * 2] = p[0];
       I.proj[i * 2 + 1] = p[1];
     }

@@ -410,6 +410,28 @@ test("the whiteboard ask: an immediate slot ack, the script on the wire, decline
   assert.equal(seam.requestIntent({ ...ask(10), line: { lessonId: LESSON, text: " " } }), null);
 });
 
+test("W2 integration: a live board that fails its gate shows the replaced template board (fallback), never an empty slot", async () => {
+  const template = { v: 1, scriptId: "tpl", line: { lessonId: LESSON }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1000,
+    ops: [{ id: "r", op: "rect", at: [100, 100], w: 200, h: 80, startMs: 0, endMs: 600 }], facts: { kind: "diagram", archetype: "fraction-parts@1", onScreen: { parts: 4 } } };
+  const { seam } = await seamWith({ planWhiteboard: async () => ({ ok: false, gate: { checks: [{ id: "W9.no_reveal", pass: false }] } }) });
+  await startLesson(seam, { activeMisconceptionIds: [] });
+  const wire = [];
+  const off = seamMod.subscribe(LESSON, { send: (m) => wire.push(m) });
+  const ask = (turn, extra = {}) => ({ intent: { intentId: `${LESSON}:wb:${turn}`, lessonId: LESSON, kind: "whiteboard", skillId: "frac.part", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue",
+    style: { band: "B2", lang: "hinglish", motion: "lively" } }, line: { lessonId: LESSON, teacherReplySeq: 4, text: "Ek roti ke chaar barabar hisse." }, mode: "fresh", kit: { topicId: KIT.topicId, content: [] }, ...extra });
+  assert.ok(seam.requestIntent(ask(5, { fallback: { script: template } })));
+  await new Promise((r) => setTimeout(r, 10));
+  const snap = seamMod.slotSnapshot(LESSON, `${LESSON}:wb:5`);
+  assert.equal(snap.artifact?.kind, "whiteboard", JSON.stringify(snap));
+  assert.equal(snap.artifact.script.ops[0].op, "rect");
+  assert.ok(wire.some((m) => m.t === "status" && m.status.state === "revealed" && m.status.intentId === `${LESSON}:wb:5`));
+  // with no fallback the slot fails calmly into her voice, as before
+  assert.ok(seam.requestIntent(ask(6)));
+  await new Promise((r) => setTimeout(r, 10));
+  assert.ok(wire.some((m) => m.t === "status" && m.status.state === "failed" && m.status.intentId === `${LESSON}:wb:6`));
+  off();
+});
+
 test("seam entry points never throw into the lesson", () => {
   seamMod._reset();
   const s = seamMod.studioSeam;

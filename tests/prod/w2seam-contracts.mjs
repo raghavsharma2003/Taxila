@@ -63,8 +63,12 @@ await withTestAccount(async ({ api, child }) => {
   ok(text.turns.length > 0 && text.turns.every((t) => !!t.move?.kind && typeof t.teacherReply === "string"), `text turns answered (${text.turns.map((t) => t.move?.kind).join(", ")})`);
   ok(text.end?.status === 200, "text lesson ends 200");
   bad.push(...w2Shape("text start", text.start), ...text.turns.flatMap((t, i) => w2Shape(`text turn ${i + 1}`, t)));
+  // "Done for today" only when that lesson counted (something graded, or 5 minutes: child.js countsAsDone); the start
+  // must agree with the home's own state either way
+  const home = await api("GET", `/api/child/plan?childId=${child.id}`);
   const again = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text" }, [201, 409]);
-  ok(again.status === 409 && again.control === "done", `a second Learn lesson the same day is refused as done (${again.status} ${again.control ?? ""})`);
+  if (home.state === "done") ok(again.status === 409 && again.control === "done", `a second Learn lesson the same day is refused as done (${again.status} ${again.control ?? ""})`);
+  else ok(again.status === 201, `home is "${home.state}" after an uncounted lesson, and a lesson starts (${again.status})`);
   if (again.status === 201) await api("POST", "/api/lesson/end", { lessonId: again.lessonId });
   const pr2 = await api("POST", "/api/lesson/start", { childId: child.id, mode: "text", purpose: "practice" }, [201, 409]);
   ok(pr2.status === 201, `Practice still starts on a done day (${pr2.status})`);

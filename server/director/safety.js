@@ -7,6 +7,8 @@
 // scrub (scrubPii) — every safety predicate in one file, so a lane cannot quietly carry a second copy.
 import { gatesFor } from "../compiler/gates.js";
 import { HELPLINES as HELPLINE_DATA } from "../compiler/floor.js";
+import { readingsFor } from "../safety/normalize.js";
+import { fuzzyScan } from "../safety/fuzzy.js";
 
 /** People a child names when disclosing harm (English and Hindi kinship / authority words). */
 const ACTOR_EN = "he|she|they|papa|mummy|mumma|mum|mom|dad|daddy|father|mother|brother|sister|step\\s*(?:father|mother|dad|mom)|uncle|aunty|auntie|teacher|sir|ma'?am|madam|bhai|bhaiya|didi|chacha|chachi|mama|mami|someone|somebody";
@@ -150,14 +152,55 @@ const FAMILIES = {
   ],
 };
 
-/** @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null }} */
-export function scanSafety(text) {
+/**
+ * The "after wake up" clause rule of wakeIdeation, for the fuzzy pass (server/safety/fuzzy.js): true = it fires
+ * (no schedule word or woken person in the clause, or "ever / again / anymore").
+ */
+const wakeClauseFires = (rest) => {
+  const clause = String(rest).split(/[.,!?;:।\n]|\s(?:but|because|coz|kyunki|par)\s/i)[0].split(/\s+/).slice(0, 7).join(" ");
+  if (WAKE_FOREVER.test(clause)) return true;
+  return !(WAKE_OBJECT.test(rest) || WAKE_SCHEDULE.test(clause));
+};
+
+/**
+ * The predicate with how it decided (safety-robust, 2026-10-05). Pass 1 is the shipped families on the bytes and on their
+ * nukta / chandrabindu fold, unchanged. Pass 2 runs only when pass 1 is quiet, on what a real transcript needs:
+ *   - the same families over normalised readings (server/safety/normalize.js readingsFor: danda and marks gone, letter runs
+ *     collapsed, unreadable other-script tokens removed, Devanagari in Roman letters);
+ *   - the fuzzy / phonetic shapes (server/safety/fuzzy.js): one mis-heard word in a disclosure, STT confusions, English
+ *     in Devanagari, Hindi in Roman letters, each shape with its own fuzz budget and family guards.
+ * Pass 2 only ever ADDS hits (no pattern was removed or narrowed).
+ * @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null, pass: 1|2|null, via: string|null }}
+ */
+export function scanSafetyDetail(text) {
   const t = String(text || "");
   // Devanagari also matched on NFC + nukta dropped + chandrabindu → anusvara ("पड़ता"/"पडता", "रहूँ"/"रहूं").
   const tn = t.normalize("NFC").replace(/़/g, "").replace(/ँ/g, "ं");
-  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t) || (tn !== t && re.test(tn)))) return { distress: true, kind };
-  return { distress: false, kind: null };
+  for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(t) || (tn !== t && re.test(tn)))) return { distress: true, kind, pass: 1, via: "families" };
+  if (!t.trim()) return { distress: false, kind: null, pass: null, via: null };
+  const seen = new Set([t, tn]);
+  for (const r of readingsFor(t)) {
+    if (seen.has(r)) continue;
+    seen.add(r);
+    for (const [kind, res] of Object.entries(FAMILIES)) if (res.some((re) => re.test(r))) return { distress: true, kind, pass: 2, via: "families:normalised" };
+  }
+  const f = fuzzyScan(t, { wakeOk: wakeClauseFires });
+  if (f.distress) return { distress: true, kind: f.kind, pass: 2, via: `fuzzy:${f.shape}` };
+  return { distress: false, kind: null, pass: null, via: null };
 }
+
+/** @returns {{ distress: boolean, kind: "self_harm"|"abuse"|"fear"|null }} */
+export function scanSafety(text) {
+  const { distress, kind } = scanSafetyDetail(text);
+  return { distress, kind };
+}
+
+/**
+ * Is the turn (partly) unreadable — a token in another script, the transcriber's hallucination (CRITIQUE §2 B1, 5/90 real
+ * segments)? Such a segment is never content: the caller asks again (no verdict, no grade) and the model distress read
+ * still runs on the readable rest (patches under evals/safety-robust/patches/ wire classify and the duplex slice).
+ */
+export { readability } from "../safety/normalize.js";
 
 /** The child said they want to stop — whatever was mid-way is over (NEVER MANIPULATE: no holding at goodbye). */
 const STOP = /\b(i\s*(want|wanna)\s*to\s*(stop|leave)|stop\s*the\s*(lesson|class)|mujhe\s*ja(a)?na\s*hai|ab\s*(band|bas)\s*karo|baad\s*mein\s*karenge)\b|^\s*(stop|bas|band\s*karo|bas\s*karo)[.!]*\s*$/i;

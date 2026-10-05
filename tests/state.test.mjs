@@ -164,9 +164,13 @@ test("distress goes to the safeguard move before anything else, and stays there"
   assert.ok(r.ui.chips?.some((c) => c.id === "safe:stop"));
 });
 
-test("'I want to stop' ends the lesson now; a pata-nahi loop gets a break with choices", () => {
+test("'I want to stop' gets one warm check-in, a second stop ends the lesson; a pata-nahi loop gets a break with choices", () => {
   let r = toPractice();
-  const stop = turn(r, cls("no_evidence", { flags: { wantsToStop: true } }));
+  // OWNER RESET 2026-10-04 #7 (W2-I stop check, applied at W2 integration): one check-in with choices, never a second
+  const checkIn = turn(r, cls("no_evidence", { flags: { wantsToStop: true } }));
+  assert.equal(checkIn.move.kind, "break");
+  assert.ok(!checkIn.end, "the first stop phrase does not end the lesson");
+  const stop = turn(checkIn, cls("no_evidence", { flags: { wantsToStop: true } }));
   assert.equal(stop.move.kind, "wrap");
   assert.equal(stop.end, true);
   const dk = cls("no_evidence", { flags: { dontKnow: true } });
