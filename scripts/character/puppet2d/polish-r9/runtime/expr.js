@@ -108,8 +108,10 @@ const THINK_C = {
     mouthRight: 0.3, mouthPressLeft: 0.45, mouthPressRight: 0.45, mouthFrownLeft: 0.32, mouthFrownRight: 0.3, mouthSmileLeft: -1, mouthSmileRight: -1 },
   head: [7, 3, 6], gaze: [2, -22], env: [0.35, 0, 0.45], act: "thinkDown",
 };
+// r9 (grok 2/2 on the r9 grid: concern A's brows 'sharp, angry'): the same softening as concern B, kept a little more knit
+// than B so the takes stay distinct: inner 1.0 -> 0.86, knit 0.5 / 0.42 -> 0.3 / 0.25, a little outer lift 0.1
 const CONCERN_A = {
-  bs: { browInnerUp: 1.0, browDownLeft: 0.5, browDownRight: 0.42, eyeSquintLeft: 0.3, eyeSquintRight: 0.26,
+  bs: { browInnerUp: 0.86, browOuterUpLeft: 0.1, browOuterUpRight: 0.1, browDownLeft: 0.3, browDownRight: 0.25, eyeSquintLeft: 0.3, eyeSquintRight: 0.26,
     mouthPressLeft: 0.4, mouthPressRight: 0.4, mouthFrownLeft: 0.52, mouthFrownRight: 0.1, mouthRight: 0.12, mouthSmileLeft: -1, mouthSmileRight: -1 },
   head: [4, 2, 7], gaze: [0, 3], env: [0.45, 0, 0.6], act: "concern",
 };

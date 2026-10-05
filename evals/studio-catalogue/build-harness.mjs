@@ -17,4 +17,6 @@ await build({
 });
 const cat = path.join(repo, "data/studio-catalogue/topics");
 if (fs.existsSync(cat)) { fs.mkdirSync(path.join(outDir, "catalogue"), { recursive: true }); for (const f of fs.readdirSync(cat)) fs.copyFileSync(path.join(cat, f), path.join(outDir, "catalogue", f)); }
+const fx = path.join(here, "fixtures");
+if (fs.existsSync(fx)) { fs.mkdirSync(path.join(outDir, "fixtures"), { recursive: true }); for (const f of fs.readdirSync(fx)) fs.copyFileSync(path.join(fx, f), path.join(outDir, "fixtures", f)); }
 console.log("harness built:", outDir);

@@ -63,7 +63,7 @@
   {
    "id": "m-w2int-flow-walk-2026-10-05",
    "kind": "measurement",
-   "title": "Playwright student-flow walk (tests/prod/w2flow-walk.mjs), class 5 Hinglish, local serve.mjs + Neon test branch: signup (7 screens) → Hello (5) → first lesson (Big numbers) → 22 typed turns incl. 2 deliberate wrong answers → natural wrap → summary → child home 'Done for today' → parent corner. Every screen shot at 360x800 and 1366x768: 0 horizontal overflow; every Studio whiteboard (3) drawn inside the stage box and the box inside the Work tray at both sizes; module frames (5) inside the tray. Before the comma key the same walk looped 10 hints on a comma item. Screenshots in docs/design/gap-audit/w2-flow/. n=1 walk per arm, 2026-10-05",
+   "title": "Playwright student-flow walk (tests/prod/w2flow-walk.mjs), class 5 Hinglish, local serve.mjs + Neon test branch: signup (7 screens) → Hello (5) → first lesson (Big numbers) → 22 typed turns incl. 2 deliberate wrong answers → natural wrap → summary → child home 'Done for today' → parent corner. Final run 93/93 checks. A sibling's fractions lesson (test clock +10 min) revealed a Studio skeleton (shade 3/4) inside the stage, and a tap shaded a part in place. Every screen shot at 360x800 and 1366x768: 0 horizontal overflow; every Studio whiteboard (3) drawn inside the stage box and the box inside the Work tray at both sizes; module frames (5) inside the tray. Before the comma key the same walk looped 10 hints on a comma item. Screenshots in docs/design/gap-audit/w2-flow/. n=1 walk per arm, 2026-10-05",
    "at": "2026-10-05"
   },
   {
@@ -88,6 +88,24 @@
    "id": "rj-w2int-lint-prefix-match",
    "kind": "rejection",
    "title": "lint-ui's path filter by plain string prefix: B1_PATHS 'src/ui' pulled in src/ui-v3/** (93 findings), so the npm-test lint gate went red in every Wave 2 stream for files none of them owned, and the deploy gate (npm test) could not pass",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "w2int-wrap-yahin-rok",
+   "kind": "decision",
+   "title": "director/say.js WRAP_WORDS also reads 'yahin rok/stop/khatam/band (dete/karte hain)' as closing language, so the reply guard strips it on any non-wrap move. Found by the flow walk twice on a probe turn: 'Theek hai, Riya. Aaj ka practice yahin rok dete hain. Ek lakh pachchees hazaar ...' while the lesson went on (owner test item 2, a confusing teacher). Controls stay quiet: 'yahin se shuru', 'yahin likho', 'yahin rakho', 'yahin dekho'. Reversal: a false strip on a real line",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "m-w2int-prod-battery-local-2026-10-05",
+   "kind": "measurement",
+   "title": "Every tests/prod W2 file plus w0/w1 on the merged tree, local serve.mjs on the Neon test branch, real Azure models, n=1 run per file (2026-10-05). Final state after the integration fixes: w2seam-contracts 13/13, w2a-home-states 47/47, w2a-parent-truth 59/59, w2b-explain-rungs 36/36, w2b-first-paint 38/39 (module rungs p90 170 ms n=4; live boards 2.3-4.8 s n=6; 1 headless Chromium crash on a class-4 topic), w2c-practice-ask pass, w2d-voice-lanes pass, w2e-brain 24/24, w2f-studio-gate 19/20 (sync p90 2313 ms vs 1500, n=3: W2-F's open bar), w2g-voice 31/31 (with AZURE_SPEECH_REGION/KEY set; without them the cascade speaks oai and the dhd checks fail), w2h-studio 24/24, w2i-release 39/39, w2i-safety pass, w0-smoke pass, w1a battery/practice-ask/text-voice/young-text pass, w1b-tray pass, w1b-mounts 37/40 (the 3 item-bound maths mounts W2-B already traced to HEAD), w1c-reteach 13/13, w1c-settle 7/8 (leftover count only), w1d-conductor 11/11 with a local worker (needs server/worker.mjs), w1d-eyes 12/12, w1f-face 32/32, w1c-three-day 16/22 (+1 day C31 delayed check missing; 22/22 at the W1 integration), w2flow-walk 93/93",
+   "at": "2026-10-05"
+  },
+  {
+   "id": "rj-w2int-three-day-c31-plus1",
+   "kind": "rejection",
+   "title": "Regression found at W2 integration, not fixed: w1c-three-day's +1 day lesson no longer opens with the C31 delayed check on a day-0 item (no ui.ask, pendingProbe none); +3 days still does. Day 0 now walks W2-C's faded step (fade:4, key '1,07,040') and spends 4 hints there, so only 3 answers are graded; the opener selection for +1 day then finds nothing due. Whether the test script (which cannot answer fade:* items) or the product (fewer delayed checks after a guided day) is wrong is not yet known; owner priority 1 (covert comprehension) makes it a release question",
    "at": "2026-10-05"
   }
  ],
@@ -156,6 +174,21 @@
    "src": "w2int-practice-ask-not-done",
    "rel": "part_of",
    "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-wrap-yahin-rok",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-prod-battery-local-2026-10-05"
+  },
+  {
+   "src": "rj-w2int-three-day-c31-plus1",
+   "rel": "part_of",
+   "dst": "m-w2int-prod-battery-local-2026-10-05"
   }
  ]
 }

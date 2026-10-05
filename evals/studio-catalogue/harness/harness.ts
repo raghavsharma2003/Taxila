@@ -18,6 +18,8 @@ const ALL = { ...ENGINES, ...ENGINES_EXT };
 
 async function specFor(archetype: string): Promise<unknown> {
   if (window.__SPEC !== undefined) return window.__SPEC;
+  const fixture = qs.get("fixture");
+  if (fixture) { try { const r = await fetch(`./fixtures/${fixture}.json`); if (r.ok) return await r.json(); } catch { /* default */ } }
   const topic = qs.get("topic"), slot = qs.get("slot") || "game";
   if (topic) {
     try { const r = await fetch(`./catalogue/${topic}.json`); if (r.ok) { const j = await r.json(); const piece = j[slot]; if (piece?.spec) return piece.spec; } } catch { /* fall through to default */ }

@@ -154,7 +154,7 @@ export function makeLesson(seed, o) {
       // steering words on a running piece
       if (graded && tr() < 0.05) turn.steer = pickOf(tr, ["harder", "slower", "again"]);
       // the misconception gets repaired after a contrast and two right answers in a row
-      if (mis && !resolvedAt.has(mis) && B.beat === "contrast" && turn.answer === "right" && prev?.answer === "right") { resolvedAt.set(mis, k); turn.resolvesMisconception = mis; }
+      if (mis && !resolvedAt.has(mis) && B.beat === "contrast" && j >= 2 && turn.answer === "right" && prev?.answer === "right") { resolvedAt.set(mis, k); turn.resolvesMisconception = mis; }
       if (turn.revealsMisconception || turn.answer === "wrong") hintRung = Math.min(3, hintRung + (turn.answer === "wrong" ? 1 : 0));
       if (j === 0) hintRung = 0;
       turn.hintRung = hintRung;

@@ -329,14 +329,23 @@ try {
   await pause(2500);
   await shoot("parent-home");
   ok(/\/parent/.test(page.url()) && !(await btn(/^\s*OK\s*$/).isVisible().catch(() => false)), "the parent corner opens with the PIN");
-  await page.goto(`${BASE}/parent/lessons`, { waitUntil: "networkidle" });
-  await pause(2000);
+  // inside the corner, move by its own navigation (a reload locks it again: the PIN unlock is per visit)
+  await page.locator("a", { hasText: /^\s*Lessons\s*$/ }).last().click().catch(() => {});
+  await pause(2500);
   await shoot("parent-lessons");
   const card = page.locator('a[href*="/parent/lessons/"]').first();
   ok(await card.isVisible().catch(() => false), "the lesson is listed for the parent");
-  if (await card.isVisible().catch(() => false)) { await card.click(); await pause(3000); await shoot("parent-lesson-card"); }
-  await page.goto(`${BASE}/parent/progress`, { waitUntil: "networkidle" });
-  await pause(2000);
+  if (await card.isVisible().catch(() => false)) {
+    await card.scrollIntoViewIfNeeded().catch(() => {});
+    await card.click({ timeout: 8000 }).catch(() => card.click({ force: true }));
+    await pause(3000);
+    ok(/\/parent\/lessons\/[^/?]+/.test(page.url()), `the parent lesson card opens (${new URL(page.url()).pathname})`);
+    await shoot("parent-lesson-card");
+    await page.goBack().catch(() => {});
+    await pause(1500);
+  }
+  await page.locator("a", { hasText: /^\s*Progress\s*$/ }).last().click().catch(() => {});
+  await pause(2500);
   await shoot("parent-progress");
   ok(errors.length === 0, `no uncaught page errors (${errors.slice(0, 3).join(" | ") || "none"})`);
 } catch (e) {

@@ -37,6 +37,8 @@ export interface PuppetStageOptions {
   /** Budget for the frame's JS work at p95 (ms). 8 ms leaves half a 60 fps frame for the GPU and the page. */
   budgetMs?: number;
   loadTimeoutMs?: number;
+  /** The clock the bus events are judged against (default performance.now; the evals pass their scripted clock). */
+  now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
 }
 
@@ -56,6 +58,7 @@ export class PuppetStage {
   private childLevel = 0;
   private dpr: number;
   private fpsCap = 60;
+  private curFps = 60;
   private lastDraw = 0;
   private lastNow = 0;
   private work: number[] = [];
@@ -111,7 +114,7 @@ export class PuppetStage {
 
   private subscribe(): void {
     this.offs.push(puppetBus.on((e) => {
-      const now = performance.now();
+      const now = (this.o.now ?? (() => performance.now()))();
       if (e.kind === "visemes") this.driver.visemes.push(e.part, e.playAt, e.visemes, e.words ?? [], now);
       else if (e.kind === "cut") this.driver.cut();
       else if (e.kind === "duplex") {
@@ -125,7 +128,7 @@ export class PuppetStage {
   }
 
   private onCue(cue: FaceCue): void {
-    const now = performance.now();
+    const now = (this.o.now ?? (() => performance.now()))();
     if (cue.kind === "affect") {
       const a = faceAffectOf(cue.display, this.o.band);
       if (a) this.driver.affect(a.emotion, a.intensity, now);
@@ -170,12 +173,18 @@ export class PuppetStage {
   }
 
   /** One frame (public for the deterministic evals: tick(now) with a scripted clock). */
-  tick(now: number): void {
+  tick(now: number, force = false): void {
     const rig = this.rig;
     if (!rig || this.disposed) return;
+    // adaptive rate (low CPU): 60 fps while she speaks or the face is changing (a state change, an expression ramp, a nod,
+    // a look); 30 fps in the slow holds (listening, thinking, idle: breath, drift and blinks, whose shaper already runs on
+    // 30 Hz steps). The governor's cap, when it has stepped down, wins.
+    const want = this.fpsCap < 60 ? this.fpsCap : now / 1000 < this.driver.busyUntil ? 60 : 30;
+    this.curFps = want;
+    if (!force && want < 60 && now - this.lastDraw < 1000 / want - 2) return;
+    // intervals between DRAWN frames (the rate the child sees), not rAF callbacks
     if (this.lastNow) this.intervals.push(now - this.lastNow);
     this.lastNow = now;
-    if (this.fpsCap < 60 && now - this.lastDraw < 1000 / this.fpsCap - 2) return;
     this.lastDraw = now;
     const w0 = performance.now();
     const tap = this.tap.read();
@@ -205,9 +214,10 @@ export class PuppetStage {
 
   private govern(now: number): void {
     if (this.work.length < 90 || now - this.lastStep < 2000) return;
+    // budget per frame interval: 8 ms of JS at 60 fps (half the frame left for GL, compositing and the page), 20 ms at 30
     const budget = this.o.budgetMs ?? 8;
     const p95 = pct(this.work, 0.95);
-    if (p95 <= budget * (this.fpsCap < 60 ? 2 : 1)) return;
+    if (p95 <= (this.fpsCap < 60 ? budget * 2.5 : budget)) return;
     this.lastStep = now;
     this.work.length = 0;
     this.rigMs.length = 0;
@@ -215,7 +225,8 @@ export class PuppetStage {
     if (this.dpr > 1.5) { this.dpr = 1.5; step = "dpr 1.5"; }
     else if (this.dpr > 1) { this.dpr = 1; step = "dpr 1"; }
     else if (this.fpsCap > 30) { this.fpsCap = 30; step = "30 fps"; }
-    else { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 30 fps, dpr 1` }); this.stop(); return; }
+    else if (p95 > budget * 3.5) { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 30 fps, dpr 1` }); this.stop(); return; }
+    else return; // at the 30 fps / dpr 1 floor and still inside a 30 fps frame: hold
     this.emit({ type: "governor", step, workP95: p95 });
   }
 
@@ -244,10 +255,16 @@ export class PuppetStage {
       .catch((err: unknown) => this.emit({ type: "fallback", reason: `rebuild after context loss failed: ${String(err).slice(0, 120)}` }));
   };
 
+  /** The live rig's mouth state (evals: the rendered lip gap in rest-space px, p.g). */
+  mouthProbe(): { gap: number; name: string } | null {
+    const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string } } | null;
+    return r ? { gap: r.solver?.p?.g ?? 0, name: r.mouth?.name ?? "" } : null;
+  }
+
   /** Stats for the evals and the owner's ?facerig read-out. */
   snapshot() {
     const st = this.rig?.stats() ?? { triangles: 0, meshes: 0 };
-    return { frames: this.frames, fpsP50: 1000 / Math.max(1, pct(this.intervals, 0.5)), intervalP95: pct(this.intervals, 0.95), workP50: pct(this.work, 0.5), workP95: pct(this.work, 0.95), rigP95: pct(this.rigMs, 0.95), dpr: this.dpr, fpsCap: this.fpsCap, draws: st.meshes, tris: st.triangles, lipSource: this.lipSource, revealed: this.revealed, state: this.driver.policy.faceState };
+    return { frames: this.frames, fpsP50: 1000 / Math.max(1, pct(this.intervals, 0.5)), intervalP95: pct(this.intervals, 0.95), workP50: pct(this.work, 0.5), workP95: pct(this.work, 0.95), rigP95: pct(this.rigMs, 0.95), dpr: this.dpr, fpsCap: this.fpsCap, draws: st.meshes, tris: st.triangles, lipSource: this.lipSource, curFps: this.curFps, revealed: this.revealed, state: this.driver.policy.faceState };
   }
 
   dispose(): void {

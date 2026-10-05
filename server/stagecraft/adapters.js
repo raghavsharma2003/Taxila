@@ -11,6 +11,7 @@
 //                outcomeToView() / outcomeToSlot() map a RevealOutcome to StudioTurnView fields and UiDirectives.studioSlot.
 //   RS-4         the instant rung uses validateSpec; grading stays gradeAnswer on the host (builders.js).
 import { fromBuildIntent, fromCandidateIntents, fromPlan, fromRequest, fromSignal, requestFromText } from "./sources.js";
+import { wantAt } from "./policy.js";
 
 /**
  * @param {import("./host.js").StagecraftHost} host
@@ -81,4 +82,27 @@ export function outcomeToSlot(outcome, candidate) {
   return { slotId: outcome.candidateId, state: "revealed",
     stagecraft: { rung: outcome.rung, archetype: p.archetype ?? candidate?.archetype, spec: p.spec ?? null, boardTwin: outcome.boardTwin ?? candidate?.boardTwin ?? null, cue: outcome.cue,
       buildSha: p.buildSha ?? null, blobUrl: p.blobUrl ?? null } };
+}
+
+/**
+ * The kernel side (patch P4): the RevealPoint for this turn from closed-vocabulary turn state. The policy's want is
+ * computed HERE from the kernel's view only (wantAt reads no portfolio: the lossless rule). Called once per turn,
+ * before studioSeam.statusFacts; ≤ 0.1 ms.
+ * @param {{ lessonId: string, turnSeq: number, phase?: string, childHoldsFloor?: boolean, safety: boolean, beat: string, beatChanged?: boolean,
+ *   topicId: string, skillId: string, classLevel?: number, band: string, lang: string, kitHash: string, itemId?: string|null, hintRung?: number,
+ *   misconception?: { id: string, state: "active"|"resolved"|"unknown", revealedTurn?: number|null } | null, contrasted?: string[],
+ *   request?: { kind: string, seq: number } | null, offerAccepted?: string | null, board?: object | null, signal?: object | null,
+ *   lastPolicyRevealTurn?: number, shownThisBeat?: string[], learnerRev?: number, namingClause?: number | null, committed?: Record<string, unknown>, at: number }} x
+ * @param {{ catalog: object }} cfg
+ */
+export function revealPoint(x, cfg) {
+  const current = { lessonId: x.lessonId, topicId: x.topicId, skillId: x.skillId, beat: x.beat, itemId: x.itemId ?? null, misconceptionId: x.misconception?.id ?? null,
+    misconceptionState: x.misconception?.state ?? "unknown", hintRung: x.hintRung ?? 0, representation: null, band: x.band, lang: x.lang, kitHash: x.kitHash,
+    learnerRev: x.learnerRev ?? 0, floorRev: x.turnSeq, pending: [] };
+  const kind = x.request ? "request_answered" : x.beatChanged ? "beat_boundary" : "trp";
+  const want = wantAt({ pointKind: kind, turnSeq: x.turnSeq, beat: x.beat, beatChanged: x.beatChanged, skillId: x.skillId, topicId: x.topicId, classLevel: x.classLevel,
+    misconception: x.misconception ?? null, contrasted: x.contrasted ?? [], request: x.request ?? null, offerAccepted: x.offerAccepted ?? null, board: x.board ?? null,
+    signal: x.signal ?? {}, lastPolicyRevealTurn: x.lastPolicyRevealTurn, safety: x.safety, shownThisBeat: x.shownThisBeat ?? [] }, { catalog: cfg.catalog, swapSpacingTurns: 2, firstRevealTurn: 3 });
+  return { kind, phase: x.phase ?? "committed", turnSeq: x.turnSeq, current, want, safetyOpen: !!x.safety, childHoldsFloor: !!x.childHoldsFloor, at: x.at,
+    ...(x.namingClause !== undefined ? { line: { namingClause: x.namingClause } } : {}), committed: x.committed ?? {} };
 }

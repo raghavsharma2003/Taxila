@@ -1,0 +1,877 @@
+{
+ "date": "2026-10-05",
+ "method": "server/stagecraft/builders.js generatedSpec (JSON mode, effort low, kit-slice prompt, validateSpec; ok = not fallen back) 3-wide per turn alternating deployments; flare-low 1024 serial ≥16 s apart with gpt-image-2 low failover; buildRace + local gate, 2 concurrent; reply probe chatStream taxila-fast effort none ≤80 tok, 2 concurrent, phase A alone vs phase B under all Stagecraft load",
+ "spend": 0.8757,
+ "specs": {
+  "all": {
+   "n": 60,
+   "valid": 58,
+   "p50": 5577,
+   "p90": 7949,
+   "usd": 0.0567,
+   "errors": []
+  },
+  "taxila-fast-bg": {
+   "n": 30,
+   "valid": 28,
+   "p50": 5373,
+   "p90": 7949,
+   "usd": 0.0387,
+   "errors": []
+  },
+  "taxila-gpt6-luna": {
+   "n": 30,
+   "valid": 30,
+   "p50": 5797,
+   "p90": 8216,
+   "usd": 0.018,
+   "errors": []
+  },
+  "rows": [
+   {
+    "i": 0,
+    "dep": "taxila-fast-bg",
+    "archetype": "catch-on-line@1",
+    "need": "explain",
+    "ms": 5954,
+    "ok": true,
+    "usd": 0.001102,
+    "why": null
+   },
+   {
+    "i": 1,
+    "dep": "taxila-fast-bg",
+    "archetype": "circuit-bench@1",
+    "need": "practice",
+    "ms": 7940,
+    "ok": true,
+    "usd": 0.001825,
+    "why": null
+   },
+   {
+    "i": 2,
+    "dep": "taxila-fast-bg",
+    "archetype": "line-runner@1",
+    "need": "explain",
+    "ms": 3693,
+    "ok": true,
+    "usd": 0.000563,
+    "why": null
+   },
+   {
+    "i": 3,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "area-claim@1",
+    "need": "contrast_misconception",
+    "ms": 4629,
+    "ok": true,
+    "usd": 0.000449,
+    "why": null
+   },
+   {
+    "i": 4,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "angle-cannon@1",
+    "need": "practice",
+    "ms": 6025,
+    "ok": true,
+    "usd": 0.000555,
+    "why": null
+   },
+   {
+    "i": 5,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "phase-shift@1",
+    "need": "explain",
+    "ms": 7473,
+    "ok": true,
+    "usd": 0.000701,
+    "why": null
+   },
+   {
+    "i": 6,
+    "dep": "taxila-fast-bg",
+    "archetype": "water-cycle@1",
+    "need": "contrast_misconception",
+    "ms": 7949,
+    "ok": true,
+    "usd": 0.002093,
+    "why": null
+   },
+   {
+    "i": 7,
+    "dep": "taxila-fast-bg",
+    "archetype": "data-rush@1",
+    "need": "practice",
+    "ms": 5328,
+    "ok": true,
+    "usd": 0.00099,
+    "why": null
+   },
+   {
+    "i": 8,
+    "dep": "taxila-fast-bg",
+    "archetype": "catch-on-line@1",
+    "need": "explain",
+    "ms": 4506,
+    "ok": true,
+    "usd": 0.001177,
+    "why": null
+   },
+   {
+    "i": 9,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "orbital-explainer@1",
+    "need": "explain",
+    "ms": 8960,
+    "ok": true,
+    "usd": 0.001206,
+    "why": null
+   },
+   {
+    "i": 10,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "area-claim@1",
+    "need": "practice",
+    "ms": 5585,
+    "ok": true,
+    "usd": 0.00052,
+    "why": null
+   },
+   {
+    "i": 11,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "vault-heist@1",
+    "need": "explain",
+    "ms": 9080,
+    "ok": true,
+    "usd": 0.000655,
+    "why": null
+   },
+   {
+    "i": 12,
+    "dep": "taxila-fast-bg",
+    "archetype": "food-web@1",
+    "need": "explain",
+    "ms": 4886,
+    "ok": true,
+    "usd": 0.001041,
+    "why": null
+   },
+   {
+    "i": 13,
+    "dep": "taxila-fast-bg",
+    "archetype": "balance-beam@1",
+    "need": "practice",
+    "ms": 5373,
+    "ok": true,
+    "usd": 0.001251,
+    "why": null
+   },
+   {
+    "i": 14,
+    "dep": "taxila-fast-bg",
+    "archetype": "water-cycle@1",
+    "need": "explain",
+    "ms": 6572,
+    "ok": true,
+    "usd": 0.001959,
+    "why": null
+   },
+   {
+    "i": 15,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "data-rush@1",
+    "need": "contrast_misconception",
+    "ms": 4518,
+    "ok": true,
+    "usd": 0.00039,
+    "why": null
+   },
+   {
+    "i": 16,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "circuit-bench@1",
+    "need": "practice",
+    "ms": 6219,
+    "ok": true,
+    "usd": 0.000767,
+    "why": null
+   },
+   {
+    "i": 17,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "slice-at@1",
+    "need": "explain",
+    "ms": 4942,
+    "ok": true,
+    "usd": 0.000593,
+    "why": null
+   },
+   {
+    "i": 18,
+    "dep": "taxila-fast-bg",
+    "archetype": "area-claim@1",
+    "need": "contrast_misconception",
+    "ms": 4745,
+    "ok": true,
+    "usd": 0.000942,
+    "why": null
+   },
+   {
+    "i": 19,
+    "dep": "taxila-fast-bg",
+    "archetype": "angle-cannon@1",
+    "need": "practice",
+    "ms": 5848,
+    "ok": true,
+    "usd": 0.001183,
+    "why": null
+   },
+   {
+    "i": 20,
+    "dep": "taxila-fast-bg",
+    "archetype": "phase-shift@1",
+    "need": "explain",
+    "ms": 6548,
+    "ok": true,
+    "usd": 0.001381,
+    "why": null
+   },
+   {
+    "i": 21,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "shadow-play@1",
+    "need": "contrast_misconception",
+    "ms": 4524,
+    "ok": true,
+    "usd": 0.000429,
+    "why": null
+   },
+   {
+    "i": 22,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "angle-sum@1",
+    "need": "practice",
+    "ms": 5042,
+    "ok": true,
+    "usd": 0.000607,
+    "why": null
+   },
+   {
+    "i": 23,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "catch-on-line@1",
+    "need": "explain",
+    "ms": 6045,
+    "ok": true,
+    "usd": 0.000682,
+    "why": null
+   },
+   {
+    "i": 24,
+    "dep": "taxila-fast-bg",
+    "archetype": "orbital-explainer@1",
+    "need": "contrast_misconception",
+    "ms": 8444,
+    "ok": false,
+    "usd": 0.002528,
+    "why": "fell_back"
+   },
+   {
+    "i": 25,
+    "dep": "taxila-fast-bg",
+    "archetype": "line-runner@1",
+    "need": "practice",
+    "ms": 4214,
+    "ok": false,
+    "usd": 0.001001,
+    "why": "fell_back"
+   },
+   {
+    "i": 26,
+    "dep": "taxila-fast-bg",
+    "archetype": "vault-heist@1",
+    "need": "explain",
+    "ms": 4410,
+    "ok": true,
+    "usd": 0.001003,
+    "why": null
+   },
+   {
+    "i": 27,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "food-web@1",
+    "need": "contrast_misconception",
+    "ms": 3351,
+    "ok": true,
+    "usd": 0.000356,
+    "why": null
+   },
+   {
+    "i": 28,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "balance-beam@1",
+    "need": "practice",
+    "ms": 5939,
+    "ok": true,
+    "usd": 0.000628,
+    "why": null
+   },
+   {
+    "i": 29,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "water-cycle@1",
+    "need": "explain",
+    "ms": 7369,
+    "ok": true,
+    "usd": 0.000836,
+    "why": null
+   },
+   {
+    "i": 30,
+    "dep": "taxila-fast-bg",
+    "archetype": "data-rush@1",
+    "need": "contrast_misconception",
+    "ms": 4346,
+    "ok": true,
+    "usd": 0.000833,
+    "why": null
+   },
+   {
+    "i": 31,
+    "dep": "taxila-fast-bg",
+    "archetype": "circuit-bench@1",
+    "need": "practice",
+    "ms": 5902,
+    "ok": true,
+    "usd": 0.001417,
+    "why": null
+   },
+   {
+    "i": 32,
+    "dep": "taxila-fast-bg",
+    "archetype": "slice-at@1",
+    "need": "explain",
+    "ms": 5335,
+    "ok": true,
+    "usd": 0.001141,
+    "why": null
+   },
+   {
+    "i": 33,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "area-claim@1",
+    "need": "explain",
+    "ms": 4495,
+    "ok": true,
+    "usd": 0.000434,
+    "why": null
+   },
+   {
+    "i": 34,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "angle-cannon@1",
+    "need": "practice",
+    "ms": 5075,
+    "ok": true,
+    "usd": 0.000503,
+    "why": null
+   },
+   {
+    "i": 35,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "phase-shift@1",
+    "need": "explain",
+    "ms": 4827,
+    "ok": true,
+    "usd": 0.000479,
+    "why": null
+   },
+   {
+    "i": 36,
+    "dep": "taxila-fast-bg",
+    "archetype": "shadow-play@1",
+    "need": "contrast_misconception",
+    "ms": 4473,
+    "ok": true,
+    "usd": 0.001016,
+    "why": null
+   },
+   {
+    "i": 37,
+    "dep": "taxila-fast-bg",
+    "archetype": "scale-cinematic@1",
+    "need": "practice",
+    "ms": 8470,
+    "ok": true,
+    "usd": 0.001956,
+    "why": null
+   },
+   {
+    "i": 38,
+    "dep": "taxila-fast-bg",
+    "archetype": "catch-on-line@1",
+    "need": "explain",
+    "ms": 5980,
+    "ok": true,
+    "usd": 0.00142,
+    "why": null
+   },
+   {
+    "i": 39,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "orbital-explainer@1",
+    "need": "contrast_misconception",
+    "ms": 6013,
+    "ok": true,
+    "usd": 0.000805,
+    "why": null
+   },
+   {
+    "i": 40,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "line-runner@1",
+    "need": "practice",
+    "ms": 5342,
+    "ok": true,
+    "usd": 0.0005,
+    "why": null
+   },
+   {
+    "i": 41,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "vault-heist@1",
+    "need": "explain",
+    "ms": 5797,
+    "ok": true,
+    "usd": 0.000513,
+    "why": null
+   },
+   {
+    "i": 42,
+    "dep": "taxila-fast-bg",
+    "archetype": "angle-cannon@1",
+    "need": "explain",
+    "ms": 4596,
+    "ok": true,
+    "usd": 0.001057,
+    "why": null
+   },
+   {
+    "i": 43,
+    "dep": "taxila-fast-bg",
+    "archetype": "balance-beam@1",
+    "need": "practice",
+    "ms": 5013,
+    "ok": true,
+    "usd": 0.001249,
+    "why": null
+   },
+   {
+    "i": 44,
+    "dep": "taxila-fast-bg",
+    "archetype": "water-cycle@1",
+    "need": "explain",
+    "ms": 6594,
+    "ok": true,
+    "usd": 0.001927,
+    "why": null
+   },
+   {
+    "i": 45,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "data-rush@1",
+    "need": "contrast_misconception",
+    "ms": 4757,
+    "ok": true,
+    "usd": 0.000415,
+    "why": null
+   },
+   {
+    "i": 46,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "catch-on-line@1",
+    "need": "practice",
+    "ms": 6883,
+    "ok": true,
+    "usd": 0.000679,
+    "why": null
+   },
+   {
+    "i": 47,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "slice-at@1",
+    "need": "explain",
+    "ms": 3985,
+    "ok": true,
+    "usd": 0.000455,
+    "why": null
+   },
+   {
+    "i": 48,
+    "dep": "taxila-fast-bg",
+    "archetype": "area-claim@1",
+    "need": "contrast_misconception",
+    "ms": 5015,
+    "ok": true,
+    "usd": 0.000956,
+    "why": null
+   },
+   {
+    "i": 49,
+    "dep": "taxila-fast-bg",
+    "archetype": "angle-cannon@1",
+    "need": "practice",
+    "ms": 4028,
+    "ok": true,
+    "usd": 0.000941,
+    "why": null
+   },
+   {
+    "i": 50,
+    "dep": "taxila-fast-bg",
+    "archetype": "phase-shift@1",
+    "need": "explain",
+    "ms": 5772,
+    "ok": true,
+    "usd": 0.00117,
+    "why": null
+   },
+   {
+    "i": 51,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "shadow-play@1",
+    "need": "explain",
+    "ms": 3372,
+    "ok": true,
+    "usd": 0.000391,
+    "why": null
+   },
+   {
+    "i": 52,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "scale-cinematic@1",
+    "need": "practice",
+    "ms": 7240,
+    "ok": true,
+    "usd": 0.000781,
+    "why": null
+   },
+   {
+    "i": 53,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "catch-on-line@1",
+    "need": "explain",
+    "ms": 8216,
+    "ok": true,
+    "usd": 0.000678,
+    "why": null
+   },
+   {
+    "i": 54,
+    "dep": "taxila-fast-bg",
+    "archetype": "circuit-bench@1",
+    "need": "contrast_misconception",
+    "ms": 5382,
+    "ok": true,
+    "usd": 0.001387,
+    "why": null
+   },
+   {
+    "i": 55,
+    "dep": "taxila-fast-bg",
+    "archetype": "line-runner@1",
+    "need": "practice",
+    "ms": 5003,
+    "ok": true,
+    "usd": 0.001138,
+    "why": null
+   },
+   {
+    "i": 56,
+    "dep": "taxila-fast-bg",
+    "archetype": "area-claim@1",
+    "need": "explain",
+    "ms": 5577,
+    "ok": true,
+    "usd": 0.00107,
+    "why": null
+   },
+   {
+    "i": 57,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "angle-cannon@1",
+    "need": "contrast_misconception",
+    "ms": 6912,
+    "ok": true,
+    "usd": 0.000569,
+    "why": null
+   },
+   {
+    "i": 58,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "phase-shift@1",
+    "need": "practice",
+    "ms": 5600,
+    "ok": true,
+    "usd": 0.000537,
+    "why": null
+   },
+   {
+    "i": 59,
+    "dep": "taxila-gpt6-luna",
+    "archetype": "water-cycle@1",
+    "need": "explain",
+    "ms": 6745,
+    "ok": true,
+    "usd": 0.000892,
+    "why": null
+   }
+  ]
+ },
+ "images": {
+  "n": 10,
+  "ok": 10,
+  "p50": 15461,
+  "p90": 18483,
+  "r429": 1,
+  "rows": [
+   {
+    "i": 0,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 15461,
+    "totalMs": 15595
+   },
+   {
+    "i": 1,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 15985,
+    "totalMs": 16134
+   },
+   {
+    "i": 2,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 16149,
+    "totalMs": 16267
+   },
+   {
+    "i": 3,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 14026,
+    "totalMs": 14173
+   },
+   {
+    "i": 4,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 14983,
+    "totalMs": 15124
+   },
+   {
+    "i": 5,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 16128,
+    "totalMs": 16243
+   },
+   {
+    "i": 6,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 13283,
+    "totalMs": 13414
+   },
+   {
+    "i": 7,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 13817,
+    "totalMs": 13959
+   },
+   {
+    "i": 8,
+    "dep": "taxila-image",
+    "failover": true,
+    "ok": true,
+    "status": 200,
+    "ms": 18483,
+    "totalMs": 19044
+   },
+   {
+    "i": 9,
+    "dep": "taxila-image25-flare",
+    "failover": false,
+    "ok": true,
+    "status": 200,
+    "ms": 12806,
+    "totalMs": 12931
+   }
+  ]
+ },
+ "races": {
+  "n": 12,
+  "ok": 12,
+  "p50": 35696,
+  "p90": 51754,
+  "usd": 0.7491,
+  "rows": [
+   {
+    "i": 1,
+    "archetype": "bar_chart_read",
+    "ok": true,
+    "ms": 18523,
+    "toPlayableMs": 18523,
+    "usd": 0.02049,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 0,
+    "archetype": "shade_fraction",
+    "ok": true,
+    "ms": 41900,
+    "toPlayableMs": 41900,
+    "usd": 0.09174,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 2,
+    "archetype": "hub_flows",
+    "ok": true,
+    "ms": 26428,
+    "toPlayableMs": 26428,
+    "usd": 0.04528,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 4,
+    "archetype": "sort_bins",
+    "ok": true,
+    "ms": 18910,
+    "toPlayableMs": 18910,
+    "usd": 0.03109,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 5,
+    "archetype": "sequence_steps",
+    "ok": true,
+    "ms": 13686,
+    "toPlayableMs": 13686,
+    "usd": 0.0259,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 3,
+    "archetype": "number_line_jump",
+    "ok": true,
+    "ms": 42192,
+    "toPlayableMs": 35696,
+    "usd": 0.09467,
+    "reason": "won",
+    "winner": "terra-low"
+   },
+   {
+    "i": 6,
+    "archetype": "slider_law",
+    "ok": true,
+    "ms": 15850,
+    "toPlayableMs": 15849,
+    "usd": 0.01843,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 8,
+    "archetype": "pictograph",
+    "ok": true,
+    "ms": 36611,
+    "toPlayableMs": 36611,
+    "usd": 0.07947,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 9,
+    "archetype": "timeline",
+    "ok": true,
+    "ms": 17556,
+    "toPlayableMs": 17556,
+    "usd": 0.02023,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 7,
+    "archetype": "process_chain",
+    "ok": true,
+    "ms": 71222,
+    "toPlayableMs": 63061,
+    "usd": 0.17065,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 10,
+    "archetype": "shade_fraction",
+    "ok": true,
+    "ms": 44069,
+    "toPlayableMs": 44069,
+    "usd": 0.09209,
+    "reason": "won",
+    "winner": "gpt6-low"
+   },
+   {
+    "i": 11,
+    "archetype": "bar_chart_read",
+    "ok": true,
+    "ms": 51754,
+    "toPlayableMs": 51754,
+    "usd": 0.0591,
+    "reason": "won",
+    "winner": "gpt6-low"
+   }
+  ]
+ },
+ "reply": {
+  "A": {
+   "n": 30,
+   "ok": 30,
+   "p50": 958,
+   "p90": 1173,
+   "r429": 0
+  },
+  "B": {
+   "n": 30,
+   "ok": 30,
+   "p50": 876,
+   "p90": 1294,
+   "r429": 0
+  }
+ }
+}

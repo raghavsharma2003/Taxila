@@ -1,0 +1,29 @@
+--- a/server/duplex/buildIntent.js
++++ b/server/duplex/buildIntent.js
+@@ -22,6 +22,11 @@
+   constructor(o = {}) {
+     this.launch = o.launch || null;
+     this.reveal = o.reveal || new RevealQueue();
++    // STAGECRAFT (docs/design/stagecraft/patches/P1): when a lesson runs Stagecraft, `launch` is
++    // server/stagecraft/adapters.js buildIntentLauncher (every intent → a SILENT nomination), the safety stop also opens
++    // the pool-wide quarantine, and the RevealQueue is never drained (the reveal policy owns the stage). Off = unchanged.
++    this.onSafetyHook = o.onSafety || null;
++    this.stagecraft = !!o.stagecraft;
+     this.turn = 0;
+     this.seen = new Set();
+     this.safety = false;
+@@ -87,6 +92,7 @@
+   onSafety() {
+     this.safety = true;
+     this.reveal.items = [];
++    try { this.onSafetyHook?.(); } catch { /* a hook never breaks the safety stop */ }
+   }
+ 
+   /** Drained only at a turn boundary (triage.js RevealQueue): never mid-utterance. */
+@@ -96,5 +102,5 @@
+    * The same, keyed by the v2 governor's FloorPhase (src/duplex/engine.ts): her floor, a committed reply and her hand-over
+    * are turn boundaries; the child's floor, a hold, an overlap and safety_attend are not (law: never mid-utterance).
+    */
+-  drainAtPhase(phase) { return this.reveal.drain(PHASE_BOUNDARY[phase] ?? ""); }
++  drainAtPhase(phase) { return this.stagecraft ? [] : this.reveal.drain(PHASE_BOUNDARY[phase] ?? ""); }
+ }

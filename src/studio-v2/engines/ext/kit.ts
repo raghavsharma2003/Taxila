@@ -113,23 +113,23 @@ export class RoundFlow {
   go(s: RoundFlow["state"]): void { this.state = s; this.stateT = 0; }
   startRound(k: number): void {
     this.round = k; this.go("intro"); this.introA = 0;
-    this.api.tw.add(this, { introA: 1 }, { dur: 0.45 });
+    this.api.tw.add(this as RoundFlow, { introA: 1 }, { dur: 0.45 });
     this.hooks.onRound(k);
   }
   /** call when the round's play is over */
   endRound(): void {
     if (this.state === "end" || this.state === "final") return;
     this.go("end"); this.endA = 0;
-    this.api.tw.add(this, { endA: 1 }, { dur: 0.45 }); this.api.tw.add(this, { endA: 0 }, { dur: 0.35, delay: 2.4 });
+    this.api.tw.add(this as RoundFlow, { endA: 1 }, { dur: 0.45 }); this.api.tw.add(this as RoundFlow, { endA: 0 }, { dur: 0.35, delay: 2.4 });
     this.hooks.onEnd?.(this.round);
   }
   tick(dt: number, introSecs = 1.7): void {
     this.stateT += dt;
     if (this.state === "boot" && this.stateT > 0.45) this.startRound(0);
-    else if (this.state === "intro" && this.stateT > introSecs) { this.api.tw.add(this, { introA: 0 }, { dur: 0.35, ease: "inCubic" }); this.go("play"); }
+    else if (this.state === "intro" && this.stateT > introSecs) { this.api.tw.add(this as RoundFlow, { introA: 0 }, { dur: 0.35, ease: "inCubic" }); this.go("play"); }
     else if (this.state === "end" && this.stateT > 3.0) {
       if (this.round + 1 < this.rounds) this.startRound(this.round + 1);
-      else { this.go("final"); this.finalA = 0; this.api.tw.add(this, { finalA: 1 }, { dur: 0.6 }); this.hooks.onFinal(); }
+      else { this.go("final"); this.finalA = 0; this.api.tw.add(this as RoundFlow, { finalA: 1 }, { dur: 0.6 }); this.hooks.onFinal(); }
     }
   }
 }

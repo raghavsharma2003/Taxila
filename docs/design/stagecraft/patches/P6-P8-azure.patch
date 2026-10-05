@@ -1,0 +1,41 @@
+--- a/server/azure.js
++++ b/server/azure.js
+@@ -22,6 +22,9 @@
+   // Image lane (ROUTER-CHANGES A4, 2026-10-04): gpt-image-2.5-flare. No server route calls it yet (offline scripts and
+   // the future Studio image lane); IMAGE below carries the quality and the fallback order every caller must use.
+   get image() { return process.env.DEPLOY_IMAGE || "taxila-image25-flare"; },
++  // STAGECRAFT spec rung (patch P6): its own deployment once owner action O-1 creates it; until then the reply lane's
++  // BACKGROUND twin. Never the reply deployment itself (stagecraft-reply-lane-isolation).
++  get stagecraftSpec() { return process.env.DEPLOY_STAGECRAFT_SPEC || "taxila-fast-bg"; },
+ };
+ 
+ /**
+@@ -90,7 +93,7 @@
+  * `retries: 0` is for a backup call that must not double the latency of the path it rescues.
+  * @returns {Promise<any>} parsed JSON, or a Buffer when `binary`.
+  */
+-async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, lane = "CHAT", quotaLane } = {}) {
++async function post(kind, deployment, path, body, { timeoutMs = DEFAULT_TIMEOUT_MS, trace, binary = false, retries = 1, lane = "CHAT", quotaLane, signal } = {}) {
+   for (let attempt = 0; ; attempt++) {
+     // Quota lanes (server/lanes.js, W2-E): a background call may wait for its bucket; a hot call never waits. The seam is a
+     // no-op (admit → undefined) until W2-E fills it. `quotaLane` is separate from `lane`, which selects the endpoint.
+@@ -100,6 +103,9 @@
+     const t0 = performance.now();
+     const ctl = new AbortController();
+     const timer = setTimeout(() => ctl.abort(), timeoutMs);
++    // the caller's AbortSignal (patch P8: Stagecraft cancels a build the moment its candidate is invalidated)
++    const onCaller = () => ctl.abort();
++    if (signal) { if (signal.aborted) ctl.abort(); else signal.addEventListener("abort", onCaller, { once: true }); }
+     let status = 0, err, out, usage;
+     try {
+       const res = await fetch(endpoint(lane) + path, {
+@@ -122,7 +128,9 @@
+         : new AzureError(`${kind} ${deployment} network error: ${e?.message || e}`, 0, "network");
+     } finally {
+       clearTimeout(timer);
++      signal?.removeEventListener?.("abort", onCaller);
+     }
++    if (signal?.aborted) throw new AzureError(`${kind} ${deployment} cancelled by the caller`, 0, "cancelled");
+     log({ kind, deployment, status: status || err?.code || "error", ms: Math.round(performance.now() - t0), attempt,
+       tokens: usage ? { in: usage.prompt_tokens ?? usage.input_tokens, out: usage.completion_tokens ?? usage.output_tokens } : undefined }, trace);
+     try {

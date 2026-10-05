@@ -155,48 +155,57 @@ export const isPalindrome = (n: number) => { const s = String(Math.abs(Math.trun
  * Exceptions exist in real recitation (a few conjunct contexts read laghu); the catalogue cross-checks with the kit.
  */
 export function matraWeights(text: string): { syl: string; w: 1 | 2 }[] {
-  const LONG_SIGNS = "ाीूेैोौॠ";
-  const SHORT_SIGNS = "िुृ";
-  const LONG_V = "आईऊएऐओऔॠ", SHORT_V = "अइउऋ";
+  const LONG_SIGNS = "\u093e\u0940\u0942\u0947\u0948\u094b\u094c\u0944";
+  const SHORT_SIGNS = "\u093f\u0941\u0943";
+  const LONG_V = "\u0906\u0908\u090a\u090f\u0910\u0913\u0914\u0960", SHORT_V = "\u0905\u0907\u0909\u090b";
+  const NASAL = "\u0902\u0903\u0901", ANUSVARA = "\u0902", VISARGA = "\u0903", HALANT = "\u094d", NUKTA = "\u093c";
   const out: { syl: string; w: 1 | 2 }[] = [];
   const s = text.normalize("NFC");
-  const isCons = (c: string) => c >= "क" && c <= "ह" || c === "क़" || (c >= "ख़" && c <= "य़");
-  let i = 0;
+  const isCons = (c: string | undefined) => !!c && ((c >= "\u0915" && c <= "\u0939") || (c >= "\u0958" && c <= "\u095f"));
+  let i = 0, wordStart = 0;
+  // anusvara / visarga make a short syllable guru, EXCEPT a word-final anusvara on a short vowel: modern print writes a
+  // nasalised vowel that way when the vowel sign rises above the line (नहिं, पियहिं = chandrabindu, laghu). Chandrabindu
+  // never changes weight.
+  const nasal = (syl: string, w: 1 | 2): [string, 1 | 2] => {
+    while (i < s.length && NASAL.includes(s[i])) {
+      const ch = s[i];
+      if (ch === VISARGA) w = 2;
+      else if (ch === ANUSVARA && isCons(s[i + 1])) w = 2;
+      syl += ch; i++;
+    }
+    return [syl, w];
+  };
   while (i < s.length) {
     const c = s[i];
+    if (/\s/.test(c)) { wordStart = out.length; i++; continue; }
     if (LONG_V.includes(c) || SHORT_V.includes(c)) {
-      let syl = c, w: 1 | 2 = LONG_V.includes(c) ? 2 : 1; i++;
-      while (i < s.length && "ंःँ".includes(s[i])) { if (s[i] !== "ँ") w = 2; syl += s[i]; i++; }
-      out.push({ syl, w }); continue;
+      i++; const [syl, w] = nasal(c, LONG_V.includes(c) ? 2 : 1); out.push({ syl, w }); continue;
     }
     if (isCons(c)) {
       let syl = c; i++;
-      if (s[i] === "़") { syl += s[i]; i++; }
-      if (s[i] === "्") {                           // halant: a cluster. The consonant joins the NEXT syllable and
-        syl += s[i]; i++;                                // makes the PREVIOUS one guru (if it exists in this word).
-        if (out.length && i < s.length && isCons(s[i])) out[out.length - 1].w = 2;
-        // carry the half consonant into the next syllable's text
+      if (s[i] === NUKTA) { syl += s[i]; i++; }
+      if (s[i] === HALANT) {                             // a cluster: the half consonant joins the NEXT syllable and makes
+        syl += s[i]; i++;                                // the previous one guru, within the same word only
+        if (out.length > wordStart && isCons(s[i])) out[out.length - 1].w = 2;
         let next = syl;
         while (i < s.length && isCons(s[i])) {
           next += s[i]; i++;
-          if (s[i] === "़") { next += s[i]; i++; }
-          if (s[i] === "्") { next += s[i]; i++; continue; }
+          if (s[i] === NUKTA) { next += s[i]; i++; }
+          if (s[i] === HALANT) { next += s[i]; i++; continue; }
           break;
         }
         if (next === syl) continue;                      // halant-final: weightless
         let w: 1 | 2 = 1;
         if (i < s.length && LONG_SIGNS.includes(s[i])) { w = 2; next += s[i]; i++; }
         else if (i < s.length && SHORT_SIGNS.includes(s[i])) { next += s[i]; i++; }
-        while (i < s.length && "ंःँ".includes(s[i])) { if (s[i] !== "ँ") w = 2; next += s[i]; i++; }
-        out.push({ syl: next, w }); continue;
+        const [sy, ww] = nasal(next, w); out.push({ syl: sy, w: ww }); continue;
       }
       let w: 1 | 2 = 1;
       if (i < s.length && LONG_SIGNS.includes(s[i])) { w = 2; syl += s[i]; i++; }
       else if (i < s.length && SHORT_SIGNS.includes(s[i])) { syl += s[i]; i++; }
-      while (i < s.length && "ंःँ".includes(s[i])) { if (s[i] !== "ँ") w = 2; syl += s[i]; i++; }
-      out.push({ syl, w }); continue;
+      const [sy, ww] = nasal(syl, w); out.push({ syl: sy, w: ww }); continue;
     }
-    i++;                                                 // spaces, danda, punctuation, Latin: no weight
+    i++;                                                 // danda, punctuation, Latin: no weight
   }
   return out;
 }

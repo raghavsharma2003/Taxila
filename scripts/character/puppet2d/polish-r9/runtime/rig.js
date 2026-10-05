@@ -986,7 +986,10 @@ export class Puppet2DRig {
       return 5.0 * Math.max(this.blinkDip || 0, smooth(0.3, 0.6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : 0.8)) - c.lift - c.inner * Math.pow(1 - ui, 1.3) - c.arch * (0.35 + 0.65 * peak) * Math.pow(ui, 0.5) - (c.peak || 0) * Math.exp(-(((ui - 0.52) / 0.34) ** 2)) + c.knit * (1 - 0.6 * ui);
     };
     const dy = dyAt(x);
-    const th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
+    // r9: beyond either end the ribbon continues RIGIDLY at the end's slope (the clamped ui made the slope 0 there, so the
+    // columns just past the inner end sheared against the rotated ones and smeared a tip texel into a 1 px speck)
+    const xa = clamp(x - 3, x0, x1 - 6), xb2 = xa + 6;
+    const th = Math.atan((dyAt(xb2) - dyAt(xa)) / 6);
     const cl = b.cl, yc = cl ? cl.y[clamp(Math.round(x - cl.x0), 0, cl.y.length - 1)] : y;
     const v = y - yc;
     const dxT = (s === "L" ? 1 : -1) * (c.knit * 0.3 + c.inner * 0.05);
@@ -1004,7 +1007,7 @@ export class Puppet2DRig {
     };
     const dxT = (s === "L" ? 1 : -1) * (c.knit * 0.3 + c.inner * 0.05);
     for (let k = 0; k < L.colX.length; k++) {
-      const x = L.colX[k], th = Math.atan((dyAt(x + 3) - dyAt(x - 3)) / 6);
+      const x = L.colX[k], xa = clamp(x - 3, x0, x1 - 6), th = Math.atan((dyAt(xa + 6) - dyAt(xa)) / 6);   // r9: rigid past the ends (see browOffset)
       L.cdy[k] = dyAt(x); L.cs[k] = Math.sin(th); L.cc[k] = Math.cos(th); L.cdx[k] = dxT;
       L.cyc[k] = cl ? cl.y[clamp(Math.round(x - cl.x0), 0, cl.y.length - 1)] : 0;
     }

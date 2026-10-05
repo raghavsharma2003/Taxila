@@ -1,0 +1,55 @@
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -28,6 +28,8 @@
+ import { identityOf, kitHashOf, lookup, recordGatePass, gatePassed, noteMount, noteIncident, excludedArchetypes, spendOf, ensureIdentity, hashOf, cachedStrings, rememberStrings } from "./library.js";
+ import { getBuild, putBuild } from "./store.js";
+ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./grade.js";
++// STAGECRAFT (patch P3): the bridge holds everything Stagecraft adds; with no host attached every call is a no-op.
++import * as stagecraft from "../stagecraft/seam-bridge.js";
+ 
+ /** Bounds (LIVE-STUDIO §3.1, §3.8; STUDENT-FLOW §5.3). */
+ export const STUDIO_LIMITS = Object.freeze({
+@@ -178,6 +180,7 @@
+ 
+ /** The Work tray slot of a piece (shared/studio.ts StudioSlot). */
+ export function slotOf(p, state = p.state) {
++  if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
+   const art = p.artifact?.kind === "whiteboard" ? p.artifact : p.kind === "whiteboard" ? undefined : artifactOf(p);
+   const st = state === "fallback_ready" ? "fallback_shown" : state;
+   return { slotId: p.slotId, intentId: p.intentId, state: st, ...(art ? { artifact: art } : {}) };
+@@ -469,7 +472,7 @@
+     const own = (p) => (beat && (BEAT_NEED[beat] ?? []).includes(p.need) ? 0 : 1);
+     const next = pieces.filter((p) => isRevealable(p) && fits(p)).sort((x, y) => own(x) - own(y) || x.neededAtMs - y.neededAtMs)[0];
+     if (next) { view.propose = { reveal: next.intentId }; if (next.facts) view.revealing = next.facts; }
+-    return view;
++    return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
+   },
+ 
+   /**
+@@ -495,7 +498,8 @@
+       // the turn moved into a beat the piece was not made for, the tray is the Director's, or her move asks its own
+       // question: it waits for its moment; onReveal skips it on this turn
+       const beat = typeof hint?.beat === "string" ? hint.beat : null;
+-      if (p && !VISIBLE.has(p.state) && (trayTaken || !!hint?.asking || (beat && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
++      // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question hold it
++      if (p && !VISIBLE.has(p.state) && (trayTaken || !!hint?.asking || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) { L.shown = { intentId: p.intentId, revealing: !VISIBLE.has(p.state) }; return slotOf(p, p.source === "skeleton" ? "fallback_ready" : "revealed"); }
+     }
+     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+@@ -543,6 +547,7 @@
+       if (L.onScreen && L.onScreen !== p.intentId) retirePiece(L, L.onScreen, "replaced");
+       p.state = "revealed"; p.revealedTurn = L.turn; p.revealedAt = Date.now();
+       L.onScreen = p.intentId; L.lastRevealTurn = L.turn;
++      if (p.source === "stagecraft") stagecraft.noteRevealed(L.lessonId ?? ev.lessonId, p.intentId);
+       p.grade = createGradeSession(p.archetype, p.params);
+       push(L, { t: "status", status: statusOf(p) });
+       if (p.source === "library" && p.buildSha) noteMount(p.buildSha).catch(() => {});
+@@ -660,7 +665,7 @@
+   if (!p || p.state === "retired") return;
+   const wasVisible = VISIBLE.has(p.state);
+   p.state = "retired"; p.retired = true; p.retiredWhy = why;
+-  if (L.onScreen === intentId) L.onScreen = null;
++  if (L.onScreen === intentId) { L.onScreen = null; if (why !== "replaced") stagecraft.noteRetired(L.lessonId); }
+   push(L, { t: "status", status: statusOf(p) });
+   if (p.mountId) dbq("update studio_mount set outcome = outcome || $2::jsonb where id = $1", [p.mountId, JSON.stringify({ retired: why })]).catch(() => {});
+   // the piece leaves with items the child got wrong and never got right: ONE incorrect event per such item (W2-H fixer):

@@ -12,7 +12,7 @@ import { TutorFace, faceTutor } from "../avatar/TutorFace.tsx";
 import { p as copy } from "../avatar/picker/copy.ts";
 import type { FloorStatus } from "../avatar/behaviour.ts";
 import type { TapSource } from "../avatar/tap.ts";
-import { PUPPET_POSTER } from "./assets.ts";
+import { puppetPoster } from "./assets.ts";
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
 
 export interface PuppetFaceProps {
@@ -108,9 +108,9 @@ export function PuppetFace(p: PuppetFaceProps) {
   }
   return (
     <div ref={host} className={`fp-host ${p.className ?? ""}`} data-face="puppet2d" data-phase={p.still ? "still" : phase} data-tutor={tutor.id}
-      role="img" aria-label={label} style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%" }}>
-      <img src={PUPPET_POSTER} alt="" aria-hidden="true" draggable={false} decoding="async"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      role="img" aria-label={label} style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: "rgb(251,229,189)" }}>
+      <img src={puppetPoster(p.framing ?? "medium")} alt="" aria-hidden="true" draggable={false} decoding="async"
+        style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" }} />
     </div>
   );
 }

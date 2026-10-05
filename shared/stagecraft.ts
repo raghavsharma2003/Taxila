@@ -65,7 +65,7 @@ export interface Nomination {
   family: FamilyKey;
   need: StageNeed;
   /** Closed-vocabulary target: kit ids only, never free text and never the child's words. */
-  target: { skillId: string; itemId?: string | null; misconceptionId?: string | null; term?: string | null };
+  target: { skillId: string; topicId?: string; itemId?: string | null; misconceptionId?: string | null; term?: string | null };
   /** Preferred kinds in order (code table, STUDIO-V2 §7 and the SC-8 priors), e.g. ["animation", "game"]. */
   kinds: StudioKind[];
   /** The source's own probability that this family is wanted at its deadline (calibrated per source, §2 of the doc). */
@@ -77,6 +77,12 @@ export interface Nomination {
   /** A child's explicit ask: pNeed is 1 and it is urgent. */
   childRequested?: boolean;
   at: Ms;
+  /** plan_lookahead only: the beat this family is planned for (a beat exit kills it unless the next beat has the same need). */
+  forBeat?: BeatType | null;
+  /** Archetypes a re-representation must not repeat (the piece on stage when nominated). */
+  exclude?: string[];
+  /** child_request only: the RS-5 note class that fired. */
+  requestKind?: "visual_request" | "game_request" | "animation_request" | "explain_differently";
 }
 export type StageNeed =
   | "explain" | "introduce" | "contrast_misconception" | "practice" | "probe" | "explore_question"
@@ -94,6 +100,8 @@ export interface SignalReading {
   choiceDue?: boolean;                   // disengagement risk → switch_modality
   curious?: { depth: "what" | "why_how" | "what_if"; term?: string | null } | null;   // L9 question depth → explore_question
   breakDue?: boolean;                    // suppresses all new nominations (a break is not a content moment)
+  /** shared/brain.ts EngagementState; "strained" is the precursor of choiceDue (a weak switch_modality hedge). */
+  engagement?: "warming" | "engaged" | "strained" | "disengaging" | "stopped" | null;
   abstain?: boolean;                     // ABSTAIN: the reading adds nothing
 }
 
@@ -212,7 +220,12 @@ export type CandidatePayload =
 export interface LateBindSlot { path: string; from: "committed_value" | "committed_misconception_value"; fallback: unknown }
 /** A prompt is built in code from closed vocabulary; this is its id and hash, never the text in telemetry. */
 export interface PromptRef { template: string; hash: string }
-export interface BoardTwin { scriptRef: string; values: Record<string, string | number> }
+export interface BoardTwin {
+  scriptRef: string;
+  values: Record<string, string | number>;
+  /** The Studio v2 board renderer's input (src/studio-v2/core/board.ts BoardSpec shape): what the device draws on a failure. */
+  board?: { title: string; lines: string[]; figure?: { kind: string; [k: string]: unknown } };
+}
 
 /** Every check a candidate passes before it is "ready" (each is code; none is a model judgement). */
 export interface CandidateChecks {
@@ -241,6 +254,8 @@ export interface Portfolio {
   onStage: StageFacts | null;
   spend: SpendLedger;
   rev: number;
+  /** The conductor's private bookkeeping (families, quota buckets, phase, ledger view). Opaque to every caller. */
+  meta?: unknown;
 }
 
 // ───────────────────────────── the scheduler ─────────────────────────────
@@ -256,6 +271,8 @@ export interface TierCaps {
   minStrength: Nomination["strength"];
   /** Minimum lead (deadline − now) at launch; below it the tier is skipped (it could not be ready in time). */
   minLeadMs: Ms;
+  /** Maximum lead at launch (just in time): a piece built minutes ahead goes stale (stale_age) before it is wanted. */
+  maxLeadMs?: Ms;
 }
 export interface SchedulerConfig {
   tiers: Readonly<Record<Tier, TierCaps>>;
@@ -268,6 +285,36 @@ export interface SchedulerConfig {
   pOffer: Prob;
   /** Spend caps that override every score. */
   usdPerLesson: Usd;
+  // ── implementation extensions (server/stagecraft/config.js DEFAULT_CONFIG documents each) ──
+  lambdaPerUsd?: number;
+  lambdaLivePerUsd?: number;
+  halfLifeMs?: Ms;
+  readyUnrevealedMs?: Ms;
+  maxFamilies?: number;
+  maxCandidates?: number;
+  liveBuildsPerLesson?: number;
+  minPReadySpec?: Prob;
+  strictLeadTiers?: Tier[];
+  reply429PauseMs?: Ms;
+  churnFlips?: number;
+  chains?: Readonly<Record<Tier, readonly string[]>>;
+  rpm?: Readonly<Record<string, number>>;
+  absent?: readonly string[];
+  replyLanes?: readonly string[];
+  swapSpacingTurns?: number;
+  firstRevealTurn?: number;
+  onDemandLeadMs?: Ms;
+  liveEvenWithEngine?: boolean;
+  /** Which sources may nominate (the shadow arm passes []: build on demand only). */
+  sources?: SourceKind[];
+  /** Which rungs exist (W2 today: no generated_spec, no image). */
+  rungs?: Rung[] | null;
+  /** The admissibility table (server/stagecraft/catalog.js buildCatalog). */
+  catalog?: unknown;
+  /** Build-time CDF overrides (evals/stagecraft/calibration.json). */
+  cdf?: unknown;
+  /** The synchronous instant rungs (engine default, board twin, late binding). */
+  instant?: unknown;
 }
 
 /** Shared, process-wide quota state per deployment (the image lane's 4 RPM is subscription-wide). */
@@ -317,6 +364,10 @@ export interface RevealPoint {
   safetyOpen: boolean;
   childHoldsFloor: boolean;
   at: Ms;
+  /** Her generated line: which clause names the piece (null = it names nothing on stage → hold:no_reference_in_line). */
+  line?: { namingClause: number | null };
+  /** The child's committed values for late binding (SC-4), by LateBindSlot.from. */
+  committed?: Record<string, unknown>;
 }
 /** The policy's choice: an idea (family) and an archetype or kind preference. Stagecraft serves it or steps down rungs. */
 export interface StageWant {
@@ -326,10 +377,16 @@ export interface StageWant {
   archetype?: string | null;
   pNeed: Prob;
   childRequested: boolean;
+  /** Which source's licence made the policy want it (the readiness metric's trigger). */
+  origin?: SourceKind;
+  /** A steering word on the running piece: answered by a knob, never a new piece. */
+  steer?: { knob: "harder" | "easier" | "slower" | "faster" | "again"; value: number | string };
+  /** The same idea is already on stage: only a strictly better rung of it may swap in (hot-swap). */
+  swapOnly?: boolean;
 }
 
 export type RevealOutcome =
-  | { act: "reveal"; candidateId: string; rung: Rung; facts: StageFacts; boundValues?: Record<string, unknown>; cue: RevealCue }
+  | { act: "reveal"; candidateId: string; rung: Rung; facts: StageFacts; boundValues?: Record<string, unknown>; cue: RevealCue; boardTwin?: BoardTwin }
   | { act: "steer"; knob: string; value: number | string }
   | { act: "offer"; family: FamilyKey; candidateId: string }        // the teacher asks "dikhaun?"; the reveal waits for yes
   | { act: "board"; family: FamilyKey; scriptRef: string; facts: StageFacts }  // nothing ready and fresh: she draws
@@ -348,14 +405,15 @@ export type StagecraftInput =
   | { t: "nominate"; n: Nomination }
   | { t: "signal"; reading: SignalReading; at: Ms }
   | { t: "board"; reading: BoardReading; at: Ms }
-  | { t: "state"; key: ValidityKey; at: Ms }                          // a committed turn, beat change, ledger write
+  | { t: "state"; key: ValidityKey; at: Ms; control?: "on" | "ready_made" | "off" }   // a committed turn, beat change, ledger write
   | { t: "phase"; phase: string; turnSeq: number; at: Ms }            // the governed duplex FloorPhase, mirrored to the server
-  | { t: "landed"; candidateId: string; ok: boolean; payload?: CandidatePayload; checks?: CandidateChecks; costUsd: Usd; at: Ms }
+  | { t: "landed"; candidateId: string; ok: boolean; payload?: CandidatePayload; checks?: CandidateChecks; facts?: StudioFacts; costUsd: Usd; at: Ms; retryable?: boolean }
   | { t: "quota"; deployment: string; status: 429 | 200; retryAfterMs?: Ms; at: Ms }
   | { t: "safety"; open: boolean; at: Ms }
   | { t: "reveal_point"; point: RevealPoint }
   | { t: "revealed"; candidateId: string; at: Ms }                    // the device painted it (the stage acknowledged)
   | { t: "mount_failed"; candidateId: string; at: Ms }                // → the board twin crossfades in; same values
+  | { t: "retired"; at: Ms }                                          // the seam retired the piece on stage (8 turns, or done)
   | { t: "timer"; at: Ms };
 
 export type StagecraftEffect =
@@ -363,11 +421,13 @@ export type StagecraftEffect =
   | { e: "cancel"; candidateId: string; reason: InvalidationReason }
   | { e: "reveal"; outcome: RevealOutcome }
   | { e: "library_return"; candidateId: string }
+  | { e: "retire"; reason: "safety" }
   | { e: "telemetry"; row: StagecraftEvent };
 
 export interface Stagecraft {
   readonly version: StagecraftContractVersion;
-  /** Pure: same input + same state → same output. The production host and the evals simulator both run it. */
+  /** Pure: same input + same state → same output. The production host and the evals simulator both run it.
+   *  Built: server/stagecraft/conductor.js (2026-10-05). */
   step(state: Portfolio, input: StagecraftInput, cfg: SchedulerConfig): { state: Portfolio; effects: StagecraftEffect[] };
 }
 

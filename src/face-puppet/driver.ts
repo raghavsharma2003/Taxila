@@ -88,6 +88,17 @@ export class PuppetDriver {
   private vis: Record<string, number> = {};
   private reduced: boolean;
   private calm = false;
+  /** Until when (s) the face needs the full frame rate: speech, a state change, an expression's ramp, a nod, a look. */
+  busyUntil = 0;
+  /** Eval-only: a head offset added after everything (the judge grid's ±20° turn cell). Never set by product code. */
+  evalHead: [number, number, number] | null = null;
+  /** Eval-only: emote a judged preset directly (the judge grid's surprise / playful cells, which no product affect maps to). */
+  evalEmote(name: string, nowMs: number, variant?: number, hold = 30): void {
+    this.exprs.emote(name, nowMs / 1000, { hold, intensity: 1, variant });
+  }
+  evalRelease(nowMs: number): void {
+    this.run([{ op: "release", why: "eval" }], nowMs / 1000);
+  }
 
   constructor(o: { band: BandKey | string; seed?: number; reducedMotion?: boolean; gentle?: boolean; smile?: number }) {
     applySafetyFloor();
@@ -111,6 +122,7 @@ export class PuppetDriver {
   /** A look at the work (faceCues gaze → angles computed by the stage from the DOM). */
   lookAt(yaw: number, pitch: number, holdS: number, reason: string): void {
     this.behaviour.lookAt(yaw, pitch, holdS, reason);
+    this.busyUntil = Math.max(this.busyUntil, this.lastT + 0.6);
   }
   voiceEvent(kind: "laugh" | "breath" | "hum"): void {
     if (!this.calm) this.behaviour.voiceEvent(kind);
@@ -122,7 +134,9 @@ export class PuppetDriver {
   /** A duplex continuer nod: content-blind, ≤ 1 per 3 s, never while she speaks or in safety calm. */
   nodCue(peakDeg: number, nowMs: number): boolean {
     if (this.state === "speaking" || this.calm) return false;
-    return this.nod.kick(peakDeg, nowMs / 1000);
+    const ok = this.nod.kick(peakDeg, nowMs / 1000);
+    if (ok) this.busyUntil = Math.max(this.busyUntil, nowMs / 1000 + 1);
+    return ok;
   }
   /** Her audio was cut (barge-in yield): the mouth closes at once. */
   cut(): void {
@@ -131,6 +145,7 @@ export class PuppetDriver {
   }
 
   private run(cmds: ActCommand[], t: number): void {
+    if (cmds.length) this.busyUntil = Math.max(this.busyUntil, t + 1.2);
     for (const c of cmds) {
       if (c.op === "emote") this.exprs.emote(c.name, t, { hold: c.hold, intensity: c.intensity, variant: c.variant });
       else if (c.op === "release") {
@@ -160,7 +175,8 @@ export class PuppetDriver {
     const speakingNow = lf.speaking || visOn;
     if (speakingNow) this.spoke = this.spoke || t - this.statusSince > 0.3;
     const st = floorState({ status: inp.status, tapSpeaking: speakingNow, silenceMs: visOn ? 0 : lf.silenceMs, spokeSinceStatus: this.spoke });
-    if (st !== this.state) { this.state = st; this.run(this.policy.floor(st, t), t); }
+    if (st !== this.state) { this.state = st; this.busyUntil = Math.max(this.busyUntil, t + 0.8); this.run(this.policy.floor(st, t), t); }
+    if (speakingNow) this.busyUntil = Math.max(this.busyUntil, t + 0.4);
     this.behaviour.setState(st);
     const b = this.behaviour.update(t, { herRms: lf.rms, herVoiced: lf.voiced || visOn, childLevel: inp.childLevel });
     const beh: Record<string, number> = { ...b.bs };
@@ -192,6 +208,7 @@ export class PuppetDriver {
       if (!tap.buf) bs.jawOpen = Math.max(bs.jawOpen ?? 0, jaw ?? 0);
       lipSource = "visemes";
     }
+    if (this.evalHead) for (let i = 0; i < 3; i++) head[i] += this.evalHead[i];
     const breath = Math.sin(t * 2 * Math.PI * 0.25);
     const workMs = performance.now() - w0;
     if (rig) {

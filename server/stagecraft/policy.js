@@ -18,7 +18,7 @@ import { familyKey, REQUEST_SHAPE } from "./sources.js";
  *   request?: { kind: string, seq: number } | null, offerAccepted?: string | null,
  *   board?: { onStage: { family: string, archetype: string, kind: string, revealedTurn: number } | null, wrongCount?: number, complete?: boolean, steer?: string | null },
  *   signal?: { stepState?: string|null, verifyDue?: boolean, choiceDue?: boolean, curious?: { depth: string } | null },
- *   lastPolicyRevealTurn?: number, safety?: boolean, beatOnly?: boolean,
+ *   lastPolicyRevealTurn?: number, safety?: boolean, beatOnly?: boolean, shownThisBeat?: string[], prefetched?: string[],
  * }} PolicyInput
  */
 
@@ -91,8 +91,12 @@ export function wantAt(x, cfg) {
     return W({ origin: "partial_intent", family: familyKey(x.skillId, "contrast_misconception", x.misconception.id, null), need: "contrast_misconception", kinds, pNeed: 0.85,
       archetype: pick(catalog, { topicId: x.topicId, misconceptionId: x.misconception.id, kinds, contrast: true }) });
   }
-  // 5. the beat plan (a new beat, or a beat with nothing of its own on stage yet)
-  if (beatNeed && (x.pointKind === "beat_boundary" || x.beatChanged || !on || on.family !== beatFamily)) {
+  // 5. the beat plan (a new beat, or a beat with nothing of its own on stage yet). A contrast beat with no active
+  //    misconception shows a (kit) contrast only to a child who never had one on this topic: a child who already
+  //    repaired theirs is not shown the contrast again.
+  const repaired = beatNeed === "contrast_misconception" && !beatMis && (x.contrasted ?? []).some((m) => m.startsWith(x.topicId));
+  // (a family already shown in this beat and retired by the seam is not shown again: no ping-pong after a retire)
+  if (beatNeed && !repaired && !(x.shownThisBeat ?? []).includes(beatFamily) && (x.pointKind === "beat_boundary" || x.beatChanged || !on || on.family !== beatFamily)) {
     const kinds = BEAT_KINDS[x.beat] ?? KINDS_FOR_NEED[beatNeed];
     if (!(on && on.family === beatFamily)) return W({ origin: "plan_lookahead", family: beatFamily, need: beatNeed, kinds, pNeed: 0.9, archetype: pick(catalog, { topicId: x.topicId, misconceptionId: beatMis, kinds, contrast: !!beatMis, planned: true }) });
   }

@@ -46,7 +46,8 @@ export function admissible(catalog, { topicId, misconceptionId = null, kinds = [
 export function liveArchetypes(catalog, topicId, kinds = []) {
   const ids = (catalog?.w2Topics?.[topicId] ?? []).filter((id) => catalog.w2Live?.[id] !== false);
   return ids.map((id) => ({ archetype: id, kind: catalog.w2Kinds?.[id] ?? "game" }))
-    .sort((a, b) => ((kinds.indexOf(a.kind) + 99) % 100) - ((kinds.indexOf(b.kind) + 99) % 100) || (a.archetype < b.archetype ? -1 : 1));
+    .sort((a, b) => rankOf(kinds, a.kind) - rankOf(kinds, b.kind) || (a.archetype < b.archetype ? -1 : 1));
 }
 
+const rankOf = (kinds, k) => { const i = kinds.indexOf(k); return i < 0 ? 99 : i; };
 export const hasLibrary = (catalog, archetype) => !!catalog?.library?.includes(archetype);

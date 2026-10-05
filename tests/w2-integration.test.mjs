@@ -3,6 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { countsAsDone } from "../server/routes/child.js";
+import { wrapsUp, stripWrap } from "../server/director/say.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 
 test("a Practice or an Ask never uses up the day's Learn lesson ('never one more' counts lessons only)", () => {
@@ -29,4 +30,13 @@ test("a number item whose verified key is written with commas gets a ',' on the 
   const plain = run("125");
   assert.equal(plain.answerForm, "number");
   assert.equal(plain.padComma, undefined);
+});
+
+test("a mid-lesson line that says 'let's stop here' is wrap language (the guard strips it on a non-wrap move)", () => {
+  // the flow walk, twice on a probe turn: "Theek hai, Riya. Aaj ka practice yahin rok dete hain. Ek lakh pachchees hazaar ..."
+  assert.equal(wrapsUp("Aaj ka practice yahin rok dete hain."), true);
+  assert.equal(wrapsUp("Theek hai Riya, yahin stop karte hain."), true);
+  assert.equal(stripWrap("Theek hai, Riya. Aaj ka practice yahin rok dete hain. Ek lakh pachchees hazaar ko commas ke saath kaise likhenge?"),
+    "Theek hai, Riya. Ek lakh pachchees hazaar ko commas ke saath kaise likhenge?");
+  for (const ok of ["Yahin se shuru karte hain.", "Ye number yahin likho.", "Is box ko yahin rakho.", "Ruko, yahin dekho."]) assert.equal(wrapsUp(ok), false, ok);
 });

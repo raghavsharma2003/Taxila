@@ -20,7 +20,7 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e.message).slice(0, 300)));
 page.on("console", (m) => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 300)); });
-const q = `?engine=${encodeURIComponent(id)}&seed=7&sound=off${topic ? `&topic=${topic}&slot=${slot}` : ""}${opt("--mut", null) ? `&mut=${opt("--mut")}` : ""}`;
+const q = `?engine=${encodeURIComponent(id)}&seed=7&sound=off${topic ? `&topic=${topic}&slot=${slot}` : ""}${opt("--mut", null) ? `&mut=${opt("--mut")}` : ""}${opt("--fixture", null) ? `&fixture=${opt("--fixture")}` : ""}`;
 await page.goto(base + q);
 await waitReady(page, 15000);
 const t0 = Date.now();
@@ -28,7 +28,7 @@ const files = [];
 for (const t of at) {
   const wait = t - (Date.now() - t0);
   if (wait > 0) await runBot(page, { maxMs: wait });
-  const f = path.join(out, `${id.replace(/[^a-z0-9]/gi, "_")}${topic ? "_" + topic : ""}_${t}.png`);
+  const f = path.join(out, `${id.replace(/[^a-z0-9]/gi, "_")}${topic ? "_" + topic : ""}${opt("--fixture", null) ? "_" + opt("--fixture") : ""}_${t}.png`);
   await page.screenshot({ path: f });
   files.push(f);
 }

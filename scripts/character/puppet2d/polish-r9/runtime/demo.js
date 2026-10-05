@@ -120,7 +120,8 @@ async function main() {
     // scripted expression beat (demo Director)
     const head = [...b.head];
     // Director beats -> the expression emitters (compositor presets, expr.js)
-    if (sc.preset && exprs.sceneId !== sc.id) { exprs.sceneId = sc.id; exprs.emote(sc.preset, t, { hold: Math.max(0.2, sc.t1 - sc.t0 - 0.9), variant: sc.variant }); }
+    if (sc.preset && exprs.sceneId !== sc.id) { exprs.sceneId = sc.id; { const nx = SCENES[SCENES.indexOf(sc) + 1];   // r9: a beat followed by the SAME emotion holds to the switch, so the takes crossfade (no relax-to-smile between concern A and B)
+      exprs.emote(sc.preset, t, { hold: Math.max(0.2, sc.t1 - sc.t0 - (nx && nx.preset === sc.preset ? 0.2 : 0.9)), variant: sc.variant }); } }
     if (!sc.preset) exprs.sceneId = null;
     {
     }

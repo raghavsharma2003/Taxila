@@ -1,0 +1,22 @@
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -32,6 +32,7 @@
+ import { awaitSettled } from "../comprehension/session.js";
+ import { seamSafe as guardSeam } from "../seam-safe.js";
+ import { studioSeam, isStudioRow } from "../studio/seam.js";
++import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (null unless the lesson runs a host)
+ import { relationalSeam } from "../relational/seam.js";
+ import { expressiveSeam } from "../voice/expressive/seam.js";
+ import { fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+@@ -310,7 +311,10 @@
+   let carried = carriedFrom(state);
+   // Seam (W2-H, server/studio/seam.js): what Studio has on screen / in flight for this lesson, as values (in memory, no
+   // network). null = nothing, and the plan context is exactly the pre-seam one.
+-  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume }), null);
++  // STAGECRAFT (patch P4): the RevealPoint for this turn, built from the kernel's own view (never the portfolio: the
++  // lossless rule). null when the lesson runs no Stagecraft host; ≤ 0.1 ms; never throws into the turn.
++  const stagecraftPoint = seamSafe("stagecraft.revealPoint", () => stagecraftPointFor({ lesson, prev, state, kit, child, childText, moduleOnly: moduleOnly || laneResume }), null);
++  const studioView = seamSafe("studio.statusFacts", () => studioSeam.statusFacts(lesson.id, { beat: prev.beat?.type ?? null, moduleOnly: moduleOnly || laneResume, stagecraftPoint }), null);
+   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
+   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, carried,
+     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}) };

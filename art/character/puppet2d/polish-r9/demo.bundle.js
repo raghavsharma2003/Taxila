@@ -2324,8 +2324,8 @@ var qe = class {
 		let r = this.g.brows[e], i = r.x[0], a = r.x[1], o = this.browCh[e], s = (t) => {
 			let n = H(e === "L" ? (a - t) / (a - i) : (t - i) / (a - i)), r = Math.exp(-(((n - .62) / .3) ** 2));
 			return 5 * Math.max(this.blinkDip || 0, U(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)) - o.lift - o.inner * (1 - n) ** 1.3 - o.arch * (.35 + .65 * r) * n ** .5 - (o.peak || 0) * Math.exp(-(((n - .52) / .34) ** 2)) + o.knit * (1 - .6 * n);
-		}, c = s(t), l = Math.atan((s(t + 3) - s(t - 3)) / 6), u = r.cl, d = n - (u ? u.y[V(Math.round(t - u.x0), 0, u.y.length - 1)] : n);
-		return [(e === "L" ? 1 : -1) * (o.knit * .3 + o.inner * .05) - d * Math.sin(l), c + d * (Math.cos(l) - 1)];
+		}, c = s(t), l = V(t - 3, i, a - 6), u = l + 6, d = Math.atan((s(u) - s(l)) / 6), f = r.cl, p = n - (f ? f.y[V(Math.round(t - f.x0), 0, f.y.length - 1)] : n);
+		return [(e === "L" ? 1 : -1) * (o.knit * .3 + o.inner * .05) - p * Math.sin(d), c + p * (Math.cos(d) - 1)];
 	}
 	browColumns(e) {
 		let t = e.name.slice(4), n = this.g.brows[t], r = n.x[0], i = n.x[1], a = this.browCh[t], o = n.cl, s = 5 * Math.max(this.blinkDip || 0, U(.3, .6, this.lidShared || 0) * (this.bsh && this.bsh.active ? 1 : .8)), c = (e) => {
@@ -2333,8 +2333,8 @@ var qe = class {
 			return s - a.lift - a.inner * (1 - n) ** 1.3 - a.arch * (.35 + .65 * o) * n ** .5 - (a.peak || 0) * Math.exp(-(((n - .52) / .34) ** 2)) + a.knit * (1 - .6 * n);
 		}, l = (t === "L" ? 1 : -1) * (a.knit * .3 + a.inner * .05);
 		for (let t = 0; t < e.colX.length; t++) {
-			let n = e.colX[t], r = Math.atan((c(n + 3) - c(n - 3)) / 6);
-			e.cdy[t] = c(n), e.cs[t] = Math.sin(r), e.cc[t] = Math.cos(r), e.cdx[t] = l, e.cyc[t] = o ? o.y[V(Math.round(n - o.x0), 0, o.y.length - 1)] : 0;
+			let n = e.colX[t], a = V(n - 3, r, i - 6), s = Math.atan((c(a + 6) - c(a)) / 6);
+			e.cdy[t] = c(n), e.cs[t] = Math.sin(s), e.cc[t] = Math.cos(s), e.cdx[t] = l, e.cyc[t] = o ? o.y[V(Math.round(n - o.x0), 0, o.y.length - 1)] : 0;
 		}
 	}
 	render() {
@@ -2887,9 +2887,11 @@ var qe = class {
 	act: "thinkDown"
 }, $e = {
 	bs: {
-		browInnerUp: 1,
-		browDownLeft: .5,
-		browDownRight: .42,
+		browInnerUp: .86,
+		browOuterUpLeft: .1,
+		browOuterUpRight: .1,
+		browDownLeft: .3,
+		browDownRight: .25,
 		eyeSquintLeft: .3,
 		eyeSquintRight: .26,
 		mouthPressLeft: .4,
@@ -3468,10 +3470,17 @@ async function bt() {
 			herVoiced: C.voiced,
 			childLevel: r.id === "listening" ? .4 : 0
 		}), D = { ...E.bs }, O = [...E.head];
-		r.preset && b.sceneId !== r.id && (b.sceneId = r.id, b.emote(r.preset, e, {
-			hold: Math.max(.2, r.t1 - r.t0 - .9),
-			variant: r.variant
-		})), r.preset || (b.sceneId = null);
+		if (r.preset && b.sceneId !== r.id) {
+			b.sceneId = r.id;
+			{
+				let t = mt[mt.indexOf(r) + 1];
+				b.emote(r.preset, e, {
+					hold: Math.max(.2, r.t1 - r.t0 - (t && t.preset === r.preset ? .2 : .9)),
+					variant: r.variant
+				});
+			}
+		}
+		r.preset || (b.sceneId = null);
 		let k = 0;
 		if (r.child) {
 			let t = r.child[0] + (e - r.t0), n = Math.floor(t * u), i = 0;

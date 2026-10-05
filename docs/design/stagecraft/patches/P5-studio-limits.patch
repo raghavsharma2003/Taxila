@@ -1,0 +1,11 @@
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -33,7 +33,7 @@
+ export const STUDIO_LIMITS = Object.freeze({
+   piecesPerLesson: 3,          // prefetched frame / skeleton pieces (whiteboards are per line and do not count)
+   firstRevealTurn: 3,          // never during the greeting: the earliest turn a prefetched piece may be revealed
+-  turnsBetweenReveals: 4,      // one thing at a time, and room to teach between pieces
++  turnsBetweenReveals: 2,      // one thing at a time, room to teach between pieces; 4 → 2 for frequency (OWNER-RESET item 14, STAGECRAFT P5)
+   retireAfterTurns: 8,         // a revealed piece leaves the tray after this many turns (kept on the Made for you shelf)
+   retireAfterCompleteTurns: 2, // ...or this many turns after its last item was answered
+   readyUnrevealedMs: 4 * 60_000, // a ready build not revealed within 4 minutes goes back to the library (§3.8)

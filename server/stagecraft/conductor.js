@@ -74,6 +74,7 @@ export function step(state, input, cfg) {
     case "reveal_point": eff.push({ e: "reveal", outcome: decide(S, input.point, C, eff) }); break;
     case "revealed": { const c = byId(S, input.candidateId); if (c) row(S, eff, "revealed", { candidateId: c.id, family: c.family, rung: c.rung }); break; }
     case "mount_failed": onMountFailed(S, input, eff); break;
+    case "retired": S.onStage = null; S.meta.onStageCand = null; break;          // the seam retired the piece (8 turns, or done)
     case "timer": onTimer(S, C, eff); break;
     default: break;
   }
@@ -202,9 +203,11 @@ function killFamily(S, fam, reason, eff) {
 function familyArchetypes(S, fam, C) {
   const topicId = fam.target.topicId ?? S.meta.current.topicId;
   const contrast = fam.need === "contrast_misconception";
-  const exclude = [...fam.exclude];
-  let a = admissible(C.catalog, { topicId, misconceptionId: fam.target.misconceptionId, kinds: fam.kinds, exclude, requireMisconception: contrast });
-  if (!a.length && contrast) a = admissible(C.catalog, { topicId, misconceptionId: null, kinds: fam.kinds, exclude });
+  // no exclusion here: what is on stage when the policy finally wants a re-representation is not known yet, so the
+  // family hedges across the top archetype of each kind and the policy's pick (which excludes the piece on stage) is
+  // usually among them
+  let a = admissible(C.catalog, { topicId, misconceptionId: fam.target.misconceptionId, kinds: fam.kinds, requireMisconception: contrast });
+  if (!a.length && contrast) a = admissible(C.catalog, { topicId, misconceptionId: null, kinds: fam.kinds });
   const out = [];
   for (const k of fam.kinds) { const x = a.find((y) => y.kind === k && !out.includes(y)); if (x) out.push(x); if (out.length >= 3) break; }
   for (const x of a) { if (out.length >= 3) break; if (!out.includes(x)) out.push(x); }
@@ -296,7 +299,7 @@ function invalidate(S, prev, cur, C, eff) {
   if (changed("misconceptionId") && cur.misconceptionId && cur.misconceptionState === "active") {
     for (const f of Object.values(S.meta.families)) if (f.need === "contrast_misconception" && f.target.misconceptionId !== cur.misconceptionId) {
       f.boost = (f.boost ?? 0) - 0.25;
-      for (const c of S.candidates) if (c.family === f.key) { c.demoted = (c.demoted ?? 1) * 0.5; row(S, eff, "invalidated", { candidateId: c.id, family: f.key, rung: c.rung, reason: "misconception_revealed" }); }
+      for (const c of S.candidates) if (c.family === f.key) { c.demoted = (c.demoted ?? 1) * 0.5; row(S, eff, "invalidated", { candidateId: c.id, family: f.key, rung: c.rung, reason: "misconception_revealed", effect: "demote" }); }
     }
   }
   // the resolved misconception's families die
@@ -383,9 +386,11 @@ function onTimer(S, C, eff) {
 }
 
 // ───────────────────────────── the scheduler (§3.2-§3.4) ─────────────────────────────
-function bestReadyValue(S, family) {
+/** What is already ready for this idea AS THIS ARCHETYPE: the policy picks one archetype per want, so a ready spec of a
+ *  sibling archetype does not serve it (the family's engine default of the same archetype is the floor). */
+function bestReadyValue(S, family, archetype) {
   let v = 0;
-  for (const c of S.candidates) if (c.family === family && c.state === "ready") v = Math.max(v, c.value);
+  for (const c of S.candidates) if (c.family === family && c.state === "ready" && (c.archetype === archetype || c.rung === "live_codegen")) v = Math.max(v, c.value);
   return v;
 }
 function quietWindow(S, C) {
@@ -436,7 +441,9 @@ function schedule(S, C, eff) {
     const fam = S.meta.families[c.family];
     if (!fam) continue;
     c.deadlineAt = fam.deadlineAt;
-    const terms = scoreCandidate(c, fam, { now, bestReadyValue: bestReadyValue(S, c.family), lambdaPerUsd: C.lambdaPerUsd, halfLifeMs: C.halfLifeMs, cdf: C.cdf ?? null });
+    // live builds are not speculative spend: LIVE-STUDIO's caps, the router and the breaker govern them (λ = 0 there)
+    const lambda = RUNG_TIER[c.rung] === "live" ? (C.lambdaLivePerUsd ?? 0) : C.lambdaPerUsd;
+    const terms = scoreCandidate(c, fam, { now, bestReadyValue: bestReadyValue(S, c.family, c.archetype), lambdaPerUsd: lambda, halfLifeMs: C.halfLifeMs, cdf: C.cdf ?? null });
     c.pNeed = terms.pNeed * (c.demoted ?? 1);
     c.score = terms.score * (c.demoted ?? 1);
     if (c.score > 0) pool.push(c);
@@ -497,7 +504,8 @@ export function preferredRung(S, want, C) {
   const cat = C.catalog, topic = S.meta.current?.topicId;
   if (want.kinds?.[0] === "image") return "image";
   if (want.archetype && cat?.rs4?.[want.archetype]) return "generated_spec";
-  if (want.archetype && (cat?.w2Topics?.[topic] ?? []).includes(want.archetype)) return "live_codegen";
+  // a live build is the bar only while the lesson's live cap has room (≤ 3 per lesson); beyond it the board is the best there is
+  if (want.archetype && (cat?.w2Topics?.[topic] ?? []).includes(want.archetype) && (S.meta.liveBuilds < (C.liveBuildsPerLesson ?? 3) || S.candidates.some((c) => c.family === want.family && c.rung === "live_codegen"))) return "live_codegen";
   return "board";
 }
 function isFresh(S, c, cur) {

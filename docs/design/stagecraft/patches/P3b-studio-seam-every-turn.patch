@@ -1,0 +1,14 @@
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -458,9 +458,9 @@
+     if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
+       const turns = L.turn - (on.revealedTurn ?? L.turn);
+       if (turns >= STUDIO_LIMITS.retireAfterTurns || (on.completeTurn != null && L.turn - on.completeTurn >= STUDIO_LIMITS.retireAfterCompleteTurns)) view.propose = { retire: on.intentId };
+-      return view;
++      return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
+     }
+-    if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < STUDIO_LIMITS.turnsBetweenReveals) return view;
++    if (L.safety || L.turn < STUDIO_LIMITS.firstRevealTurn || L.turn - L.lastRevealTurn < STUDIO_LIMITS.turnsBetweenReveals) return stagecraft.augmentView(lessonId, view, hint?.stagecraftPoint ?? null);
+     // with the lesson's current beat (the call site's hint), a piece is offered only in the beat it was made for; without
+     // it (the seam commit's call site), on the lesson clock
+     const beat = typeof hint?.beat === "string" ? hint.beat : null;

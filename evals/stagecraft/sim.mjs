@@ -61,11 +61,11 @@ export function simulate(L, arm, env) {
   let S = initPortfolio(L.id, 0);
   const H = new Heap();
   const rows = [];
-  const X = { wrongReveals: 0, staleReveals: 0, safetyTurnReveals: 0, revealsWhileChildSpeaks: 0, offTopicReveals: 0, visibleFailures: 0, mountFailures: 0, requestFirstFrameMs: [], gapsMs: [] };
+  const X = { buildsDuringSafety: 0, wrongReveals: 0, staleReveals: 0, safetyTurnReveals: 0, revealsWhileChildSpeaks: 0, offTopicReveals: 0, visibleFailures: 0, mountFailures: 0, requestFirstFrameMs: [], gapsMs: [] };
   const wants = [];               // the lossless stream: (turn, point kind, family, archetype, premise)
   const aborted = new Set();
   // the kernel's view (what production's kernel knows; never the portfolio)
-  const K = { revealedAt: new Map(), ledger: new Map(), contrasted: [], request: null, offered: null, onStage: null, wrong: 0, right: 0, lastReveal: -99, safety: false, lastFrame: {}, pieces: [] };
+  const K = { shownBeat: [], revealedAt: new Map(), ledger: new Map(), contrasted: [], request: null, offered: null, onStage: null, wrong: 0, right: 0, lastReveal: -99, safety: false, lastFrame: {}, pieces: [] };
   for (const m of L.knownMis ?? []) K.ledger.set(m, "active");
   const truth = { key: null, safetyWindows: [], childSpeech: [] };
   const misFor = (topicId) => { for (const [m, st] of K.ledger) if (m.startsWith(topicId)) return { id: m, state: st }; return null; };
@@ -92,6 +92,7 @@ export function simulate(L, arm, env) {
 
   function launch(e) {
     const now = S.meta.now;
+    if (K.safety) X.buildsDuringSafety++;
     const r = streamRng(L.seed, `build:${arm}:${e.candidateId}`);
     const u = r(), uFail = r(), u429 = r(), uNet = r();
     const dist = buildDist(e.rung, e.archetype, C.cdf);
@@ -126,6 +127,9 @@ export function simulate(L, arm, env) {
   function reveal(o, point) {
     const now = S.meta.now;
     const want = point?.want;
+    // the kernel's rule: a request is answered once its idea is on stage ("ye dekho, yahi hai"), whatever rung shows it
+    // and whatever this point's outcome (a hold for the same piece, or a line that named nothing this time)
+    if (o.act === "hold" && want?.childRequested && K.onStage?.family === want.family) { K.request = null; K.offered = null; }
     if (o.act === "hold") return;
     // anything that changes the stage is checked against truth
     const speaking = truth.childSpeech.some(([a, b]) => now >= a && now <= b);
@@ -164,6 +168,7 @@ export function simulate(L, arm, env) {
       K.onStage = { family: want.family, archetype: want.archetype ?? "whiteboard", kind, revealedTurn: turn?.k ?? 0 };
       K.wrong = 0; K.right = 0; K.lastReveal = turn?.k ?? K.lastReveal;
       if (want.need === "contrast_misconception") { const m = want.family.split("|")[2]; if (m !== "-") K.contrasted.push(m); }
+      K.shownBeat.push(want.family);
     }
   }
 
@@ -252,19 +257,22 @@ export function simulate(L, arm, env) {
     const pointAt = Math.max(turn.eotAt + 1, turn.herStart + onset - 400);
     H.push(pointAt, () => {
       // retire: 8 turns on stage, or 2 turns after it was completed (seam.js, unchanged)
-      if (K.onStage && (turn.k - K.onStage.revealedTurn >= 8 || (K.right >= 3 && turn.k - K.onStage.revealedTurn >= 2 + 3))) { endPiece(S.meta.now); K.onStage = null; }
+      if (K.onStage && (turn.k - K.onStage.revealedTurn >= 8 || (K.right >= 3 && turn.k - K.onStage.revealedTurn >= 2 + 3))) { endPiece(S.meta.now); K.onStage = null; inp({ t: "retired", at: S.meta.now }); }
       const kind = turn.request && K.request ? "request_answered" : turn.beatChanged ? "beat_boundary" : "trp";
+      if (turn.beatChanged) K.shownBeat = [];
       const mis0 = misFor(turn.topicId);
       const mis = mis0 ? { ...mis0, revealedTurn: K.revealedAt.get(mis0.id) ?? null } : null;
       const want = wantAt({ pointKind: kind, turnSeq: turn.k, beat: turn.beat, beatChanged: turn.beatChanged, skillId: turn.skillId, topicId: turn.topicId, classLevel: L.classLevel,
         misconception: mis, contrasted: K.contrasted, request: K.request, offerAccepted: K.offerAccepted ?? null,
-        board: { onStage: K.onStage, wrongCount: K.wrong, complete: K.right >= 3, steer: turn.steer }, signal: K.lastFrame, lastPolicyRevealTurn: K.lastReveal, safety: K.safety,
+        board: { onStage: K.onStage, wrongCount: K.wrong, complete: K.right >= 3, steer: turn.steer }, signal: K.lastFrame, lastPolicyRevealTurn: K.lastReveal, safety: K.safety, shownThisBeat: K.shownBeat,
         beatOnly, prefetched }, { catalog: env.catalog, swapSpacingTurns: 2, firstRevealTurn: 3 });
       K.offerAccepted = null;
       const point = { kind, phase: onset >= 400 ? "her_turn" : "committed", turnSeq: turn.k, current: truth.key, want, safetyOpen: K.safety, childHoldsFloor: false, at: S.meta.now,
         line: { namingClause: turn.namingClause }, committed: { committed_misconception_value: "v" }, turn };
       if (want) wants.push(`${turn.k}|${kind}|${want.family}|${want.archetype}|${want.need}|${truth.key.topicId}|${truth.key.misconceptionId}`);
+      env.onPoint?.({ turn: turn.k, kOn: K.onStage?.family ?? null, scOn: S.meta.onStageCand?.family ?? null, want: want?.family ?? null, kind });
       inp({ t: "reveal_point", point });
+      env.onPoint?.({ after: turn.k, kOn: K.onStage?.family ?? null, scOn: S.meta.onStageCand?.family ?? null, req: K.request?.kind ?? null });
     });
     H.push(turn.herEnd, () => inp({ t: "phase", phase: "handover", turnSeq: turn.k, at: S.meta.now }));
   }
