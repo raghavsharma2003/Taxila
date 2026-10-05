@@ -369,6 +369,15 @@ export class EngineHost {
 
   get phase(): FloorPhase { return this.governor.phase; }
 
+  /** The child is voicing now (cheap; per frame). */
+  get childVoicing(): boolean { return this.audio.voicing; }
+
+  /** Read-only state for a live bridge's commit summary (no side effects): the child's voice edges and the safety state. */
+  peek(): { firstOnsetAt: Ms | null; lastOffsetAt: Ms | null; voicing: boolean; safety: ReturnType<PartialSafety["state"]> } {
+    const c = this.audio.snapshot();
+    return { firstOnsetAt: c.firstOnsetAt, lastOffsetAt: c.lastOffsetAt, voicing: c.voicing, safety: this.safety.state() };
+  }
+
   // ───────────────────────────── the tick ─────────────────────────────
 
   private maybeAskSemantic(view: TranscriptView, t: Ms): void {

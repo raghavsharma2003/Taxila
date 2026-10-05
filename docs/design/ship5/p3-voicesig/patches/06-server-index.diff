@@ -1,0 +1,14 @@
+diff --git a/server/index.js b/server/index.js
+index 702d975..5677c5e 100644
+--- a/server/index.js
++++ b/server/index.js
+@@ -18,6 +18,8 @@ import { routes as lane } from "./voice/realtimeSession.js";
+ // W2-H: the Studio channel (SSE stream, slot, build, host-graded answers, the Made for you feed). One-line seam; the routes
+ // live in W2-H's module.
+ import { routes as studio } from "./routes/studio.js";
++// ship5 p3-voicesig: the client kill switch and the status page's per-state table (GET /api/voicesig/config|status).
++import { routes as voicesig } from "./voicesig/routes.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...lane });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...lane, ...voicesig });
+ export { handle, register };

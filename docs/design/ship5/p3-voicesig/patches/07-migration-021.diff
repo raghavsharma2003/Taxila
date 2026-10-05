@@ -1,0 +1,83 @@
+diff --git a/db/migrations/021_voicesig.sql b/db/migrations/021_voicesig.sql
+new file mode 100644
+index 0000000..5fe25eb
+--- /dev/null
++++ b/db/migrations/021_voicesig.sql
+@@ -0,0 +1,64 @@
++-- ship5 p3-voicesig (owner-ship-five-2026-10-05): per-child voice-signal baselines (docs/design/voice-signals/SPEC.md §5).
++-- Number 021 (next free after W2's 020; if another ship5 stream also took 021, rename this file to the next free number
++-- at integration; nothing references the number).
++-- Apply to the Neon TEST branch first: DATABASE_URL=$CONDUCTOR_TEST_DATABASE_URL node scripts/migrate.mjs
++--
++-- What it may hold (G-VS-SCHEMA, tests/p3-voicesig-server.test.mjs): running moments of per-turn MEASUREMENTS (timing,
++-- pauses, relative intensity) per child x context x language mode x answer form, and per-head calibration offsets. Never a
++-- per-turn history, transcript, audio, embedding or derived knowledge-state name.
++-- Consent: rows exist ONLY for children whose parent chose "Remember your child's usual answering pace" (consent purpose
++-- voice_pace_memory; off by default). Withdrawal deletes voicesig.subject at once (cascade; server/routes/account.js).
++-- Account / child deletion cascades through child(id). The subject key is HMAC(child_id, VOICESIG_SUBJECT_KEY).
++-- Residency: Neon has no India region (nearest Singapore); the parent copy names it.
++-- Additive only.
++
++create schema if not exists voicesig;
++
++create table if not exists voicesig.subject (
++  subject      bytea primary key,
++  child_id     uuid not null unique references child(id) on delete cascade,
++  consent_ver  text not null,
++  granted_at   timestamptz not null,
++  band         text not null check (band in ('B1','B2','B3','B4')),
++  last_seen    timestamptz not null default now()
++);
++
++create table if not exists voicesig.baseline (
++  subject    bytea not null references voicesig.subject(subject) on delete cascade,
++  context    text not null check (context in ('answer','read_aloud')),
++  lang_mode  text not null check (lang_mode in ('hi','hinglish','en','unk')),
++  form       text not null check (form in ('number','word','choice_spoken','explain','read_aloud')),
++  feature    text not null check (feature in ('onsetMs','contentOnsetMs','pauseFrac','longestPauseMs','articulationWps','voicedFrac','fillerLeadMs','durRatio','finalRelDb','durationMs')),
++  n          int not null check (n >= 0),
++  n_total    int not null check (n_total >= n),
++  mean       double precision not null,
++  m2         double precision not null check (m2 >= 0),
++  updated_at timestamptz not null default now(),
++  primary key (subject, context, lang_mode, form, feature)
++);
++
++create table if not exists voicesig.calibration (
++  subject    bytea not null references voicesig.subject(subject) on delete cascade,
++  head       text not null check (head in ('h1','h2','h3','h4')),
++  model_ver  text not null,
++  n          int not null check (n >= 0),
++  a          double precision not null default 0,
++  b          double precision not null default 1,
++  updated_at timestamptz not null default now(),
++  primary key (subject, head, model_ver)
++);
++
++create table if not exists voicesig.population_norm (
++  feature     text not null,
++  band        text not null check (band in ('B1','B2','B3','B4')),
++  lang_mode   text not null check (lang_mode in ('hi','hinglish','en','unk')),
++  form        text not null,
++  item_b_bin  smallint not null,
++  n_children  int not null check (n_children >= 20),
++  median      double precision not null,
++  mad         double precision not null check (mad >= 0),
++  fitted_at   timestamptz not null default now(),
++  primary key (feature, band, lang_mode, form, item_b_bin)
++);
++
++create index if not exists voicesig_subject_seen on voicesig.subject(last_seen);
+diff --git a/db/migrations/README.md b/db/migrations/README.md
+index c20f7b8..ac8bda8 100644
+--- a/db/migrations/README.md
++++ b/db/migrations/README.md
+@@ -29,4 +29,8 @@ statement per call).
+ --   020_reteach_child_history.sql  W2-C  widens reteach_attempts_chosen_by_check to add 'child_history' (selectReteach step 4b)
+ -- Streams apply their file ONLY to the Neon test branch (CONDUCTOR_TEST_DATABASE_URL); production is the integration
+ -- step's. 014 was never used (W1-D needed none): it stays a gap. W3 numbers are allotted in the W3 seam commit.
++
++-- ship5 (owner-ship-five-2026-10-05):
++--   021_voicesig.sql    p3-voicesig  voicesig.subject / baseline / calibration / population_norm (numbers only; rows only
++--                                    under the parent's voice_pace_memory choice; cascade on withdrawal and child delete)
+ ```

@@ -1,0 +1,47 @@
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 6e3e201..a0aa522 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -34,6 +34,7 @@ import { seamSafe } from "../seam-safe.js";
+ import { studioSeam } from "../studio/seam.js";
+ import { relationalSeam } from "../relational/seam.js";
+ import { purposeSeam } from "../lesson/purpose.js";
++import { voicesigSeam } from "../voicesig/lesson.js";
+ import { realtimeSeam } from "../voice/realtimeSession.js";
+ import { fallbackReply, safeguardLine, scrubbed, textReply, words } from "../brain/say.js";
+ import { clientInstructions, debugFor, floorIncidentStmt, kitFor, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
+@@ -149,12 +150,15 @@ async function start(req, res, body) {
+   // ~50 ms median on the Neon test branch, n = 12, before it was overlapped).
+   const planP = planFor(child, guardian);
+   planP.catch(() => {}); // awaited below; never an unhandled rejection if an earlier check throws first
+-  const [core, memory, controls, lastLesson] = await Promise.all([
++  const [core, memory, controls, lastLesson, vsb0] = await Promise.all([
+     hasConsent(guardian.id, child.id, "core_tutoring"), hasConsent(guardian.id, child.id, "memory"),
+     one("select address from child_controls where child_id = $1", [child.id]).catch(() => null),
+     // the name the teacher had in the child's last lesson: a new one (the child renamed her, or picked another
+     // teacher) is re-introduced at the greeting, still as their AI teacher (director/shapes.js greet)
+     one("select state->'ctx'->>'teacherName' as name from lesson where child_id = $1 order by started_at desc limit 1", [child.id]).catch(() => null),
++    // ship5 p3-voicesig: the child's answering-pace baseline (persisted only under the parent's voice_pace_memory choice;
++    // else an empty session one). Never throws; undefined when voicesig is switched off.
++    voicesigSeam.startRows({ q, hasConsent, guardianId: guardian.id, childId: child.id }),
+   ]);
+   if (!core) throw forbidden("core_tutoring consent is required before a lesson");
+   const mode = body.mode === "text" || body.mode === "cascade" ? body.mode : "voice";
+@@ -251,6 +255,7 @@ async function start(req, res, body) {
+     : step(state0, { event: "start", kit, now });
+   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
+   const state = r.state;
++  if (vsb0) state.vsb = vsb0;
+   // W2-E: the opening's beat (ui.beat; the client's end-of-turn thresholds read it) and its Moment for the voice layer.
+   state.beat = nextBeat(undefined, r.move, state);
+   const openingMoment = momentOf({ move: r.move, verdict: "ungraded", engagement: "warming", relational: null, ctx: state.ctx, turn: state.turn ?? 0,
+@@ -491,6 +496,9 @@ async function end(req, res, body) {
+     where id = $1 and ended_at is null returning state`, [lesson.id, endedByPageHide(req, body) ? { endedBy: "pagehide" } : {}]);
+   if (!claimed) return already(await one("select summary, parent_note, state from lesson where id = $1", [lesson.id]));
+   const state = claimed.state;
++  // ship5 p3-voicesig: the session's answering-pace baseline goes back to the child's rows (only under the parent's
++  // voice_pace_memory choice, re-checked now), off the reply path; endSave never throws.
++  void voicesigSeam.endSave({ q, hasConsent, guardianId: guardian.id, childId: child.id, classLevel: child.class_level, vsb: state.vsb });
+   // The last why / teach-back of the lesson is still held (its verdict lands "on the next turn", and there is none):
+   // wait for the blind grader while the summary is written, then fold and store it like a turn would.
+   const heldP = flushHeld(child, lesson, state).catch((e) => console.warn("[lesson] end: held evidence not stored:", e.message));

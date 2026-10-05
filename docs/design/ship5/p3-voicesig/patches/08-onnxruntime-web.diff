@@ -1,0 +1,255 @@
+diff --git a/package-lock.json b/package-lock.json
+index c9c0ae8..795c780 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -22,6 +22,7 @@
+         "@types/react-dom": "^19.3.0",
+         "@types/three": "0.180.0",
+         "@vitejs/plugin-react": "^6.1.1",
++        "onnxruntime-web": "1.30.0",
+         "playwright": "^1.63.0",
+         "three": "0.180.0",
+         "typescript": "^7.0.2",
+@@ -54,6 +55,72 @@
+         "url": "https://github.com/sponsors/oxc-project"
+       }
+     },
++    "node_modules/@protobufjs/aspromise": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz",
++      "integrity": "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/base64": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/@protobufjs/base64/-/base64-1.1.2.tgz",
++      "integrity": "sha512-AZkcAA5vnN/v4PDqKyMR5lx7hZttPDgClv83E//FMNhR2TMcLUhfRUBHCmSl0oi9zMgDDqRUJkSxO3wm85+XLg==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/codegen": {
++      "version": "2.0.5",
++      "resolved": "https://registry.npmjs.org/@protobufjs/codegen/-/codegen-2.0.5.tgz",
++      "integrity": "sha512-zgXFLzW3Ap33e6d0Wlj4MGIm6Ce8O89n/apUaGNB/jx+hw+ruWEp7EwGUshdLKVRCxZW12fp9r40E1mQrf/34g==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/eventemitter": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/@protobufjs/eventemitter/-/eventemitter-1.1.1.tgz",
++      "integrity": "sha512-vW1GmwMZNnL+gMRaovlh9yZX74kc+TTU3FObkkurpMaRtBfLP3ldjS9KQWlwZgraRE0+dheEEoAxdzcJQ8eXZg==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/fetch": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/@protobufjs/fetch/-/fetch-1.1.1.tgz",
++      "integrity": "sha512-GpptLrs57adMSuHi3VNj0mAF8dwh36LMaYF6XyJ6JMWlVsc+t42tm1HSEDmOs3A8fC9yyeisgLhsTVQokOZ0zw==",
++      "dev": true,
++      "license": "BSD-3-Clause",
++      "dependencies": {
++        "@protobufjs/aspromise": "^1.1.1"
++      }
++    },
++    "node_modules/@protobufjs/float": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/@protobufjs/float/-/float-1.0.2.tgz",
++      "integrity": "sha512-Ddb+kVXlXst9d+R9PfTIxh1EdNkgoRe5tOX6t01f1lYWOvJnSPDBlG241QLzcyPdoNTsblLUdujGSE4RzrTZGQ==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/path": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/@protobufjs/path/-/path-1.1.2.tgz",
++      "integrity": "sha512-6JOcJ5Tm08dOHAbdR3GrvP+yUUfkjG5ePsHYczMFLq3ZmMkAD98cDgcT2iA1lJ9NVwFd4tH/iSSoe44YWkltEA==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/pool": {
++      "version": "1.1.0",
++      "resolved": "https://registry.npmjs.org/@protobufjs/pool/-/pool-1.1.0.tgz",
++      "integrity": "sha512-0kELaGSIDBKvcgS4zkjz1PeddatrjYcmMWOlAuAPwAeccUrPHdUqo/J6LiymHHEiJT5NrF1UVwxY14f+fy4WQw==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/@protobufjs/utf8": {
++      "version": "1.1.2",
++      "resolved": "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.2.tgz",
++      "integrity": "sha512-b1UQwcEZ4yCnMCD8DAL1VlbvBJE9/IX4FTIp7BG1xYpf29SLazLSrqUkj4w7Y5y7cCVP6E5tcqqcI0xemPkHug==",
++      "dev": true,
++      "license": "BSD-3-Clause"
++    },
+     "node_modules/@rolldown/binding-android-arm-eabi": {
+       "version": "1.2.12",
+       "resolved": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.12.tgz",
+@@ -815,6 +882,13 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/flatbuffers": {
++      "version": "25.9.23",
++      "resolved": "https://registry.npmjs.org/flatbuffers/-/flatbuffers-25.9.23.tgz",
++      "integrity": "sha512-MI1qs7Lo4Syw0EOzUl0xjs2lsoeqFku44KpngfIduHBYvzm8h2+7K8YMQh1JtVVVrUvhLpNwqVi4DERegUJhPQ==",
++      "dev": true,
++      "license": "Apache-2.0"
++    },
+     "node_modules/framer-motion": {
+       "version": "13.5.1",
+       "resolved": "https://registry.npmjs.org/framer-motion/-/framer-motion-13.5.1.tgz",
+@@ -853,6 +927,13 @@
+         "node": "^8.16.0 || ^10.6.0 || >=11.0.0"
+       }
+     },
++    "node_modules/guid-typescript": {
++      "version": "1.0.9",
++      "resolved": "https://registry.npmjs.org/guid-typescript/-/guid-typescript-1.0.9.tgz",
++      "integrity": "sha512-Y8T4vYhEfwJOTbouREvG+3XDsjr8E3kIr7uf+JZ0BYloFsttiHU0WfvANVsR7TxNUJa/WpCnw/Ino/p+DeBhBQ==",
++      "dev": true,
++      "license": "ISC"
++    },
+     "node_modules/lightningcss": {
+       "version": "1.33.0",
+       "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.33.0.tgz",
+@@ -1114,6 +1195,13 @@
+         "url": "https://opencollective.com/parcel"
+       }
+     },
++    "node_modules/long": {
++      "version": "5.3.2",
++      "resolved": "https://registry.npmjs.org/long/-/long-5.3.2.tgz",
++      "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==",
++      "dev": true,
++      "license": "Apache-2.0"
++    },
+     "node_modules/meshoptimizer": {
+       "version": "0.22.0",
+       "resolved": "https://registry.npmjs.org/meshoptimizer/-/meshoptimizer-0.22.0.tgz",
+@@ -1155,6 +1243,28 @@
+         "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+       }
+     },
++    "node_modules/onnxruntime-common": {
++      "version": "1.30.0",
++      "resolved": "https://registry.npmjs.org/onnxruntime-common/-/onnxruntime-common-1.30.0.tgz",
++      "integrity": "sha512-7fdVWjAID1dVhH/G8qK3APARunV4VkBFoCQAP7qp4Wkab0mrorvmc+sqiT+mKXOzDqdjN5j+/Z9nb4gzNPWcyA==",
++      "dev": true,
++      "license": "MIT"
++    },
++    "node_modules/onnxruntime-web": {
++      "version": "1.30.0",
++      "resolved": "https://registry.npmjs.org/onnxruntime-web/-/onnxruntime-web-1.30.0.tgz",
++      "integrity": "sha512-q0y+JrrtukXSzsBWEMccVfqX25LRmosXHF+CaRJmg8pZClzcV7svNc4rKY3jL02Vb7QmRMDs1SigqR4CXAfKYQ==",
++      "dev": true,
++      "license": "MIT",
++      "dependencies": {
++        "flatbuffers": "^25.1.24",
++        "guid-typescript": "^1.0.9",
++        "long": "^5.2.3",
++        "onnxruntime-common": "1.30.0",
++        "platform": "^1.3.6",
++        "protobufjs": "^7.2.4"
++      }
++    },
+     "node_modules/pg": {
+       "version": "8.23.1",
+       "resolved": "https://registry.npmjs.org/pg/-/pg-8.23.1.tgz",
+@@ -1264,6 +1374,13 @@
+         "url": "https://github.com/sponsors/jonschlinkert"
+       }
+     },
++    "node_modules/platform": {
++      "version": "1.3.6",
++      "resolved": "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz",
++      "integrity": "sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==",
++      "dev": true,
++      "license": "MIT"
++    },
+     "node_modules/playwright": {
+       "version": "1.63.0",
+       "resolved": "https://registry.npmjs.org/playwright/-/playwright-1.63.0.tgz",
+@@ -1361,6 +1478,30 @@
+         "node": ">=0.10.0"
+       }
+     },
++    "node_modules/protobufjs": {
++      "version": "7.6.6",
++      "resolved": "https://registry.npmjs.org/protobufjs/-/protobufjs-7.6.6.tgz",
++      "integrity": "sha512-dYDWdjSl5RNb7SgPxGQcRU+GtvP7s2fpkrY0r432PcOIaZ0/rBcxEZnQN67iJhFuQiVw754JDoPruPCNdGsbjg==",
++      "dev": true,
++      "hasInstallScript": true,
++      "license": "BSD-3-Clause",
++      "dependencies": {
++        "@protobufjs/aspromise": "^1.1.2",
++        "@protobufjs/base64": "^1.1.2",
++        "@protobufjs/codegen": "^2.0.5",
++        "@protobufjs/eventemitter": "^1.1.1",
++        "@protobufjs/fetch": "^1.1.1",
++        "@protobufjs/float": "^1.0.2",
++        "@protobufjs/path": "^1.1.2",
++        "@protobufjs/pool": "^1.1.0",
++        "@protobufjs/utf8": "^1.1.1",
++        "@types/node": ">=13.7.0",
++        "long": "^5.3.2"
++      },
++      "engines": {
++        "node": ">=12.0.0"
++      }
++    },
+     "node_modules/react": {
+       "version": "19.3.0",
+       "resolved": "https://registry.npmjs.org/react/-/react-19.3.0.tgz",
+diff --git a/package.json b/package.json
+index 0a66515..4a796e7 100644
+--- a/package.json
++++ b/package.json
+@@ -27,6 +27,7 @@
+     "@types/react-dom": "^19.3.0",
+     "@types/three": "0.180.0",
+     "@vitejs/plugin-react": "^6.1.1",
++    "onnxruntime-web": "1.30.0",
+     "playwright": "^1.63.0",
+     "three": "0.180.0",
+     "typescript": "^7.0.2",
+diff --git a/src/voicesig/ort.ts b/src/voicesig/ort.ts
+new file mode 100644
+index 0000000..5d7d513
+--- /dev/null
++++ b/src/voicesig/ort.ts
+@@ -0,0 +1,36 @@
++// The filler detector's runtime (ship5 p3-voicesig; onnxruntime-web approved by the owner, decision owner-ship-five-2026-10-05).
++// Loaded LAZILY, once, after the shared tap is live: the WASM build of onnxruntime-web (no WebGPU, one thread: the page is
++// not cross-origin isolated) and the 45 KB AMI-trained graph (models/voicesig/filler-gru.onnx, CC BY 4.0; attribution in
++// the model card). Both are same-origin assets of this build: no CDN, no third-party AI API, nothing leaves the device.
++// Skipped on Save-Data / 2G (the runtime is ~3.7 MB gzip): the head then runs at stage 0, which is the shadow-safe floor.
++import * as ort from "onnxruntime-web/wasm";
++import fillerUrl from "../../models/voicesig/filler-gru.onnx?url";
++import card from "../../models/voicesig/filler-gru.json";
++import { loadFillerModel, type FillerModel } from "./head.ts";
++import type { OrtLike } from "./frontend/encoder.ts";
++
++let once: Promise<FillerModel | null> | null = null;
++
++/** Whether this device should fetch the runtime at all (Save-Data, 2G → no). */
++export function detectorAllowed(nav: { connection?: { saveData?: boolean; effectiveType?: string } } | undefined = typeof navigator !== "undefined" ? (navigator as never) : undefined): boolean {
++  const c = nav?.connection;
++  if (c?.saveData) return false;
++  return !(c?.effectiveType && /(^|-)2g$/.test(c.effectiveType));
++}
++
++export function loadFillerDetector(): Promise<FillerModel | null> {
++  if (once) return once;
++  once = (async () => {
++    if (!detectorAllowed()) return null;
++    try {
++      ort.env.wasm.numThreads = 1;
++      const res = await fetch(fillerUrl);
++      if (!res.ok) return null;
++      const bytes = new Uint8Array(await res.arrayBuffer());
++      return await loadFillerModel(ort as unknown as OrtLike, bytes, card.threshold, card.ver);
++    } catch {
++      return null;
++    }
++  })();
++  return once;
++}

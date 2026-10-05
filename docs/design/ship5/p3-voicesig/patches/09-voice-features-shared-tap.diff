@@ -1,0 +1,38 @@
+diff --git a/src/voice/features.ts b/src/voice/features.ts
+index efa672f..987fb92 100644
+--- a/src/voice/features.ts
++++ b/src/voice/features.ts
+@@ -78,6 +78,8 @@ export class VoiceFeatures implements VoiceFeaturesLike {
+   private lastAudibleAt = -Infinity;
+   private pendingEnd: { at: number; timer: ReturnType<typeof setTimeout> | null } | null = null;
+   private utteranceFns = new Set<(u: UtteranceFeatures) => void>();
++  /** The shared front-end's frame subscription (attachFrames), when this instance does not own a worklet. */
++  private frameOff: (() => void) | null = null;
+   private scoredFns = new Set<(r: ScoredUtterance, u: UtteranceFeatures) => void>();
+ 
+   constructor(opts: VoiceFeaturesOptions = {}) {
+@@ -118,7 +120,24 @@ export class VoiceFeatures implements VoiceFeaturesLike {
+     }
+   }
+ 
++  /**
++   * Feed from the ONE shared mic tap (src/voicesig/lessonTap.ts, G-VS-ONE) instead of this class's own worklet. The
++   * front-end's frames are FrameAnalyzer frames on the same 16 kHz samples and the same epoch clock (onChunk's formula),
++   * so the tracker sees what attachTap would have given it (test G-VS-DXEQ).
++   */
++  attachFrames(tap: MicTap, teacherLevel: LevelSource | undefined, fe: { onFrame(cb: (f: { t: number; rmsDb: number; f0: number | null; speech: boolean }) => void): () => void }): void {
++    this.detach();
++    this.ownsCtx = false;
++    this.ctx = tap.ctx;
++    this.track = tap.stream.getAudioTracks()[0] ?? null;
++    this.teacherEnd = tap.teacherEnd;
++    if (tap.teacherEnd === "remote" && teacherLevel) this.levelOff = teacherLevel.subscribe((v) => this.onTeacherLevel(v));
++    this.frameOff = fe.onFrame((f) => this.tracker.addFrames([{ t: f.t, rmsDb: f.rmsDb, f0: f.f0, speech: f.speech }]));
++  }
++
+   detach(): void {
++    this.frameOff?.();
++    this.frameOff = null;
+     this.node?.port.postMessage("stop");
+     this.node?.disconnect();
+     this.source?.disconnect();

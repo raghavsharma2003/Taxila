@@ -1,0 +1,26 @@
+diff --git a/server/brain/reasons.js b/server/brain/reasons.js
+index da685fc..d681dc7 100644
+--- a/server/brain/reasons.js
++++ b/server/brain/reasons.js
+@@ -38,7 +38,7 @@ export const FAMILIES = Object.freeze({
+   turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice"],
+   // component_error.<seam>: a seam call threw (seam-safe.js fell back); director: the move sent differs from the kernel's
+   component_error: ["safety", "director", "comprehension", "relational", "studio", "vibe", "conductor", "moment", "signals", "expressive", "purpose",
+-    "realtime"],
++    "realtime", "voicesig"],
+   // The comprehension trail of a turn (owner priority 1: "why did she treat my child's answer as wrong, or not re-teach?"
+   // is answered from brain_trace rows alone): the classifier's outcome, where it came from, the verdict the child saw and
+   // what the reply guard did to her words. Codes only, never words.
+@@ -50,6 +50,12 @@ export const FAMILIES = Object.freeze({
+     "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "unavailable"],
+   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
+   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],
++  // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state voice timing read on this turn (named for what it
++  // says about knowledge and the move it licenses, never a state of mind: restriction 12), whether the precision gate let
++  // it act (vs_gate.live) or why it stayed shadow, and the tie-breaker it handed the Director when live. Trace only.
++  vs: ["fluentRecall", "workingAloud", "fragileCorrect", "heldBelief", "effortfulGuess", "rapidGuess", "searching", "absent", "none", "disagree", "no_kv"],
++  vs_gate: ["live", "killed", "mode_shadow", "not_measured_on_children", "precision_below_bar", "too_few_firings", "ladder_l0", "adapter_shadow"],
++  vs_act: ["followUpProbe", "gentlerHint", "slowerPace"],
+ });
+ 
+ const SETS = Object.fromEntries(Object.entries(FAMILIES).map(([k, v]) => [k, new Set(v)]));

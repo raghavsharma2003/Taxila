@@ -1,0 +1,64 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index 1bf6b54..f34665b 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -8,6 +8,7 @@ import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
+ import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
+ import { sessionTokenHash } from "../auth.js";
+ import { turnVoice } from "../voice/features.js";
++import { voicesigSeam } from "../voicesig/lesson.js";
+ import { getTopic } from "../content/index.js";
+ import { gamingDiscount, nextAffect } from "../learner/affect.js";
+ import { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "../learner/model.js";
+@@ -359,11 +360,22 @@ export async function lessonTurn(req, body) {
+   if (cls?.flags?.distress && cls.source !== "predicate") {
+     seamSafe("duplex.modelNote", () => duplexRegistry.sliceFor(lesson.id)?.modelNote(cls.flags.distressKind, Date.now()) ?? null, null);
+   }
++  // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state this spoken turn's on-device timing numbers
++  // (TurnRequest.voiceFeatures.kv) read against the child's own baseline, the transcript and the grader verdict. Pure,
++  // well under a millisecond, never awaited on the network. A disclosure turn (predicate, classifier, duplex floor) gets
++  // nothing; a state reaches the consumers only through the precision gate (measured on children >= 0.80), and until then
++  // it is shadow: trace codes only, and the plan below is exactly the pre-voicesig plan.
++  const vsTurn = seamSafe("voicesig.turn", () => voicesigSeam.turn({ kv: body.voiceFeatures?.kv, typed: !!body.typed || moduleOnly || !!help || laneResume,
++    bargeIn: !!body.teacherInterrupted, safety: !!cls?.flags?.distress || !!pendingSafety || !!fast?.flags?.distress, childText, cls, item: activeItem,
++    context: body.voiceFeatures?.context, vsb: state.vsb, classLevel: child.class_level, env: process.env }), null);
+   if (settling) { await settling; carried = carriedFrom(state); planCtx.carried = carried; mark("settled"); }
+   // This utterance's voice tie-breakers (features.js signalsFrom: capped booleans) reach the plan only if they are
+   // already in when the classification is: the turn never waits on them (CE8: zero evidence weight, tie-break and
+   // pacing only). A speculative reply was planned without them, so a non-empty signal set can only miss it.
+   if (voiceNow?.reliable && Object.keys(voiceNow.signals ?? {}).length) planCtx.voice = { signals: voiceNow.signals, z: voiceNow.z };
++  // A LIVE voicesig state hands the same tie-breaker vocabulary (followUpProbe → the why probe and the comprehension probe
++  // gap, gentlerHint → the gentler rung and the re-teach order, slowerPace → the pace knob); a shadow state hands nothing.
++  if (vsTurn && Object.keys(vsTurn.hints ?? {}).length) planCtx.voice = { signals: { ...(planCtx.voice?.signals ?? {}), ...vsTurn.hints }, z: planCtx.voice?.z ?? {} };
+ 
+   // Evidence → learner model → Director step → compile, all staged as statements for the turn's one transaction.
+   let plan = await planTurn(state, cls, { ...planCtx, now });
+@@ -650,6 +662,11 @@ export async function lessonTurn(req, body) {
+       // Pace knobs from the vibe persona (wait before a nudge, end-of-speech silence): session config, never the prompt.
+       ...(next.vibe && vibeAccepted ? { pace: { waitNudgeSec: next.vibe.waitNudgeSec, endpointSilenceMs: next.vibe.endpointSilenceMs } } : {}),
+     };
++  // voicesig, after every re-plan (relational floor, content filter): the session baseline learns from this turn, never
++  // from a safety turn (a disclosure's timing is never part of the child's usual pace), and the codes go to the trace only.
++  const vsSafety = r.move.kind === "safeguard" || !!incident;
++  if (vsTurn && !late) next.vsb = vsSafety ? state.vsb : vsTurn.vsb;
++  const vsReasons = vsTurn && !vsSafety && !late ? vsTurn.reasons ?? [] : [];
+   // The dedupe record lands in the same transaction as the turn: a resend of this turnSeq replays outCore.
+   if (turnSeq != null) {
+     next.acks = [...(prev.acks ?? []).filter((a) => a.turnSeq !== turnSeq), { turnSeq, ...(edited ? { edited: true } : {}) }].slice(-ACKS_MAX);
+@@ -688,7 +705,7 @@ export async function lessonTurn(req, body) {
+           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
+           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
+           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...studioReasons, ...releaseReasons,
+-          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }),
++          ...comprehensionReasons({ cls, classified, help: !!help, uiVerdict: uiV, guard }), ...vsReasons,
+           ...(guard?.caught?.includes("unavailable") ? ["turn.fallback_reply"] : []),
+           ...[...seamErrors].map((c) => `component_error.${c}`)],
+         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
+@@ -744,6 +761,7 @@ export async function lessonTurn(req, body) {
+       item: item ? { id: item.id, kind: item.kind, prompt_en: item.prompt_en, prompt_hi: item.prompt_hi, answer: item.answer, acceptable: item.acceptable, ...(item.options ? { options: item.options.map((o) => o.text) } : {}) } : null,
+       kitVerified: kit.verified, ms, timings: trace,
+       ...(voice ? { voice: { reliable: voice.reliable, signals: voice.signals, z: voice.z } } : {}),
++      ...(vsTurn?.trace && !vsSafety ? { vs: { ...vsTurn.trace, read: vsTurn.read, hints: vsTurn.hints, reasons: vsReasons } } : {}),
+     };
+   }
+   return out;
