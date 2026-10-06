@@ -1,0 +1,208 @@
+diff --git a/server/brain/reasons.js b/server/brain/reasons.js
+index 5ac5392..72a0277 100644
+--- a/server/brain/reasons.js
++++ b/server/brain/reasons.js
+@@ -12,7 +12,7 @@ const BEATS = ["arrive", "warmup", "hook", "explain", "worked_example", "contras
+ // here rather than imported so this module stays pure and dependency-free.
+ const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye",
+   "continue", "confused", "thinking", "choices", "why", "how", "clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom",
+-  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite"];
++  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear"];
+ // the CONVERSATION-V2 note's intents (conversation/understand.js INTENTS; a test keeps the two lists equal)
+ const CONV2_INTENTS = ["answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know",
+   "ask_for_answer", "insist_wrong", "check_my_work", "question_on_topic", "clarify", "curiosity_offlesson", "explain_differently",
+diff --git a/server/compiler/compile.js b/server/compiler/compile.js
+index f9272f7..cf3e6eb 100644
+--- a/server/compiler/compile.js
++++ b/server/compiler/compile.js
+@@ -188,6 +188,8 @@ function moveParts(move, voiced, rel) {
+       // compile threw a BudgetError → POST /api/lesson/turn 500 on a live turn (w2c-personalisation, w1c-three-day). The
+       // move's own shape is what the turn must do; the rapport note is the one part that can go.
+       ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: 10 }] : []),
++      // round 2 (conversation): how they asked to be taught, kept on every turn (droppable like the rapport note)
++      ...(move.prefs?.length ? [{ text: `- how they asked you to teach (keep doing it): ${move.prefs.map((x) => String(x).replace(/[^\p{L}\p{N} ,'-]/gu, " ").trim().slice(0, 40)).join("; ")}`, drop: 9 }] : []),
+     ];
+ }
+ 
+@@ -198,9 +200,12 @@ const LANGUAGE = {
+ };
+ /** The child ASKED for this language (director/requests.js, OWNER TEST item 4, F12): it holds whatever they reply in. */
+ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple English" };
++// round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
++// "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
++const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
+ function languageRule(language, ageBand, pinned = false) {
+   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+-  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.` : LANGUAGE[language] ?? LANGUAGE.hinglish;
++  const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
+   return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
+ }
+ 
+diff --git a/server/conversation/lexicon.js b/server/conversation/lexicon.js
+index f338e10..34afb81 100644
+--- a/server/conversation/lexicon.js
++++ b/server/conversation/lexicon.js
+@@ -51,6 +51,25 @@ const ADULT = /\b(?:(?:hi|hello|namaste)[\s,]+)?(?:this\s+is\s+(?:his|her|their)
+ const THINK_TRAIL = /(?:\b(?:because|so|then|but|wait|toh|phir|fir|aur|lekin|kyunki|kyuki|matlab|ruko)|\.{3}|…)\s*$/i;
+ const OOB = /\b(?:(?:ghost|horror|bhoot|bhoot\s+ki|darawni|scary)\s+(?:story|kahani|movie|film)|horror\s+(?:movie|film|story)|gaali|gali\s+(?:do|batao|sikhao)|bad\s+words?|(?:swear|curse)\s+words?|girl\s*friend|boy\s*friend|(?:kiss|sex)|how\s+to\s+(?:hack|kill|make\s+a\s+bomb|steal)|hack\s+(?:karna|karo|kaise|sikhao)|(?:mera|my)\s+(?:homework|essay|assignment)\s+(?:kar|likh|do|write)|(?:homework|essay|assignment)\s+(?:kar|likh)\s*(?:do|dijiye|ke\s+do|kar\s+do)|do\s+my\s+(?:homework|essay)|write\s+my\s+(?:essay|homework)|(?:pubg|bgmi|free\s*fire)\s+(?:kill|killing)\s+(?:tips|trick)|(?:bomb|gun|pistol)\s+(?:banana|kaise|banao|kaise\s+banate)|prank\b[^?]{0,40}\b(?:ro\s+de|rula|rone|hurt|chot|cry)|(?:aapko|tumhe|tumko|your)\s+(?:kaunsi|kaun\s*si|which|favou?rite)\s+(?:political\s+)?party(?:\s+(?:pasand|achhi|best))?)\b/i;
+ 
++// round 2 (conversation): a garbled or broken-off turn (an ASR fragment, a false start): a stutter or a filler AND it stops on
++// a word that cannot end a thought (an article, a postposition, a filler). Not a verdict on anything: she did not catch
++// all of it. General shape only (no battery phrase is listed): a disfluency + a dangling end, 3-9 words, no question mark.
++const FILLER = /^(?:uh+|um+|umm+|mm+|hm+|hmm+|err+|erm+|aa+|haa+|ahh*|uhh*)$/;
++const DANGLING = /^(?:the|a|an|of|with|like|to|for|and|um+|uh+|mm+|ki|ka|ke|ko|se|wo|woh|vo|naa|na|jo|ye|yeh|mein|par|pe|matlab|wala|wali|wale)$/;
++const STUTTER_EXTRA = /^(?:i|it|is|kya|haan|ha|wo|woh|mm+|hm+)$/;
++/** PURE. Is the turn a fragment she should ask to hear again (stutter or filler, and a dangling last word)? */
++export function fragmentLike(t) {
++  const w = T(t).replace(/[.,!…]+/g, " ").split(/\s+/).filter(Boolean);
++  if (w.length < 3 || w.length > 9 || /[?？]/.test(String(t))) return false;
++  // a stutter is a repeated FUNCTION word ("the the", "ki ki", "kya kya"): a repeated content word is Hindi reduplication
++  // ("cham cham", "dheere dheere"), never a sign of a broken line
++  const stutter = w.some((x, i) => i > 0 && x === w[i - 1] && (DANGLING.test(x) || STUTTER_EXTRA.test(x)));
++  const filler = w.some((x) => FILLER.test(x));
++  // and at least one content word: an article drill's answer ("a the the", "an, a, a") is an answer, not a fragment
++  const content = w.some((x) => !DANGLING.test(x) && !FILLER.test(x) && !STUTTER_EXTRA.test(x) && x.length >= 2);
++  return (stutter || filler) && content && DANGLING.test(w.at(-1));
++}
++
+ /** Words of an attempt (a number), or more words than a request carries: never read as one of these. */
+ const attemptLike = (t) => /\d/.test(t);
+ 
+@@ -72,6 +91,9 @@ export function readIntent(text) {
+   if (OOB.test(t) && n <= 12) return hit("oob");
+   if (ADULT.test(t)) return hit("adult");
+   if (attemptLike(t)) return null;
++  // before the thinking readings: a stutter that trails off on "the" / "ki" is a broken line, and the repair (say it again,
++  // or finish it) serves a child who was also thinking
++  if (fragmentLike(t)) return hit("unclear");
+   if (BREAK.test(t)) return hit("break");
+   if (BACK.test(t)) return hit("back");
+   if (CONFUSED.test(t)) return hit("confused");
+@@ -96,7 +118,7 @@ export function readIntent(text) {
+ 
+ /** The p5 reading types (state.js acts on each; tests enumerate them). */
+ export const P5_TYPES = Object.freeze(["confused", "clarify", "repeat", "back", "skip", "harder", "easier", "know", "boredom", "frustration",
+-  "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite"]);
++  "thinking", "identity", "small_talk", "oob", "break", "adult", "ask_invite", "unclear"]);
+ 
+ // ── modifiers on an ANSWER (CONVERSATION-V2 §3.2): read in code beside the grade; they never change the grade ──
+ const HEDGED = /\b(?:shayad|shaayad|maybe|perhaps|i\s+think|mujhe\s+lagta\s+hai|lagta\s+hai|not\s+sure|pakka\s+nahi|sure\s+nahi|i\s+guess|probably)\b/i;
+diff --git a/server/conversation/policy.js b/server/conversation/policy.js
+index f5a24b4..7bacb42 100644
+--- a/server/conversation/policy.js
++++ b/server/conversation/policy.js
+@@ -48,6 +48,8 @@ export function requestFromNote(note) {
+     case "break_request": return r("break");
+     case "thinking_aloud": return r("thinking");
+     case "adult_voice": return r("adult");
++    // round 2: a garbled turn gets a no-blame "say it again / finish it" (the battery's noise 0/5 took the default path)
++    case "noise": return r("unclear");
+     // a stop or a leaving read by a model alone: one check-in, never an end (the stop chip / a second stop / the bytes end it)
+     case "end_request": case "leaving": return r("stop", { fromNote: true });
+     default: return null;
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index 005d008..d94c513 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -221,7 +221,7 @@ export const languageAsked = ({ lang, teaching = false }) => join(
+ );
+ /** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
+ export const showVisual = ({ kind = "diagram" } = {}) => join(
+-  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving" : "they asked to see it: a picture of the same idea",
++  kind === "game" ? "they want to play: the activity is the way in now" : kind === "animation" ? "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have)" : "they asked to see it: a picture of the same idea",
+   "one idea; let the picture do the work; a few words about what to look at",
+   "the key stays unsaid; then one small question about what they see",
+ );
+@@ -347,6 +347,8 @@ export const returnParked = ({ topic }) => `before the next thing: come back to
+ export const answerTheirQuestion = () => "they asked a real question about today's idea: answer it in at most two sentences, correctly and simply, without giving the key; then the question";
+ export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
+ export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
++/** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
++export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
+ /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
+ export const offerWays = () => join(
+   "they want something else: agree warmly, in your own words",
+diff --git a/server/director/state.js b/server/director/state.js
+index aca7335..df7e83b 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -757,7 +757,7 @@ const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" },
+   { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
+ /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
+ export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
+-  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite"]);
++  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear"]);
+ 
+ /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
+ function teachAgainPlan(s, kit, how) {
+@@ -828,6 +828,8 @@ function p5RequestMove(s, input, item, req, labels) {
+       if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
+       return withLead(SH.adaptTo({ method: req.method }));
+     case "adult": return withLead(SH.adultVoice());
++    // round 2 (conversation): a broken-off or garbled turn: no verdict, a no-blame ask to say it again or finish it
++    case "unclear": return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+     case "park": {
+       const e = parkEntry({ topic: req.topic, learning: req.learning, turn: s.turn, itemOnTable: !!item });
+       s.later = pushLater(s.later ?? [], e);
+@@ -835,11 +837,10 @@ function p5RequestMove(s, input, item, req, labels) {
+     }
+     case "detour": {
+       const p = recentParked(s.later ?? [], s.turn, req.topic);
+-      if (!p) {
+-        const e = parkEntry({ topic: req.topic, learning: false, turn: s.turn, itemOnTable: !!item });
+-        s.later = pushLater(s.later ?? [], e);
+-        return withLead(SH.parkIt({ topic: e.topic, promise: e.promise }));
+-      }
++      // round 2 (conversation): a push again with nothing parked (the first ask got an uptake, or was parked more than
++      // DETOUR_WITHIN turns ago) is still a second ask: a short real engagement now, never a second "later" (battery
++      // insistence: "refuses" 4/10 on the local base run 2026-10-06)
++      if (!p) return withLead(SH.detourTo({ topic: req.topic }));
+       s.later = serveLater(s.later, p.id, s.turn);
+       return withLead(SH.detourTo({ topic: p.topic }));
+     }
+@@ -1136,6 +1137,9 @@ export function step(prev, input) {
+     // p5-interaction: the UNDERSTAND note's alongside readings on a graded answer (hedge, check, insist; a parked question)
+     ...(p5Flag("STEER") && !NO_VERDICT_MOVES.has(p.kind) ? [...(input.cls?.mods ?? []).map((m) => SH.MOD_NOTE[m]), input.cls?.alsoPark ? SH.parkAlso({ topic: input.cls.alsoPark.topic }) : null] : [])];
+   const move = { kind: p.kind, shape: join(p.shape, ...notes) };
++  // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
++  // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
++  if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
+   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
+   if (p.skillId) move.skillId = p.skillId;
+   if (p.probe) move.probe = p.probe;
+@@ -1152,6 +1156,8 @@ export function step(prev, input) {
+   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
+   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
+   if (p.request) move.request = p.request;
++  // round 2 (conversation): the request's own note, for the lead slot's last instruction (brain/say.js)
++  if (p.lead && p5Flag("STEER")) move.lead = String(p.lead).slice(0, 400);
+   if (p.visual) {
+     move.visual = p.visual;
+     // what is on the stage decides the words: point at it, or (nothing mounted) show it with things they know — never a
+diff --git a/tests/p5-interaction-conversation.test.mjs b/tests/p5-interaction-conversation.test.mjs
+index 879b4b5..cc5fe9b 100644
+--- a/tests/p5-interaction-conversation.test.mjs
++++ b/tests/p5-interaction-conversation.test.mjs
+@@ -28,8 +28,10 @@ const POS = {
+   break: ["brb", "can we pause for a bit?", "paani peeke aata hoon"],
+   ask_invite: ["didi ek sawaal hai", "mera ek question hai", "didi ek sawaal poochun?", "can I ask a question?", "i have a doubt"],
+   adult: ["hi this is his father can you go over this part again with him", "main iski mummy hoon aaj 10 minute mein khatam karna please"],
++  // round 2 (conversation): a broken-off line (a stutter or filler, ending on a word that cannot end a thought)
++  unclear: ["umm wo jo bada wala ki", "the the bigger piece is the", "uh i mean it goes to the"],
+ };
+-const NEG = ["haan", "ok samajh gaya", "3/4", "the answer is 12", "pehle 24 ko break karte hain", "ek min... haan bolo", "liquid, solid, gas", "dhoop wala", "asha", "yes",
++const NEG = ["hmm haan ok", "a the the", "cham cham ghan ghan zor se", "dheere dheere chalo", "haan", "ok samajh gaya", "3/4", "the answer is 12", "pehle 24 ko break karte hain", "ek min... haan bolo", "liquid, solid, gas", "dhoop wala", "asha", "yes",
+   "hmm", "pata nahi", "i think it is half", "samajh gaya", "haan haan samajh gaya boss", "Four lakh eight thousand nineteen", "what is 3 times 4?",
+   "why does the bar get bigger?", "kyunki 3 se divide hota hai", "see you have to add 5 and 3 to get 8", "i'm done, it's 24", "3/4 hai kyunki",
+   "haan toh", "Prakrit, Brahmi lipi, pattharon par", "the election commission counts the votes"];
+@@ -102,7 +104,9 @@ test("applyNote: the note never grades, never subtracts distress, and only route
+ 
+ test("a stop or a leaving read by the note alone is a check-in request, never an end", () => {
+   for (const i of ["end_request", "leaving"]) assert.deepEqual(requestFromNote(NOTE({ intent: i })).type, "stop");
+-  for (const i of ["backchannel", "noise", "answer_correct", "dont_know"]) assert.equal(requestFromNote(NOTE({ intent: i })), null, i);
++  for (const i of ["backchannel", "answer_correct", "dont_know"]) assert.equal(requestFromNote(NOTE({ intent: i })), null, i);
++  // round 2 (conversation): a garbled turn is a no-blame repair request (battery noise 0/5 took the default path)
++  assert.equal(requestFromNote(NOTE({ intent: "noise" })).type, "unclear");
+ });
+ 
+ test("understand(): a usable note; a 429 opens the breaker (no calls for BREAKER_MS); errors and junk are null; never throws", async () => {

@@ -1,0 +1,105 @@
+diff --git a/server/comprehension/fuse.js b/server/comprehension/fuse.js
+index bffcf98..0c92bdd 100644
+--- a/server/comprehension/fuse.js
++++ b/server/comprehension/fuse.js
+@@ -2,7 +2,8 @@
+ // (server/learner/kt/ledger.js, unchanged: K, D, M and θ) and then through facets.js (U, T) with the PRE-event
+ // retrievability, in the same seq order and with the same de-duplication, so replay always equals the online fold
+ // (TP1-TP2 extended to `comp`). Pure: no clock, no randomness, no I/O.
+-import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest } from "../learner/kt/ledger.js";
++import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest, rank, DELAY_MS } from "../learner/kt/ledger.js";
++import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
+ import { retrievability, daysBetween } from "../learner/kt/fsrs.js";
+ import { applyFacetEvent, applyFacetTeach, facetDrop, facetsOfClass, newFacet } from "./facets.js";
+ import { COMP_PARAMS_VERSION, FACET } from "./params.js";
+@@ -89,10 +90,17 @@ export function fuseEvidence(state, events, ctx = {}) {
+     const rechecked = !!preSk?.anchorSession && post.anchorSession !== preSk.anchorSession;   // a delayed check ran
+     if (preSk && (post.flags.delayed !== preSk.flags.delayed || post.delayedMisses !== preSk.delayedMisses || rechecked)) moved.push("D");
+     if (ev.misconceptionId || ev.discriminates) moved.push("M");
+-    if (moved.some((m) => m !== "K") || ev.via === "weave" || ev.via === "callback") {
++    // round2 truth: the first item answer on a learned skill in a later session (>= 20 h after its anchor) is the
++    // session-open delayed check / review (C31, director/state.js activate). It is a moment the parent card must show even
++    // when only K moved: a +1 day review never certifies (V1.3), so D does not move, and before this the card stayed
++    // byte-identical after it (w1c-three-day "the parent card changes after the delayed check alone": none). VALUES-100
++    // V1.5. Item events carry no shapeId, so this is read from held state only (replay-stable); once per skill per session.
++    const recheck = !!preSk && rank(preSk.display) >= rank("learned_today") && ITEM_CLASSES.has(ev.cls) && !!anchor
++      && preSk.anchorSession !== ev.sessionId && delayDays * 86_400_000 >= DELAY_MS && !c.reasons.some((r) => r.at === startAt && r.recheck);
++    if (moved.some((m) => m !== "K") || ev.via === "weave" || ev.via === "callback" || recheck) {
+       c.reasons = [...c.reasons, {
+-        evId: ev.id, at: startAt, shapeId: ev.shapeId, cls: ev.cls, outcome: ev.outcome, grader: ev.grader, via: ev.via ?? "dialogue",
+-        help: ev.entryRung ?? 0, delayDays: Math.round(delayDays * 10) / 10, moved,
++        evId: ev.id, at: startAt, shapeId: ev.shapeId ?? (recheck ? "C31" : undefined), cls: ev.cls, outcome: ev.outcome, grader: ev.grader, via: ev.via ?? "dialogue",
++        help: ev.entryRung ?? 0, delayDays: Math.round(delayDays * 10) / 10, moved, ...(recheck ? { recheck: true } : {}),
+       }].slice(-8);
+     }
+   }
+diff --git a/tests/round2-truth-card.test.mjs b/tests/round2-truth-card.test.mjs
+new file mode 100644
+index 0000000..6d86278
+--- /dev/null
++++ b/tests/round2-truth-card.test.mjs
+@@ -0,0 +1,64 @@
++// round2 truth (patch 07; VALUES-100 V1.5 "every claim links to the exact moments (answers, delayed checks)"): the
++// session-open delayed check / review (C31: the first item answer on a learned skill in a session >= 20 h after its
++// anchor) is a reason on the parent card even when only K moved. Item events carry no shapeId on the live path
++// (learner/live.js attaches one to why events only), so the rule reads held state, and the events below carry none. A +1 day review never
++// certifies (V1.3), so D does not move, and before 07 the card stayed byte-identical after it (w1c-three-day, local and
++// prod: "the parent card changes after the delayed check alone": none). Real fold, no DB.
++import { describe, test } from "node:test";
++import assert from "node:assert/strict";
++import { fuseEvidence, newLearnerState, beliefFor } from "../server/comprehension/index.js";
++import { conceptCard } from "../server/comprehension/report/howweknow.js";
++
++const SK = "c5-maths-ch01-t01-s1", H = 3600_000;
++const T0 = Date.UTC(2026, 9, 1, 4, 30);
++let n = 0;
++const ev = (sid, t, itemKey, o = {}) => ({ id: `${sid}-${++n}`, seq: n, sessionId: sid, sessionStartAt: new Date(t).toISOString(), at: new Date(t).toISOString(),
++  episodeId: `${sid}-ep${n}`, skillIds: [SK], target: SK, itemKey, cls: "item.open", outcome: 0, grader: "code", graderVersion: "g", topicType: "T3", ...o });
++const P = "c5-maths-ch01-t01-";
++const day0 = () => [ev("A", T0, P + "i01"), ev("A", T0, P + "i02"), ev("A", T0, P + "i04"), ev("A", T0, P + "i01"),
++  ev("A", T0, P + "i04", { cls: "probe.why", grader: "llm" }), ev("A", T0, P + "i02")];
++
++describe("round2 truth: the delayed check is on the parent card", () => {
++  test("a right +1 day review adds a reason (K only, never D) and a 'used it again days later' chip", () => {
++    const s0 = fuseEvidence(newLearnerState({ childId: "c", classLevel: 5 }), day0());
++    const b0 = beliefFor(SK, { ...s0, now: new Date(T0 + 2 * H).toISOString() });
++    assert.equal(s0.ledger.skills[SK].display, "learned_today");
++    const s1 = fuseEvidence(s0, [ev("B", T0 + 21 * H, P + "i01")]);
++    assert.equal(s1.ledger.skills[SK].flags.delayed, false, "a +1 day review never certifies (V1.3)");
++    const r = s1.comp.skills[SK].reasons.at(-1);
++    assert.equal(r.shapeId, "C31");
++    assert.ok(!r.moved.includes("D"), `moved ${r.moved}`);
++    const b1 = beliefFor(SK, { ...s1, now: new Date(T0 + 22 * H).toISOString() });
++    const c0 = conceptCard(b0, { concept: "big numbers", now: new Date(T0 + 2 * H).toISOString() });
++    const c1 = conceptCard(b1, { concept: "big numbers", now: new Date(T0 + 22 * H).toISOString() });
++    assert.notDeepEqual(c1.chips, c0.chips);
++    assert.match(c1.chips.at(-1), /used it again days later · on their own · exact answer/);
++  });
++
++  test("once per skill per session; a missed check shows as 'still working on it'", () => {
++    const s0 = fuseEvidence(newLearnerState({ childId: "c", classLevel: 5 }), day0());
++    const n0 = s0.comp.skills[SK].reasons.length;
++    const s1 = fuseEvidence(s0, [ev("B", T0 + 21 * H, P + "i01", { outcome: 4 }), ev("B", T0 + 21 * H, P + "i02")]);
++    const added = s1.comp.skills[SK].reasons.slice(n0);
++    assert.equal(added.filter((r) => r.recheck).length, 1, "one recheck reason in the session");
++    const b1 = beliefFor(SK, { ...s1, now: new Date(T0 + 22 * H).toISOString() });
++    const card = conceptCard(b1, { concept: "big numbers", now: new Date(T0 + 22 * H).toISOString() });
++    assert.ok(card.chips.some((c) => /used it again days later \(still working on it\)/.test(c)), card.chips.join(" | "));
++  });
++
++  test("an answer in the SAME session as the anchor, or before 20 h, is not a recheck", () => {
++    const s0 = fuseEvidence(newLearnerState({ childId: "c", classLevel: 5 }), day0());
++    const n0 = s0.comp.skills[SK].reasons.length;
++    const same = fuseEvidence(s0, [ev("A", T0, P + "i02")]);
++    assert.equal(same.comp.skills[SK].reasons.length, n0);
++    const early = fuseEvidence(s0, [ev("C", T0 + 10 * H, P + "i02")]);
++    assert.equal(early.comp.skills[SK].reasons.filter((r) => r.recheck).length, 0);
++  });
++
++  test("on a skill that is not learned yet, an answer that moves only K adds no reason (unchanged)", () => {
++    const s0 = fuseEvidence(newLearnerState({ childId: "c", classLevel: 5 }), [ev("A", T0, P + "i01", { outcome: 4 })]);
++    const before = s0.comp.skills[SK].reasons.length;
++    const s1 = fuseEvidence(s0, [ev("B", T0 + 21 * H, P + "i02", { outcome: 4 })]);
++    assert.equal(s1.comp.skills[SK].reasons.length, before);
++  });
++});

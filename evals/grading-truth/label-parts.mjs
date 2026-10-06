@@ -10,6 +10,8 @@
 // often and are not needed: a one-part answer is partial under both whenever both say >= 2), and per acceptable entry the
 // same label. Cohen's kappa is reported for both decisions.
 //   NODE_USE_ENV_PROXY=1 node evals/grading-truth/label-parts.mjs [--n 400] [--seed 7] [--raters gpt-5.6-terra,DeepSeek-V4-Pro]
+//     [--classes 4-7] [--out data/parts-labels.json]   (round2 truth: --classes 1-9 --n 99999 labels every candidate; --out
+//     relative to this folder or absolute, so a full run never overwrites the battery's sampled truth file by accident)
 import { readFileSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { rng } from "./lib/oracle.mjs";
@@ -22,10 +24,12 @@ const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? proces
 const N = Number(arg("--n", 400)), SEED = Number(arg("--seed", 7));
 const RATERS = arg("--raters", "gpt-5.6-terra,DeepSeek-V4-Pro").split(",");
 const BATCH = 8, CAP_USD = Number(arg("--cap", 9));
+const [CLO, CHI] = String(arg("--classes", "4-7")).split("-").map(Number);
+const OUT = arg("--out", "data/parts-labels.json");
 
 const R = rng(SEED);
 const cand = [];
-for (const f of readdirSync(join(MAIN, "data/kits")).filter((x) => /^c[4-7]-.*\.json$/.test(x)).sort()) {
+for (const f of readdirSync(join(MAIN, "data/kits")).filter((x) => { const m = x.match(/^c(\d)-.*\.json$/); return m && +m[1] >= CLO && +m[1] <= (CHI || CLO); }).sort()) {
   const j = JSON.parse(readFileSync(join(MAIN, "data/kits", f), "utf8"));
   for (const t of j.topics) for (const it of t.items) {
     if (["why", "teachback"].includes(it.kind)) continue;
@@ -92,6 +96,7 @@ for (const s of sample) {
 const meta = { date: new Date().toISOString(), raters: RATERS, candidates: cand.length, sampled: sample.length, bothRated: both, multiPartAgreed: multi, singleAgreed: single,
   partsDisagree: disagree.filter((d) => d.why).length, kappaMultiSingle: kappa(pairsMS), kappaAcceptable: kappa(pairsAcc),
   raterMultiShare: RATERS.map((m, i) => +(pairsMS.filter((p) => p[i] === "multi").length / Math.max(1, pairsMS.length)).toFixed(3)), acceptableRated: accTotal, acceptableAgreed: accAgree, acceptableAgreedPartial: accPartial, usd: +usd.toFixed(3), seed: SEED };
-mkdirSync(join(HERE, "data"), { recursive: true });
-writeFileSync(join(HERE, "data/parts-labels.json"), JSON.stringify({ meta, items, disagree }, null, 1));
+const outPath = OUT.startsWith("/") ? OUT : join(HERE, OUT);
+mkdirSync(join(outPath, ".."), { recursive: true });
+writeFileSync(outPath, JSON.stringify({ meta: { ...meta, classes: [CLO, CHI || CLO] }, items, disagree }, null, 1));
 console.log(JSON.stringify(meta, null, 1));

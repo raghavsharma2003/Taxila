@@ -96,9 +96,10 @@ The production report's shape (2.4 s end-of-turn, 1.9-4.3 s server, 0.5-1.8 s to
    real confidence returns the identical result. Otherwise the turn does its own work, exactly as before. Consent,
    auth, ended lesson and lane gates are the turn's own (`loadTurnContext`); a withdrawn consent sends nothing to a model.
    It also opens the Diya socket if the replica has none.
-2. **Note-parallel reply** (inside `perceive()`): when classify returns a non-answer while the note is still out, the
-   no-note plan's reply is written at once instead of after the note wait. Used only through the existing exact
-   reply-key match; when the note changes the plan the key differs and the turn writes its reply as before.
+2. **Note-parallel reply** (inside `perceive()`, **default OFF** after measuring it): when classify returns a non-answer
+   while the note is still out, the no-note plan's reply is written at once instead of after the note wait. Used only
+   through the existing exact reply-key match. Measured: 8 launches in 40 turns, 1 used (the note changed the plan in the
+   other 7; 29 more were already covered by a speculative reply). Behind `TAXILA_NOTE_PARALLEL=on`.
 3. **Speech region = server region** (an ops change, no code: `deploy-azure.mjs --set AZURE_SPEECH_REGION=eastus2
    --secret AZURE_SPEECH_KEY=AZURE_OPENAI_API_KEY` while the app is in eastus2; India resource when the app moves to
    India). Measured −200 ms p50 first byte (§1.6).
@@ -121,3 +122,64 @@ network ≈ 1.0-1.1 s. **900 ms is not reachable for the content reply on a casc
 first.** It is reachable only for an acknowledgement decided on the device (≈ end of turn + a cached clip), which the
 safety rule forbids before the distress read; with the read, the ack's first sound is classify-bound (§5 of the
 results). Reported as such, not rounded.
+
+## 5. Results (measured, 2026-10-06)
+
+Harness `evals/latency/turn-e2e.mjs` (header states the method): local in-process API on a scratch copy of HEAD with
+patches 01-03, Neon TEST branch, prod model routing, synthetic child speech (gpt-4o-mini-tts ×1.2 pitch, NOT children),
+transcription over WebSocket from this US sandbox to eastus2, one cascade lesson on c4-maths-ch01-t01 per run, 20 turns.
+"sound" = first PCM byte + 60 ms player lead + a NOMINAL 50 ms device output latency (not measured). ms, p50 / p90.
+
+| run (file in `evals/latency/results/`) | n | turn sent after speech end | Brain (turn → JSON) | TTS first byte | **speech end → sound** |
+|---|---|---|---|---|---|
+| before-local (HEAD, no prefetch, Diya India resource) | 17 | 1,735 / 2,754 | 3,060 / 4,258 | 798 / 858 | **5,380 / 8,045** |
+| after-local-2 (prefetch + note-parallel on, India resource) | 20 | 1,569 / 1,605 | 2,575 / 3,930 | 633 / 817 | **4,675 / 6,052** |
+| base-local-3-eastus2 (same tree, no prefetch, speech eastus2) | 20 | 2,002 / 3,304 | 3,138 / 4,411 | 378 / 440 | **6,049 / 7,318** |
+| after-local-3-eastus2 (prefetch, note-parallel off, speech eastus2) | 20 | 1,576 / 1,691 | 2,564 / 3,687 | 396 / 436 | **4,506 / 5,754** |
+| pooled no-prefetch (before + base3) | 37 | 1,842 / 3,079 | 3,074 / 4,383 | 435 / 828 | **5,742 / 7,597** |
+| pooled prefetch (after-2 + after-3) | 40 | 1,569 / 1,641 | 2,564 / 3,930 | 412 / 801 | **4,670 / 6,052** |
+| prod ee97e9c, taxila.dev ACA eastus2, from the US sandbox, /turn + /tts-stream (prod-turn) | 12 | 1,625 / 1,647 | 3,366 / 4,808 | 876 / 901 | **5,999 / 7,012** |
+
+- **What the prefetch does, mechanically:** adopted 58/60 turns over the three prefetch runs (the 2 misses: no prefetch
+  had been sent). It arrives `aheadMs` ≈ 220-680 ms (p50 ~450) before the turn, so classify and the note start that
+  much earlier. Deltas equalled the completed transcript 77/77. Brain p50 −485 ms (before vs after-2) and −574 ms (base3
+  vs after-3), but those pairs are **confounded by guard rewrites** (16/20 turns rewrote in base3, 11/20 in after-3) and
+  by STT drift between runs (base3's endpoint+STT was 400 ms slower than after-3's). The honest attributable gain is
+  the head start, ≈ 0.4-0.5 s p50.
+- **Speech region eastus2:** TTS first byte p50 633 → 396 ms on the same harness (after-2 vs after-3; first-byte bench
+  431 → 230 ms). An ops change.
+- **Cost of the prefetch:** 39-41 sends per 20 turns; every send starts classify + the note + up to 3 speculative
+  replies, and about one send per turn is superseded by later deltas (the transcription emits in blocks ~450 ms apart).
+  Offline replay of the 64 recorded delta timelines: debounce 250 ms → 0.98 wasted sends per turn, lead p50 512 ms;
+  400 ms → 0.53, lead 362 ms; 600 ms → 0.23, lead 162 ms. Default kept at 250 ms; the cost is ~1 extra perceive per turn
+  [estimate ≈ $0.004: one grok classify, one gpt-6-sol note, three taxila-fast replies]. Rate-capped at 30 per lesson
+  per minute.
+- **SHADOW ack:** would have fired 2/20 in after-3 (graded answers only; 14 non-answers, 3 token screen), ready
+  1,501 and 1,821 ms after speech end, i.e. ~2.7-3.0 s before the reply's sound on those turns. Not played.
+- **Acceptance** (`tests/prod/round2-latency.mjs`): local 12/12 (gates, adopt only identical words, a disclosure via the
+  prefetch still gets the safeguard with 1098 / 14416 digit-exact, adopted 10/10, turn → first audio p50 3,098 → 2,481
+  ms text-only with a fixed 600 ms lead). taxila.dev: the route 404s (not deployed): 1/3, as expected; arm A turn →
+  first audio p50 2,773 / p90 3,582 ms (n=10, US sandbox → eastus2).
+
+### What is still short of the bar, and why
+
+V4.3 first sound p50 ≤ 900 ms: **not met. Best measured p50 4,506 ms (local, synthetic speech).** Where it goes, p50:
+
+1. **End of turn ~1.1 s + "completed" transcript ~0.5 s** = the turn is sent ~1.57 s after the child stops. The server VAD
+   waits 900 ms of silence. A word-aware end of turn is the duplex stream's TaxilaFDB (SHADOW); a fixed shorter silence
+   cuts children off (`rj-silence-gated-turn-taking`). Sending the turn on the stable deltas (they equalled the final
+   77/77) would save ~0.5 s but is an end-of-turn decision on a 650 ms silence: not without the word-aware engine.
+2. **Guard rewrites: the single largest remaining cost.** 46 of 77 measured turns rewrote (60 %; MODEL-STACK assumed
+   10 %). A rewritten turn's Brain stage is ~3.3 s vs ~1.4-1.7 s clean (reply stage 2.5 s vs 0.05-0.9 s). The guards
+   behind them (counts over rewritten turns): ask 22, drift 10, noconfirm 9, long 7, praise 6, script 5, leak 4. Fixing
+   the prompt so first drafts pass is a quality/prompt change owned by the interaction stream; a parallel second draft
+   was already rejected (`rejected.md`: two parallel drafts). Expected gain if rewrites fell to 10 %: ≈ −1 s p50.
+3. **Classify + the note** (~0.8 s and up to 2.2 s from their start) must finish before a dependent reply: the floor and
+   the grade. The prefetch starts them ~0.45 s earlier; nothing else can move them without a faster model (a quality
+   trade the owner ruled out: note bake-off 87-85 % vs 90 %).
+4. **TTS ~0.4 s** (eastus2) + network to India ~0.15 s.
+
+Sum of the irreducible parts with every model call hidden behind the end-of-turn wait ≈ 1.0-1.1 s; with this cascade's
+real model times ≈ 1.7-2.7 s. **The 900 ms bar is not reachable for the content reply on a cascade that must grade and
+read distress first;** an acknowledgement sound is the only path under ~1 s, and it may only be played after the distress
+read (≈ 1.5-1.8 s after speech end measured), so it does not meet 900 ms either.

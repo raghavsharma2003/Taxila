@@ -1,0 +1,14 @@
+diff --git a/tests/prod/_owner.mjs b/tests/prod/_owner.mjs
+index f298bf4..c7a4c6c 100644
+--- a/tests/prod/_owner.mjs
++++ b/tests/prod/_owner.mjs
+@@ -128,7 +128,8 @@ export const RX = {
+   // refers to something on the stage
+   refers: /\b(dekho|dekhiye|dekhte|dekhna|screen|board|diagram|picture|tasveer|chitra|drawing|banaya|bana (?:rahi|raha|diya)|game|khel|activity|niche|neeche|yahan|here|look|see|shown|on the right|left mein|tray|line par|bars?|model)\b/i,
+   // the child is told to speak slowly (F14), or to "think in Hindi" (F12)
+-  childSlow: /\b(dheere|dhire|slowly)\s+(?:se\s+)?(?:bol|boliye|bolo|bataiye|batao|say|speak|repeat)|say it (?:once more|again),? slowly/i,
++  // round 2: imperatives only — "main dheere bolungi" (SHE will go slowly, the asked-for move) matched "dheere bol" (owner-4, prod 2026-10-06)
++  childSlow: /\b(dheere|dhire|slowly)\s+(?:se\s+)?(?:bol|boliye|bolo|bolna|bataiye|batao|say|speak|repeat)\b(?!\s*(?:ungi|unga|engi|enge))|say it (?:once more|again),? slowly/i,
+   thinkInHindi: /hindi mein soch/i,
+   praiseOpen: /^\s*(?:[\p{L}]+\s*[,—-]\s*)?(?:✅|✔|👍|👏|🎉|🌟|⭐|💯|bilkul|sahi|correct|exactly|perfect|great|well done|very good|good job|shabaa?sh|wah|badhiya|ekdam sahi|you got it|that'?s right)/iu,
+   praiseAny: /\b(?:aapne|tumne|you)\b[^.!?]{0,60}\b(?:sahi|correct(?:ly)?|right)\s+(?:kaha|bataya|likha|likhi|likhe|pehchana|pehchaana|jodi|joda|chuni|chuna|socha|pakda|nikala|got|said|found|identified)\b|\bsahi (?:jawab|answer)\b(?!\s*(?:kya|kaun|hoga))|\bthat'?s (?:right|correct)\b/iu,

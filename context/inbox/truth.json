@@ -1,7 +1,7 @@
 {
  "stream": "truth",
  "at": "2026-10-06",
- "source": "docs/design/round2/truth (RESEARCH.md, APPLY.md, patches 01-05)",
+ "source": "docs/design/round2/truth (RESEARCH.md, APPLY.md, patches 01-07)",
  "nodes": [
   {
    "id": "truth-d1-pace-park-hands-to-ladder",
@@ -49,7 +49,7 @@
    "id": "ms-truth-local-batteries-2026-10-06",
    "kind": "measurement",
    "at": "2026-10-06",
-   "title": "Local server (Neon TEST branch, real Azure models, scripted children, n = 1-2 per file): w1c-reteach HEAD 13/13 (n=1; prod failure is model-dependent) / patched 13/13 (n=2); w1c-three-day HEAD 16/23 (n=1) / patched 20/23 (n=2); round2-truth acceptance A+B+C HEAD 6 FAIL / patched 0 FAIL; w1b-mounts patched: forged G1 graded both directions in 2 lessons each."
+   "title": "Local server (Neon TEST branch, real Azure models, scripted children, n = 1-2 per file): w1c-reteach HEAD 13/13 (n=1; prod failure is model-dependent) / 01-05 13/13 (n=2); w1c-three-day HEAD 16/23 / 01-05 20/23 x2 / 01-07 22/23 and 21/23 (the remaining fails are the comprehension U threshold on scripted reasons, flaky run to run); round2-truth acceptance A+B+C HEAD 6 FAIL / 01-07 19/19; w1b-mounts 01-05: forged G1 graded right in both directions in 2 lessons each."
   },
   {
    "id": "ms-truth-grading-det-noparts-2026-10-06",
@@ -122,6 +122,78 @@
    "kind": "rejection",
    "at": "2026-10-06",
    "title": "Counting lakh / crore / million as decisive words in corroborate: 'two lakh thirty-six thousand…' for '2,36,408' read as a swapped word. Scale words are part of the number; the value check decides them."
+  },
+  {
+   "id": "truth-d6-delayed-check-first-slot",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Session open (learner/live.js dueForChecks, comprehension/weave.js planChecks, learner/checks.js warmupItemsFor): a due delayed check (learned_today+, no delayed pass, >= 20 h past the anchor; tagged check:true) takes the first opener slot before any FSRS review or expired weave entry, oldest anchor first; an opener with no item passes its slot to the next due check; a skill >= 2 learning days with no unseen check item (cannot be certified, V1.3) is passed over and only fills a spare slot as a review tagged uncertifiable (never counted). Ask starts still answer first (trigger stays pending); practice starts unchanged. Reverse if: on the pilot, lessons whose first item is a delayed check end early or get boredom flags >= 5 points more often than other lessons (then the check moves to the second slot)."
+  },
+  {
+   "id": "truth-d7-callback-is-a-card-reason",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "comprehension/fuse.js: the first item answer on a learned (learned_today+) skill in a session >= 20 h after its anchor (the session-open delayed check / review, C31) writes a reason (recheck:true, shapeId C31) once per skill per session, so the parent card shows 'used it again days later' (or '… still working on it') even when only K moved; read from held state (replay-stable). VALUES-100 V1.5. Reverse if: the claims audit or a parent study reads the chip as a mastery claim."
+  },
+  {
+   "id": "rj-truth-retention-order-starves-check",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Ordering session openers by lowest retention alone: a skill learned yesterday has the HIGHEST retention of anything due, so it sorted behind every mastered skill's FSRS review and lost its opener slot (evals/next-day-check/sim.mjs, 2,000 starts x 2 seeds: the opening move was the due check in 722/1,289 and 711/1,304 lessons on HEAD). Also: an opener with no item left its slot empty."
+  },
+  {
+   "id": "rj-truth-card-ignores-review",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Comprehension reasons only when a facet other than K moved (or via weave/callback): the C31 +1 day review answered right moved only K, so the parent card did not change (w1c-three-day 'the parent card changes after the delayed check alone': none, local and prod)."
+  },
+  {
+   "id": "ms-truth-nextday-sim-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "evals/next-day-check/sim.mjs (real kits c1-c9 maths, real ledger fold, real Director start; deterministic; 2,000 starts per seed; children with 1-4 skills learned 1-5 days ago and 0-8 mastered skills with FSRS reviews due). Opening move = the due check: seed 7 722/1,289 -> 1,289/1,289; seed 11 711/1,304 -> 1,304/1,304; 'exhaust' (day 0 answered every non-reserved check item) seed 7 999/1,949 -> 1,949/1,949, seed 11 982/1,937 -> 1,937/1,937 (HEAD -> patches 01-07). Results: evals/next-day-check/results/2026-10-06/."
+  },
+  {
+   "id": "ms-truth-no-reserve-skills-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Kit coverage of the V1.3 'new form' check (director/items.js checkReserveIds over every kit c1-c9, 2026-10-06): 1,467 of 2,991 skills (49.0%) have no reserve item (fewer than 2 practice/retrieval/near-transfer items); English 287/510, Hindi 352/612, maths 321/933, EVS 93/201, science 251/463, SST 163/272. In the 'exhaust' sim ~36% of due skills (2,045-2,083 of ~5,700) could not be certified at all: a content gap (one unseen check item per skill), not a scheduling one."
+  },
+  {
+   "id": "ms-truth-grading-heldout-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "grading-truth model leg (taxila-fast, classes 1-9, run.mjs --dump-model, paired before/after corroborate on the same labels): held-out seed 13 (guard frozen before the run, sha1 d33a436) n=1,890: proven-truth wrong 69 -> 2, weak 16 -> 3, two-rater 303 -> 241, correct answers uncredited 51 -> 68 (14.3% of 476). Seeds 7 / 11: proven 62 -> 5 / 57 -> 3. Deterministic paths seed 13 (production config, no parts file): classifyFast 879 / 78,810 wrong (838 exact match on a kit acceptable entry two raters call partial), Studio W2-H 2/773 (no-item-id, known V1-04), every other path 0."
+  },
+  {
+   "id": "ms-truth-third-rater-audit-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Third-family audit of the two-rater agreed-partial labels on kit acceptable entries: 40 drawn uniformly of 947 (LCG seed 11), read by Claude against the question: 37 agree partial, 3 ambiguous, 0 disagree (docs/design/round2/truth/data/third-rater-audit.json). Not a human adjudication."
+  },
+  {
+   "id": "ms-truth-owner1-local-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "owner-1 typed answers on a local server (Neon TEST, taxila-fast), n=1 run per seed: HEAD default 0/61, seed 8 3/62 (1 partial->correct); patched 01-05 default 2/58, seed 7 0/40, seed 8 2/68: 0 false credits in 166 typed answers; all 4 patched 'wrong' are one contested item (c2-maths-ch03-t02-i05 'Which is bigger, and why?' answered '85': kit acceptable says complete, V1.1 + both raters say partial; the guard re-asks)."
+  },
+  {
+   "id": "truth-open-parts-data-unshipped",
+   "kind": "open",
+   "at": "2026-10-06",
+   "title": "The designed fix for partial answers listed as acceptable (server/content/parts.js reading data/kits-parts.json: agreed two-rater labels + a human pass on disagreements) was never shipped; production credits partial acceptables as complete on both the deterministic and the model path. It is the root cause of 838/879 deterministic and ~240/246 post-guard model-leg wrong grades on the grading-truth battery."
+  },
+  {
+   "id": "rj-truth-card-reason-keyed-on-shapeid",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "First cut of patch 07 keyed the card reason on ev.shapeId === 'C31': item events carry no shapeId on the live path (learner/live.js attaches one to why events only), so it never fired on a real server (w1c-three-day '+1 day card changes' still FAILED); the unit test had passed only because its synthetic events carried a shapeId. Keyed on held state instead."
+  },
+  {
+   "id": "ms-truth-parts-labels-c1-9-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "label-parts.mjs --classes 1-9 (gpt-5.6-terra + DeepSeek-V4-Pro, 2026-10-06, $13.04): all 5,579 list-shaped kit items rated; agreed acceptable labels 6,111 complete / 4,638 partial / 71 wrong, 4,290 disagreements; kappa acceptable 0.51-0.63, multi/single 0.48-0.54 by class band. grading-truth deterministic battery with these labels as truth (seed 13, n=89,560 classifyFast cases): HEAD production config 4,330 wrong (4.8%; 4,091 exact matches on agreed-partial acceptable entries); HEAD + candidate parts file (agreed only) 9 wrong (circular for the agreed labels)."
   }
  ],
  "edges": [
@@ -199,6 +271,61 @@
    "src": "truth-d4b-performance-only-scheduling-not-adopted",
    "rel": "part_of",
    "dst": "truth-d4-teachback-credits-every-covered-skill"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "supersedes",
+   "dst": "rj-truth-retention-order-starves-check"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "measured_by",
+   "dst": "ms-truth-nextday-sim-2026-10-06"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "supersedes",
+   "dst": "rj-truth-card-ignores-review"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-grading-heldout-2026-10-06"
+  },
+  {
+   "src": "truth-d5-model-label-must-be-corroborated",
+   "rel": "measured_by",
+   "dst": "ms-truth-owner1-local-2026-10-06"
+  },
+  {
+   "src": "truth-open-parts-data-unshipped",
+   "rel": "measured_by",
+   "dst": "ms-truth-third-rater-audit-2026-10-06"
+  },
+  {
+   "src": "ms-truth-no-reserve-skills-2026-10-06",
+   "rel": "blocks",
+   "dst": "truth-d6-delayed-check-first-slot"
+  },
+  {
+   "src": "truth-d6-delayed-check-first-slot",
+   "rel": "part_of",
+   "dst": "truth-d4-teachback-credits-every-covered-skill"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "supersedes",
+   "dst": "rj-truth-card-reason-keyed-on-shapeid"
+  },
+  {
+   "src": "truth-open-parts-data-unshipped",
+   "rel": "measured_by",
+   "dst": "ms-truth-parts-labels-c1-9-2026-10-06"
+  },
+  {
+   "src": "truth-d7-callback-is-a-card-reason",
+   "rel": "measured_by",
+   "dst": "ms-truth-local-batteries-2026-10-06"
   }
  ]
 }

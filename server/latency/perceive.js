@@ -45,8 +45,13 @@ export function fingerprint({ lessonId, state, clsArgs, bargeIn = false }) {
   return sha1(JSON.stringify([String(lessonId), sha1(JSON.stringify(state ?? null)), clsInputs(clsArgs), !!bargeIn]));
 }
 
-/** TAXILA_NOTE_PARALLEL=off turns rule 3 off (the turn then waits for the note before writing, as before). Default on. */
-export const noteParallelOn = (env = process.env) => !/^(off|0|false|no)$/i.test(String(env.TAXILA_NOTE_PARALLEL ?? ""));
+/**
+ * Rule 3 is OFF by default; TAXILA_NOTE_PARALLEL=on turns it on. Measured 2026-10-06 (evals/latency/turn-e2e.mjs, local,
+ * n = 40 turns over two runs): it launched 8 extra reply calls and 1 of them was used (in the other 7 the note changed the
+ * plan; in 29 more the no-note key was already a speculative reply: "dup"). Quotas are maxed, so a 1-in-8 call is not worth
+ * it on this script; kept behind the flag for a script with more "no note / shadow" non-answers.
+ */
+export const noteParallelOn = (env = process.env) => /^(on|1|true|yes)$/i.test(String(env.TAXILA_NOTE_PARALLEL ?? ""));
 
 /** A promise's settled-ness without awaiting it. */
 function track(p) {
@@ -82,7 +87,7 @@ export function perceive(d, x) {
   const clsP = x.classified ? d.classify(x.clsArgs) : Promise.resolve(null);
   clsP.catch(() => {});
   const out = { now, fast, specs, noteP, noteT0, clsP, c2, noteParallel: null };
-  if (noteP && x.textLane && !x.late && x.noteParallel !== false && noteParallelOn()) {
+  if (noteP && x.textLane && !x.late && (x.noteParallel === true || (x.noteParallel !== false && noteParallelOn()))) {
     out.noteParallel = clsP.then((cls) => {
       if (!isNonAnswer(cls) || noteState.settled) return null;
       return exactSpec(d, x, cls, now, specs);

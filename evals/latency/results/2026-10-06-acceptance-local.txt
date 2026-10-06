@@ -1,0 +1,23 @@
+PASS a live cascade lesson: 202 (202)
+PASS empty text: 204 empty (204 empty)
+PASS other words: not adopted ({"adopted":false,"miss":"inputs_or_words"})
+PASS identical words: adopted ({"adopted":true,"aheadMs":667}; cls no_evidence/model)
+PASS an ended lesson: 204 ended (204 ended)
+PASS a typed text lesson: 204 lane (204 lane)
+PASS consent withdrawn: 204 consent, nothing sent to a model (204 consent)
+cleanup: account deleted
+PASS a disclosure after a prefetch: the safeguarding move (safeguard, prefetch {"adopted":true,"aheadMs":654})
+PASS Childline 1098 and Tele-MANAS 14416 digit-exact in her reply
+WARN cleanup: prod-r2latsafe+…@taxila.test is held by the product's safeguarding guard after this arm's intended disclosure (expected; a human resolves the test incident, then deletes it)
+cleanup: account deleted
+PASS B: the prefetch route runs on a live cascade lesson (202)
+cleanup: account deleted
+turn → first audio byte (final transcript sent → first PCM), http://127.0.0.1:18632:
+  A final only: n=10 p50 3098 ms, p90 4738 ms
+  B prefetch (+600 ms lead): n=10 p50 2481 ms, p90 3983 ms
+  adopted 10/10
+PASS audio for both arms (10, 10)
+PASS the turn adopts the prefetch on identical words (10/10, bar 0.8)
+WARN timing comparison is enforced only from the Azure probe (TAXILA_PROBE=1); sandbox numbers are reported, not gated
+
+12/12 checks passed (http://127.0.0.1:18632)

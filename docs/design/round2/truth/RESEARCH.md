@@ -89,7 +89,38 @@ What transfers to a Hindi-English voice tutor on Azure-only:
 - So a model label that the child's words cannot corroborate must become **no evidence**, never a credit.
 - The cost is a re-ask, which is reported as "uncredited", per form.
 
-### 2.3 The re-check after a re-teach (problem 1)
+### 2.3 Which due item goes first (problem 4, second half: "lead the next lesson EVERY time it is due")
+Fixing D4 makes a check *due*. A second, separate failure decides whether it is *asked*. The session-open pipeline
+(`dueForChecks` → `planChecks` → `warmupItemsFor`) sorted every due skill by lowest retention and kept the first 2-4.
+- A skill learned yesterday has the HIGHEST retention of anything due, so it sorted behind every mastered skill whose FSRS
+  review had come due, and lost its slot.
+- An opener with no item (no kit, or no unseen item) left its slot empty instead of passing it on.
+- Measured on HEAD with `evals/next-day-check/sim.mjs` (real kits c1-c9 maths, real ledger fold, real Director start;
+  2,000 simulated lesson starts per seed): the opening move was the due check in **722 / 1,289** (seed 7) and
+  **711 / 1,304** (seed 11) lessons that had one due. That is about 55%.
+
+How the products handle the same conflict:
+- **ASSISTments ARRS** keeps the retention test separate from practice. The system assigns it automatically on its own
+  schedule (7, 14, 30, 60 days after mastery), apart from the teacher's assignments. It is a measurement gate, not a
+  review.
+- **Anki** orders due reviews by due date by default, so the card that has waited longest goes first. Recent versions
+  (23.10+) also offer orders such as retrievability ascending and relative overdueness. Which order is used is a
+  scheduling choice; it is not the scheduler's model.
+- **Khan Mastery Challenges** choose by time since the last review and by the current level (2.1).
+- **Duolingo HLR** practises the items with the lowest predicted recall. It has no certification step, so it has no
+  counterpart to the first check.
+- What I could not find: a published measurement of what happens when a certification check and maintenance reviews
+  compete for the same slots. The rule below comes from the products' structure (the gate is separate from reviews), not
+  from a measured comparison.
+
+What transfers:
+- The first delayed check is a **measurement** (V1.3 "secure"), not a review. A gate must not compete with maintenance
+  reviews on retention.
+- Among checks, the oldest goes first (due-date order, as in Anki), so a check that has waited is never starved.
+- A check that can no longer be given in a new form (every item already met) must not hold a slot that a certifiable
+  check needs.
+
+### 2.4 The re-check after a re-teach (problem 1)
 - ASSISTments and the Cognitive Tutor re-check with a NEW problem of the skill.
 - A re-ask of the same multiple-choice item after feedback is known to measure elimination, not knowledge. With 2
   options it is right 100% of the time after one wrong.
@@ -161,6 +192,31 @@ What transfers to a Hindi-English voice tutor on Azure-only:
   or the pilot shows children re-asked more than once per 10 answered items. Either would mean the cost in re-asks
   outweighs the protection.
 
+### D6 · A due delayed check takes the first opener slot (problem 4, patch 06)
+- **`dueForChecks`.** The delayed checks come first, tagged `check: true`, and ordered by the oldest anchor. FSRS reviews
+  follow, by lowest retention as before.
+- **`planChecks`.** A tagged check is never outranked by a review or by an expired weave entry.
+- **`warmupItemsFor`.**
+  - It fills as many warm-up slots as `planChecks` planned (at most `LIMITS.warmupMax`).
+  - An opener with no item passes its slot to the next due check.
+  - A skill at 2 or more learning days with no item it has never met cannot be certified (V1.3: new form). It is passed
+    over in the first pass. It fills a spare slot only as a review, tagged `uncertifiable`, and the ledger never counts
+    that review (`checkDayOk` + `novel`, unchanged).
+- **Unchanged.** Ask (doubt) starts still answer the child's question first, and the trigger stays pending
+  (`tests/w1c-delayed-order.test.mjs`). Practice starts still run their review set.
+- **Reverse if** the pilot shows lessons whose first item is a delayed check end early or get "boring" flags more often
+  than other lessons, by 5 points or more. That would mean the gate is costing engagement, and it should move to the
+  second slot.
+
+### D7 · The delayed check is a moment on the parent card (patch 07)
+- **Rule.** The first item answer on a learned skill in a session ≥ 20 h after its anchor writes a comprehension reason.
+  So the card shows "used it again days later", or "… (still working on it)" for a miss, even though only K moved.
+- **Why.** A +1-day review never certifies (V1.3), so D does not move, and the card stayed byte-identical. V1.5 asks
+  that the parent see the moments.
+- **How.** It is read from held state, once per skill per session, so a replay gives the same result. It is not keyed
+  on a shape id, because item events carry none on the live path.
+- **Reverse if** the claims audit or a parent study reads the chip as a mastery claim.
+
 ## 4. What does NOT transfer, and why
 
 - **Human deferral** (CHiL(L)Grader, ASSISTments open response) has no human in a live lesson. The code-gradable
@@ -179,6 +235,7 @@ Sources:
   - [What are Mastery Challenges](https://support.khanacademy.org/hc/en-us/articles/360037494231-What-are-Mastery-Challenges)
   - [Khan Academy Mastery Mechanics](https://mattfaus.com/2014/07/03/khan-academy-mastery-mechanics/)
 - Duolingo: [Settles & Meeder, A Trainable Spaced Repetition Model for Language Learning](https://research.duolingo.com/papers/settles.acl16.pdf)
+- Anki review sort orders: [Anki manual, Deck Options → Display Order](https://docs.ankiweb.net/deck-options.html)
 - Mastery criteria: [Pelánek, Conceptual Issues in Mastery Criteria](https://www.fi.muni.cz/~xpelanek/publications/mastery-modeling.pdf)
 - Wheel-spinning:
   - [Beck & Gong, Wheel-Spinning: Students Who Fail to Master a Skill](https://www.semanticscholar.org/paper/Wheel-Spinning:-Students-Who-Fail-to-Master-a-Skill-Beck-Gong/0890bd77b4615cbe9aa6be27b4c9aa6772f3d74f)

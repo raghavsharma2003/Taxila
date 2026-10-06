@@ -1,0 +1,71 @@
+{
+ "stream": "latency",
+ "at": "2026-10-06",
+ "source": "docs/design/round2/latency (RESEARCH.md §5, APPLY.md, patches 01-03); evals/latency/results/2026-10-06-*",
+ "nodes": [
+  {
+   "id": "lat-turn-prefetch-adopt-identical",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Turn prefetch: the device sends the stable partial transcript (energy-VAD quiet + deltas still 250 ms, <=3 per item) to POST /api/lesson/turn-prefetch; the server runs the turn's own perceive() (classify incl. the model distress read, the note, speculative replies) behind the turn's own gates (auth, guardian, core_tutoring consent, ended, lane, 30/lesson/min) and the /turn ADOPTS it only on an identical fingerprint (lesson, stored-state hash, words byte for byte, every classify input, barge-in) and an identical classifyFast on the real ASR confidence. Nothing commits, grades or speaks before the turn. Reverse if adopted turns ever grade differently from the same words without a prefetch, or if the wasted-send cost causes 429s on real turns."
+  },
+  {
+   "id": "m-lat-prefetch-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "turn-e2e.mjs, local in-process (US sandbox, Neon TEST, prod routing, synthetic child speech gpt-4o-mini-tts x1.2, 20-turn cascade lessons c4-maths-ch01-t01): speech end -> sound p50/p90 pooled no-prefetch 5742/7597 (n=37) vs prefetch 4670/6052 (n=40). Best run (prefetch + speech eastus2) 4506/5754 n=20. Prefetch adopted 58/60, ahead of the turn ~450 ms p50; deltas == completed transcript 77/77. Brain p50 -485 / -574 ms in two before/after pairs, confounded by rewrite counts (16/20 vs 11/20) and STT drift; attributable gain ~0.4-0.5 s (the head start). Local acceptance 12/12."
+  },
+  {
+   "id": "m-lat-prod-baseline-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Prod ee97e9c from the US sandbox via agent proxy to eastus2 ACA, same harness: speech end -> sound p50/p90 5999/7012 (n=12; /turn + /tts-stream), 5323/6800 with /turn-audio (n=12, different run, Brain varied). Text-only turn -> first audio on taxila.dev 2773/3582 (n=10, tests/prod/round2-latency.mjs arm A). V4.3 bar (first sound p50 <= 900 ms) not met anywhere."
+  },
+  {
+   "id": "m-lat-speech-region-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Diya DragonHD first byte from the US sandbox, warm, n=12 each: India resource 431/467 ms, eastus2 AIServices 230/496 ms; cold 1731 vs 891. In the end-to-end harness TTS stage p50 633 -> 396 ms. Not yet measured from the eastus2 container."
+  },
+  {
+   "id": "lat-speech-region-follows-app",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Proposed ops change: AZURE_SPEECH_REGION = the app's region (eastus2 now, key = the eastus2 AIServices key; India resource once the app moves). Reverse if a tts-region run from the container itself shows no gain, or Diya quality/visemes differ by region."
+  },
+  {
+   "id": "rj-lat-note-parallel-default-on",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: writing the no-note reply in parallel with the UNDERSTAND note on every non-answer (note-parallel). Broke: 8 extra reply calls in 40 turns, 1 used; the note changed the plan in the other 7 and the speculative fan-out already covered the no-note key 29 times. Now default OFF behind TAXILA_NOTE_PARALLEL=on."
+  },
+  {
+   "id": "m-lat-prefetch-waste-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Prefetch cost: 39-41 sends per 20 turns. Offline replay of 64 recorded delta timelines (gpt-live-transcribe emits deltas in blocks ~450 ms apart): debounce 250 ms -> 0.98 superseded sends per turn, lead p50 512 ms; 400 -> 0.53, 362; 600 -> 0.23, 162. Each superseded send costs one classify + one note + up to 3 speculative replies [estimate ~$0.004]. Default 250."
+  },
+  {
+   "id": "m-lat-rewrite-share-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Guard rewrites are the largest remaining turn cost: 46/77 measured turns rewrote (60 %, MODEL-STACK A3 assumes 10 %). Rewritten Brain ~3.3 s vs clean 1.4-1.7 s p50. Guards on rewritten turns: ask 22, drift 10, noconfirm 9, long 7, praise 6, script 5, leak 4. Owned by the interaction stream (prompt/guards); a parallel second draft is already rejected."
+  },
+  {
+   "id": "lat-900ms-unreachable-on-graded-cascade",
+   "kind": "decision",
+   "at": "2026-10-06",
+   "title": "Stated limit: V4.3 first sound <= 900 ms is not reachable for a content reply on a cascade that must finish the grade and the distress read first: end of turn (~1.1 s server VAD + 0.5 s completed transcript) + classify/note + reply + TTS ~0.4 s. Even with all model work hidden, end-of-turn + TTS + network ~1.0-1.1 s. The SHADOW ack (after the distress read) was ready 1.5-1.8 s after speech end. Reverse if a word-aware end of turn (duplex TaxilaFDB) lands at <= 0.4 s and rewrites fall to ~10 %, then re-measure."
+  }
+ ],
+ "edges": [
+  { "src": "lat-turn-prefetch-adopt-identical", "rel": "measured_by", "dst": "m-lat-prefetch-2026-10-06" },
+  { "src": "lat-turn-prefetch-adopt-identical", "rel": "measured_by", "dst": "m-lat-prefetch-waste-2026-10-06" },
+  { "src": "lat-turn-prefetch-adopt-identical", "rel": "part_of", "dst": "cascade-speculative-reply" },
+  { "src": "lat-speech-region-follows-app", "rel": "measured_by", "dst": "m-lat-speech-region-2026-10-06" },
+  { "src": "m-lat-prod-baseline-2026-10-06", "rel": "part_of", "dst": "ms-ship5-prod-2026-10-06" },
+  { "src": "lat-900ms-unreachable-on-graded-cascade", "rel": "measured_by", "dst": "m-lat-rewrite-share-2026-10-06" },
+  { "src": "lat-900ms-unreachable-on-graded-cascade", "rel": "caused_by", "dst": "rj-silence-gated-turn-taking" },
+  { "src": "rj-lat-note-parallel-default-on", "rel": "measured_by", "dst": "m-lat-prefetch-2026-10-06" }
+ ]
+}

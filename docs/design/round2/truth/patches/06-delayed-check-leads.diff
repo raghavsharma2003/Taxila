@@ -1,0 +1,276 @@
+diff --git a/server/learner/live.js b/server/learner/live.js
+index 355f2a2..24d6250 100644
+--- a/server/learner/live.js
++++ b/server/learner/live.js
+@@ -227,22 +227,30 @@ export function snapshotFromKt(sk, now) {
+ /**
+  * Skills whose delayed check is due at session open (INTEGRATION.md §4): ktView.due() AND every learned skill
+  * with no delayed pass yet whose anchor is ≥ 20 h old (FSRS's first interval is usually > 1 day, so without the
+- * second set the next-day check never runs — found by the comprehension simulator). Lowest retention first.
+- * @returns {{ skillId: string, retention: number }[]}
++ * second set the next-day check never runs — found by the comprehension simulator).
++ * Order (round2 truth, V1 "the delayed check leads the next lesson every time it is due"): the delayed checks FIRST
++ * (`check: true`; oldest anchor first, so a check that has waited is never starved), then FSRS reviews by lowest
++ * retention. Before this, a just-learned skill (high retention) sorted behind every mastered skill's review and lost
++ * its opener slot: evals/next-day-check/sim.mjs, 1,000 starts, seed 7: the opener was the due check in 354/645.
++ * @returns {{ skillId: string, retention: number, check?: boolean }[]}
+  */
+ export function dueForChecks(ledger, now, k = 4) {
+   const t = new Date(now).getTime();
+   const view = ktView(ledger, { now });
+   const ids = new Set(view.due(k * 3));
++  const checks = new Set();
+   for (const sk of Object.values(ledger.skills)) {
+     // p5-interaction (w1c-three-day, "+1 day: the delayed check leads the next lesson"): the opener is due 20 h after the
+     // anchor, as before V1-10. What changed with V1.3 is what it COUNTS for: before 2 learning days it is a review of an item
+     // the child has met (server/learner/checks.js), which never certifies; from 2 days on, the certifying check on a new item
+     // (kt/ledger.js advanceDisplay: checkDayOk + novel).
+-    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) ids.add(sk.skillId);
++    if (rank(sk.display) >= rank("learned_today") && !sk.flags.delayed && sk.anchorAt && t - new Date(sk.anchorAt).getTime() >= DELAY_MS) { ids.add(sk.skillId); checks.add(sk.skillId); }
+   }
+   return [...ids].map((id) => readSkill(ledger.skills[id], now)).filter(Boolean)
+-    .sort((a, b) => a.retention - b.retention || (a.skillId < b.skillId ? -1 : 1)).map((s) => ({ skillId: s.skillId, retention: s.retention }));
++    .sort((a, b) => checks.has(b.skillId) - checks.has(a.skillId)
++      || (checks.has(a.skillId) && a.anchorAt !== b.anchorAt ? (a.anchorAt < b.anchorAt ? -1 : 1) : 0)
++      || a.retention - b.retention || (a.skillId < b.skillId ? -1 : 1))
++    .map((s) => ({ skillId: s.skillId, retention: s.retention, ...(checks.has(s.skillId) ? { check: true } : {}) }));
+ }
+ 
+ /** Kit fields a probe shape needs (COMPREHENSION-ENGINE.md §4.3), present on this kit for this skill. */
+diff --git a/server/comprehension/weave.js b/server/comprehension/weave.js
+index fb8327b..4a21868 100644
+--- a/server/comprehension/weave.js
++++ b/server/comprehension/weave.js
+@@ -62,16 +62,19 @@ export function expire(q, now) {
+ 
+ /**
+  * Session-open plan (§3.5.7; the Conductor hook planChecks): 2-4 openers from due skills and expired weave entries,
+- * lowest retention first, plus protégé returns for skills whose U is open (3-10 days after the anchor).
+- * @param {{ q: any[], due: { skillId: string, retention: number }[], beliefs?: Record<string, any>, now: string, openers?: number }} o
++ * due delayed checks first, then lowest retention, plus protégé returns for skills whose U is open (3-10 days after the anchor).
++ * @param {{ q: any[], due: { skillId: string, retention: number, check?: boolean }[], beliefs?: Record<string, any>, now: string, openers?: number }} o
+  */
+ export function planChecks({ q, due, beliefs = {}, now, openers = 3 }) {
+   const t = new Date(now).getTime();
+   const expired = q.filter((e) => e.status === "expired").map((e) => e.skillId);
++  // round2 truth: a due delayed check (`check`, learner/live.js dueForChecks) always takes an opener slot before a review
++  // or an expired weave entry, in the order dueForChecks gave; the rest by lowest retention, as before.
+   const pool = new Map();
+-  for (const d of due) pool.set(d.skillId, d.retention);
+-  for (const s of expired) if (!pool.has(s)) pool.set(s, beliefs[s]?.retention ?? 0.5);
+-  const callbacks = [...pool.entries()].sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : 1)).slice(0, openers).map(([skillId]) => skillId);
++  due.forEach((d, i) => pool.set(d.skillId, { r: d.retention, check: d.check ? i + 1 : 0 }));
++  for (const s of expired) if (!pool.has(s)) pool.set(s, { r: beliefs[s]?.retention ?? 0.5, check: 0 });
++  const callbacks = [...pool.entries()].sort((a, b) => (!!b[1].check - !!a[1].check) || (a[1].check - b[1].check) || a[1].r - b[1].r || (a[0] < b[0] ? -1 : 1))
++    .slice(0, openers).map(([skillId]) => skillId);
+   const protege = Object.values(beliefs).filter((b) => b && b.open?.includes("U") && b.U >= 0.3 && ["learned_today", "mastered"].includes(b.display))
+     .filter((b) => { const a = q.find((e) => e.skillId === b.skillId)?.anchorAt; const d = a ? (t - new Date(a).getTime()) / DAY : 0;
+       return d >= WEAVE.PROTEGE_MIN_D && d <= WEAVE.PROTEGE_MAX_D; })
+diff --git a/server/learner/checks.js b/server/learner/checks.js
+index d00b2d4..791ee61 100644
+--- a/server/learner/checks.js
++++ b/server/learner/checks.js
+@@ -5,11 +5,13 @@
+ //
+ // Selection, per skill: an item the ledger has never seen on it (ledger skill.items), of a check class (practice, near
+ // transfer, retrieval; a near transfer first, it is the new form by design), at or above the median difficulty the child
+-// already met on it; easiest of those first. No unseen item → no check this session (never a repeat dressed as one).
++// already met on it; easiest of those first. No unseen item → no CHECK this session (never a repeat dressed as one; see
++// openerFor: a skill still owed its check is reviewed, labelled uncertifiable, only in a slot nothing certifiable wanted).
+ import { getKit } from "../content/index.js";
+ import { LIMITS } from "../director/state.js";
+ import { checkReserveIds } from "../director/items.js";
+-import { checkDayOk } from "./kt/ledger.js";
++import { checkDayOk, rank } from "./kt/ledger.js";
++import { dueForChecks } from "./live.js";
+ 
+ const CHECK_KINDS = ["near_transfer", "practice", "retrieval"];
+ const topicOf = (skillId) => String(skillId).replace(/-s\d+$/, "");
+@@ -18,36 +20,57 @@ const median = (xs) => { const v = [...xs].sort((a, b) => a - b); return v.lengt
+ /**
+  * @param {string[]} skillIds the openers planChecks chose @param {{ ledger: any }} o
+  * @returns {Promise<any[]>} warm-up items, tagged kind "retrieval" for the Director (it poses them as the session's openers)
++ *
++ * round2 truth (V1 "the delayed check leads the next lesson every time it is due"; evals/next-day-check/sim.mjs):
++ *  - the warm-up holds as many openers as planChecks planned (≤ LIMITS.warmupMax). An opener that yields no item gives
++ *    its slot to the next due delayed check (learner/live.js dueForChecks, `check`), not to nothing;
++ *  - a skill ≥ 2 learning days past its anchor with NO item it has never met cannot be certified (V1.3: new form): it is
++ *    passed over in the first pass so it never starves a skill that can be, and only fills a slot left over, as a REVIEW
++ *    (`review: true`, `uncertifiable: true`; the ledger does not count it: checkDayOk + novel).
+  */
+ export async function warmupItemsFor(skillIds, { ledger, now = Date.now() } = {}) {
+-  const out = [];
+-  for (const skillId of skillIds.slice(0, LIMITS.warmupMax)) {
+-    const topicId = topicOf(skillId);
+-    const kit = topicId ? await getKit(topicId, { generate: false }) : null;
+-    if (!kit) continue;
+-    const seen = new Set(ledger?.skills?.[skillId]?.items ?? []);
+-    const all = kit.items.filter((i) => i.skillId === skillId && CHECK_KINDS.includes(i.kind));
+-    // p5-interaction: before 2 learning days (V1.3) the opener is a REVIEW (spaced retrieval) of an item the child has met —
+-    // never the reserve, which is kept for the certifying check; the ledger does not count it as the check either way
+-    const anchorAt = ledger?.skills?.[skillId]?.anchorAt ?? null;
+-    if (anchorAt && !checkDayOk(anchorAt, new Date(now).toISOString())) {
+-      const reservedR = checkReserveIds(kit);
+-      const met = all.filter((i) => seen.has(i.id) && !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3));
+-      const r = met[0] ?? all.filter((i) => !reservedR.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
+-      if (r) out.push({ ...r, kind: "retrieval", checkKind: r.kind, review: true, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
+-        misconceptions: kit.misconceptions.filter((m) => m.id === r.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })) });
+-      continue;
+-    }
+-    const metDiff = median(all.filter((i) => seen.has(i.id)).map((i) => i.difficulty ?? 3)) ?? 1;
+-    const reserved = checkReserveIds(kit);
+-    const fresh = all.filter((i) => !seen.has(i.id)).sort((a, b) => reserved.has(b.id) - reserved.has(a.id));
+-    const it = [...fresh].sort((a, b) => reserved.has(b.id) - reserved.has(a.id) || ((b.difficulty ?? 3) >= metDiff) - ((a.difficulty ?? 3) >= metDiff)
+-      || CHECK_KINDS.indexOf(a.kind) - CHECK_KINDS.indexOf(b.kind) || (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
+-    if (!it) continue;
+-    out.push({
+-      ...it, kind: "retrieval", checkKind: it.kind, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
+-      misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
+-    });
++  const cap = Math.min(LIMITS.warmupMax, skillIds.length);
++  const queue = [...skillIds];
++  if (ledger) for (const d of dueForChecks(ledger, now)) if (d.check && !queue.includes(d.skillId)) queue.push(d.skillId);
++  const out = [], spare = [];
++  for (const skillId of queue) {
++    if (out.length >= cap) break;
++    const r = await openerFor(skillId, { ledger, now });
++    if (!r) continue;
++    if (r.uncertifiable) spare.push(r); else out.push(r);
+   }
++  for (const r of spare) if (out.length < cap) out.push(r);
+   return out;
+ }
++
++const withKit = (it, kit, topicId, extra = {}) => ({
++  ...it, kind: "retrieval", checkKind: it.kind, ...extra, topicId, topicType: kit.topicType, kitVerified: kit.verified, expectations: kit.expectations,
++  misconceptions: kit.misconceptions.filter((m) => m.id === it.targetsMisconception).map((m) => ({ id: m.id, belief: m.belief, signs: m.signs, remediation: m.remediation })),
++});
++
++async function openerFor(skillId, { ledger, now }) {
++  const topicId = topicOf(skillId);
++  const kit = topicId ? await getKit(topicId, { generate: false }) : null;
++  if (!kit) return null;
++  const seen = new Set(ledger?.skills?.[skillId]?.items ?? []);
++  const all = kit.items.filter((i) => i.skillId === skillId && CHECK_KINDS.includes(i.kind));
++  const reserved = checkReserveIds(kit);
++  const review = (extra = {}) => {
++    const met = all.filter((i) => seen.has(i.id) && !reserved.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3));
++    const r = met[0] ?? all.filter((i) => !reserved.has(i.id)).sort((a, b) => (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
++    return r ? withKit(r, kit, topicId, { review: true, ...extra }) : null;
++  };
++  // p5-interaction: before 2 learning days (V1.3) the opener is a REVIEW (spaced retrieval) of an item the child has met —
++  // never the reserve, which is kept for the certifying check; the ledger does not count it as the check either way
++  const anchorAt = ledger?.skills?.[skillId]?.anchorAt ?? null;
++  if (anchorAt && !checkDayOk(anchorAt, new Date(now).toISOString())) return review();
++  const metDiff = median(all.filter((i) => seen.has(i.id)).map((i) => i.difficulty ?? 3)) ?? 1;
++  const fresh = all.filter((i) => !seen.has(i.id));
++  const it = [...fresh].sort((a, b) => reserved.has(b.id) - reserved.has(a.id) || ((b.difficulty ?? 3) >= metDiff) - ((a.difficulty ?? 3) >= metDiff)
++    || CHECK_KINDS.indexOf(a.kind) - CHECK_KINDS.indexOf(b.kind) || (a.difficulty ?? 3) - (b.difficulty ?? 3))[0];
++  if (it) return withKit(it, kit, topicId);
++  // no item never met: a learned skill still owed its certifying check is reviewed (it never certifies); any other
++  // (a mastered skill's FSRS review) keeps the old rule: no opener this session
++  const sk = ledger?.skills?.[skillId];
++  return sk && !sk.flags?.delayed && rank(sk.display) >= rank("learned_today") ? review({ uncertifiable: true }) : null;
++}
+diff --git a/tests/round2-truth-nextday.test.mjs b/tests/round2-truth-nextday.test.mjs
+new file mode 100644
+index 0000000..40bd333
+--- /dev/null
++++ b/tests/round2-truth-nextday.test.mjs
+@@ -0,0 +1,96 @@
++// round2 truth (VALUES-100 V1 "the delayed check leads the next lesson every time it is due"; patch 06): the session-open
++// pipeline lesson.js runs (learner/live.js dueForChecks → comprehension/weave.js planChecks → learner/checks.js
++// warmupItemsFor → the Director's warm-up). Before 06 a just-learned skill (high retention) sorted behind every mastered
++// skill's FSRS review and lost its opener slot, and an opener with no item left its slot empty: evals/next-day-check/sim.mjs,
++// 2,000 starts x 2 seeds, the opening move was the due check in 722/1,289 and 711/1,304 lessons (HEAD) → all (06).
++// Real kits and the real ledger fold; no network, no DB.
++import { describe, test } from "node:test";
++import assert from "node:assert/strict";
++import { fold, newLedger, ktView } from "../server/learner/kt/ledger.js";
++import { dueForChecks } from "../server/learner/live.js";
++import { warmupItemsFor } from "../server/learner/checks.js";
++import { planChecks } from "../server/comprehension/weave.js";
++import { initLessonState, step } from "../server/director/state.js";
++import { getKit } from "../server/content/index.js";
++
++const H = 3600_000, DAY = 24 * H;
++const NOW = Date.UTC(2026, 9, 20, 4, 30);   // 10:00 IST
++const A = "c5-maths-ch01-t01-s1";   // learned 3 days ago on 2 of its items: certifiable (unseen items left)
++const M = "c5-maths-ch02-t01-s1";   // learned 40 days ago, certified at +3 days: mastered, its FSRS review is due
++const U = "c5-maths-ch02-t01-s3";   // learned 3 days ago on BOTH its check-kind items: nothing unseen, cannot be certified
++const P = (s) => `${s.replace(/-s\d+$/, "")}-`;
++let n = 0;
++const ev = (sid, t, skillId, itemKey, o = {}) => ({ id: `${sid}-${++n}`, seq: n, sessionId: sid, sessionStartAt: new Date(t).toISOString(),
++  at: new Date(t).toISOString(), episodeId: `${sid}-ep${n}`, skillIds: [skillId], target: skillId, itemKey, cls: "item.open", outcome: 0,
++  grader: "code", graderVersion: "g", topicType: "T3", ...o });
++const learn = (sid, t, sk, [a, b]) => [ev(sid, t, sk, P(sk) + a), ev(sid, t, sk, P(sk) + b), ev(sid, t, sk, P(sk) + a),
++  ev(sid, t, sk, P(sk) + b, { cls: "probe.why", grader: "llm" }), ev(sid, t, sk, P(sk) + b)];
++
++function ledgerOf(parts) {
++  const evs = [];
++  if (parts.includes("M")) evs.push(...learn("m0", NOW - 40 * DAY, M, ["i01", "i02"]), ev("m1", NOW - 37 * DAY, M, P(M) + "i13"));
++  if (parts.includes("A")) evs.push(...learn("a0", NOW - 3 * DAY, A, ["i01", "i02"]));
++  if (parts.includes("U")) evs.push(...learn("u0", NOW - 3 * DAY - H, U, ["i04", "i14"]));
++  evs.forEach((e, k) => { e.seq = k + 1; });
++  return fold(newLedger({ childId: "c", classLevel: 5 }), evs);
++}
++
++describe("round2 truth: the delayed check leads the next lesson", () => {
++  test("preconditions: M is mastered with its FSRS review due; A and U are learned_today with no delayed pass", () => {
++    const L = ledgerOf(["M", "A", "U"]);
++    assert.equal(L.skills[M].display, "mastered");
++    assert.ok(ktView(L, { now: NOW }).due(12).includes(M), "M's review is due");
++    for (const s of [A, U]) { assert.equal(L.skills[s].display, "learned_today", s); assert.equal(L.skills[s].flags.delayed, false); }
++    assert.ok(L.skills[M].retention < 1 && L.skills[A].retention > 0);
++  });
++
++  test("dueForChecks: a due delayed check (check: true) comes before any FSRS review, whatever the retentions", () => {
++    const due = dueForChecks(ledgerOf(["M", "A"]), NOW);
++    assert.deepEqual(due.map((d) => d.skillId), [A, M]);
++    assert.equal(due[0].check, true);
++    assert.equal(due[1].check, undefined);
++  });
++
++  test("planChecks: with one opener slot (band B1 has 2, this is the edge) the check takes it", () => {
++    const due = dueForChecks(ledgerOf(["M", "A"]), NOW);
++    assert.deepEqual(planChecks({ q: [], due, now: new Date(NOW).toISOString(), openers: 1 }).openers, [A]);
++    // an expired weave entry with a low retention does not outrank it either
++    const q = [{ skillId: "c5-maths-ch03-t01-s1", status: "expired" }];
++    assert.equal(planChecks({ q, due, beliefs: { "c5-maths-ch03-t01-s1": { retention: 0.01 } }, now: new Date(NOW).toISOString(), openers: 1 }).openers[0], A);
++  });
++
++  test("warmupItemsFor: an opener with no item gives its slot to the next due check, never leaves it empty", async () => {
++    const L = ledgerOf(["A"]);
++    const w = await warmupItemsFor(["c9-maths-ch99-t99-s1", A].slice(0, 1), { ledger: L, now: NOW });
++    assert.equal(w.length, 1);
++    assert.equal(w[0].skillId, A);
++    assert.ok(!w[0].review && !L.skills[A].items.includes(w[0].id), `A's certifying check, on an item never met (${w[0].id})`);
++  });
++
++  test("a skill that cannot be certified (no unseen item) never takes the slot of one that can; it only fills a spare slot, as a review", async () => {
++    const L = ledgerOf(["A", "U"]);
++    const due = dueForChecks(L, NOW);
++    assert.equal(due[0].skillId, U, "U's anchor is older, so dueForChecks lists it first");
++    const one = await warmupItemsFor(planChecks({ q: [], due, now: new Date(NOW).toISOString(), openers: 1 }).openers, { ledger: L, now: NOW });
++    assert.deepEqual(one.map((x) => x.skillId), [A], "the one slot goes to the check that can certify");
++    const two = await warmupItemsFor(planChecks({ q: [], due, now: new Date(NOW).toISOString(), openers: 2 }).openers, { ledger: L, now: NOW });
++    assert.deepEqual(two.map((x) => x.skillId), [A, U]);
++    assert.equal(two[1].review, true);
++    assert.equal(two[1].uncertifiable, true);
++    assert.ok(L.skills[U].items.includes(two[1].id), "the review is an item U has met (it can never count as the check)");
++  });
++
++  test("end to end through the Director: the lesson's opening move poses the due check, not the mastered review", async () => {
++    const L = ledgerOf(["M", "A"]);
++    const due = dueForChecks(L, NOW);
++    const warm = await warmupItemsFor(planChecks({ q: [], due, now: new Date(NOW).toISOString(), openers: 2 }).openers, { ledger: L, now: NOW });
++    const kit = await getKit("c5-maths-ch04-t01", { generate: false });
++    const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Bittu", what: "a puppy" }, ageBand: "10-15", lang: "english",
++      interests: [], firstMeeting: false, hasCallback: false, topicTitle: "Today", classLevel: 5, address: "tum", sessionId: "s" };
++    const s0 = initLessonState({ topicId: kit.topicId, kit, warmupItems: warm, openers: warm.map((w) => w.skillId), ctx, seed: 7, now: NOW });
++    const r0 = step(s0, { event: "start", kit, now: NOW });
++    assert.equal(r0.move.kind, "greet");
++    assert.equal(r0.move.itemId, warm[0].id);
++    assert.equal(warm[0].skillId, A);
++  });
++});

@@ -30,7 +30,7 @@ function fakeDeps({ fast = { result: null, flags: { offTopic: false } }, conv2 =
 }
 const input = (over = {}) => ({ classified: true, clsArgs: { target: { mode: "item", key: "8" }, childText: "aath", heard: "kitne?", lang: "hinglish", typed: false, classLevel: 4, trace: [] },
   state: {}, target: { mode: "item" }, planCtx: { kit: {} }, said: "aath", historyOf: (n) => n.recent, textLane: true, late: false, help: null, childText: "aath",
-  noteArgs: { said: "aath" }, ...over });
+  noteArgs: { said: "aath" }, noteParallel: true, ...over });
 
 describe("perceive (the turn's perceive stage)", () => {
   test("mirrors the turn: specs and the note only when the bytes decided nothing; one clock", async () => {
@@ -92,6 +92,24 @@ describe("perceive (the turn's perceive stage)", () => {
     cls.res({ outcome: "no_evidence", flags: {} });
     assert.equal(await P.noteParallel, "dup");
     assert.equal(calls.reply, 0);
+  });
+
+  test("note-parallel is OFF unless asked (measured 1 used of 8 launched): no extra reply call by default", async () => {
+    const saved = process.env.TAXILA_NOTE_PARALLEL;
+    try {
+      delete process.env.TAXILA_NOTE_PARALLEL;
+      const { d, calls, cls } = fakeDeps();
+      const P = perceive(d, input({ noteParallel: undefined }));
+      cls.res({ outcome: "no_evidence", flags: { offTopic: true } });
+      await flush(); await flush();
+      assert.equal(P.noteParallel, null);
+      assert.equal(calls.reply, 0);
+      process.env.TAXILA_NOTE_PARALLEL = "on";
+      const on = fakeDeps();
+      const Q = perceive(on.d, input({ noteParallel: undefined }));
+      on.cls.res({ outcome: "no_evidence", flags: { offTopic: true } });
+      assert.equal(await Q.noteParallel, "launched");
+    } finally { if (saved === undefined) delete process.env.TAXILA_NOTE_PARALLEL; else process.env.TAXILA_NOTE_PARALLEL = saved; }
   });
 
   test("isNonAnswer", () => {
