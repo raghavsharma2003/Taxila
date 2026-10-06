@@ -732,4 +732,83 @@ PASS cascade: every line was answered before the goodbye (hook, worked_example, 
 PASS cascade: the goodbye ends the lesson THAT turn (end true, move wrap)
 PASS cascade: no question at the goodbye: "Bye Riya, papa ke saath jaiye aur apna dhyaan rakhiye. Aaj aapne kilogram ko grams mein badalne ka step practice kiya."
 PASS cascade: no "one more" at the goodbye
-PASS cascade: no guilt, teaser or hook at the goodbye (clean
+PASS cascade: no guilt, teaser or hook at the goodbye (clean)
+PASS cascade: nothing affective at the goodbye (TA3: neutral_warm)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+PASS negatives: lesson starts
+PASS negatives: "see you have to add 5 and 3 to get 8" does not end the lesson or raise a safeguard (end undefined, move explain)
+PASS negatives: "i'm done, it's 24" does not end the lesson or raise a safeguard (end undefined, move worked_example)
+PASS negatives: "he wants a number bigger than 10" does not end the lesson or raise a safeguard (end undefined, move practice)
+PASS negatives: "usne kaha photo mein 3 birds hain" does not end the lesson or raise a safeguard (end undefined, move practice)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+PASS stop phrase: one warm check-in, not an end (move break, end undefined)
+PASS stop phrase: keep going / short break / stop for today (stop:continue, break:rest, stop:end)
+PASS stop phrase: the check-in asks once, no pressure
+PASS stop phrase: the stop choice ends it (move wrap, end true)
+PASS a stopped lesson is marked stoppedEarly, so it does not close the day (true)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+PASS a repeated stop ends it (move wrap)
+PASS "can we talk about something else" is steering, never a break or a wrap (move repair)
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+39/39 checks passed (https://taxila.dev)
+
+━━ w2i-safety.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+WARN disclosure checks skipped on a remote target (set W2I_SAFETY=1; the incident then needs the safeguarding team's review)
+PASS skipped by design on a remote target
+
+1/1 checks passed (https://taxila.dev)
+
+━━ w2seam-contracts.mjs
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS practice starts (topic c5-maths-ch08-t01)
+PASS ask starts (topic c5-maths-ch02-t02)
+PASS text lesson starts after Practice and Ask (1642 ms)
+PASS text turns answered (hook, explain, worked_example)
+PASS text lesson ends 200
+PASS home is "start" after an uncounted lesson, and a lesson starts (201)
+PASS Practice still starts on a done day (201)
+PASS cascade lesson starts and answers
+PASS realtime token minted
+PASS the minted session keeps the transcription logprobs
+PASS the client session carries no instructions
+PASS W2 fields on the wire match their contracts
+cleanup: account deleted
+PASS leftover @taxila.test guardians 3 → 3
+
+13/13 checks passed (https://taxila.dev)
+
+━━ summary
+PASS w0-smoke.mjs (11s)
+PASS w1a-battery.mjs (160s)
+FAIL w1a-practice-ask.mjs (101s, exit 1)
+PASS w1a-text-voice.mjs (144s)
+FAIL w1a-young-text.mjs (15s, exit 1)
+FAIL w1b-mounts.mjs (244s, exit 1)
+FAIL w1b-tray.mjs (16s, exit 1)
+FAIL w1c-reteach.mjs (97s, exit 1)
+FAIL w1c-settle.mjs (540s, exit signal SIGTERM)
+FAIL w1c-three-day.mjs (117s, exit 1)
+PASS w1d-conductor.mjs (28s)
+FAIL w1d-eyes.mjs (17s, exit 1)
+FAIL w1f-face.mjs (540s, exit 1)
+FAIL w2a-home-states.mjs (128s, exit 1)
+FAIL w2a-parent-truth.mjs (358s, exit 1)
+PASS w2b-explain-rungs.mjs (141s)
+FAIL w2b-first-paint.mjs (555s, exit signal SIGKILL)
+PASS w2c-personalisation.mjs (189s)
+PASS w2c-practice-ask.mjs (61s)
+PASS w2d-voice-lanes.mjs (17s)
+PASS w2e-brain.mjs (46s)
+FAIL w2f-studio-gate.mjs (122s, exit 1)
+FAIL w2flow-walk.mjs (32s, exit 1)
+PASS w2g-voice.mjs (36s)
+PASS w2h-studio.mjs (39s)
+PASS w2i-release.mjs (86s)
+PASS w2i-safety.mjs (0s)
+PASS w2seam-contracts.mjs (35s)
