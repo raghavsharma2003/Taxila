@@ -183,7 +183,11 @@ function moveParts(move, voiced, rel) {
     : [
       { text: `YOUR MOVE THIS TURN: ${kind}${rung}`, drop: null },
       { text: `- shape (a note, not words to say): ${move.shape}`, drop: null },
-      ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: null }] : []),
+      // ship5 integration: droppable (shed only when the MOVE section is over its cap). p5's reading prefixes ("they asked
+      // a real question …: answer it …") made hook + interest + protégé + aap + this note 288 tokens (cap 260), and the
+      // compile threw a BudgetError → POST /api/lesson/turn 500 on a live turn (w2c-personalisation, w1c-three-day). The
+      // move's own shape is what the turn must do; the rapport note is the one part that can go.
+      ...(shape ? [{ text: `- relational note (a note, not words to say): ${shape}`, drop: 10 }] : []),
     ];
 }
 

@@ -50,7 +50,9 @@ const layout = () => page.evaluate(() => {
   const tray = r(document.querySelector('[data-testid="tray"]'));
   const box = r(document.querySelector('[data-testid="studio-box"]'));
   const stage = document.querySelector('[data-testid="studio-stage"]');
-  const drawing = r(stage?.querySelector("svg, iframe, img, canvas"));
+  // the first VISIBLE drawing: ship5 p4's Stagecraft keeps a hidden interim board canvas (display:none once the piece
+  // paints) before the controller's own canvases, and a 0-width rect is never "inside"
+  const drawing = [...(stage?.querySelectorAll("svg, iframe, img, canvas") ?? [])].map((e) => r(e)).find((x) => x && x.width > 0) ?? null;
   const frame = r(document.querySelector('[data-testid="tray"] iframe'));
   return {
     overflowX: document.documentElement.scrollWidth > window.innerWidth + 1,

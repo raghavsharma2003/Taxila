@@ -1034,13 +1034,15 @@ function capPlan(s, input, p) {
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   if (!pins || item.id !== s.activeItemId || s.pinItem !== item.id || (s.pinRun ?? 0) < LIMITS.cardMax) return p;
   const assert = s.hintLevel >= 2;
-  if (assert) { if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item); }
-  // ship5 integration (p5 card cap x W1-C re-teach): under the cap the help ladder ends at rung 2, so the rung-3 fails the
-  // re-teach trigger counts (two_fails_post_rung3) could never happen and a child who kept getting it wrong was never
-  // re-taught (tests/prod/w1c-reteach 0 re-teach moves). An asserted cap after real help IS the ladder's end on that
-  // skill: it counts as one such fail, so two of them on a skill let engineReteach fire on its next answer.
-  if (assert && s.hintLevel < 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
-  else if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+  if (assert) {
+    if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item);
+    // ship5 integration (p5 card cap x W1-C re-teach): under the cap the help ladder ends at rung 2-3, so the post-rung-3
+    // fails the re-teach trigger counts (two_fails_post_rung3) never happened and a child who kept getting it wrong was
+    // never re-taught (tests/prod/w1c-reteach: 0 re-teach moves). An asserted cap after real help IS the ladder's end on
+    // the skill: it counts as one such fail (unless decide() already counted this fail at rung >= 3, hintLevel now 4), so
+    // two of them on a skill let engineReteach fire on its next answer.
+    if (s.hintLevel <= 3) s.failsPostRung3 = { ...s.failsPostRung3, [item.skillId]: (s.failsPostRung3?.[item.skillId] ?? 0) + 1 };
+  } else if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
   s.unclear = 0;
   const prefix = join(p.lead, assert ? SH.assertAndMove() : SH.leaveForLater());
   const next = s.phase === "warmup" ? nextWarmup(s, input, prefix) : poseNext(s, input, prefix, assert ? isomorphicFor(s, kit, item) ?? undefined : undefined);
