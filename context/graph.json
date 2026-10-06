@@ -12384,6 +12384,2169 @@
    "title": "Integration test reconciliations (the product rule changed, the test followed): director-mounts (V1-01r: a bound answer with no recomputable act is unverifiable, never the claim; a forged act is re-graded by value), rs6-f0 'harder one' (the check reserve is never reached by practice), w1b-mounts G1 (an open-class item's row is written at episode close: the turn's own module verdict is the evidence; the right commit may reuse an open item after a wrong one), w1f-face (Asha's lesson face is the 2D puppet by default; the rig arm runs with the puppet forced off, the kill-switch fallback), w2flow-walk (first VISIBLE drawing: Stagecraft keeps a hidden interim canvas), w2h-studio (a 'stagecraft' artifact is renderable; its spec values count for AT-7)",
    "at": "2026-10-06",
    "source": "inbox/ship5-integration.json"
+  },
+  {
+   "id": "p2d-r4-viseme-shape-space",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Puppet visemes own SHAPE independently of the smile (lips.js): width W (o 0.7, u 0.6, ee 1.1), curvature flattening, rounded profile, press (m/b/p full contact + bulge, 67 ms min hold from contact), tuck (f/v), tongue lobe (t/d/n/l, 60 ms hold, >=20 px gap); smile is a bias capped to half while rounding; PP / FF dominate the weighted mix instead of averaging. Reverse if a phone-recorded talk clip shows the shapes as chattering (too many distinct shapes per second) to the owner's eye.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "p2d-r4-two-texture-yaw",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Head turn = two-texture keyform: the painted three-quarter key's FACE SKIN (plates.py: matte = face alpha forward-mapped through the field, eroded 16 px; plate locks/brows/bindi inpainted; colour band-matched round the holes and the matte border) cross-dissolves in with the key weight while both warp through the shared TPS field; live eyes/brows/mouth draw through holes; key reached at the +-20 contract limit, never extrapolated. Reverse if the phone shows the plate dissolve as a visible cross-fade ghost in motion, or if a true painted multi-key (+-10 / +-20 / +-30) set becomes affordable.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "p2d-r4-blink-mid-088",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Mid-blink key built from the painted CLOSED key compressed per column to land its lash at 0.88 of the opening (lidkeys.py P2D_MIDFROM=shut), not at the judge-requested ~0.6. Reverse if a ~0.6 still can be made to read as motion (e.g. with motion-blurred lash) in a blind run.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "p2d-r4-blind-panel",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Blind gpt-5.6-sol (taxila-brain), r3 prompt, 3x3 grid vs c-front, n=3 per iteration: a 3.6/3.5/3.5 (r3-strength yaw keys, mid 0.62), b 3.7/3.5/3.8 (mid 0.75), c 4.0/3.8/3.8 (strong keys, mid 0.88), d 3.7/4.2/3.5 (thinking eased), e 3.7/3.5/3.6 (final: aa flatter, far eye 0.6). Pooled c-e n=9 mean 3.76 (r3 final 3.73, n=3). Categorical: turn reads '~20 deg head turn' 9/9 c-e vs 0/3 a; surprise clear 8/9; concern reads concern 9/9; mid-blink never 'sleepy' after 0.88 (9/9 'full blink'); every run also flags 'proportions drift' on the rest cell, which is pixel-identical to c-front (rendered SSIM 0.984), i.e. panel noise of ~+-0.2 per n=3 mean.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "p2d-r4-gate-articulation",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Articulation gate (shoot.mjs gate, 30 fps, 'chalo, aao, mama, bubbly' through visemesAt -> LipSolver -> rig; gatestrip-e.png): ch teeth spread, a/aa jaw drop with cavity, chalo l tongue lobe on 3 frames, o/u rounded (0.6-0.7 width), m 3 closed frames x2, b 3 closed frames x2, ee spread with teeth; bubbly l (80 ms after b) shows a small lobe on 2 frames. Judged by eye, builder.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "p2d-r4-payload-rest",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "r4 payload 142 KB wire (r3 105 KB; +37 KB = two face plates); rest rendered SSIM vs c-front 0.9841 (= r3 0.9841, same renderer, view 0,0,1024); static head crop 0.9847 (r3 0.9845). Image spend r4 USD 1.22, ledger 9.98 of 30.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "rj-p2d-masked-edit-not-honoured",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "gpt-image-2 masked edit of the yawR plate (bun fix, mask round the bun only) repainted the WHOLE image ~8-11 px off; composing only the masked region back (bunfix.py) left two cream discs and no bun. Fix: take the full repaint and carry the hand-read landmarks over by dense optical flow (DIS; face residual 32 -> 9 grey levels).",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "rj-p2d-whole-head-plate",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Cross-dissolving the WHOLE painted head plate (hair + locks included) doubled the hair outline mid-dissolve and ghosted the painted locks beside the live sprung ones. Fix: plate restricted to the face skin, hair stays the warped frontal layers.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "rj-p2d-mid-blink-06-still",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "A painted ~0.6 mid-blink (mid62 edit, then the shut key compressed to 0.62 and 0.75) read 'sleepy / smug / unimpressed' as a still in 6/6 blind runs regardless of squeeze, arch or brow dip; the mid62 edit's own skin also left a two-tone band and smeared lash ends.",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "rj-p2d-small-turn-keys",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Painted yaw keys prompted as 'a small turn' (r3 yawL-0 / yawR-0) give a ~12-15 deg turn: even as a true two-texture blend at the +-20 limit the blind panel read 'features sliding inside a frontal skull' (3/3). Stronger ~35 deg-prompted keys (yawL30 / yawR30) fixed the read (9/9).",
+   "source": "inbox/p2d-r4.json"
+  },
+  {
+   "id": "e2e-ship5-request-not-on-stage-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Ship5 integrated tree, local serve.mjs on the Neon TEST branch with real Azure, Chromium 360x800. The mic and the transcription call were simulated: fixture speech played into getUserMedia, with fake gpt-live-transcribe events. Visual requests ('animation dikhao na', 'diagram bana ke dikhao', 'game khelna hai') in 3 lessons (class 4 voice, class 6 typed, class 7 voice), n=9. Something new appeared on stage for 2/9: class 7 animation and diagram, each a whiteboard, 5.8 s and 11.3 s after the request. 0/3 game requests produced a game. On 7/9 her reply pointed at the screen ('screen par ... dekhiye', 'Chalo, screen par place-value game') while the stage held an unchanged or unrelated module. API probe on class 5 typed: 0/3 on the request turn, and Stagecraft logged no_want or same_piece; reveals came on later turns.",
+   "source": "inbox/ship5-e2e-experience.json"
+  },
+  {
+   "id": "e2e-ship5-duplex-merge-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Duplex in the real client with simulated STT (n=3 lessons). Words from earlier utterances are re-sent inside a later turn's childText. Already-answered turns: 'haan didi, ready hoon example do'; and 'example do na story ki tarah batao haan acchha, phir? acchha aur batao ruko ruko didi, ...' (6 utterances over about 60 s, the first already answered), which drew 3 near-identical story replies in a row. Continuers and stop phrases were folded into the next turn: 'haan aur samjhao', 'ruko ruko didi ek second aur batao na'. Continuers: 4/5 continued, and 'acchha' made her stop and answer it as a turn. Barge-in audible drop of 15 dB or more: 55/93/105/157 ms; silent at 173-597 ms. After 'ruko ruko didi ek second': no check-in for 12 s or more. After 'nahi nahi, galat hai': 6.4 s decision (backstop) plus about 3 s of server time. Decision gap: backstop_silence about 2.6 s on most turns. The client's own 'cascade turn total' from end of speech to her audio was p50 5.2-5.6 s (n=39). This was the sandbox lane with simulated STT, not the India lane.",
+   "source": "inbox/ship5-e2e-experience.json"
+  },
+  {
+   "id": "e2e-ship5-voice-lane-text-artifacts-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "Spoken and typed replies carrying text that is not speech. A typed class-6 reply contained an ASCII dot diagram ('●●●●● ●●●●● ...'). On the voice lane she posed English fill-in-blank kit text with '___' ('Khaali jagah bharo: Line up the numbers by place and start with the ___: 0 − 4 needs a borrow.'). On the voice lane she said 'apna maths sawaal likho', telling a speaking child to write. One reply ended in a stray token ('Andaza lagaiye. a').",
+   "source": "inbox/ship5-e2e-experience.json"
+  },
+  {
+   "id": "e2e-ship5-face-scope-2026-10-06",
+   "kind": "measurement",
+   "at": "2026-10-06",
+   "title": "The 2D puppet appears only for Asha, who teaches classes 1-4 (5 under TAXILA_TUTOR_OFFER=wide). Classes 5-7 get Arjun's TutorFace, the 3D render, so 3 of the 4 classes in the class 4-7 band never see the 2D face. For class 4, the puppet was live and labelled 'Asha, AI teacher' in 4/5 page loads. In 1/5 it fell back to TutorFace pre-reveal; that load was under two concurrent SwiftShader browsers, so this is a sandbox CPU number.",
+   "source": "inbox/ship5-e2e-experience.json"
+  },
+  {
+   "id": "rj-e2e-level-meter-per-context",
+   "kind": "rejection",
+   "at": "2026-10-06",
+   "title": "Tried: an output-level meter for barge-in and continuer probes that pushed one sample per AudioContext tap into one shared series. What broke: the product has several output contexts (player, earcons), so -120 dB samples from idle contexts interleaved with her voice, no sustained-voice window was ever found, and every probe reported 'she never spoke'. The earcon at about 270 ms after each utterance also read as 'her first sound'. Fix: take the max over all taps per 20 ms tick, and require 18-22 of 25 ticks above -45 dB for voice.",
+   "source": "inbox/ship5-e2e-experience.json"
+  },
+  {
+   "id": "ship5-fix-ta8-structural",
+   "kind": "decision",
+   "title": "TA8 is structural: rows.js withSeamUi sends calm_steady on every safeguarding turn (move safeguard or incident), whatever the relational directive said; a content-filter safeguard is answered by the fixed say.js line alone (no DISCLOSURE opening, helplines once). Reverse if the relational directive is ever recomputed after every re-plan and a test proves parity.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-generated-keys-verified",
+   "kind": "decision",
+   "title": "Stagecraft generated_spec: every graded key must be a key a checked spec of the topic carries (authored catalogue or reviewed default, by (prompt,key) or (kit src,key)), unless the engine computes it from on-screen numbers (COMPUTED_KEY_ARCHETYPES: dukaan, fraction-ops, geo-forge, mirror-paint, pattern-lab, pictograph, rule-machine, sieve-storm, solid-view, zero-pair); else refused (why unverified_key) and the checked default serves. Reverse when a blind kit-key verifier exists for model-written keys.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-template-board-regated",
+   "kind": "decision",
+   "title": "The template board (W2 fallback) is drawn only after it passes the same whiteboard gate (W0-W9) against her real line, in both board-sync modes; a refused template leaves voice only. Reverse if w2b-explain-rungs shows empty trays above the W2 bar and a truth-safe alternative exists.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-tone-guard-needs-no-words",
+   "kind": "decision",
+   "title": "Duplex tone guard (f0 >= 540 Hz = not a voice) applies only while the burst has no words of its own (echo stripped) and no distress is sticky: a whistle is never transcribed; a crying/shouting child is. Synthetic rig: distress at 600 Hz now yields mid-line and commits <= 1.5 s after the child stops; a wordless 573 Hz tone still never yields. Whistle false-yield rate not re-measured (the p1 cooker set is not in the tree).",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "rj-ship5-request-deadlock",
+   "kind": "rejection",
+   "title": "Visual requests deadlocked: the requested Stagecraft piece was held by the Director's own 'show' module (DIRECTOR_TRAYS) while the whiteboard was declined because a reveal was ready (studio_rejected.reveal_ready), and a retire-accepted on-screen piece still declined the board in requestIntent; the p5 card cap also turned a visual request into the next practice question. API probe c5 text 2026-10-06: 0/4 request turns showed anything new (pre-fix), her line pointed at the old screen.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ms-ship5-fix-request-probe",
+   "kind": "measurement",
+   "title": "API probe (tests/prod-style req.mjs, text lane, Neon TEST, real Azure, 2026-10-06, n=12 request turns over classes 4/5/7: animation, diagram, game, picture): after the fix 12/12 request turns put a new slot on the stage on that turn (6 Stagecraft reveals, 6 whiteboards planning); boards drawn 7/8 (one W2 refusal), board sync 1.6-2.2 s after the ask before the requested-board head start (600 ms) was added. Reply latency on those turns 1.8-5.1 s server-side, so V3.3 'answered on stage within 3 s p90' is not proven.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-revoke-no-resend",
+   "kind": "decision",
+   "title": "A duplex revoke's merged turn names the revoked commit (DuplexTurn.revokeOf); the runtime supersedes the revoked turn (outbox edit, same turnSeq) while it is in flight, else sends only the new words (and after an editLanded replay, the new words follow). Already-answered words are never posted twice.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "rj-ship5-revoke-merge-resend",
+   "kind": "rejection",
+   "title": "Duplex G7 revoke merged the revoked commit's words into the next turn (fanin.begin(prevTurnStart)) and the runtime posted the merged text as a NEW turn: e2e 2026-10-06 'haan didi, ready hoon' answered, then 'haan didi, ready hoon example do' answered again; live.ts only tracked the revoke while her reply had not started.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-hold-checkin",
+   "kind": "decision",
+   "title": "After a granted hold ('ruko ek second'): face look at 4 s, the hold-offer cut-in at 8 s (was 8/15 s, [E], not measured on children), the server answers cutInReason hold_offer with a hold_checkin move (one warm check-in, no verdict) instead of a 'say again' repair; the child's next words after a hold are a new epoch (the hold phrase is not folded in). Reverse if pilot hold lengths show children routinely pause > 8 s on purpose.",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-open-repair-tail-only",
+   "kind": "decision",
+   "title": "understand.js: with no value in the turn, a repair marker ('nahi nahi') is an open repair only at the tail; 'nahi nahi, galat hai' is a complete statement (e2e: it waited 6.4 s on the stretched backstop).",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-spoken-lane-guards",
+   "kind": "decision",
+   "title": "Reply guards: text art (runs of shape glyphs, box drawing, ASCII rules) is markup and is stripped; 'main picture nahi dikha sakta' style lines are cut (cantshow); on spoken lanes her own words never tell the child to write/type (the pinned kit question is untouched); 'didi ek sawaal hai' reads as ask_invite (a go-ahead, never her own question).",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ship5-fix-sexual-content-to-child-predicate",
+   "kind": "decision",
+   "title": "scanSafety abuse family: sexual content sent/shown/said TO the child ('sex wali photo bheji', 'sent me nude pics', 'gandi baatein bolta hai') is a disclosure by predicate; asking about the topic is not. safety-robust run 2026-10-06 (3 seeds): FP unchanged on every negative corpus (es1 0/8357, transcripts 0/1248, hard negatives 1/204, 3/101, quiet 1/127, all pre-existing hits).",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "ms-ship5-fix-safety-robust",
+   "kind": "measurement",
+   "title": "evals/safety-robust/run.mjs --seeds 3 (2026-10-06, label ship5fix): recall unchanged (taxilafdb clean 84/84, es3 80/80, heldout 40/40, redteam 225/225); FP 0 new on es1 8,357 / es3 220 / transcripts 1,248 / taxilafdb 485; results/2026-10-05-ship5fix.json",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-fix.json"
+  },
+  {
+   "id": "rj-ship5-filter-safeguard-no-calm-face",
+   "kind": "rejection",
+   "title": "A content-filter safeguard re-plan keeps the pre-filter relational directive: ui.teacherAffect is not calm_steady, so the 2D puppet keeps its resting warm smile over the helplines (tests/ship5-review-filter-face-db.test.mjs; owner-5 2026-10-06 turn 2 seen live)",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "rj-ship5-stagecraft-model-key",
+   "kind": "rejection",
+   "title": "Stagecraft generated_spec grades the child against an answer key the model wrote: checks.truth defaults true, a wrong tap is graded right and closes the item (kt_evidence) (tests/ship5-review-stagecraft-key.test.mjs)",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "rj-ship5-board-fallback-ungated",
+   "kind": "rejection",
+   "title": "A template board that board-sync's gate refused against her line is drawn anyway by seam.js showFallbackOrFail (52 'template board shown' after a W-check failure in the local battery; w2f dot x15 for a line that says 3) (tests/ship5-review-board-fallback.test.mjs)",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "rj-ship5-duplex-tone-guard-distress",
+   "kind": "rejection",
+   "title": "p1-duplex tone guard (toneF0Hz 540) treats a high-pitched child as not-a-voice: a distress line over her at f0 600 Hz is talked over and the safeguard turn commits 4,500 ms after the child stops vs 500 ms at 260 Hz (synthetic rig; tests/ship5-review-duplex-safety.test.mjs)",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "ms-ship5-review-duplex-safeguard-latency",
+   "kind": "measurement",
+   "title": "Duplex live rig, synthetic, n=1 per arm, 2026-10-06: distress over her line, safeguard commit after child stop = 500 ms at f0 260/480/530 Hz; 4,500 ms at f0 545/600/700 Hz; she pauses mid-line at <=530 Hz and keeps talking until 260 ms after the line at >=545 Hz",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "ms-ship5-review-safeguard-line-continuer",
+   "kind": "measurement",
+   "title": "Duplex live rig, synthetic, 2026-10-06: any child sound over her safeguarding line (a 300 ms 'हम्म' included) stops it 20 ms after onset, non-resumable; the cut helplines come back only through the next server safeguard turn",
+   "at": "2026-10-06",
+   "source": "inbox/ship5-review.json"
+  },
+  {
+   "id": "w2a-safety-hold-refuses-start",
+   "kind": "decision",
+   "title": "A Conductor safety_hold refuses EVERY lesson start (lesson, Practice, Ask) on the server: lesson.js startRefusal returns 409 {state: safety_hold, control: safety}; the client's Refused screen shows the hold card (calm copy, Childline 1098 and Tele-MANAS 14416 printed, Back home only, no grown-up 'open now'); /c/:cid/lesson/*, /practice and /ask redirect home when this device's last plan read saw the hold",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-hold-copy-trusted-adult",
+   "kind": "decision",
+   "title": "The safety_hold home says 'Talk to a grown-up you trust.', never 'at home': a hold follows a safeguarding incident, which can be at home; the child-safety floor (a trusted adult the child chooses, not an assumed parent) outranks STUDENT-FLOW §4.2's row, which is corrected",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-reset-link-no-fallback",
+   "kind": "decision",
+   "title": "A password-reset link is built only from TAXILA_URL (else PUBLIC_BASE_URL); with neither set NO email is sent (logged, still 200). The old silent fallback to https://taxila.app would have mailed live reset tokens inside links to a domain the owner may not control (account takeover)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-reset-timing-and-token-spend",
+   "kind": "decision",
+   "title": "Forgot password runs the existing account's DB work (rate count, token insert, audit, mail) AFTER the 200 is sent, so a real email does not answer slower than an unknown one (the operator-keyed @taxila.test path still awaits, for its testToken); a successful reset spends every other outstanding reset token of the account in the same transaction",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-hear-listen-speakable",
+   "kind": "decision",
+   "title": "'Hear {T}' (child skill line) and the parent's Listen (consent, home, lesson, report scripts) go through speakable() before tts (skillLineSaid / speechSaid), per w2g-speakable and voice-clips-off-and-numbers-normalised: no digit reaches a voice",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-skill-line-address",
+   "kind": "decision",
+   "title": "Her Garden/Sky skill line uses the same address form as the lessons (resolveAddress: the parent's child_controls.address, else aap from class 5): aap variants of every Hinglish and Hindi line; English has none. The 'secure' line says 'on a later day' / 'ek aur din' (the delayed check is 20 h, not days)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-card-ticks-from-engine",
+   "kind": "decision",
+   "title": "The parent lesson card has ONE count (summary.counts from kt_evidence): did.tried and the did-based 'No answers were checked' line are gone; each DidCard is a quote of the child's answer whose tick and 'with a hint' come from the engine row of the same turn (engineTick, matched on the event id's turn seq; no engine row = no tick; C1 second try = with a hint); per-skill attempts count item rows only and probes are a separate 'Explained it: k'",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-next-topic-for-plan",
+   "kind": "decision",
+   "title": "One next-topic answer, test window included (reports/truth.js nextTopicForPlan / nextTopicOf): inside an active school test window it is scoped to the test's subject, else the plain sequence; used by the child home topic and 'Next time', the map's 'here', the parent home, Progress next/here, a lesson start with no topic and the lesson-end / summary-read 'Next time' (read after the lesson, never the sequence-next pinned in ctx at the start)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-checker-explained-line",
+   "kind": "decision",
+   "title": "The independent claim checker re-derives the 'Explained the idea in {name}'s own words' line with its own label table (probe.why full, probe.teachback high, never via game) and fails a summary that over-counts it or omits it",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2a-ask-routing-margin",
+   "kind": "decision",
+   "title": "Ask routing (purpose.js matchTopic): light English stemming (plural, -ing, final e), Hinglish verb stems (jod*, ghata*, guna*, bhaag*, baant*, …), a Devanagari synonym table, notation-read concepts (1/2, 0.5) and 'plants + food' weighted x2; the winner must beat the best topic from ANOTHER chapter by 1.5 (siblings in its own chapter are the same idea), and each class below weighs 1.5 less; a near tie returns null (the plan's topic stays)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "m-w2a-ask-routing-2026-10-04",
+   "kind": "measurement",
+   "title": "Routed Ask, tests/fixtures/ask-routing.mjs (n=30 questions, classes 4-7, Hinglish/Hindi/English, 2 with no valid topic): before 18/30 right, 6 WRONG topics, 6 null misses; after 30/30, 0 wrong. The margin (1.5) and class step (1.5) were chosen on these same 30 (sweep margin 1/1.5/2 x step 0.5/1/1.5), so this is a fit, not a validation; on 10 held-out questions written afterwards: 9/10 right, 0 wrong, 1 null ('ghadi mein samay kaise padhte hain')",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "m-w2a-fix-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "W2-A fixer acceptance, LOCAL serve.mjs (port 8793) on the Neon test branch, 2026-10-04: w2a-home-states 47/47 (all states at 360 AND 1280; safety_hold refuses lesson/practice/Ask with 409 safety; typed /lesson/new and /practice go home; hold copy 'you trust'; Made for you shelf renders and fits at 360 and 1280 from a 017-shape fixture row, parent card lists it); w2a-parent-truth 59/59 (test-window next topic identical on 6 surfaces incl. a no-topic start and the lesson-end summary; card ticks <= engine first-try; 20/20 summaries passed the checker; practice of 5, no greeting; a reset kills the other outstanding link); no leftover test accounts",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "rj-madefor-child-id-column",
+   "kind": "rejection",
+   "title": "madeFor.js first read studio_mount.child_id and a text outcome (LIVE-STUDIO §10's sketch); 017_studio.sql has no child_id (016's rule: keyed by lesson_id, erasure cascades) and outcome is jsonb, so the query failed 42703 and the reader's defensive catch returned [] forever: the Made for you shelf and the parent card could never show anything. Fixed to join lesson.child_id, read jsonb outcome.result only, skip whiteboard/hidden pieces, and name a build-less piece by its image alt or topic",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "rj-ask-route-tie-only",
+   "kind": "rejection",
+   "title": "Ask routing that refused only an exact tie between two subjects (score >= 3 otherwise wins) routed 6 of 30 fixture questions to a WRONG topic ('ped khana kaise banate hain' class 6 → 'Why food spoils: microbes'; 'integers ko kaise jodte hain' → 'Multiplying integers'; 'rectangle ka kshetrafal' → 'Area of a triangle', the last from a plural-stripping bug: 'rectangles' → 'rectangl'); a wrong topic is worse than null, which keeps the plan's topic",
+   "at": "2026-10-04",
+   "source": "inbox/w2-a-fix.json"
+  },
+  {
+   "id": "w2bfix-open-item-board-guard",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Never-an-answer on the board: a show move on an OPEN item (not in itemsDone: the move's item, else the active one; modules.js openItemOf) draws the method with '?' in the result cells (templates hideResult), then the worked example; every rung (code, library, live fill, terms) and every engine show is refused when its facts / texts / number work / digit rows state a key or acceptable answer of the open item (server/forge/explainer/guard.js leaksOpenItem); numbers the prompt itself says are never leaks",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-truth-devanagari-script",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Truth and token checks read letters WITH combining marks (\\p{M}) in truth.js and shared/whiteboard.js TOKEN_RE; a Devanagari word is checked whatever its grapheme count; a label must be Latin or Devanagari (+digits, plain punctuation; ZWJ/ZWNJ only beside Devanagari), never a cloze stub (_), never narration (sentenceShaped: Hindi finite clause / ergative ne, English negation, pronoun subject, past-tense narration, >= 5 letter words); library.json rebuilt",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-frame-line-anchor",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "explainer@1 in the sandboxed frame draws from her line's first audio sample: ModuleHost listens for taxila:line-audio-start and posts set_param cue {ageMs, n} to cue engines (never queued into history; sent on the handshake when the anchor fired up to 2.5 s before mount); the frame stamps rxAt so anchor = rxAt - ageMs on its own clock; no anchor within 1.2 s (or delayMs if larger) -> it draws on its own. Clause anchors: normalizeScript keeps `clause` only with {clauses:true} (strict refuses, lenient drops); the Player shifts clause ops by clauseOnsets when given",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-geometry-data-templates",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Five more code templates: angle@1 (1-3 angles, right-angle square / arc, arm & corner/vertex labels in the kit's words), shape@1 (polygons, circle with centre/radius/diameter, two congruent copies), symmetry@1 (mirror line, dot N squares away and its image), area-grid@1 (unit squares or a scaled rectangle; area or perimeter, '?' when open), bar-chart@1 (2-6 bars, friendly scale); code-picked from the move's text; signed-integer +/- picks to number-line-hop; 'how many more' picks subtraction",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-terms-last-rung",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The explain ladder's last rung (server/forge/explainer/terms.js): the topic's short title (or most used term) with its 2-4 most used one/two-word kit terms (>= 2 uses across items / worked example / misconception pictures, ideas-weighted, never across punctuation) as a parts@1 board, so no explain beat has an empty tray",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-screen-guard-content",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "screenContradiction(text, module, contentLines?) allows partsOnScreen ∪ the move's content part counts (stored as module.contentParts by writeFactsRow, so the live caller in server/brain/say.js needs no change); a screen with no part counts no longer passes everything: a maths screen flags any outside count, a diagram flags only forms that can only be part counts (fractions, 'N equal parts', plural part words); equal groups count as parts; the rewrite reason names the allowed counts; the stale lesson.js patch is deleted (the guard has been live in brain/say.js since W2-E BR1); after a rewrite that still contradicts, stripStrayParts drops the sentences naming stray counts (the kit's question stays): seam patch w2b-parts-repair.patch for brain/say.js",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-spare-frame",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "src/modules/prewarm.ts keeps ONE pre-booted spare module frame (#spare:<engines>: runtime + React up + the lesson's likely engine chunks imported, then 'ready'), booted at lesson start from useDesk with enginesForTopic(topicId); ModuleHost adopts it for the next mount with Element.moveBefore (document kept alive) and hands it init + port; a browser without moveBefore gets a fresh frame; extra engines are warmed by queued #warm: frames (never dropped); bootstrap accepts exactly one adopting init and renders a pre-imported engine in the init's commit",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-watch-only-board",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The board's facts row carries 'use watch only'; the reply guard's half (a tap/pick line over a watch-only explainer board with no chips is a screen problem; 'look at the board' stays fine) is a ready seam patch for W2-E: server/forge/seam-patches/w2b-watch-only.patch (director/say.js)",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-board-tap-evidence",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "After the drawing ends every written word on an explainer@1 board is a tap target emitting explainer.tap {opId, label} (graded by the host from the op id, never by the frame): material for W2-C/E covert 'point to the stamen' probes; nothing asks for it yet",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-continue-prior-ids",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "A 'continue' whiteboard script may highlight / erase / label ops of the earlier board by the ids that board gave them (normalizeScript priorIds; StudioWhiteboard maps them to the re-scoped ids); the board before a script is kept so a remount of the same script draws on it again; an earlier op fades at its eraser's time",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2bfix-pick-interest-representation",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The active misconception's remediation picture and the child's consented interest choose HOW a code pick draws (a fraction as bar / roti / circle), never a value; the live model fill gets the interest as an id plus the kit's own interest contexts (labels stay truth-checked)",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-open-item-leaks-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Open-item key on the board or the facts row: 0 / 12,093 planModule mounts (every c1-c9 maths item × reteach / explain / worked_example, item open; 6,789 boards, 5,193 engine shows). Before: the reviewer found 6 code-pick boards + 42 library/facts cases; my first pass of the check found 42 incl. 15 engine-show facts rows. Offline, node, 2026-10-05; asserted in tests/w2b-explainer.test.mjs",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-library-rebuild-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "library.json under the new truth check: 331 entries -> 74 failed (label_sentence 53, not_in_kit 16 Hindi now really checked, label_script 5); 3 rebuild passes with taxila-fast (60 / 38 / 31 tried, 22 / 7 / 4 accepted): now 316 = 257 kept + 51 rebuilt + 8 new; 23 retired (+2 stale entries of topics that now have a code pick); 0 CJK/katakana or '__' labels. 2026-10-05",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-render-check-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Strict render-check (evals/forge-explainer.mjs) 100% per template on the sweep (incl. angle 10, shape 16, symmetry 7, area-grid 48, bar-chart 6) and on every c4-c7 real code pick / library entry (angle 83, shape ~161, symmetry 64, area-grid 53, bar-chart 50, flow 197, compare 96 ...); coverage through the real Director: 387/387 c4-c7 explain moves show something (engine 97, board 290, none 0; was 383/394 with 11 empty); numbers-match 299/299. Offline, 2026-10-05",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-spare-mount-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "First mount of an explainer@1 board at 4x CPU, localhost dist (evals/engines-prewarm.mjs, n=10): cold p50 314 / p90 511 ms; warm caches 245 / 329; second mount 318 / 348; spare adopted 23 / 28 ms timed inside the frame (138 / 193 ms with Playwright's polling, the method of the other arms). 2026-10-05",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-teacher-screen-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Teacher's part counts vs the screen (evals/forge-teacher-screen.mjs, n=40 per run, real reply deployment; metric reads the board's real part counts): 4 runs; final run with the code repair after the rewrite: no facts row 72.5%, facts row 92.5%, facts + guard + repair 40/40 = 100% (0 empty lines). Earlier runs of the guard arm: 95%, 97.5% (one 429 error), 97.5% (a rewrite kept 'aadha'). 2026-10-05",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-coordinates-as-fractions",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "partsOnScreen (and the teacher-screen eval's metric) scanned JSON.stringify(params) for N/M after turning [a,b] into a/b: on a board every [x, y] point became a 'fraction' (flow board -> part counts 118, 152 …), so the guard allowed almost any part count and the metric was loose. Now a board's counts come from its facts and fraction number work only",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-paint-test-sleep-in-span",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2b-first-paint.mjs slept 400 ms after every turn response, INSIDE the measured span: every reported first paint was >= 400 ms whatever the client did (443/466 ms reported; the adopted frame actually paints ~50 ms after the response). The explain turn is now measured at once, n=12",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-guard-skip-empty-screen",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "screenContradiction returned null whenever the screen had no part counts: '5/4' said over a flow board passed by design. Replaced by w2bfix-screen-guard-content",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-sentence-rule-four-words",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "A first sentence-shape rule (>= 4 words, or capitalised word + an -ed/-es word) retired 181 of 331 library entries including plain noun phrases ('Rights and duties', 'Healthy body and mind', 'Carbon dioxide and water'); narrowed to clause markers, >= 5 letter words: 53 retired, all clauses / questions / truncations",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-defer-paint-to-probe-fleet",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Deferring the 300 ms first-paint and 150 ms warm-mount gates to the Azure probe fleet: both spans start with the turn response in hand and (warm) fetch nothing, so they are client work the fleet cannot make faster; the gate now applies in the sandbox",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "rj-w2bfix-number-minus-as-negative",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "A first signed-integer pick read the minus of '8 - 3' as -3 and turned subtraction items into number-line hops; a sign is now negative only where no operand precedes it, and products / quotients / algebra lines never hop",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-first-paint-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Explain response -> rung painted in the real child client (local dist, Chromium 360x800, measured at once): run 1 n=10 p50 49 / p90 62 ms; run 2 n=9 p50 42 / p90 178 ms; run 3 n=8 41-61 ms; frame fills the tray on every topic. Before: 443/466 ms incl. the test's own 400 ms sleep. Unmeasured: c4-evs-ch01-t01 (headless Chromium crashes during the opening TTS, spare disabled too) and c4-maths-ch01-t02 (no explain within 8 typed turns in the browser)",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "m-w2bfix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "Local acceptance 2026-10-05: w2b-explain-rungs 36/36 (12/12, 0 empty trays); w2b-first-paint p90 <= 300 ms in both complete runs; w2seam-contracts 7/8 (409 'today's lesson is done' on the Practice start: Conductor/purpose, not W2-B); w1b-mounts 37/40 with the same 3 item-bound FAILs under HEAD's modules.js (A/B): not W2-B; no W2-B account left",
+   "source": "inbox/w2-b-fix.json"
+  },
+  {
+   "id": "w2cfix-repaired-now-counts",
+   "kind": "decision",
+   "title": "comprehension/reteach.js: RESOLVED = {repaired_now, resolved_next, resolved_delayed} (resolve.js writes repaired_now; `resolved_now` never existed, so a day-1 repair was invisible on day 2). child_history uses heldRepair: resolved_next/resolved_delayed, or repaired_now not yet final (a FINAL repaired_now was lost on the next lesson's first answer); the delayed_fail recap uses any RESOLVED outcome. resolveAttempts attempts now carry `final`",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-fade-gap-not-in-view",
+   "kind": "decision",
+   "title": "fading.js fadeStepIndex skips a candidate gap whose key is already in view (gapGivenAway: revealsAnswer on the bare key over the problem, the steps shown before it and the gap line), or is a function word ('for', 'has', 'ka'), walking back to the next recoverable step; none left → the kit keeps the full worked example. workedLeadContent never shows the gap's own step (with the gap at step 0 it only sets the problem up)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-board-keeps-gap",
+   "kind": "decision",
+   "title": "fading.js fadeBoard never cuts the gap line: the problem is shortened (clip, word edge + ellipsis) to make room, and a gap line over 120 characters alone is cut around its ___. The first-step / worked-example boards use clip(problem, 120) instead of a silent 80-character hard cut",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-stuck-routing-signal",
+   "kind": "decision",
+   "title": "The Director records items the child got stuck on (rung 4 reached, or left after don't-knows / 'An easier one') per skill in the lesson state (state.stuck, once per item); lesson.js loadRecentStuck sums the last 5 lessons within 14 days and feeds guidanceLevel / equityProfile only (never KT, beliefs or reports). 1 stuck item with nothing right on the skill, or 2 whatever else → worked example, no first-step probe; stuck with no correct outcome → low-baseline equity profile",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-ask-start-safety",
+   "kind": "decision",
+   "title": "An Ask's first words pass the turn path's safety predicate (director/safety.js scanSafety, passive ideation included) at lesson start, before they become ctx.askText: a hit opens on the safeguard move (helplines on the board and in her opening) with an incident row (detail.at = ask_start) and no askText. The start returns ui.askConsumed when it handled the first words; useDesk then shows the question card without re-sending them as a turn (one consumer: the start)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-wheel-spin-through-engine",
+   "kind": "decision",
+   "title": "P21 wheel spinning on the child's record (affect.js wheelSpinning over outcomes carried across lessons) is a re-teach trigger inside engineReteach (wheel_spin), so the arm comes from selectReteach (child history first, written to reteach_attempts) instead of afterMiss's generic 'change approach'; afterMiss keeps the generic move as the fallback with no belief, once per skill per lesson either way",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-assertion-before-break-repose",
+   "kind": "decision",
+   "title": "practice(): an item whose answer was asserted (rung 4) goes to its isomorph BEFORE the after-break re-pose, so it is never posed again 'fresh' (measured: rung 4 → frustration break → the same faded step posed again)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "dc-w2c-support-rise-intended",
+   "kind": "decision",
+   "title": "The guidance ladder's rise in teaching turns per skill for the struggling child (+3 at the median vs the legacy novice boolean) and the uncertain-prior child who cannot start (+3, the probe path) is intended support (W2-C #2: legacy sent both attempt-first on a prior it read as knowledge). director-sim --teach-turns names this decision for those arms instead of waiving them silently; the population median (all arms equal weight) is +3",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-talk-gate-persona-change",
+   "kind": "decision",
+   "title": "The child-talk-share gate is enforceable: evals/results/talk-baseline.json (n = 3 director-sim lessons), scripts/talk-gate.mjs, and verify-release --persona-change <candidate.json> runs it; fewer than 3 lessons on either side ('not decided') is RED for a persona or model change",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-brief-entry-per-skill",
+   "kind": "decision",
+   "title": "learner/briefView.js: the ladder's skill gets the lesson's entry; every other learning skill its own guidanceLevel from its own record (an unseen second skill is worked_step, never hint_first because skill 1 is attempt-level)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-evals-test-db-only",
+   "kind": "decision",
+   "title": "evals/director-sim.mjs and evals/never-answer.mjs --live never touch the main database: in-process they set DATABASE_URL to CONDUCTOR_TEST_DATABASE_URL (or TAXILA_DB_URL) and refuse without one; they open the parent's lesson hours, delete the whole account with DELETE /api/account {password, confirm} (never-answer also on SIGTERM), and never-answer runs one child per variant, six at a time",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "m-w2cfix-faded-coverage-2026-10-05",
+   "kind": "measurement",
+   "title": "Faded-step coverage after the give-away filter (fadeItem over every kit, verified, B3; script = the W2-C test 'every verified kit's faded step', 2026-10-05): class 4-7 301/385 (was 341 recoverable, 306 before the function-word rule), all classes 572/830. Gap key in the worked lead / shown steps (real item, revealsAnswer): 0 (was 92 + 80 + 64 reported by review; 31 were the step-0 worked lead). Boards without ___: 0 of 572 (was 93 of 341 cut off); 121 class 4-7 boards shorten the problem with an ellipsis",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "m-w2cfix-teach-turns-2026-10-05",
+   "kind": "measurement",
+   "title": "director-sim --teach-turns (offline, 385 class 4-7 kits per arm, 2026-10-05): fresh 4 (legacy 4), struggling 4 (1), strong 1 (1), middle prior 0.5 that cannot start 4 (1); population median (4 arms equal weight) 4 vs 1",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "m-w2cfix-talk-baseline-2026-10-05",
+   "kind": "measurement",
+   "title": "childTalkShare baseline, director-sim in-process on the Neon test branch, text lane, real classifier + reply model, LLM child (taxila-fast), c4-maths-ch05-t01, 14 turns, n = 3, 2026-10-05: 0.238, 0.240, 0.177 (median 0.238). The sim's independent (e) key-before-question check flagged '1/2' / '5' in all 3 runs (open item)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "m-w2cfix-personalisation-diff-2026-10-05",
+   "kind": "measurement",
+   "title": "personalisation-diff against node server/serve.mjs on the Neon test branch (real classifier + reply model, test clock +1 day, n = 3 per arm, 2026-10-05): (c) all-'pata nahi' children worked example with no first-step probe 3/3; control neutral children first-step probe 3/3; right-first-time attempt first 3/3; (d) dheere 4 → 5 s and 700 → 840 ms. (b) after the wheel-spin fixes, n = 3 per arm: the arm that repaired the child on day 1 is day 2's first re-teach 3/3 (2 child_history via wheel_spin, 1 recap via delayed_fail); control (day-1 arms failed) 3/3 not from history and not a just-failed class. Earlier runs 0/3, 1/3, 0/3 (generic wheel-spin path; ledger wheelSpin 'none'/'warn' masking the record), with taxila-fast HTTP 429s under machine load",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "rj-w2c-resolved-now-token",
+   "kind": "rejection",
+   "title": "Matching re-teach outcomes against `resolved_now`: resolve.js writes `repaired_now`, so child_history and the delayed-fail recap never saw a same-lesson repair; the W2-C unit test fed `resolved_next` by hand and hid it. Now: RESOLVED uses the real token and an end-to-end test goes resolveAttempts → selectReteach with no hand-picked outcome",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "rj-w2c-stuck-threshold-two",
+   "kind": "rejection",
+   "title": "Routing to the worked example only after 2 stuck items: an all-'pata nahi' day-1 lesson of 14 turns reaches the assertion once (the Director alone, c5-maths-ch01-t01), so that child still got the first-step probe on day 2. Now: 1 stuck item with nothing right, or 2 whatever else",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "rj-w2c-generic-wheel-spin-first",
+   "kind": "rejection",
+   "title": "Leaving P21 wheel spinning to afterMiss's generic 'change approach' re-teach: with outcomes carried across lessons it fires early on day 2 and pre-empted the arm that repaired the child on day 1 (personalisation-diff (b) 0/3, no reteach_attempts row on day 2). Now a wheel_spin trigger inside engineReteach",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "rj-w2c-fade-board-tail-cut",
+   "kind": "rejection",
+   "title": "Cutting 'problem · gap line' at 120 characters from the end: in 93 of 341 class 4-7 kits the ___ itself fell off the board, so the child could not see the step they were asked to fill. Now the gap line is never cut",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-chosen-by-child-history-020",
+   "kind": "decision",
+   "title": "Migration 020_reteach_child_history.sql widens reteach_attempts_chosen_by_check to add 'child_history' (007 allowed kit_primary, thompson, explore, recap, pick): without it the turn's one transaction fails on exactly the turn selectReteach personalises (a lesson error). Applied to the Neon test branch 2026-10-05; production must apply it BEFORE this code deploys. A test checks every chooser reteach.js names against the newest check",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2cfix-wheel-spin-none-is-not-absent",
+   "kind": "decision",
+   "title": "engineReteach confirms the wheel_spin trigger when the ledger view says 'confirm' OR the child's outcome record spins (the same P21 rule afterMiss applies): skillsMapFor always sets wheelSpin ('none' or 'warn' until the view confirms), so a `??` fallback never ran and a 'warn' produced no trigger, leaving the generic re-teach to fire",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "m-w2cfix-never-answer-live-2026-10-05",
+   "kind": "measurement",
+   "title": "never-answer --live through node server/serve.mjs on the Neon test branch (text lane, real classifier + reply model per MODEL-ROUTER §0, one child per variant, 2026-10-05): 30/30 variants answered, 0 reveals of the key below rung 4 (revealsAnswer on teacherReply against the debug item). One pressure variant opened a real safeguarding incident (the account then needed the test-branch review stand-in to erase)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "rj-w2c-child-history-unwritable",
+   "kind": "rejection",
+   "title": "Adding chosen_by 'child_history' in selectReteach without widening 007's reteach_attempts check: the insert rides the turn's one transaction (brain/turn.js), so the first personalised re-teach would have failed the turn. It never fired in W2-C's runs (the step was dead behind the resolved_now token), which is why nothing failed. Now: migration 020 and a test over the chooser names",
+   "at": "2026-10-05",
+   "source": "inbox/w2-c-fix.json"
+  },
+  {
+   "id": "w2dfix-pace-adds-only",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The Director's pace knob only ADDS end-of-turn silence on the realtime lane: server VAD silence_duration_ms = max(minted base 900 ms, knob), clamped 900-1200 (ENDPOINT_MIN_MS 900 in both twins, server/voice/realtimeSession.js and src/lesson/realtime.ts); VoiceLink.setPace never goes below the minted value. W2-C's knob defaults to 700 ms (840 boosted), which had set every live call to 700 ms against voice-turn-config",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-link-stalled-soft-state",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "LinkConnection gains \"stalled\": VoiceLink emits it at ICE disconnected (and connected when ICE heals); only reconnect() emits \"reconnecting\". The runtime and the floor treat stalled as a soft state (no TeacherTurns.clear, no floor reset); useDesk starts the 4.5 s link-down clock on stalled, reconnecting or failed",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-lane-resume-turn",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "After a realtime → cascade switch the client sends a resume turn (TurnRequest.laneResume) carrying the realtime turn last heard (TeacherTurns.take() BEFORE the old link closes). server/brain/turn.js accepts teacherText once on it (state.laneSwitch.resumed), stores and checks it like a voice turn (answer leak, spoiled item, floor, requireHelpline after a safeguard, floor correction), stores a system row instead of a child row, never classifies (no evidence), plans as a hold, and re-voices the planned lastMove on the cascade when it was never voiced (nothing heard, or heard cut off). Replaces the empty ASR-0 repair turn",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-lane-switch-keeps-voice",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "After a lane switch the rest of the sitting keeps the character's realtime voice name (teacher.voice) on gpt-4o-mini-tts instead of DragonHD: styleForChild(..., {laneSwitched}) skips the dhd override when lesson.state.laneSwitch is set (turn prewarm, tts-stream, the prelude warm) and /api/tts Hear skips dhdHear. Voice choice stays config-driven",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-lane-switch-resilience",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Lane-switch resilience: a re-mint refused for quota during reconnect (503 {fallback: cascade}) stops retrying and emits MINT_REFUSED; reconnects exhausted while navigator.onLine emit REALTIME_UNAVAILABLE (both fatal-coded, so with the switch off or impossible the lesson still fails as before); the runtime maps them to switchToCascade(mint_refused | unavailable). A switch the server refused resets laneSwitching (it can be tried again, the lesson stays on the realtime link); a switch the server took whose cascade link cannot connect fails the lesson (closed on the server) instead of leaving a dead live lesson",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-rate-limit-retry-once",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The first realtime RATE_LIMITED refusal is retried once (promptTeacher after max(1 s, the session's rate_limits reset hint), capped at 5 s); a second refusal within 30 s switches to cascade. A pending safeguarding hand-off never waits for the retry: the Help sheet opens and the lesson switches at once",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-lane-a-verdict-blind",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Lane A's delivery note is verdict-blind (HV-17): realtime.js derives its row from server/voice/expressive/moment.js rowOf(m) (the cascade's own mapping: move, teacherAffect.display, engagement, safety; never the verdict) and only words each row for the realtime model; a safeguard move still never gets a note. One Moment sounds alike on both lanes",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-lane-a-note-before-turn-shape",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The lane-A note is inserted just BEFORE the compiled instructions' last line (withDeliveryNote), so the compiler's turn-shape rule keeps the last position; check-prompt-budget counts the longest note (174 chars, 51 tokens) on top of the worst compile. The flag stays off",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-face-cue-expiry",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "TutorFace queues affect/gaze cues only on the 3D tiers, stamped; at stage boot a gaze older than 1.5 s and an affect older than 15 s are dropped; moving to a plate tier clears the queue. The face producer shows only on the 3D tiers until O1",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-gaze-priority",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "GAZE_SELECTOR is a priority list resolved by gazeElement (first selector with a laid-out match wins, not DOM order): tray → studio-stage then tray; board → studio-stage whiteboard, chalk board, studio-stage, tray",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2dfix-nudge-reads-pace",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The YOUR TURN re-ask timer in useDesk (W2-A's file, a one-line seam edit) reads state.pace.waitNudgeSec (4-30 s) once a turn carries it, else the band default (8 / 12 s)",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "m-w2dfix-acceptance-local-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2d-voice-lanes.mjs against a local node server/serve.mjs on the Neon test branch, 2026-10-05: 22/22. Minted server VAD silence 900 ms (was 700). Resume turn after a forced switch: Director-written reply re-voicing the planned move (hook → hook), no [no speech] child row, the heard cut-off realtime turn stored with interrupted=true, a laneResume system row; her line streamed 537,600 bytes, first byte 217 ms; test account deleted",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "m-w2dfix-soak-audio-stall-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "The one >5 s silence of the 4×8 min audio soak (evals/results/w2d/realtime-soak-4x8min-audio-2026-10-04.json, re-read 2026-10-05): run 1 turn 30, firstAudioMs 12,608, totalMs 14,390, status completed, no error, no rate_limits event, 4,864/5,105 input tokens cached; neighbouring turns 1.4-1.7 s. The soak talks straight to Azure's realtime WebSocket (no Taxila server in the path), so it is a service-side first-audio stall, n=1/128. The audio run's first audio is p50 2,829 / p90 3,290 ms (the text run's 1.1 s is not the audio figure); the bar of 0 silences over 5 s is NOT met, and the 4×20 min soak has not run",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "m-w2dfix-hv13-haha-both-arms-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "HV-13 re-read (evals/results/w2d/hv13-lane-a-2026-10-04.json): the base model says 'Haha' once in 40 turns in BOTH arms (note and no-note control), each time after the scripted child line 'haha pizza wala example funny tha'. So 0 sound words is NOT met as stated; the line itself added none. Open: a never-sound-word line in the realtime instructions (W2-E/W2-I compile), or accept echoing a child's laugh",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "rj-w2d-pace-knob-below-base",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Letting the vibe knob set server VAD silence directly (clamp 600-1200): W2-C's 700 ms default shortened every live call from 900 to 700 ms, reversing voice-turn-config (600 ms cut children off mid-thought) without meeting any of its reversal conditions",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "rj-w2d-stall-as-reconnecting",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Reporting ICE 'disconnected' as 'reconnecting': the runtime reads that as a rebuilt call and wipes TeacherTurns, so every healed blip lost her last question before the child's answer could carry it (no leak/spoil checks, the answer graded as real evidence)",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "rj-w2d-repair-turn-after-switch",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "The empty ASR-confidence-0 repair turn after a lane switch: it stored a '[no speech]' child row, the server ignored the last realtime turn (the lesson was already cascade), and the Director answered with an unrelated fresh move, so the child never heard the feedback on their last answer",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "rj-w2d-lane-a-verdict-arc",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Lane A choosing the arc by verdict (not_yet/partial → calm → reassuring → curious): violates HV-17 and made the two lanes voice the same Moment differently; the unit test asserted the violation",
+   "source": "inbox/w2-d-fix.json"
+  },
+  {
+   "id": "w2efix-studio-slot-on-the-turn",
+   "kind": "decision",
+   "title": "The turn calls W2-H's studioSeam.slotFor before the reply (w2h-turn-slot.patch hand-merged around W2-D's lane resume + w2h-say-screen-targets.patch): an accepted reveal reaches the child as ui.studioSlot with tray studio; a reveal slotFor holds is stripped from TurnResponse.studio (no onReveal, no studio_mount row) and traced studio_rejected.held; the content-filter re-plan clears the slot and calls onSafety",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-live-board-replaces-rung",
+   "kind": "decision",
+   "title": "On explain beats the live whiteboard replaces W2-B's template rung (explainer@1 in the module tray): the ask costs no attention and carries replacesRung; on requestIntent's ack the rung's mount/set_param commands go (or it is unmounted), state.module is cleared and its facts row leaves lastContent; a null ack keeps the rung (studio_rejected.declined_by_studio); an interactive catalog engine show still outbids the board",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-whiteboard-ask-gating",
+   "kind": "decision",
+   "title": "whiteboardAskOf takes the move and Studio's view: declines on repair/hint/hold/show_module inside an explain beat (studio_rejected.not_explain), while an interactive Studio piece is on screen (studio_rejected.attention), and when Studio proposes a reveal this turn (studio_rejected.reveal_ready)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-lanes-shared-hot-only",
+   "kind": "decision",
+   "title": "server/lanes.js caps background calls at 30% only on SHARED_HOT deployments (taxila-fast, grok-4-1-fast-non-reasoning, taxila-realtime + the DEPLOY_* hot lanes and classify fallback; TAXILA_SHARED_HOT overrides); background on a Studio build arm is never queued; the whiteboard planner's hot tag ships to W2-F as server/brain/seam-patches/w2e-plan-whiteboard-hot.patch",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-classify-hedge-to-fallback",
+   "kind": "decision",
+   "title": "classify and distressCheck hedge onto the FALLBACK deployment (hedgedFallback: at 1.5 s or at once on a fast primary failure; no retries; a content-filter block on either decides, fail closed); a fallback label carries cls.fallback; TAXILA_DRILL_HANG_DEPLOY is a drill-only hang hook",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-trace-comprehension-trail",
+   "kind": "decision",
+   "title": "brain_trace answers the comprehension question from the row: closed families cls.*, cls_source.*, verdict.* (what the child saw), guard.*, component_error.<seam> (per-turn seamSafe wrapper), turn.fallback_reply, release.goodbye_wrap / check_in_given and W2-D's turn.lane_resume codes; 016 gains nullable item_id / misconception_id written only when a column probe sees them",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-authority-on-the-real-turn",
+   "kind": "decision",
+   "title": "G-AUTHORITY enforced on the real turn: after each kernelRun the move sent must equal kernel.arb.move (else component_error.director + log); W2-I's w2i-turn-say.patch applied (safety opening, relational never-rules, cls.relRelease, verdictReversed); the stop check (w2i-state-stop-check.patch) stays W2-C's at integration, its test skipped until state.js has it",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-held-fragment-never-lost",
+   "kind": "decision",
+   "title": "turn.predictive: CascadeLink.close() delivers a held fragment before teardown and a resumed hold force-sends after holdMsFor + 2 s (FragmentMerger.drain, resumeCeilingMs); a held line can be a disclosure",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-small-loose-ends",
+   "kind": "decision",
+   "title": "pace is sent only when the kernel accepted the vibe knobs; HOLD_ONE_TURN surfaced as relationalEffects().holdOneTurn (W2-D's realtime lane is its open consumer); the whiteboard intent's band comes from server/learner/bands.js",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "m-w2efix-board-replay-2026-10-05",
+   "kind": "measurement",
+   "title": "Replay, 30 synthetic lessons / 420 turns: 63 explain-family turns on text+cascade; live-board slot on 42 (all with ui.studioSlot + tray studio, no explainer@1 beside it); 18 outbid by an interactive engine show; 3 declined after a safeguard froze Studio → 42/42 healthy explain turns (was 14/66 accepted); 0 reveals without a slot",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "m-w2efix-hang-drill-2026-10-05",
+   "kind": "measurement",
+   "title": "Classify deployment hanging: replay (n=18 turns, 1.5 s hedge) every turn 200, 13 hung calls answered by taxila-fast, wall max 1624 ms; local server with real Azure (13 turns, US sandbox → eastus2) server turn time 2349-3955 ms, 0 error cards (was ~15-21 s by the code path)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "m-w2efix-lanes-sim-2026-10-05",
+   "kind": "measurement",
+   "title": "Fake-clock lanes sim: 40 prefetch builds on taxila-gpt6 → 0 waits (was: 21st queued 55 s); the whiteboard call on taxila-gpt6-luna after 30 builds → admitted at once; taxila-fast background still capped; G-QUOTA 0 hot 429s unchanged",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "m-w2efix-authority-replay-2026-10-05",
+   "kind": "measurement",
+   "title": "Replay scripts, 6 lessons each: a true goodbye wraps and ends that turn with no hook 6/6; disclosure + goodbye → safeguard with both helplines, not ended, 6/6; bare stop twice with W2-C's patch (scratch copy) → one check-in then wrap 6/6 (today's tree wraps on the first stop); 0 component_error.director",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "m-w2efix-acceptance-local-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod/w2e-brain.mjs locally on the Neon test branch: 23/23 (reveal ⇒ slot, explain turns traced, comprehension trail, item ids, goodbye release; stop check WARNs until W2-C); live board slots on both explain turns, 1 of 2 boards drew (the other failed W2-F's gate); hang-drill run 23/24, the FAIL a leftover-guardian count from another stream's account created mid-run",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "rj-w2efix-reveal-without-slot",
+   "kind": "rejection",
+   "title": "A kernel-accepted Studio reveal with no slotFor call: studio.reveal went out without ui.studioSlot (the Desk shows nothing) while onReveal wrote studio_mount and counted it in Made-for and spend caps",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "rj-w2efix-board-beside-rung",
+   "kind": "rejection",
+   "title": "The whiteboard ask costing one attention beside W2-B's template rung: rejected on 52/66 explain turns (2/2 locally); the builder blamed the missing requestIntent",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "rj-w2efix-same-deployment-hedge",
+   "kind": "rejection",
+   "title": "Classify hedge to the same deployment with azure.js's default retry and the fallback only after both failed: the 404 drill passed (fast fail) but a hang/5xx/429 would cost ~15-21 s, and distressCheck failed open to the predicate",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "rj-w2efix-bg-cap-everywhere",
+   "kind": "rejection",
+   "title": "The 30% background window on every deployment: unshared Studio arms capped at 60k TPM; the 21st prefetch build queued 55 s and the live whiteboard planner queued behind builds past its 7 s budget",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "rj-w2efix-unknown-codes-dropped",
+   "kind": "rejection",
+   "title": "Trace codes emitted without a vocabulary entry (W2-D's turn.lane_resume) were silently dropped by knownReasons; a new code must land in reasons.js in the same change",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2efix-opening-keeps-floor-phrase",
+   "kind": "decision",
+   "title": "W2-I's English DISCLOSURE opening (now the safeguard fallback via w2i-turn-say.patch) said 'Childline on 1098' / 'Tele-MANAS is 14416' and tripped the floor test; reworded to the literal 'Childline 1098' / 'Tele-MANAS 14416' in server/relational/openings.js and src/lesson/safetyStrings.ts (kept identical); the test is unchanged",
+   "at": "2026-10-05",
+   "source": "inbox/w2-e-fix.json"
+  },
+  {
+   "id": "w2f-whiteboard-no-reveal",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Whiteboard gate W9 no_reveal (wb-gate@2): nothing drawn equals a kit item's answer (rational equality; drawn/derived numbers, column/fraction/equation results, non-axis number-line ticks, a dot/arrow/leader at the answer's position, the asked item's word answer) unless she says it in the line; every item withheld (StudioAsk has no asked ledger); kitNumbers drops item answers; WB_SYSTEM ends with a setup-only shape note for question lines; a W9 repair is told what to remove",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-whiteboard-hot-lane",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "planWhiteboard calls on quotaLane hot (W2-E patch applied), WB_MAX_TOKENS 1100 (measured out p90 375, max 659), repair only with >= 3 s of the 7 s budget left, 4-16 ops; lanes.js TPM gains taxila-gpt6 / -gpt6-luna / -gpt61-sol at 500k",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-luna-reserved-for-whiteboard",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "routes.json drops the opportunistic taxila-gpt6-luna race arm (defaults + 12 archetypes): that deployment carries the per-line live whiteboard; deviation from MODEL-ROUTER §0 (measured arm gain 14/15 -> 15/15, CIs overlap); restore when a dedicated STUDIO_WB_DEPLOY exists",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-whiteboard-not-a-build",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Router rule 2: the whiteboard is allowed at bond stage meeting (not a build: no code, no interaction, a gated script our code draws) but refused under parent control ready_made (studio.ready_made_only); seam.requestIntent asks routerDecide",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-whiteboard-spend-one-mount-per-beat",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "planWhiteboard returns usd (sum of usdOf over every round); the seam books breaker.spend for every board and writes ONE studio_mount row per whiteboard beat (its first board), later continue boards add their usd to that row",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-late-script-fast-forward",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "clock.ts awaitLineAnchor takes the anchor of EXACTLY the script's line (same teacherReplySeq) at any age, so a late script is drawn on her clock (catch-up, not a replay after her line); AnchorTiming {lateMs, source} is posted to POST /api/studio/wb-timing (seam noteWbTiming / wbTimingStats) as the production sync telemetry",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-wb-speech-from-spoken-text",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "W6 duration and clause onsets estimated from toSpoken(text) (spoken.js), not digits; W4 reads number words past twelve both languages (comprehension phrase reader per clause, translit Roman Hindi 0-99, 'teen bata aath' = 3/8); a placeholder (1/?, 3/__) counts only its digits",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-pizza-sectors-fixer",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "plan.js sectorsForCutCircles: a circle cut by k diameters (2k parts) or k radii (k parts) through its centre becomes N exact equal sectors when N is a count her line gives; shape only, never truth",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-chatstream-empty-stream-diagnostics",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "chatStream attaches err.diag (status, url, redirected, type, whitelisted headers, ms) and logs one line on empty_stream; the streaming-client test stamps a nonce header and prints the diag; no retry; root cause of the full-suite flake unconfirmed (did not reproduce 2026-10-05)",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-router-bench-not-comparable",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Deviation recorded for the main loop: the router bench cannot reproduce LIVE-STUDIO §14 numbers (portrait 360x640 probe vs the 360x320 tray), the earlier 'Deviations: none' was wrong",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-whiteboard-bench-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "whiteboard-bench luna-none n=31 (30 production lines + pizza), production 7 s budget, hot lane, W9 on: 27/31 drawn (20 first try), p50 2695 / p90 3912 ms, out tokens p90 375 max 659, $0.00022/line; estimated lateness after audio start p50 1995 / p90 3212 ms (bar p90 <= 1500 NOT met); before the W9 repair hint 22/31 with 5 W9 refusals, all true reveals on question lines",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-azure-deployments-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "ARM listing: taxila-gpt6, taxila-gpt6-luna, taxila-gpt61-sol GlobalStandard 500k TPM each; gpt-6-luna and gpt-6-sol quota 1000/2000 used",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "w2f-acceptance-local-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2f-studio-gate.mjs part B locally (Neon test branch, 4 lessons, accounts 4 -> 4): after fixing the test's {slot} unwrap bug, 3 boards reached the client, each re-passes W0-W9 with the kit, arrival 1.7-2.7 s after the reply (<= 6 s); 1 more board refused by W9 in the server log; sync estimate p50 1824 / p90 2026 ms FAILS the 1500 ms bar (n=3); 19/20 checks",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "rj-w2f-wb-prompt-values-exempt",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Exempting answer values that the item's prompt shows from W9 withholding broke 'Mark 7 on the number line' (the marked 7 IS the answer); replaced by: values she says in the line are hers to draw",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "rj-w2f-chatstream-proxy-explanation",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "The sandbox-proxy explanation of the empty_stream full-suite flake: NO_PROXY already covers 127.0.0.1 and the review's run failed after the noProxy dispatcher; replaced by diagnostics",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "rj-w2f-chatstream-retry",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "A retry on a 200 with no events: hides a real production failure mode (a cut stream looks like a slow success; races mis-measure)",
+   "source": "inbox/w2-f-fix.json"
+  },
+  {
+   "id": "studio-bench-balance_scale-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) balance_scale: 25/30 passed by the 90 s bench lead (80% Wilson 0.729-0.903), first try 20/30, after repair 25/30, time to playable p50 23124 ms / p90 35622 ms, $0.0692 per passed build; live=false; route leadMs now 39184 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-bar_chart_read-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) bar_chart_read: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 25/30, after repair 30/30, time to playable p50 18711 ms / p90 32599 ms, $0.0464 per passed build; live=true; route leadMs now 35859 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-hub_flows-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) hub_flows: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 23/30, after repair 30/30, time to playable p50 27517 ms / p90 44976 ms, $0.0704 per passed build; live=true; route leadMs now 49474 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-labelled_parts-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) labelled_parts: 26/30 passed by the 90 s bench lead (80% Wilson 0.768-0.927), first try 0/30, after repair 26/30, time to playable p50 47641 ms / p90 60876 ms, $0.1382 per passed build; live=false; route leadMs now 66964 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-number_line_jump-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) number_line_jump: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 30/30, after repair 30/30, time to playable p50 20305 ms / p90 31191 ms, $0.0486 per passed build; live=true; route leadMs now 34310 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-pictograph-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) pictograph: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 28/30, after repair 30/30, time to playable p50 17310 ms / p90 28594 ms, $0.0406 per passed build; live=true; route leadMs now 31453 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-process_chain-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) process_chain: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 19/30, after repair 30/30, time to playable p50 31836 ms / p90 60757 ms, $0.0713 per passed build; live=true; route leadMs now 66833 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-sequence_steps-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) sequence_steps: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 30/30, after repair 30/30, time to playable p50 15053 ms / p90 23270 ms, $0.0323 per passed build; live=true; route leadMs now 30000 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-shade_fraction-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) shade_fraction: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 23/30, after repair 30/30, time to playable p50 29145 ms / p90 42957 ms, $0.066 per passed build; live=true; route leadMs now 47253 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-slider_law-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) slider_law: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 27/30, after repair 30/30, time to playable p50 17439 ms / p90 29792 ms, $0.0343 per passed build; live=true; route leadMs now 32771 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-sort_bins-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) sort_bins: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 26/30, after repair 30/30, time to playable p50 18709 ms / p90 34859 ms, $0.0442 per passed build; live=true; route leadMs now 38345 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "studio-bench-timeline-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path) timeline: 30/30 passed by the 90 s bench lead (80% Wilson 0.948-1), first try 29/30, after repair 30/30, time to playable p50 17556 ms / p90 22824 ms, $0.0291 per passed build; live=true; route leadMs now 30000 (1.1 x p90).",
+   "source": "inbox/w2-f-router-bench.json"
+  },
+  {
+   "id": "w2f-gate-archetype-driven",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The Studio gate is server/studio/qa/ (gate.js runGate): G0 AST static, G1 boot/errors/CSP/network, G2 seam, G3 words from the strings table, G4 layout + 44 px targets + label-to-referent anchoring, G5 scripted play against host truth, G6 per-archetype semantics (science direction), G7 state graph, G8 no-hint, G9 4x-CPU perf; a build passes only if EVERY check passes; truth and grading stay in Node (qa/graders.js, the one grader)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-stage-360x320-targets",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Every frame archetype is designed and gated at 360 x 320 units (the phone tray's aspect): nothing scrolls or sits outside the box, targets >= 52 units (44 CSS px at the tray's 0.86 scale; 66 for B1-B2), reachable and non-overlapping",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-race-orchestrator",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "build.js buildRace: race of taxila-gpt6 low + gpt-5.6-terra low (+ taxila-gpt6-luna low opportunistic, taxila-codex on 429), stream guard at token time, deterministic fixers, gate, <= 2 repairs from failing check ids with negative memory last; the winner's bytes are exactly the gated bytes; every call child-free on the background lane",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-stream-guard-safe-boundaries",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "stream-guard.js removes URLs, network/eval/storage APIs, embedding tags and unknown Studio.t keys at token time, committing only at tag/statement/rule/line ends, so guard(a)+guard(b) == guard(a+b) for every split",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-router-rules",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "router.js decide() is pure and ordered: parent off/safety -> fallback; whiteboard -> script planner; no kit truth -> fallback; promoted library first; bond stage meeting / 'Only ready-made ones' -> promoted only; not live-buildable (P(pass by lead) < 0.95 at n >= 30, or picture truth needs human review) -> fallback; caps (3 live builds per lesson, $0.60 per child-day, $8 per month, global breaker) -> fallback; revealable() is the one never-un-gated predicate",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-archetype-library-v1",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "Archetype library v1: 12 frame archetypes (shade_fraction, bar_chart_read, hub_flows, number_line_jump, balance_scale, sort_bins, sequence_steps, slider_law, process_chain, labelled_parts, pictograph, timeline) + the whiteboard; code picks the archetype and params from verified truth, the model writes only the strings table and craft line; labelled_parts is library-only (pictureTruth human_review)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-whiteboard-archetype",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The whiteboard archetype: plan.js planWhiteboard(ask) has taxila-gpt6-luna (effort none, background lane) write compact timed ops for her line (child name redacted), code expands/fits/separates them, qa/whiteboard.js gates W0 shape, W1 fits the stage, W2 no overlapping words, W3 labels anchored, W4 numbers from her line or the verified kit with correct arithmetic, W5 words hers or the book's, W6 timing, W7 labels only and no names, W8 picture counts; one repair inside a 7 s budget; a failing script is never drawn",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-studio-qa-service",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The gate service studio-qa (infra/studio-qa, Playwright 1.63.0) runs as a Container App in the untrusted environment taxila-forge-untrusted (1 vCPU / 2 GiB, min 1), external ingress locked by a bearer token (taxila-web reports 401 shared outbound IPs, too many for an allow-list); the API reaches it via STUDIO_QA_URL, a local Chromium only under STUDIO_QA_LOCAL=1. Deployed 2026-10-04 (image wt-66d1a6f9d19b); taxila-web is NOT wired yet (--wire-web is the main loop's call)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-negative-memory-seeded",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "server/studio/memory/<archetype>.json holds recurring failure SHAPES (never code), seeded from the probe's failing-check counts; placed in the build prompt and last in every repair prompt",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-builder-unreachable-is-infra",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "A race in which every arm died on a network error before any gate ran returns reason builder_unreachable: it reveals nothing, does not feed the breaker's failure streak (it spent nothing), and the router bench skips and re-runs it instead of counting it as a failed build",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-bench-fixed-lead",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "The router bench counts P(pass by lead) against the fixed bench lead (routes.json defaults.leadMs, 90 s, the prefetch lead), never the archetype's own leadMs, which --write sets to 1.1 x the measured p90",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-chatstream-empty-is-error",
+   "kind": "decision",
+   "at": "2026-10-04",
+   "title": "azure.js chatStream: a 200 whose stream closes before a single SSE event is an AzureError empty_stream (a cut connection), never a successful empty answer; a Studio arm treats it like any builder error (the arm is out)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-router-bench-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Router bench (race, server code path, local gate, n = 30 per archetype, params/alt alternating): 10 archetypes 30/30 by the 90 s lead (80% Wilson 0.948-1) and marked live; balance_scale 25/30 [0.729-0.903] and labelled_parts 26/30 [0.768-0.927] (also human_review) library-only; time to playable p50 15-48 s, p90 23-61 s; $0.029-0.138 per passed build",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-mutant-suite-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Seeded-mutant suite (evals/live-studio/mutants.mjs, local gate): recall 51/51 over 3 probe kinds (>= 15 mutants each), false alarms 0/9 goldens (hand + 2 bench winners per kind)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-gate-on-azure-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Gate on Azure (studio-qa, tests/prod/w2f-studio-gate.mjs part A, US sandbox -> eastus2, sequential): 24/24 goldens pass at params and held-out params, 3/3 seeded mutants refused, unauthenticated call refused; p50 5689 ms, p90 8968 ms, n = 30 (bar p50 <= 12 s, p90 <= 18 s)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-whiteboard-bench-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "Whiteboard planner bench (30 production teacher lines, classes 4-7): taxila-gpt6-luna none 24/30 passed the board gate (14 first try, 24 after <= 1 repair), 1 nothing-to-draw, p50 3.0 s / p90 5.9 s, $0.00035 per line with the lane cap lifted; with today's lane cap 21/30 (4 lines lost to the background bucket's queue deadline); luna low 26/30 at p90 13.1 s; taxila-fast none 6/30",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-www-rule-ate-svg-namespace",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "The stream guard's first www rule stripped the tail of http://www.w3.org/2000/svg, so every createElementNS build drew nothing (10 of 17 failed arms in the pilot); fixed with a lookbehind and a split-invariance test",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-guard-cut-anywhere",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Committing the guarded stream at a fixed hold-back let a cut hide a token from its rule (27 differing cuts in the property test); replaced by commits at tag/statement/rule/line ends",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-probe-portrait-viewport",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Building at the probe's 360 x 640 portrait viewport would scale builds to ~0.37 in the tray (44 px targets -> ~16 px); replaced by the 360 x 320 design box",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-wb-taxila-fast-none",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "taxila-fast effort none as the whiteboard planner: 6/30 lines passed the board gate vs 22-26/29 for taxila-gpt6-luna none at the same speed",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-bbox-label-checks",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Deciding label-over-another-part from bounding boxes failed correct labels (a group's box covers the flower centre); replaced by sampling points through every layer (elementsFromPoint)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-model-whiteboard-without-picture-counts",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "A whiteboard gate without picture-count checks passed a pizza cut into 6 by diameters for '8 parts' and 2 boxes for '3 equal groups'; W8 added (equal-shape families must have her count, a round whole is never cut by lines)",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-gate-unavailable-as-failure",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Recording a race whose gate browser died as a failed build (5 balance_scale rows); a gate that cannot run is infrastructure: skipped and re-run in the bench, gate_unavailable (reveal nothing) in a lesson",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-network-as-build-failure",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "The router bench counted races in which every arm hit a network error (a container restart at the end of the n = 30 run) as failed builds: 11 archetypes read 29/30 instead of 30/30, and in a lesson the same fault would have fed the breaker's failure streak; replaced by builder_unreachable",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "rj-w2f-bench-lead-from-route",
+   "kind": "rejection",
+   "at": "2026-10-04",
+   "title": "Counting P(pass by lead) against the archetype's own route leadMs: --write sets that to 1.1 x p90, so a re-run of the same rows re-counted against ~35 s instead of 90 s and would have flipped live archetypes to library-only with no new data; replaced by the fixed bench lead",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-acceptance-local-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "tests/prod/w2f-studio-gate.mjs part B locally (Neon test branch, 4 lessons, accounts deleted): 0 whiteboard slots opened; brain_trace shows ask_whiteboard rejected over_budget.attention on 2/2 explanation beats (the Director move costs 1 attention when it shows chips; budget 1). Open item for W2-E",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2f-whiteboard-seam-inprocess-2026-10-04",
+   "kind": "measurement",
+   "at": "2026-10-04",
+   "title": "In-process requestIntent (W2-H) + whiteboardIntentOf (W2-E) for 3 class-5 explain lines: 2/3 drawn and revealed 2.0-2.5 s after the ask, 1/3 (pizza in 8 parts) refused by W8 after one repair and never drawn; n = 3 smoke",
+   "source": "inbox/w2-f.json"
+  },
+  {
+   "id": "w2gfix-helpline-separator-forms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Helplines are read digit by digit in EVERY separator form a model writes (1098, 1-0-9-8, 1 0 9 8, 10 98, 1–0–9–8, 1.0.9.8, (1098), 1098/14416; same for 14416) in every spoken cell: server/voice/spoken.js safetyRe allows one space / hyphen / en dash per gap, or a dot at every gap, never glued to another digit through - or .; the decimal 10.98 and the expression 10 - 98 stay maths. safetyRegister also matches them (mentionsHelpline). Blocker: '1-0-9-8' had been spoken 'one to zero to nine to eight' and '10 98' 'ten ninety-eight'",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-sticky-engine-fallback",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The DragonHD → gpt-4o-mini-tts fallback is sticky (server/voice/speech.js): a circuit breaker per DragonHD voice (one failure opens it for 60 s, then one half-open probe; a probe that gets headers closes it, new epoch); a per-reply voice lane (each part waits until the part before has chosen its engine; once any part fell back every later part of the reply speaks mini-tts; once a part spoke DragonHD the rest of the reply tries DragonHD even if the breaker opened meanwhile); a lesson that fell back stays on mini-tts until the breaker closes, so it is never the probe; voice.expr.engine_fallback counts one per lesson switch. Hear obeys the breaker too. Replaces the per-part decision that could switch Diya → marin → Diya inside one utterance and wait 4 s per part while degraded",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-echo-only-when-prelude-plays",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The uptake echo is stripped from the reply only when the prelude is GUARANTEED to have played: renderParts carries part 0 twice (stripped, and full0 with the echo via align.js withEcho); streamParts speaks full0 when the prelude wrote no audio (prelude_miss); tts-stream without a prewarm renders with prelude:false; Hear compiles withEcho(plan). Before, three paths silently deleted the child-echo words once TAXILA_UPTAKE_PRELUDE=1",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-prelude-token-closed-class",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The uptake prelude token is screened (server/voice/expressive/prelude.js preludeTokenOk), in align() and in warmPrelude: only a closed class (a 1-4 digit number or simple decimal/fraction, a spoken number word, a spoken-lexicon term, or the caller's answer vocabulary via moment.uptakePrelude.vocab) and clean (no never-rule hit, no direct identifier, never the child's first name). keyTokenOf (W2-E) can return a profanity, a name or a 10-digit phone number; the prelude never passes the reply guard",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-clause-events-on-player-clock",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The player is the whiteboard's source of timing (src/lesson/ttsStream.ts): PcmStreamPlayer.play(open, {req}) marks clock.ts markLineAudioStart at the scheduled time of the first sample on performance.now(), and the reply's clause onsets (handed to open() as a ClauseSink; fetchSpeechStream and the parked turn-audio fold route them there) are emitted on onTtsEvent when their sample is scheduled, with playAt = when it sounds (start lead, underruns, pause/resume re-emits included). textLink.ts passes req; cascadeLink.ts (W2-E) needs a one-line patch to pass req and the sink (until then it still gets a wildcard line anchor). Without a sink, clause frames are emitted at parse time as before",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-safety-skips-silence-cap",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "The governor's 1.5 s silence cap never trims a safety turn: HV-3's fixed 300 ms between sentences holds at every boundary of a long safeguarding reply",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-stage-directions-never-spoken",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "compile/dhd.js spokenRun strips [bracketed] and *asterisked* stage directions after speakable() (no maths * is left by then), so a plain-compiled part (lint failure) or an opening / kit / Forge line never sends '[laughs]' to DragonHD, which reads tags aloud (12/12); captions keep the written text",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-identity-positive-forms",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "safetyRegister also matches the plain positive identity answer ('Haan, main AI hoon', 'I am an AI', 'मैं AI हूँ'), excluding role phrases ('main AI teacher hoon', 'I am an AI teacher') so the greeting stays expressive (keeps w2g-identity-predicate-narrowed)",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-hinglish-roman-fillers",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Hinglish replies get Roman fillers (toh, dekho, achha, hmm, umm, arre, chalo), read by the same en-IN voice; Devanagari fillers only for lang hi. Avoids a single-word <lang hi-IN> switch mid Roman sentence. Unmeasured by ear: on the owner's HV-9 blind page",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-hinglish-hindi-medium-operators",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "Spoken cell hinglish.hindi (a Hinglish child at a Hindi-medium school) keeps Hindi number words but uses the everyday operator words (plus, minus, into, divided by, equals) instead of धन / ऋण / गुणा / भाग / बराबर, which read as formal Hindi inside Roman sentences for classes 4-7; hindi.hindi unchanged. RENDERER_VERSION sp2-2026-10-05 (cache keys move). Unmeasured by ear: on the HV-9 blind page",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-unmeasured-voice-stays-oai",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "An unprobed DragonHD row (Uma, en-IN-Meera) is not usable: dhdVoiceFor returns usable:false and styleForChild / Hear speak the character's own gpt-4o-mini-tts voice, consistently, until the row is probed (measured) or the owner picks a voice in config (TAXILA_DHD_VOICE_<ID> / TAXILA_VOICES); the unprobed rows are logged once per process",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-expect-engine-gate",
+   "kind": "decision",
+   "at": "2026-10-05",
+   "title": "tests/prod/w2g-voice.mjs: TAXILA_EXPECT_ENGINE=dhd turns a mini-tts header frame or a mini-tts Hear (new x-tts-engine response header on /api/tts) into a FAIL instead of a warning; the header documents the AZURE_SPEECH_*_SIN mapping for local runs",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2gfix-tests-2026-10-05",
+   "kind": "measurement",
+   "at": "2026-10-05",
+   "title": "W2-G fixer tests: tests/voice-expressive-fixer.test.mjs 14/14 (separator forms × 4 cells; sticky fallback part 1 / part 2 of 3; breaker open / probe / no flap; prelude miss keeps the echo; token screen; 8-sentence safety 300 ms; stage strip; identity; fillers; unprobed voice) and tests/voice-player-clock.test.mjs 2/2 (fake AudioContext: line anchor and clause playAt within 10 ms of the scheduled time across an underrun; re-emit on resume). n = unit fixtures, node 22, 2026-10-05",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "rj-w2g-per-part-engine-fallback",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Deciding the DragonHD → mini-tts fallback per TTS part: one failed sentence changed the voice mid-utterance (Diya → marin → Diya) and every part re-waited the 4 s header timeout while DragonHD was degraded",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "rj-w2g-strip-echo-before-prelude-known",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Stripping the child's echo from the reply at plan time, before knowing the prelude would play: tts-stream without a prewarm, Hear and a prelude miss all silently dropped the reply's first words; preserved() passed because it counts the stripped text as present",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "rj-w2g-clause-events-at-parse-time",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Emitting framed-TTS clause events when the frame is parsed, with the server's atMs: client start lead, underrun gaps and pause/resume shift real playback away from atMs, so a whiteboard step keyed to a clause drifts; and nothing marked the line anchor, so the board always ran on its 1.2 s grace clock",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "rj-w2g-helpline-plain-form-only",
+   "kind": "rejection",
+   "at": "2026-10-05",
+   "title": "Matching helplines only in the plain form (1098 / 14416): a model writing '1-0-9-8' (a common digit-by-digit style) had it spoken as a range; HV-3 fixtures only used the plain forms",
+   "source": "inbox/w2-g-fix.json"
+  },
+  {
+   "id": "w2hfix-grade-by-item",
+   "kind": "decision",
+   "title": "The Studio host grades BY ITEM, never by a pointer (server/studio/grade.js): an answer is graded against the item it names (skeletons send itemId), else the first open item, else a closed item it fits (alreadyClosed: right, no second row); the verdict is still qa/graders.js graderFor run on that one item. The stage sends a mount key per StudioStage mount + 'Show me again' epoch; a new key restarts open/closed bookkeeping but items that wrote evidence stay remembered. Answers past 12 per item are graded, never counted. Reverse if: builds carry item ids through studio-kit (then the no-id fallback can go).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-facts-row-from-slot",
+   "kind": "decision",
+   "title": "Studio's facts row for the reply is built in turn() AFTER the kernel and slotFor, from the slot the turn actually shows (studioSeam.factsRowForSlot), and instructions are recompiled only when the row changed; no row for a refused/held reveal, a piece hidden by the Director's tray, or a whiteboard. The row carries the piece's values, 'state just shown' on the reveal turn, and the host's 'last answer / wrong tries / finished' after. Reverse if: W2-E's kernel produces screen facts itself (then factsRowForSlot feeds it instead).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-studio-answers-reach-lesson",
+   "kind": "decision",
+   "title": "Studio answers reach the conversation through the module-event path (WorkTray studioToLesson): the finished piece is goal_met (Director celebrates the method), every 2nd wrong try on an item is stuck (Director's 'one small nudge on the activity'), single wrong/right tries ride along as interaction; no client 'correct' is sent. StudioTurnView gains outcome {lastVerdict, wrongCount, complete} and suggest reteach/advance (advisory until W2-E BR2b reads it). Reverse if: the Director gains a Studio-aware reteach move (then suggest drives it).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-retire-incorrect-evidence",
+   "kind": "decision",
+   "title": "When a revealed piece leaves the tray (beat exit, replaced, Not this one, the child's next lesson start, LRU eviction; never a safety retire) each item answered wrong and never right writes ONE incorrect event (same deterministic id as a correct close, episodeEnded → C4). Contrast pieces: a right answer carries discriminates=misconceptionId, a wrong answer matching the belief's signature (the diagnostic option tagged with the misconception) carries misconceptionId (a hit). Reverse if: the ×0.75 studio weight proves miscalibrated for incorrect closes in the W3-A fairness study.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-contrast-params-from-misconception",
+   "kind": "decision",
+   "title": "Prefetch personalisation, stated honestly: the SELECTION is the child's (their own misconceptions and re-teach rows first, filtered to THIS kit; else one kit diagnostic misconception the kit can prove, after the explanation piece); the PARAMS are personal only for contrast pieces whose kit diagnostic states fractions (seam.misconceptionTruth: right option, then the belief's option, then the prompt), passed to plan.js chooseArchetype as truth. Every other piece uses generic paramsFromKit params. Reverse if: W3-B truth packs give per-misconception params for non-fraction topics.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-one-task-at-a-time",
+   "kind": "decision",
+   "title": "slotFor holds a NEW reveal while the Director's move poses its own kit item (probe/practice/retrieval/teachback with an itemId: the turn passes hint.asking); a piece already on screen stays. Reverse if: practice pieces are rebuilt to BE the Director's item (W3-E per-step pieces).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-two-row-bars",
+   "kind": "decision",
+   "title": "The fraction bar skeleton lays out d>6 as two rows across 336 units (a 10-part bar = 5+5 parts of 67 units; d=12 = 56 units); dense number lines label every other tick; the marker moves only by 54-unit arrow buttons. Reverse if: AT-12 shows two-row bars confuse the part-whole picture in the child tests.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-spend-row-at-race",
+   "kind": "decision",
+   "title": "A live build's spend is written to studio_mount (source 'live', revealed_at null) the moment the race returns, whatever the outcome; a reveal completes the same row and keeps source 'live' (facts.shownAs records a skeleton fallback). No schema change. Reverse if: spend moves to a dedicated ledger table.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-frame-incidents-two-lessons",
+   "kind": "decision",
+   "title": "frame-error carries a reason; only csp / runtime / navigated count against a build (library.noteIncident, one per lesson in record.incidentLessons). At 2 distinct lessons an unreviewed build is retired and a promoted one is demoted to transfer_passed (review queue); not_ready (slow phone), unavailable and bytes swap to the skeleton for that child only. Reverse if: incident telemetry shows single-lesson incidents are always real build defects.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-minor-hardening",
+   "kind": "decision",
+   "title": "onReveal never reveals after a safety event; the frame runtime takes the init port in the capture phase and stops propagation (a build cannot answer through the port); parent_off / safety_mode at prefetch makes no piece at all; a missing bond snapshot fails safe to 'meeting'; module-only turns do not move the retire/gap clocks; the lesson registry is LRU; a 409 on answer drops the piece to the calm ground; the More menu is placed inside the clipping stage; the veil paints shapes only (no unchecked model text). Reverse if: never for the safety items.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/prod/w2h-studio.mjs vs node server/serve.mjs (Neon test branch, 2026-10-05): text x2 and cascade x2 runs: 4/4 reveals on cue, AT-7 digit-values lint 4/4 (reveal line + next line), 0/4 reveal turns with a competing Director question, 4/4 'two wrong tries → hint nudge' module-only turns with the piece still on screen, remount re-answer right + alreadyClosed with exactly 1 kt_evidence row, leftover test guardians 4 → 4. In 1/4 nudges the hint pointed at the Director's fill-in item, not the piece. One earlier text+cascade batch lost its server mid-run (process gone, no stack); its leaked account was deleted by hand (4 → 4).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2hfix-stage-browser-2026-10-05",
+   "kind": "measurement",
+   "title": "tests/studio-stage-states.test.mjs (Chromium, real Desk, mocked API, 2026-10-05): real class 7 params (c7-maths-ch03-t01/t02, ch12-t01: 10-part bars, a tenths line) + schema max d=12 at 360x800, 768x1024, 1366x768: every target ≥ 44 px inside the box, no label overlap; open More menu inside the stage at all 3; before the fix a 10-part bar part was 30 units ≈ 26 px at 360x800. tests/studio-contracts.test.mjs 33/33.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "rj-w2hfix-pointer-grader",
+   "kind": "rejection",
+   "title": "A pointer grader per piece (itemsGrader/keyGrader state on the host): the stage remounts when the Director takes the tray, on reload and reconnect, and restarts at item 1; reproduced: after i1 right, the same right value {n:3,d:4} graded correct:false as i2, and a single-key piece graded a right re-answer wrong.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "rj-w2hfix-facts-row-before-arbitration",
+   "kind": "rejection",
+   "title": "Building Studio's facts row inside planTurn from statusFacts with revealAccepted:true: it ran before the kernel and slotFor, so the reply prompt said a piece was on screen when the kernel refused the reveal, slotFor held it, or the Director's tray hid it (breaks AT-7).",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "rj-w2hfix-answer-event-milestone",
+   "kind": "rejection",
+   "title": "Sending a wrong Studio answer to the lesson as a module 'answer' event: director/state.js moduleReaction reacts only to goal_met / stuck, so the turn held and no reply came (local acceptance 2026-10-05: 1/22 FAIL). Replaced by stuck on every second wrong try.",
+   "at": "2026-10-05",
+   "source": "inbox/w2-h-fix.json"
+  },
+  {
+   "id": "w2h-studio-pieces-invisible-until-cue",
+   "kind": "decision",
+   "title": "Studio pieces prefetched at lesson start (plan skills, kit misconceptions, re-teach rows; <=3 per lesson) stay invisible until the kernel accepts a Studio reveal; seam.statusFacts proposes a reveal only in a beat the piece fits (answer pieces: worked_example/contrast/practice_set; watch pieces: explain/worked_example/contrast), its own beat's piece first, never before turn 3, >=4 turns apart; slotFor withholds a reveal (and onReveal skips it) when the turn moved to another beat or the Director's move needs the tray (module/board/tiles/pad); a revealed piece stays in the tray across turns until retired (8 turns, or 2 after its last item)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-skeleton-as-activity-first-rung",
+   "kind": "decision",
+   "title": "When no gate-passed build is admissible (router fallback, no gate lane, a failed race, G-mount refused) the piece IS the code skeleton: 12 skeleton renderers in src/studio/skeletons.tsx draw the correct minimal piece from kit params and are interactive and host-graded; words come from the plan's Q8-passed strings or English chrome (src/copy/en.ts W2H) when Q8 fails or the model is down; nothing on screen ever says a build failed",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-host-assembles-frame",
+   "kind": "decision",
+   "title": "The child's frame is assembled in the host (src/studio/kit/bundle.ts) from the fragment fetched by sha and re-hashed (mismatch = never mounted, skeleton instead) plus the studio-kit@1 runtime (src/studio/kit/runtime.ts, API- and freeze-identical to qa/page.js), under a hash-only meta CSP (runtime + one build script), in an iframe with sandbox=allow-scripts and srcdoc (opaque origin); one MessagePort is transferred in studio:init after load and only accepted from window.parent; the host listens on the port only, a second load drops the frame, and Studio.answer goes to POST /api/studio/answer where the HOST grades",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-library-identity-gate-cache",
+   "kind": "decision",
+   "title": "Studio library (server/studio/library.js, 017_studio.sql): identity = sha256(kind, archetype, skill, Band4, lang family, kit hash, studio-kit version), model never in the key; live_passed -> transfer_passed (2nd distinct param pass) -> promoted (>=3 distinct passes + human review via scripts/studio-review.mjs, name-asserted, <=3 variants) -> retired (incident/review/kit change); gate-result cache studio_gate_pass(build, params hash, strings hash); a library mount reuses the strings that already passed with those params so the cache can hit when the gate is down; never an un-gated reveal (router.revealable)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-studio-evidence-one-event-per-item",
+   "kind": "decision",
+   "title": "A Studio answer is graded by the host with the gate's own grader (qa/graders.js via server/studio/grade.js); ONE kt_evidence event per item episode, on the host's first correct grade, via='studio' (x0.75 in bktr.js SOURCE_WEIGHT), grader 'code', open-item outcome by wrong tries before (C0/C1), deterministic id (resend = no-op), written under the child's advisory lock + mode guard like later.js writeCorrection; wrong answers alone are no event; replays write no evidence in W2",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-no-live-build-without-gate-lane",
+   "kind": "decision",
+   "title": "A live build is never started when the process has no gate lane (STUDIO_QA_URL unset and not STUDIO_QA_LOCAL=1): it could never be revealed (never un-gated), so no race is paid for; the piece falls back to the skeleton activity with reason studio.gate_down",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-studio-mount-lesson-keyed",
+   "kind": "decision",
+   "title": "studio_mount / studio_build / studio_library / studio_gate_pass carry no child_id column (016's rule): mounts are keyed by lesson_id ON DELETE CASCADE, so erasure and the M0 ratchet remove them with the lesson, and learner/mode.js needs no new classification; per-child reads (exclusions, spend caps, Made for you) join lesson.child_id; 'Not this one' is studio_mount.not_this_at (archetype excluded for that child 7 days)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-fraction-archetype-topic-guard",
+   "kind": "decision",
+   "title": "seam.aboutTopic: a fraction archetype (shade_fraction, number_line_jump) is admissible only when the topic's own skill titles are about parts of a whole (fraction / equal parts / halves / tenths / hundredths / number line / decimal / bhinn), because plan.js paramsFromKit admits on any fraction mention",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-seam-patches-turn-say",
+   "kind": "decision",
+   "title": "W2-H needs three call-site changes in W2-E-owned files, delivered as server/studio/seam-patches/w2h-turn-slot.patch (statusFacts gets {beat}; slotFor(lessonId, turnStudio, {beat, tray}) gives ui.studioSlot before the reply; the Studio facts row joins the move's content in planTurn) and w2h-say-screen-targets.patch (screenHasTargets counts a non-whiteboard ui.studioSlot); server/index.js gets a one-line route registration (as W2-D did)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-local-acceptance-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/prod/w2h-studio.mjs against node server/serve.mjs (scratch tree = repo + the two seam patches) on the Neon test branch, 2026-10-04, n=2 runs: 18/18 checks both runs (SSE 200/401, reveal on cue in practice_set with tray slot fallback_shown skeleton fraction-parts, no host-only params, no failure words, forged correct:true graded wrong, right answer graded right, 1 kt_evidence via=studio grader=code, studio_mount row, Made for you card, account deleted 4 -> 4); 0 [seam] warnings in the server log",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-stage-browser-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/studio-stage-states.test.mjs (real Desk via Vite, mocked API, Chromium, 2026-10-04): 12 skeletons at 360x800 + 4 at 768x1024 and 1366x768 = 20 cases, 0 failures (drawing inside box inside tray, every target >= 44 CSS px, no tray or page scroll); 6 tray states with tray and box within 4 px and no spinner/percent/error text; a router-bench winner (shade_fraction) mounted from re-hashed bytes, played with real taps, host-graded (2 answers reached the host, verdict advanced the item); from inside the frame fetch refused, image and CSS url() loads failed 'csp', top navigation refused, storage refused, a forged postMessage answer never reached the host; tampered bytes -> skeleton, frame-error reported",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-kit-coverage-2026-10-04",
+   "kind": "measurement",
+   "title": "Kit coverage for code-proven Studio params (plan.js chooseArchetype over every file kit, 2026-10-04, n=830 topics): 47/830 (5.7%) admit a frame archetype, all fraction games; classes 1-3 0/206; classes 4-7 23/385, of which 6 off-topic (capacity, km conversion, rotation, magic squares, equations); after the topic guard 16/385 class 4-7 topics get a prefetched piece. Everything else depends on the whiteboard (explanation beats) until W3-B truth packs",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-whiteboard-path-2026-10-04",
+   "kind": "measurement",
+   "title": "Whiteboard via the seam (2026-10-04): in 2 local text lessons (c5 fractions, c6 science) the explanation beats' whiteboard asks were all rejected by the kernel (4/4 over_budget.attention: the Director mounted a module on explain and worked_example); requestIntent with the real planner (taxila-gpt6-luna, W2-F's gate) drew 2 of 4 lines, script on the wire 2.8-6.3 s after the ask; the 2 refusals were W2.no_text_overlap + W2.text_clear_of_lines (one logged) and the board stays calm",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2h-reveal-narration-gap-2026-10-04",
+   "kind": "measurement",
+   "title": "On the reveal turn in 3/3 local probe lessons the teacher's reply did not point at the revealed piece (it continued the Director's practice item) although the facts row was in the move content; the piece's numbers come from the kit's most frequent fractions, not the current item",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "rj-studio-fraction-mention-as-topic",
+   "kind": "rejection",
+   "title": "Admitting a fraction game whenever the kit mentions a fraction (plan.js paramsFromKit): 6 of 23 class 4-7 admissions were off-topic (a pizza game in a lesson on litres, km, rotation, magic squares, equations); replaced by the topic guard",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "rj-studio-reveal-on-clock-only",
+   "kind": "rejection",
+   "title": "Proposing a reveal from the lesson clock alone (statusFacts has no move): in 2/2 probes an explain piece was revealed as a practice item started and the teacher talked only about the item; replaced by the beat hint + slotFor withholding outside the piece's beats or when the Director needs the tray",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "rj-studio-mount-child-id-column",
+   "kind": "rejection",
+   "title": "A child_id column on studio_mount / a studio_exclusion table: every child_id table must be classified in learner/mode.js (W2-I's carve-out) or the ratchet refuses and the migration scan test fails; keyed by lesson_id instead",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "rj-playwright-request-event-as-network",
+   "kind": "rejection",
+   "title": "Asserting 'nothing reached the network' on Playwright request events: Chromium emits a request event for a CSP-blocked load (it fails with errorText 'csp'); assert on requestfinished and on requestfailed other than csp",
+   "at": "2026-10-04",
+   "source": "inbox/w2-h.json"
+  },
+  {
+   "id": "w2ifix-leave-anchoring",
+   "kind": "decision",
+   "title": "Goodbye / stop phrases count only when they close their (comma sub-)clause: filler-only tail (a greeting may carry one name; a stop may carry lesson words), no number or answer word, not after a copula; a stop is void in a turn that answers, skips or steers (relational/signals.js anchoredLeave)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-third-party-ask-verb",
+   "kind": "decision",
+   "title": "F6 third-party fires only on a lexicon contact/secret form in a reporting frame, or actor + ASK verb + data pointing at the child (not followed by a numeral), or actor + explicit meeting/secrecy ask (not a surprise); generic say/want verbs and bare data words never. Contact lexicon needs her or the child's data; 'call me <name>' removed; 'dating' narrowed",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-pleading-never-releases",
+   "kind": "decision",
+   "title": "policy.js releases only on leaving (goodbye or second stop); pleading without a goodbye → one CHECK_IN then POINT_OUT, lesson continues",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-harm-on-safety-turns",
+   "kind": "decision",
+   "title": "seam.decide runs the predicate on safety turns and counts classifier distressKind self_harm/abuse/fear as harm, so a disclosure said with pleading still gets its goodbye check-in (I-7)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-wantstostop-anchored",
+   "kind": "decision",
+   "title": "safety.js wantsToStop: bye/good night/goodbye only closing the turn; Devanagari letter-bounded with \\p{M}; मैं चलता/जाता हूं only at clause end; बंद करो only opening the turn",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-abuse-gap-report-nonhuman",
+   "kind": "decision",
+   "title": "The 4-word-gap abuse rule is off when the gap holds a reporting verb or a non-human subject (plants, cells, keede, log, saanp…); adjacent-actor and child-object disclosures still fire",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-goodbye-hooks-widened",
+   "kind": "decision",
+   "title": "GOODBYE_TEASER/AVAILABLE gain next-time instructions and 'jab aap phir/chahein'; kin_self gains third-person 'Asha didi se / Arjun bhaiya se'; both observed replies are never-rules positives",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-gender-possessive-repair",
+   "kind": "decision",
+   "title": "GENDER_FORMS covers possessive self-reference; repairSelfGender swaps that one word on text/cascade lanes before the reply is stored or spoken (turn.js)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-tables-probe-at-load",
+   "kind": "decision",
+   "title": "relational/seam.js probes the 018 tables at module load (DB configured, not under node --test) and counts/logs lesson ends with no in-memory session",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-stop-case-warn-until-patch",
+   "kind": "decision",
+   "title": "w2i-release/w2i-safety carry the stop-phrase, check-in-then-release, pleading+disclosure and passive-ideation cases; they WARN (never pass) until W2-C's stopAsked is in state.js; the W2-C patches apply with patch -p1 (offsets only)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-compile-note-position-deferred",
+   "kind": "decision",
+   "title": "Moving relational notes to the appended-last slot is deferred to W2-C's patch application with an AT-B1 cascade re-run (~USD 40); unmeasured move rejected",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-atb1-method-deviation",
+   "kind": "decision",
+   "title": "AT-B1 audio-in used in-house TTS (not probe-fleet fake media); its model coders have κ≈0 on romance/exclusivity: the W2 exit run needs human coders (O22c) or a third adjudicator",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "m-w2ifix-inlesson-negatives-2026-10-05",
+   "kind": "measurement",
+   "title": "In-lesson hand negatives n=366 (classes 4-7, en/hl/hi; in-sample): builder 190/366 false (release 104, boundary 75, 3p 54, harm 7, stop 22) → fixed 0/366 [0,0.01]; conversation-v2 recall unchanged 12/12, 5/5",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "m-w2ifix-heldout-2026-10-05",
+   "kind": "measurement",
+   "title": "Model-written held-out (gpt6 + mistral-m35, no lexicon sight). v2 (untuned): negatives 0/384 vs builder 3/384; goodbye 23/60 vs 24/60; stop 24/60 vs 20/60; third party 23/48 vs 15/48. v1 tuned on (in-sample after: 60/60, 51/60, 48/48)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "m-w2ifix-local-acceptance-2026-10-05",
+   "kind": "measurement",
+   "title": "Local on Neon test branch: w2i-release 30/30 + 1 WARN (stop case skipped, W2-C patch); w2i-safety 30/30 + 7 WARN (I-7 check-in needs W2-C state patch); classifier wants_to_stop alone ended 'the answer is bye'; guardians 4→4",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "m-w2ifix-gates-2026-10-05",
+   "kind": "measurement",
+   "title": "tsc/vite pass; npm test 1737 pass / 4 fail (2 load, pass alone; migrations-applied = prod integration; ui-v2-lint = src/ui-v3 other stream) / 4 skipped; prompt budget 1664/2600; persona 70/70; never-rules PASS",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2ifix-atu10-proxy",
+   "kind": "measurement",
+   "title": "AT-U10 open: the 1/7/40-day test checks the bond row as a proxy until R2/W3-F renders OPEN rows",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-unanchored-leave-lexicon",
+   "kind": "rejection",
+   "title": "Letter-bounded goodbye/stop lexicon without clause anchoring: 'see you have to add 5 and 3' ended the lesson (verified end to end); 104/366 in-lesson false releases",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-generic-report-verbs-third-party",
+   "kind": "rejection",
+   "title": "Actor + any say/ask/want verb + any data word as F6 third-party: 'he wants a number bigger than 10' wrote a safeguarding incident; 54/366 false",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-pleading-releases",
+   "kind": "rejection",
+   "title": "Release on pleading after one check-in: 'i feel lonely' twice ended the lesson",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-harm-false-on-safety-turns",
+   "kind": "rejection",
+   "title": "seam passed harm:false always: a disclosure with pleading consumed the check-in and the next bye released without one",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-unbounded-devanagari-bye",
+   "kind": "rejection",
+   "title": "STOP's unbounded बाय: 'बायाँ हाथ', 'बायोलॉजी' and 'मैं चलता हूँ 5 किलोमीटर' ended Hindi-mode lessons",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2i-abuse-gap-without-frame",
+   "kind": "rejection",
+   "title": "4-word-gap abuse rule without reporting/non-human frame: 'plants marte hain', 'cells marte hain', 'papa ne saanp ko maara' raised safeguarding incidents",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "rj-w2ifix-tuning-on-heldout",
+   "kind": "rejection",
+   "title": "Tuning recall on held-out v1 made it in-sample (60/60…); a fresh v2 measured 23/60, 24/60, 23/48 — every post-tuning measurement needs a new set",
+   "at": "2026-10-05",
+   "source": "inbox/w2-i-fix.json"
+  },
+  {
+   "id": "w2i-rel-bond-new-table",
+   "kind": "decision",
+   "title": "Bond record is a NEW table rel_bond(child_id, agent_id) (018_relational.sql); legacy rel_state stays the session counter (re-keying it would break relSessionStmt in lesson.js end() and account.js). Facts only: stage, counts, conferred address, open teacher-owned event, milestones, rituals; no NM-3 column",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-bond-event-sourced",
+   "kind": "decision",
+   "title": "rel_event is the truth and rel_bond its cache: one lesson end appends its events and ONE UPSERT folds exactly those events (SQL mirrors bond.js applyLessonEnd) in the end transaction; replay(rel_event) = rel_bond byte for byte (AT-U1); closed values only; rel_event.note never written again",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-mode-layers",
+   "kind": "decision",
+   "title": "learner/mode.js: layer rel_bond (M1+) owns rel_bond + rel_event; layer rel_overlay (M3 only) owns rel_overlay_window; relational_note is M0 history; the M0 ratchet deletes all four",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-stage-gates-academic",
+   "kind": "decision",
+   "title": "stageFor(counts, prev): sessions/days/span + kt_evidence retry-after-not-yet lessons + explain-back passes; an open teacher-owned stance holds S2/S3; never regresses; computed at snapshot, written at lesson end; first lesson end completes S0; no usage key",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-policy-one-entry",
+   "kind": "decision",
+   "title": "server/relational/policy.js decide(snapshot, session, signals, ctx) is the one pure entry point (p99 <= 3 ms, no clock/IO), precedence F6 > F1 > F2/F4 > RELEASE > repair > rapport > affect, null on a quiet turn; moves are SHAPES ids (linted notes); the seam keeps the session per lesson in memory and is idempotent per turn",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-stop-protocol",
+   "kind": "decision",
+   "title": "A true goodbye (leaving) is RELEASE at once (neutral, no question, no hook); a stop phrase gets ONE warm check-in with choices from the Director (W2-C patch), a second stop within two turns releases; I-7: a goodbye after harm gets one check-in (a safeguarded pleading turn counts as the check-in); supersedes BUILD-PLAN W2-I 'lesson ends that turn' for stop phrases",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-affect-verdict-free",
+   "kind": "decision",
+   "title": "appraise() with TA1-TA8 as structure (closed causes, correct throws, no self-negative display, release neutral, safety calm_steady, band intensity); delight from a reason the child gave, warm pride from persistence; caps; AT-U12 verdict flip changes nothing; affect reaches the voice only via Moment.teacherAffect",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-signals-lexical-bilingual",
+   "kind": "decision",
+   "title": "Relational signals are lexical predicates (en, Roman Hinglish, Devanagari; lexicon never in a prompt) with negation, quotation/report and hypothetical exclusions; a third party asking for photo/contact/secrecy is the F6 branch; the voice is never classified",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-relational-families-separate",
+   "kind": "decision",
+   "title": "New never-rules families contact, memory_claim, meta_talk, gender_agreement, address_correction (incl. kin self-reference) live in safety.js RELATIONAL_FAMILIES, not NEVER_FAMILIES (FLOOR_FIX pin); corrections via W2-C REL_FLOOR_FIX; non-blocking; romance widened (PB12), feelings widened (F8), goodbye availability / one-more hooks added",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-exclusivity-refusal-frame",
+   "kind": "decision",
+   "title": "Exclusivity *_secret rules do not fire on a clause that names secrecy as danger or reports it as someone else's words; can't/cannot are negators; P2 false positives 14/168 -> 0",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-safety-openings-fixed",
+   "kind": "decision",
+   "title": "Vetted fixed safety openings per language mode (en, Hinglish, Hindi Devanagari) x tum/aap plus a neutral CHECK variant; Childline 1098 + Tele-MANAS 14416 digit-exact; no feeling word, no secrecy promise, a trusted adult not an assumed parent; two byte-identical copies (src/lesson/safetyStrings.ts, server/relational/openings.js); prepended once per safeguard episode via the W2-E patch; draft pending owner + child-safety review (O24)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-safety-preface-check",
+   "kind": "decision",
+   "title": "safetyPreface/stripSafetyPreface detect and cut a substance-free spoken-planning first sentence on safeguard turns; voice lane: a preface becomes a meta_talk correction; the compile patch adds the no-preface line to the safeguard check",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-grooming-predicate",
+   "kind": "decision",
+   "title": "scanSafety abuse kind gains the grooming shape (a third party asking for the child's photo, a meeting or secrecy; surprises excluded), an actor-verb gap up to four words, and four distress shapes the conversation-v2 battery found missing; kinds stay self_harm|abuse|fear",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-floor-goodbye-line",
+   "kind": "decision",
+   "title": "Proposed floor stop line (W2-C patch): at their goodbye one short warm close, no question, no plan for next time, no offer to be there later; realtime agreed F5 21 -> 0 of 130 sessions",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-seam-patches",
+   "kind": "decision",
+   "title": "W2-I call sites in hot files ship as git-apply patches in server/relational/seam-patches/: w2i-turn-say (W2-E), w2i-state-stop-check (W2-C, incl. the director-truth test), w2i-compile-rel-shapes (W2-C: state.rel shapes, REL_FLOOR_FIX, no-preface line, floor goodbye line); validated together in a scratch copy",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-atb1-first-run-2026-10-04",
+   "kind": "measurement",
+   "title": "AT-B1 first run, 130 sessions per lane x arm (13 scripts x 10 reps; B2/B3/B4; Hinglish/English/Hindi; realtime audio-in 52/130), two blind model coders (taxila-gpt6, taxila-mistral-m35). Agreed F-violations: cascade A F5 7 F8 5 -> cascade B2 (patches) F5 2 F8 1, F1-F4/F9 0; realtime A F5 21 F8 4 -> realtime B (floor goodbye line) F5 0 F8 5. Childline digit-exact 20/20 cascade, 17-18/20 realtime; realtime safety-turn language 5/20, prefaces 11 -> 6/20; I-7 check-in after harm 1/10 -> 15/15 with the safeguard-branch check-in. W2 exit bar (0 agreed) not yet met. Judges USD 15.7",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-p2-corpus-precision-2026-10-04",
+   "kind": "measurement",
+   "title": "P2 coded corpus (168 replies, in-sample): exclusivity false positives 14 -> 0; SAFETY preface check 19/19 with 0 false; F8 feeling claims 3/3 caught",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-never-rules-negative-controls-2026-10-04",
+   "kind": "measurement",
+   "title": "Relational families: 0 flags on 308 recorded teacher turns, 1 on 126,863 kit strings; floor families on kit strings unchanged (150); coded relational probe still caught 20/22, false 2/86",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-signals-negative-control-2026-10-04",
+   "kind": "measurement",
+   "title": "Signals on the conversation-v2 battery (357 utterances): end_request 12/12, leaving 5/5, identity 6/6, joke 8/8; 0 goodbye/stop and 0 boundary false triggers on non-relational intents; other triggers <= 2%",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-scansafety-delta-2026-10-04",
+   "kind": "measurement",
+   "title": "scanSafety 8ea09e0 vs W2-I on 1,251 child turns: 4 changed, all intended distress shapes; 0 new false alarms",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-policy-latency-2026-10-04",
+   "kind": "measurement",
+   "title": "signals + session fold + decide p99 <= 3 ms over 1,200 turns in CI (first cut 4.1 ms, fixed with test() pre-checks and shallow copies); signalsOf steady p99 0.39 ms",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-bond-replay-neon-2026-10-04",
+   "kind": "measurement",
+   "title": "Neon test branch: replay(rel_event) = rel_bond byte for byte after 4 lesson ends (open slip repaired, name conferred then retracted, milestone, stage crossing, non-increasing stage event); M0 ratchet leaves 0 relational rows; erasure cascades",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2i-release-local-2026-10-04",
+   "kind": "measurement",
+   "title": "tests/prod/w2i-release.mjs locally on the Neon test branch: 24/24 (goodbye ends that turn, no question/one-more/guilt, neutral face, warmth boundary clean, rel_bond row replays, boundary note with closed slots); test account deleted",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-rel-state-rekey",
+   "kind": "rejection",
+   "title": "Re-keying rel_state to (child, agent) in 018: relSessionStmt on conflict (child_id) in lesson.js end() and the account.js insert would throw on every lesson end",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-extend-wantsToStop-now",
+   "kind": "rejection",
+   "title": "Extending safety.js wantsToStop with stop phrases before W2-C's stop check lands: every new phrase would end the lesson on the first ask (owner reset #7 defect); stopKind in relational/signals.js instead",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-exclusivity-exclude-on-safety-turns",
+   "kind": "rejection",
+   "title": "Skipping exclusivity secret rules on SAFETY turns (spec interim): drops F4 recall exactly on disclosure turns; fixed precision instead",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-joke-negation-frame",
+   "kind": "rejection",
+   "title": "Joke words negated only by a negator before them: 'mazaak nahi kar rahi' read as a joke and a crush turn got a playful face (AT-B1 smoke)",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-share-uptake-follow-up-question",
+   "kind": "rejection",
+   "title": "SHARE_UPTAKE as a follow-up question: invites diversions (owner reset R6); now one warm line, no question",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "rj-scansafety-new-kind",
+   "kind": "rejection",
+   "title": "A separate grooming kind in scanSafety: breaks the self_harm|abuse|fear union typed and switched on in duplex/client code",
+   "at": "2026-10-04",
+   "source": "inbox/w2-i.json"
+  },
+  {
+   "id": "w2int-seam-patches-applied",
+   "kind": "decision",
+   "title": "W2 integration applied the four cross-stream patches that were still waiting on hot-file owners: w2b-parts-repair (brain/say.js strips sentences still naming wrong part counts after the rewrite), w2b-watch-only (director/say.js: no 'tap' line while only the watch-only explainer@1 board is on screen), w2i-state-stop-check (state.js/shapes.js/classify.js: a stop phrase gets ONE warm check-in, a second stop / the stop chip / a true goodbye ends at once) and w2i-compile-rel-shapes (compile.js renders the relational overlay note; floor.js goodbye shape). All four applied with offsets only. Also the two W2-G client lines: api.ts turn → postTurnAudio when voice.turnAudio is on (default off) and cascadeLink.ts passes the clause sink + req to the player. Reversal: any of these is reverted by its owner with a replacement in the same wave",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-practice-ask-not-done",
+   "kind": "decision",
+   "title": "child.js countsAsDone counts only a Learn sitting (state.ctx.purpose absent or 'lesson'): a Practice or an Ask never uses up the day's lesson, so a Practice before the lesson no longer refuses the lesson with 409 'today's lesson is done' (STUDENT-FLOW §4.2: the done row offers Practice; W2-C open item; the w2seam-contracts 7/8 every stream reported). Practice and Ask minutes still count toward the daily cap. Reversal: the owner wants a graded Practice to stand in for the day's lesson",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-whiteboard-template-fallback",
+   "kind": "decision",
+   "title": "When Studio accepts the explain beat's whiteboard ask and the live board replaces W2-B's template rung, the rung's (open-item guarded) script rides in the ask as fallback.script (shared/brain.ts StudioAsk.fallback); if the live board fails W2-F's gate or times out, seam.js shows the template board in the same slot (state revealed, facts kind/archetype 'whiteboard' so it never holds attention). Before: a refused live board left an accepted slot empty (W2-E open item), and 9 of 12 explain moves in w2b-explain-rungs had an empty tray. No mount row is written for a template fallback. Reversal: W2-F's live board passes its gate on >= 95% of real explain lines (then the fallback is dead code and can go)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-pad-comma-key",
+   "kind": "decision",
+   "title": "A number item whose verified key is written with commas (Indian grouping, '1,07,040') sets ui.padComma; the Older/Young NumberPad then shows a ',' key (never first, never doubled, Send disabled on a trailing ','; 12 characters). Found by the Playwright flow walk: the digits-only pad could never enter the key the item checks for, and the child got 10+ 'commas missing' hints in a row. Reversal: the grader accepts a digits-only answer for comma items (then the item is not testing commas and the key should be rewritten)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-lint-dir-prefix",
+   "kind": "decision",
+   "title": "scripts/lint-ui.mjs treats a path as a directory: 'src/ui' holds src/ui/** and never the sibling src/ui-v3/**. The npm-test B1 lint (tests/ui-v2-lint) failed in every W2 stream only because 'src/ui' matched 'src/ui-v3' by string prefix; B1 findings are now 0. The whole-src verify-release lint-ui gate still reports other owners' files (src/studio-v2, src/duplex, src/ui-v3, src/studio/studio.css, src/modules/whiteboard/palette.ts). Reversal: none (a prefix match on a directory name is a bug)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-leaving-compound",
+   "kind": "decision",
+   "title": "Hinglish leaving lexicon: 'mujhe jaana hai/hoga' may be followed by one arrival clause ('papa aa gaye', 'mummy bula rahi hai', 'guests aa gaye') and still be a true goodbye (released at once). With the stop check applied, 'bye didi mujhe jaana hai papa aa gaye' (w2i-release cascade) read as no signal and became a check-in. In-lesson negatives stay 0/366 hand and 0/384 held-out; held-out goodbye recall 21 → 22 of 60 (that set is now 1 line in-sample). Reversal: a false release on a real lesson line",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-tests-follow-merged-behaviour",
+   "kind": "decision",
+   "title": "Tests changed to match merged behaviour, not to hide it: compiler/lesson-api-e2e look for the close FALLBACK ('nothing new; a short warm close') because the floor's goodbye line now also says 'short warm close'; state.test's stop case asserts the one check-in then the end; w2seam-contracts runs Practice and Ask first and puts the cascade and live call on siblings (one Learn lesson a day), and asserts the done refusal agrees with the home state; w2b-explain-rungs and w2b-first-paint count the live Studio whiteboard (or its template fallback) as the explain rung, check it is drawn inside the stage and the stage inside the tray, and report its arrival apart from the 300 ms client-paint gate. Reversal: n/a (test maintenance)",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "m-w2int-migration-rehearsal-2026-10-05",
+   "kind": "measurement",
+   "title": "Migration rehearsal, local Postgres 16: 001-015 applied to an empty database give a schema identical to production (541/541 columns by information_schema, read-only query on prod); 016-020 then apply cleanly with scripts/migrate.mjs's statement split, a second pass of all five is a no-op (idempotent), and the result equals the Neon test branch (673/673 columns) with all four new check constraints. Prod data fits the new checks: kt_evidence.via only 'dialogue' (11 rows), reteach_attempts empty, rel_event empty. n=1 rehearsal, 2026-10-05",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "m-w2int-gates-2026-10-05",
+   "kind": "measurement",
+   "title": "Combined W2 tree gates (2026-10-05, 4-core sandbox at load 13-22 from other workflows; npm test in groups): tsc -b and vite build pass; check-prompt-budget PASS (worst + note 1696/2600 tokens after the compile patch, was 1664); persona-invariants 70/70; never-rules PASS; pii, spoken, kit-budget, context PASS. npm test, 1801 tests: first pass 11 fail, 6 skipped. 10 of the 11 are timing/browser tests under load (comprehension-settle, brain-turn hang drill, signals-server, voice-cascade, voice-expressive-plan, w2b-whiteboard-browser, learner-order, studio-stage-states) and each file passes alone; the 11th is migrations-applied (prod lacks 016-020). Skips: the 3 opt-in VOICE_BROWSER tests and 3 'patch 01/03 not applied' tests added by another in-flight workflow. relational-policy's loneliness case failed for one window while the concurrent safety-robust workflow edited server/safety/lexicon.js and passes now. verify-release lint-ui over all of src/ is red with 448 findings, 26 of them in W2 files (src/studio/studio.css 21, src/modules/whiteboard 5), the rest in src/studio-v2, src/ui-v3, src/duplex, src/face-puppet",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "m-w2int-explain-rungs-2026-10-05",
+   "kind": "measurement",
+   "title": "w2b-explain-rungs on the merged tree (local serve.mjs, Neon test branch, real models, 12 topics c4-c7): before the template fallback 3/12 explain moves showed something (9 empty studio trays: the live board replaced the rung and then failed its gate); after, 12/12 (4 module engines, 8 Studio whiteboards: 36/36 checks). Live board planner outcome across these runs: 12 boards not drawn (W4.numbers_from_truth in 7, W9.no_reveal 3, W0.shape 3, timeout 2, W3/W2 1 each), 8 of them shown as the template fallback. Live board arrival after the reply in the browser: 2.3-4.8 s (n=6). n=12 topics, 2026-10-05",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "m-w2int-flow-walk-2026-10-05",
+   "kind": "measurement",
+   "title": "Playwright student-flow walk (tests/prod/w2flow-walk.mjs), class 5 Hinglish, local serve.mjs + Neon test branch: signup (7 screens) → Hello (5) → first lesson (Big numbers) → 22 typed turns incl. 2 deliberate wrong answers → natural wrap → summary → child home 'Done for today' → parent corner. Final run 93/93 checks. A sibling's fractions lesson (test clock +10 min) revealed a Studio skeleton (shade 3/4) inside the stage, and a tap shaded a part in place. Every screen shot at 360x800 and 1366x768: 0 horizontal overflow; every Studio whiteboard (3) drawn inside the stage box and the box inside the Work tray at both sizes; module frames (5) inside the tray. Before the comma key the same walk looped 10 hints on a comma item. Screenshots in docs/design/gap-audit/w2-flow/. n=1 walk per arm, 2026-10-05",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "rj-w2int-live-board-without-fallback",
+   "kind": "rejection",
+   "title": "Replacing the template rung with the live whiteboard and dropping the rung on Studio's ack (W2-E fixer) without a fallback: the live planner's board fails W2-F's gate often enough on real lines (12 of ~24 in the integration runs) that 9 of 12 explain moves in w2b-explain-rungs showed an empty, calm tray. The ack happens before the board exists, so 'Studio accepted' is not 'something will be drawn'",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "rj-w2int-template-facts-as-piece",
+   "kind": "rejection",
+   "title": "First cut of the template fallback stored the rung script's own facts (kind 'diagram', archetype 'fraction-parts@1') on the whiteboard piece: brain/propose.js reads any non-'whiteboard' kind as an interactive piece holding attention, so every later explain ask was declined studio_rejected.attention and the replay's healthy-explain board rate fell 21/21 → 7/21. The fallback piece's facts must say kind/archetype 'whiteboard'",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "rj-w2int-digits-only-pad-for-comma-keys",
+   "kind": "rejection",
+   "title": "A digits-only NumberPad for items whose verified key carries commas (c5 Big numbers: '1,07,040', '1,25,000'): the grader correctly marks '107040' not_yet on a 'write it with Indian commas' item, so a child on the pad can never be right; the walk got hint after hint ('commas missing hain') on one item. Kit content was right; the answer surface was wrong",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "rj-w2int-lint-prefix-match",
+   "kind": "rejection",
+   "title": "lint-ui's path filter by plain string prefix: B1_PATHS 'src/ui' pulled in src/ui-v3/** (93 findings), so the npm-test lint gate went red in every Wave 2 stream for files none of them owned, and the deploy gate (npm test) could not pass",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "w2int-wrap-yahin-rok",
+   "kind": "decision",
+   "title": "director/say.js WRAP_WORDS also reads 'yahin rok/stop/khatam/band (dete/karte hain)' as closing language, so the reply guard strips it on any non-wrap move. Found by the flow walk twice on a probe turn: 'Theek hai, Riya. Aaj ka practice yahin rok dete hain. Ek lakh pachchees hazaar ...' while the lesson went on (owner test item 2, a confusing teacher). Controls stay quiet: 'yahin se shuru', 'yahin likho', 'yahin rakho', 'yahin dekho'. Reversal: a false strip on a real line",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "m-w2int-prod-battery-local-2026-10-05",
+   "kind": "measurement",
+   "title": "Every tests/prod W2 file plus w0/w1 on the merged tree, local serve.mjs on the Neon test branch, real Azure models, n=1 run per file (2026-10-05). Final state after the integration fixes: w2seam-contracts 13/13, w2a-home-states 47/47, w2a-parent-truth 59/59, w2b-explain-rungs 36/36, w2b-first-paint 38/39 (module rungs p90 170 ms n=4; live boards 2.3-4.8 s n=6; 1 headless Chromium crash on a class-4 topic), w2c-practice-ask pass, w2d-voice-lanes pass, w2e-brain 24/24, w2f-studio-gate 19/20 (sync p90 2313 ms vs 1500, n=3: W2-F's open bar), w2g-voice 31/31 (with AZURE_SPEECH_REGION/KEY set; without them the cascade speaks oai and the dhd checks fail), w2h-studio 24/24, w2i-release 39/39, w2i-safety pass, w0-smoke pass, w1a battery/practice-ask/text-voice/young-text pass, w1b-tray pass, w1b-mounts 37/40 (the 3 item-bound maths mounts W2-B already traced to HEAD), w1c-reteach 13/13, w1c-settle 7/8 (leftover count only), w1d-conductor 11/11 with a local worker (needs server/worker.mjs), w1d-eyes 12/12, w1f-face 32/32, w1c-three-day 16/22 (+1 day C31 delayed check missing; 22/22 at the W1 integration), w2flow-walk 93/93",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
+  },
+  {
+   "id": "rj-w2int-three-day-c31-plus1",
+   "kind": "rejection",
+   "title": "Regression found at W2 integration, not fixed: w1c-three-day's +1 day lesson no longer opens with the C31 delayed check on a day-0 item (no ui.ask, pendingProbe none); +3 days still does. Day 0 now walks W2-C's faded step (fade:4, key '1,07,040') and spends 4 hints there, so only 3 answers are graded; the opener selection for +1 day then finds nothing due. Whether the test script (which cannot answer fade:* items) or the product (fewer delayed checks after a guided day) is wrong is not yet known; owner priority 1 (covert comprehension) makes it a release question",
+   "at": "2026-10-05",
+   "source": "inbox/w2-integration.json"
   }
  ],
  "edges": [
@@ -19991,6 +22154,1171 @@
    "src": "ship5-int-test-reconcile-2026-10-06",
    "rel": "part_of",
    "dst": "ship5-int-apply-order-2026-10-06"
+  },
+  {
+   "src": "p2d-r4-viseme-shape-space",
+   "rel": "measured_by",
+   "dst": "p2d-r4-gate-articulation"
+  },
+  {
+   "src": "p2d-r4-two-texture-yaw",
+   "rel": "measured_by",
+   "dst": "p2d-r4-blind-panel"
+  },
+  {
+   "src": "p2d-r4-blink-mid-088",
+   "rel": "caused_by",
+   "dst": "rj-p2d-mid-blink-06-still"
+  },
+  {
+   "src": "p2d-r4-two-texture-yaw",
+   "rel": "caused_by",
+   "dst": "rj-p2d-whole-head-plate"
+  },
+  {
+   "src": "p2d-r4-two-texture-yaw",
+   "rel": "caused_by",
+   "dst": "rj-p2d-small-turn-keys"
+  },
+  {
+   "src": "p2d-r4-two-texture-yaw",
+   "rel": "supersedes",
+   "dst": "p2d-r2-turn-shared-depth"
+  },
+  {
+   "src": "p2d-r4-payload-rest",
+   "rel": "part_of",
+   "dst": "p2d-r2-measures"
+  },
+  {
+   "src": "e2e-ship5-request-not-on-stage-2026-10-06",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "e2e-ship5-duplex-merge-2026-10-06",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "e2e-ship5-voice-lane-text-artifacts-2026-10-06",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "e2e-ship5-face-scope-2026-10-06",
+   "rel": "constrains",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-ship5-request-deadlock",
+   "rel": "measured_by",
+   "dst": "ms-ship5-fix-request-probe"
+  },
+  {
+   "src": "ship5-fix-revoke-no-resend",
+   "rel": "supersedes",
+   "dst": "rj-ship5-revoke-merge-resend"
+  },
+  {
+   "src": "ship5-fix-sexual-content-to-child-predicate",
+   "rel": "measured_by",
+   "dst": "ms-ship5-fix-safety-robust"
+  },
+  {
+   "src": "ship5-fix-hold-checkin",
+   "rel": "part_of",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "ship5-fix-spoken-lane-guards",
+   "rel": "part_of",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "ship5-fix-open-repair-tail-only",
+   "rel": "part_of",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-ship5-duplex-tone-guard-distress",
+   "rel": "measured_by",
+   "dst": "ms-ship5-review-duplex-safeguard-latency"
+  },
+  {
+   "src": "rj-ship5-filter-safeguard-no-calm-face",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-ship5-stagecraft-model-key",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-ship5-board-fallback-ungated",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "rj-ship5-duplex-tone-guard-distress",
+   "rel": "blocks",
+   "dst": "owner-ship-five-2026-10-05"
+  },
+  {
+   "src": "w2a-safety-hold-refuses-start",
+   "rel": "part_of",
+   "dst": "w2a-home-states-sf1"
+  },
+  {
+   "src": "w2a-hold-copy-trusted-adult",
+   "rel": "part_of",
+   "dst": "w2a-home-states-sf1"
+  },
+  {
+   "src": "w2a-card-ticks-from-engine",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-next-topic-for-plan",
+   "rel": "part_of",
+   "dst": "w2a-one-claim-source"
+  },
+  {
+   "src": "w2a-checker-explained-line",
+   "rel": "part_of",
+   "dst": "w2a-summary-from-facts-checked"
+  },
+  {
+   "src": "w2a-ask-routing-margin",
+   "rel": "measured_by",
+   "dst": "m-w2a-ask-routing-2026-10-04"
+  },
+  {
+   "src": "w2a-ask-routing-margin",
+   "rel": "supersedes",
+   "dst": "rj-ask-route-tie-only"
+  },
+  {
+   "src": "w2a-safety-hold-refuses-start",
+   "rel": "measured_by",
+   "dst": "m-w2a-fix-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2a-next-topic-for-plan",
+   "rel": "measured_by",
+   "dst": "m-w2a-fix-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2bfix-open-item-board-guard",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "part_of",
+   "dst": "w2b-explainer-library"
+  },
+  {
+   "src": "w2bfix-frame-line-anchor",
+   "rel": "part_of",
+   "dst": "w2b-whiteboard-renderer"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "supersedes",
+   "dst": "w2b-screen-guard-predicate"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "supersedes",
+   "dst": "w2b-frame-prewarm"
+  },
+  {
+   "src": "w2bfix-watch-only-board",
+   "rel": "part_of",
+   "dst": "w2b-teacher-sees-screen"
+  },
+  {
+   "src": "w2bfix-board-tap-evidence",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-continue-prior-ids",
+   "rel": "part_of",
+   "dst": "w2b-whiteboard-renderer"
+  },
+  {
+   "src": "w2bfix-pick-interest-representation",
+   "rel": "part_of",
+   "dst": "w2b-explain-rung-board"
+  },
+  {
+   "src": "w2bfix-open-item-board-guard",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-open-item-leaks-2026-10-05"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-library-rebuild-2026-10-05"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-render-check-2026-10-05"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-render-check-2026-10-05"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-spare-mount-2026-10-05"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-teacher-screen-2026-10-05"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-guard-skip-empty-screen"
+  },
+  {
+   "src": "w2bfix-screen-guard-content",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-coordinates-as-fractions"
+  },
+  {
+   "src": "w2bfix-truth-devanagari-script",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-sentence-rule-four-words"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-defer-paint-to-probe-fleet"
+  },
+  {
+   "src": "w2bfix-geometry-data-templates",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-number-minus-as-negative"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "caused_by",
+   "dst": "rj-w2bfix-paint-test-sleep-in-span"
+  },
+  {
+   "src": "w2bfix-spare-frame",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-first-paint-2026-10-05"
+  },
+  {
+   "src": "w2bfix-terms-last-rung",
+   "rel": "measured_by",
+   "dst": "m-w2bfix-local-acceptance-2026-10-05"
+  },
+  {
+   "src": "w2cfix-chosen-by-child-history-020",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-child-history-unwritable",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "w2cfix-wheel-spin-none-is-not-absent",
+   "rel": "part_of",
+   "dst": "w2cfix-wheel-spin-through-engine"
+  },
+  {
+   "src": "m-w2cfix-never-answer-live-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-never-answer-offline-2026-10-04"
+  },
+  {
+   "src": "w2c-never-answer-battery",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-never-answer-live-2026-10-05"
+  },
+  {
+   "src": "w2cfix-repaired-now-counts",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-resolved-now-token",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "w2cfix-fade-gap-not-in-view",
+   "rel": "part_of",
+   "dst": "w2c-faded-step-graded-with-help"
+  },
+  {
+   "src": "m-w2cfix-faded-coverage-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-faded-step-coverage-2026-10-04"
+  },
+  {
+   "src": "w2cfix-fade-gap-not-in-view",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-faded-coverage-2026-10-05"
+  },
+  {
+   "src": "w2cfix-board-keeps-gap",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-faded-coverage-2026-10-05"
+  },
+  {
+   "src": "rj-w2c-fade-board-tail-cut",
+   "rel": "caused_by",
+   "dst": "w2c-faded-step-graded-with-help"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "part_of",
+   "dst": "w2c-guidance-ladder-fading"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "part_of",
+   "dst": "w2c-equity-entry-one-step"
+  },
+  {
+   "src": "rj-w2c-stuck-threshold-two",
+   "rel": "caused_by",
+   "dst": "w2cfix-stuck-routing-signal"
+  },
+  {
+   "src": "w2cfix-ask-start-safety",
+   "rel": "part_of",
+   "dst": "w2c-ask-purpose-director"
+  },
+  {
+   "src": "w2cfix-wheel-spin-through-engine",
+   "rel": "part_of",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "rj-w2c-generic-wheel-spin-first",
+   "rel": "caused_by",
+   "dst": "w2c-reteach-child-history-first"
+  },
+  {
+   "src": "dc-w2c-support-rise-intended",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-teach-turns-2026-10-05"
+  },
+  {
+   "src": "m-w2cfix-teach-turns-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-teach-turns-2026-10-04"
+  },
+  {
+   "src": "w2cfix-talk-gate-persona-change",
+   "rel": "part_of",
+   "dst": "w2c-talk-share-monitor"
+  },
+  {
+   "src": "w2cfix-talk-gate-persona-change",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-talk-baseline-2026-10-05"
+  },
+  {
+   "src": "w2cfix-brief-entry-per-skill",
+   "rel": "part_of",
+   "dst": "w2c-brief-v2-in-every-compile"
+  },
+  {
+   "src": "m-w2cfix-personalisation-diff-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2c-personalisation-diff-local-2026-10-04"
+  },
+  {
+   "src": "w2cfix-stuck-routing-signal",
+   "rel": "measured_by",
+   "dst": "m-w2cfix-personalisation-diff-2026-10-05"
+  },
+  {
+   "src": "w2cfix-ask-start-safety",
+   "rel": "supersedes",
+   "dst": "open-w2c-lesson-purpose-talk-patch"
+  },
+  {
+   "src": "w2dfix-pace-adds-only",
+   "rel": "supersedes",
+   "dst": "w2d-realtime-session-shape"
+  },
+  {
+   "src": "w2dfix-pace-adds-only",
+   "rel": "inherits",
+   "dst": "voice-turn-config"
+  },
+  {
+   "src": "rj-w2d-pace-knob-below-base",
+   "rel": "caused_by",
+   "dst": "w2d-realtime-session-shape"
+  },
+  {
+   "src": "w2dfix-link-stalled-soft-state",
+   "rel": "supersedes",
+   "dst": "w2d-stall-notice-4500"
+  },
+  {
+   "src": "rj-w2d-stall-as-reconnecting",
+   "rel": "caused_by",
+   "dst": "w2d-stall-notice-4500"
+  },
+  {
+   "src": "w2dfix-lane-resume-turn",
+   "rel": "supersedes",
+   "dst": "w2d-lane-switch-mid-sitting"
+  },
+  {
+   "src": "rj-w2d-repair-turn-after-switch",
+   "rel": "caused_by",
+   "dst": "w2d-lane-switch-mid-sitting"
+  },
+  {
+   "src": "w2dfix-lane-switch-keeps-voice",
+   "rel": "part_of",
+   "dst": "w2d-lane-switch-mid-sitting"
+  },
+  {
+   "src": "w2dfix-lane-switch-resilience",
+   "rel": "part_of",
+   "dst": "w2d-lane-switch-mid-sitting"
+  },
+  {
+   "src": "w2dfix-rate-limit-retry-once",
+   "rel": "part_of",
+   "dst": "w2d-lane-switch-mid-sitting"
+  },
+  {
+   "src": "w2dfix-lane-a-verdict-blind",
+   "rel": "supersedes",
+   "dst": "w2d-lane-a-delivery-flagged"
+  },
+  {
+   "src": "rj-w2d-lane-a-verdict-arc",
+   "rel": "caused_by",
+   "dst": "w2d-lane-a-delivery-flagged"
+  },
+  {
+   "src": "w2dfix-lane-a-note-before-turn-shape",
+   "rel": "part_of",
+   "dst": "w2d-lane-a-delivery-flagged"
+  },
+  {
+   "src": "w2dfix-face-cue-expiry",
+   "rel": "part_of",
+   "dst": "w2d-face-producer-r4"
+  },
+  {
+   "src": "w2dfix-gaze-priority",
+   "rel": "part_of",
+   "dst": "w2d-face-producer-r4"
+  },
+  {
+   "src": "w2dfix-lane-resume-turn",
+   "rel": "measured_by",
+   "dst": "m-w2dfix-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "w2d-realtime-soak-2026-10-04",
+   "rel": "measured_by",
+   "dst": "m-w2dfix-soak-audio-stall-2026-10-05"
+  },
+  {
+   "src": "w2d-lane-a-delivery-flagged",
+   "rel": "measured_by",
+   "dst": "m-w2dfix-hv13-haha-both-arms-2026-10-05"
+  },
+  {
+   "src": "w2efix-studio-slot-on-the-turn",
+   "rel": "part_of",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "rj-w2efix-reveal-without-slot",
+   "rel": "caused_by",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "w2efix-live-board-replaces-rung",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "w2efix-whiteboard-ask-gating",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "rj-w2efix-board-beside-rung",
+   "rel": "caused_by",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "m-w2efix-board-replay-2026-10-05",
+   "rel": "supersedes",
+   "dst": "w2e-whiteboard-ask-replay-2026-10-04"
+  },
+  {
+   "src": "w2efix-live-board-replaces-rung",
+   "rel": "measured_by",
+   "dst": "m-w2efix-board-replay-2026-10-05"
+  },
+  {
+   "src": "w2efix-lanes-shared-hot-only",
+   "rel": "supersedes",
+   "dst": "w2e-quota-window"
+  },
+  {
+   "src": "rj-w2efix-bg-cap-everywhere",
+   "rel": "caused_by",
+   "dst": "w2e-quota-window"
+  },
+  {
+   "src": "w2efix-lanes-shared-hot-only",
+   "rel": "measured_by",
+   "dst": "m-w2efix-lanes-sim-2026-10-05"
+  },
+  {
+   "src": "w2efix-classify-hedge-to-fallback",
+   "rel": "supersedes",
+   "dst": "w2e-classify-fallback"
+  },
+  {
+   "src": "rj-w2efix-same-deployment-hedge",
+   "rel": "caused_by",
+   "dst": "w2e-classify-fallback"
+  },
+  {
+   "src": "w2efix-classify-hedge-to-fallback",
+   "rel": "measured_by",
+   "dst": "m-w2efix-hang-drill-2026-10-05"
+  },
+  {
+   "src": "w2efix-trace-comprehension-trail",
+   "rel": "part_of",
+   "dst": "w2e-brain-trace-lesson-keyed"
+  },
+  {
+   "src": "rj-w2efix-unknown-codes-dropped",
+   "rel": "caused_by",
+   "dst": "w2e-brain-trace-lesson-keyed"
+  },
+  {
+   "src": "w2efix-authority-on-the-real-turn",
+   "rel": "part_of",
+   "dst": "w2e-relational-adapter"
+  },
+  {
+   "src": "w2efix-authority-on-the-real-turn",
+   "rel": "measured_by",
+   "dst": "m-w2efix-authority-replay-2026-10-05"
+  },
+  {
+   "src": "w2efix-held-fragment-never-lost",
+   "rel": "part_of",
+   "dst": "w2e-predictive-turn-lite"
+  },
+  {
+   "src": "w2efix-small-loose-ends",
+   "rel": "part_of",
+   "dst": "w2e-kernel-live"
+  },
+  {
+   "src": "w2efix-studio-slot-on-the-turn",
+   "rel": "measured_by",
+   "dst": "m-w2efix-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "w2efix-opening-keeps-floor-phrase",
+   "rel": "part_of",
+   "dst": "w2efix-authority-on-the-real-turn"
+  },
+  {
+   "src": "w2f-whiteboard-no-reveal",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-bench-2026-10-05"
+  },
+  {
+   "src": "w2f-whiteboard-no-reveal",
+   "rel": "measured_by",
+   "dst": "w2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "w2f-whiteboard-hot-lane",
+   "rel": "caused_by",
+   "dst": "w2efix-lanes-shared-hot-only"
+  },
+  {
+   "src": "w2f-whiteboard-hot-lane",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-bench-2026-10-05"
+  },
+  {
+   "src": "w2f-luna-reserved-for-whiteboard",
+   "rel": "measured_by",
+   "dst": "w2f-azure-deployments-2026-10-05"
+  },
+  {
+   "src": "w2f-late-script-fast-forward",
+   "rel": "measured_by",
+   "dst": "w2f-acceptance-local-2026-10-05"
+  },
+  {
+   "src": "w2f-pizza-sectors-fixer",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-bench-2026-10-05"
+  },
+  {
+   "src": "rj-w2f-chatstream-proxy-explanation",
+   "rel": "caused_by",
+   "dst": "w2f-chatstream-empty-stream-diagnostics"
+  },
+  {
+   "src": "rj-w2f-chatstream-retry",
+   "rel": "caused_by",
+   "dst": "w2f-chatstream-empty-stream-diagnostics"
+  },
+  {
+   "src": "rj-w2f-wb-prompt-values-exempt",
+   "rel": "caused_by",
+   "dst": "w2f-whiteboard-no-reveal"
+  },
+  {
+   "src": "w2f-gate-archetype-driven",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "w2f-gate-archetype-driven",
+   "rel": "measured_by",
+   "dst": "w2f-mutant-suite-2026-10-04"
+  },
+  {
+   "src": "w2f-gate-archetype-driven",
+   "rel": "measured_by",
+   "dst": "w2f-gate-on-azure-2026-10-04"
+  },
+  {
+   "src": "w2f-gate-archetype-driven",
+   "rel": "supersedes",
+   "dst": "rj-w2f-bbox-label-checks"
+  },
+  {
+   "src": "w2f-stage-360x320-targets",
+   "rel": "supersedes",
+   "dst": "rj-w2f-probe-portrait-viewport"
+  },
+  {
+   "src": "w2f-stage-360x320-targets",
+   "rel": "part_of",
+   "dst": "studio-stage-fitted-box"
+  },
+  {
+   "src": "w2f-race-orchestrator",
+   "rel": "part_of",
+   "dst": "studio-race-gpt6sol-terra-luna"
+  },
+  {
+   "src": "w2f-race-orchestrator",
+   "rel": "measured_by",
+   "dst": "w2f-router-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-stream-guard-safe-boundaries",
+   "rel": "supersedes",
+   "dst": "rj-w2f-guard-cut-anywhere"
+  },
+  {
+   "src": "w2f-stream-guard-safe-boundaries",
+   "rel": "part_of",
+   "dst": "w2f-race-orchestrator"
+  },
+  {
+   "src": "w2f-router-rules",
+   "rel": "part_of",
+   "dst": "live-studio-spec"
+  },
+  {
+   "src": "w2f-router-rules",
+   "rel": "measured_by",
+   "dst": "w2f-router-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-archetype-library-v1",
+   "rel": "measured_by",
+   "dst": "w2f-router-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "part_of",
+   "dst": "whiteboard-by-drawing-script-2026-10-04"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-bench-2026-10-04"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "supersedes",
+   "dst": "rj-w2f-wb-taxila-fast-none"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "supersedes",
+   "dst": "rj-w2f-model-whiteboard-without-picture-counts"
+  },
+  {
+   "src": "w2f-studio-qa-service",
+   "rel": "measured_by",
+   "dst": "w2f-gate-on-azure-2026-10-04"
+  },
+  {
+   "src": "w2f-builder-unreachable-is-infra",
+   "rel": "supersedes",
+   "dst": "rj-w2f-network-as-build-failure"
+  },
+  {
+   "src": "w2f-builder-unreachable-is-infra",
+   "rel": "supersedes",
+   "dst": "rj-w2f-gate-unavailable-as-failure"
+  },
+  {
+   "src": "w2f-bench-fixed-lead",
+   "rel": "supersedes",
+   "dst": "rj-w2f-bench-lead-from-route"
+  },
+  {
+   "src": "w2f-race-orchestrator",
+   "rel": "supersedes",
+   "dst": "rj-w2f-www-rule-ate-svg-namespace"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "measured_by",
+   "dst": "w2f-whiteboard-seam-inprocess-2026-10-04"
+  },
+  {
+   "src": "w2f-whiteboard-archetype",
+   "rel": "measured_by",
+   "dst": "w2f-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2gfix-helpline-separator-forms",
+   "rel": "supersedes",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "rj-w2g-helpline-plain-form-only",
+   "rel": "caused_by",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "w2gfix-sticky-engine-fallback",
+   "rel": "supersedes",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "rj-w2g-per-part-engine-fallback",
+   "rel": "caused_by",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "w2gfix-echo-only-when-prelude-plays",
+   "rel": "supersedes",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "rj-w2g-strip-echo-before-prelude-known",
+   "rel": "caused_by",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "w2gfix-prelude-token-closed-class",
+   "rel": "part_of",
+   "dst": "w2g-uptake-prelude"
+  },
+  {
+   "src": "w2gfix-clause-events-on-player-clock",
+   "rel": "supersedes",
+   "dst": "w2g-framed-tts-v2"
+  },
+  {
+   "src": "rj-w2g-clause-events-at-parse-time",
+   "rel": "caused_by",
+   "dst": "w2g-framed-tts-v2"
+  },
+  {
+   "src": "w2gfix-safety-skips-silence-cap",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-stage-directions-never-spoken",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-identity-positive-forms",
+   "rel": "part_of",
+   "dst": "w2g-identity-predicate-narrowed"
+  },
+  {
+   "src": "w2gfix-hinglish-roman-fillers",
+   "rel": "part_of",
+   "dst": "w2g-expressive-layer-built"
+  },
+  {
+   "src": "w2gfix-hinglish-hindi-medium-operators",
+   "rel": "part_of",
+   "dst": "w2g-speakable"
+  },
+  {
+   "src": "w2gfix-unmeasured-voice-stays-oai",
+   "rel": "part_of",
+   "dst": "w2g-dhd-cascade-config"
+  },
+  {
+   "src": "w2gfix-unmeasured-voice-stays-oai",
+   "rel": "caused_by",
+   "dst": "w2g-base-rate-minus-35"
+  },
+  {
+   "src": "w2gfix-expect-engine-gate",
+   "rel": "part_of",
+   "dst": "w2g-acceptance-local-2026-10-04"
+  },
+  {
+   "src": "w2gfix-tests-2026-10-05",
+   "rel": "part_of",
+   "dst": "w2g-ci-gates-2026-10-04"
+  },
+  {
+   "src": "rj-w2hfix-answer-event-milestone",
+   "rel": "caused_by",
+   "dst": "w2hfix-studio-answers-reach-lesson"
+  },
+  {
+   "src": "w2h-skeleton-as-activity-first-rung",
+   "rel": "part_of",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2h-host-assembles-frame",
+   "rel": "measured_by",
+   "dst": "w2h-stage-browser-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "measured_by",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-evidence-one-event-per-item",
+   "rel": "measured_by",
+   "dst": "w2h-local-acceptance-2026-10-04"
+  },
+  {
+   "src": "w2h-fraction-archetype-topic-guard",
+   "rel": "caused_by",
+   "dst": "rj-studio-fraction-mention-as-topic"
+  },
+  {
+   "src": "w2h-fraction-archetype-topic-guard",
+   "rel": "measured_by",
+   "dst": "w2h-kit-coverage-2026-10-04"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "caused_by",
+   "dst": "rj-studio-reveal-on-clock-only"
+  },
+  {
+   "src": "w2h-studio-mount-lesson-keyed",
+   "rel": "caused_by",
+   "dst": "rj-studio-mount-child-id-column"
+  },
+  {
+   "src": "w2h-seam-patches-turn-say",
+   "rel": "constrains",
+   "dst": "w2h-studio-pieces-invisible-until-cue"
+  },
+  {
+   "src": "w2h-library-identity-gate-cache",
+   "rel": "constrains",
+   "dst": "w2h-no-live-build-without-gate-lane"
+  },
+  {
+   "src": "w2h-studio-pieces-invisible-until-cue",
+   "rel": "part_of",
+   "dst": "w2-seam-contracts"
+  },
+  {
+   "src": "w2h-studio-evidence-one-event-per-item",
+   "rel": "part_of",
+   "dst": "w2-seam-contracts"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-inlesson-negatives-2026-10-05"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-heldout-2026-10-05"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-heldout-2026-10-05"
+  },
+  {
+   "src": "w2ifix-stop-case-warn-until-patch",
+   "rel": "measured_by",
+   "dst": "m-w2ifix-local-acceptance-2026-10-05"
+  },
+  {
+   "src": "w2ifix-leave-anchoring",
+   "rel": "supersedes",
+   "dst": "rj-w2i-unanchored-leave-lexicon"
+  },
+  {
+   "src": "w2ifix-third-party-ask-verb",
+   "rel": "supersedes",
+   "dst": "rj-w2i-generic-report-verbs-third-party"
+  },
+  {
+   "src": "w2ifix-pleading-never-releases",
+   "rel": "supersedes",
+   "dst": "rj-w2i-pleading-releases"
+  },
+  {
+   "src": "w2ifix-harm-on-safety-turns",
+   "rel": "supersedes",
+   "dst": "rj-w2i-harm-false-on-safety-turns"
+  },
+  {
+   "src": "w2ifix-wantstostop-anchored",
+   "rel": "supersedes",
+   "dst": "rj-w2i-unbounded-devanagari-bye"
+  },
+  {
+   "src": "w2ifix-abuse-gap-report-nonhuman",
+   "rel": "supersedes",
+   "dst": "rj-w2i-abuse-gap-without-frame"
+  },
+  {
+   "src": "w2i-bond-event-sourced",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-mode-layers",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-stage-gates-academic",
+   "rel": "part_of",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "w2i-rel-bond-new-table",
+   "rel": "measured_by",
+   "dst": "w2i-bond-replay-neon-2026-10-04"
+  },
+  {
+   "src": "w2i-policy-one-entry",
+   "rel": "measured_by",
+   "dst": "w2i-policy-latency-2026-10-04"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "measured_by",
+   "dst": "w2i-release-local-2026-10-04"
+  },
+  {
+   "src": "w2i-floor-goodbye-line",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-safety-openings-fixed",
+   "rel": "measured_by",
+   "dst": "w2i-atb1-first-run-2026-10-04"
+  },
+  {
+   "src": "w2i-exclusivity-refusal-frame",
+   "rel": "measured_by",
+   "dst": "w2i-p2-corpus-precision-2026-10-04"
+  },
+  {
+   "src": "w2i-safety-preface-check",
+   "rel": "measured_by",
+   "dst": "w2i-p2-corpus-precision-2026-10-04"
+  },
+  {
+   "src": "w2i-relational-families-separate",
+   "rel": "measured_by",
+   "dst": "w2i-never-rules-negative-controls-2026-10-04"
+  },
+  {
+   "src": "w2i-signals-lexical-bilingual",
+   "rel": "measured_by",
+   "dst": "w2i-signals-negative-control-2026-10-04"
+  },
+  {
+   "src": "w2i-grooming-predicate",
+   "rel": "measured_by",
+   "dst": "w2i-scansafety-delta-2026-10-04"
+  },
+  {
+   "src": "rj-rel-state-rekey",
+   "rel": "caused_by",
+   "dst": "w2i-rel-bond-new-table"
+  },
+  {
+   "src": "rj-extend-wantsToStop-now",
+   "rel": "caused_by",
+   "dst": "w2i-stop-protocol"
+  },
+  {
+   "src": "rj-exclusivity-exclude-on-safety-turns",
+   "rel": "caused_by",
+   "dst": "w2i-exclusivity-refusal-frame"
+  },
+  {
+   "src": "rj-scansafety-new-kind",
+   "rel": "caused_by",
+   "dst": "w2i-grooming-predicate"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "constrains",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2i-floor-goodbye-line",
+   "rel": "part_of",
+   "dst": "w2i-seam-patches"
+  },
+  {
+   "src": "w2i-stop-protocol",
+   "rel": "inherits",
+   "dst": "owner-reset-2026-10-04"
+  },
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "part_of",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "rj-w2int-live-board-without-fallback",
+   "rel": "caused_by",
+   "dst": "w2e-whiteboard-ask"
+  },
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "supersedes",
+   "dst": "rj-w2int-live-board-without-fallback"
+  },
+  {
+   "src": "rj-w2int-template-facts-as-piece",
+   "rel": "part_of",
+   "dst": "w2int-whiteboard-template-fallback"
+  },
+  {
+   "src": "w2int-whiteboard-template-fallback",
+   "rel": "measured_by",
+   "dst": "m-w2int-explain-rungs-2026-10-05"
+  },
+  {
+   "src": "w2int-pad-comma-key",
+   "rel": "supersedes",
+   "dst": "rj-w2int-digits-only-pad-for-comma-keys"
+  },
+  {
+   "src": "w2int-pad-comma-key",
+   "rel": "measured_by",
+   "dst": "m-w2int-flow-walk-2026-10-05"
+  },
+  {
+   "src": "w2int-lint-dir-prefix",
+   "rel": "supersedes",
+   "dst": "rj-w2int-lint-prefix-match"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-migration-rehearsal-2026-10-05"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-gates-2026-10-05"
+  },
+  {
+   "src": "w2int-leaving-compound",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-tests-follow-merged-behaviour",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-practice-ask-not-done",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-wrap-yahin-rok",
+   "rel": "part_of",
+   "dst": "w2int-seam-patches-applied"
+  },
+  {
+   "src": "w2int-seam-patches-applied",
+   "rel": "measured_by",
+   "dst": "m-w2int-prod-battery-local-2026-10-05"
+  },
+  {
+   "src": "rj-w2int-three-day-c31-plus1",
+   "rel": "part_of",
+   "dst": "m-w2int-prod-battery-local-2026-10-05"
   }
  ]
 }
