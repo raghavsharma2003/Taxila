@@ -84,5 +84,6 @@ const P05 = /face-puppet\/config\.js/.test(read("../server/index.js"));
 test("patch 03: server/index.js registers GET /api/face/config", { skip: P05 ? false : "patch 03 (server seam, 03-server-face-config.diff) not applied yet" }, () => {
   const src = read("../server/index.js");
   assert.match(src, /import \{ routes as face \} from "\.\/face-puppet\/config\.js"/);
-  assert.match(src, /\.\.\.face \}\);/);
+  // registered in the one register() call (ship5 integration: '...lane' stays last, tests/w2d-voice-lanes asserts '...lane }')
+  assert.match(src, /register\(\{[^}]*\.\.\.face\b[^}]*\}\);/);
 });

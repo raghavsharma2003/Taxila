@@ -33,4 +33,6 @@ statement per call).
 -- ship5 (owner-ship-five-2026-10-05):
 --   021_voicesig.sql    p3-voicesig  voicesig.subject / baseline / calibration / population_norm (numbers only; rows only
 --                                    under the parent's voice_pace_memory choice; cascade on withdrawal and child delete)
+--   022_studio_mount_stagecraft.sql  ship5 integration  widens studio_mount_source_check to add 'stagecraft' (p4's revealed
+--                                    pieces; without it every Stagecraft reveal's mount row was refused)
 ```

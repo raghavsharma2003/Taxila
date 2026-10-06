@@ -33,6 +33,7 @@ function allowedNumbers(art, ask, childLine) {
   const out = new Set();
   const add = (t) => { for (const n of numbersIn(t)) { out.add(n); for (const k of n.split("/")) out.add(k); } };
   add(JSON.stringify(art?.params ?? {}));
+  add(JSON.stringify(art?.stagecraft ?? {}));   // ship5 p4: a Stagecraft piece carries its values in the revealed spec
   for (const it of art?.params?.items ?? []) if (it.n != null && it.d != null) out.add(`${it.n}/${it.d}`);
   add(ask?.text); add(childLine);
   return out;
@@ -81,7 +82,7 @@ async function oneRun({ api, child, mode, rep }) {
   ok(!!slot && slot.intentId === reveal && ["revealed", "fallback_shown"].includes(slot.state), `${tag} the reveal turn carries the tray slot (${slot ? `${slot.state}` : "none"})`);
   ok(revealTurn.ui?.tray === "studio", `${tag} the Work tray is the studio stage on the reveal turn (${revealTurn.ui?.tray})`);
   const art = slot?.artifact;
-  ok(!!art && ["skeleton", "frame"].includes(art.kind), `${tag} a renderable artifact (${art?.kind}${art?.skeleton ? ` ${art.skeleton}` : ""})`);
+  ok(!!art && ["skeleton", "frame", "stagecraft"].includes(art.kind), `${tag} a renderable artifact (${art?.kind}${art?.skeleton ? ` ${art.skeleton}` : ""})`);
   ok(!!art && HOST_ONLY.every((k) => !(k in (art.params ?? {}))), `${tag} the slot carries no host-only truth`);
   if (art?.kind === "frame") ok(/^[0-9a-f]{64}$/.test(art.sha256) && art.src === `/api/studio/build?sha=${art.sha256}`, `${tag} a frame is addressed by the sha of its gate-passed bytes`);
   ok(!/\b(error|fail|failed|loading|kharab|ban nahi|nahi ban|could not)\b/i.test(revealTurn.teacherReply ?? ""), `${tag} the reveal line never mentions a failure`);

@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    { "id": "rj-ship5-filter-safeguard-no-calm-face", "kind": "rejection", "title": "A content-filter safeguard re-plan keeps the pre-filter relational directive: ui.teacherAffect is not calm_steady, so the 2D puppet keeps its resting warm smile over the helplines (tests/ship5-review-filter-face-db.test.mjs; owner-5 2026-10-06 turn 2 seen live)", "at": "2026-10-06" },
+    { "id": "rj-ship5-stagecraft-model-key", "kind": "rejection", "title": "Stagecraft generated_spec grades the child against an answer key the model wrote: checks.truth defaults true, a wrong tap is graded right and closes the item (kt_evidence) (tests/ship5-review-stagecraft-key.test.mjs)", "at": "2026-10-06" },
+    { "id": "rj-ship5-board-fallback-ungated", "kind": "rejection", "title": "A template board that board-sync's gate refused against her line is drawn anyway by seam.js showFallbackOrFail (52 'template board shown' after a W-check failure in the local battery; w2f dot x15 for a line that says 3) (tests/ship5-review-board-fallback.test.mjs)", "at": "2026-10-06" },
+    { "id": "rj-ship5-duplex-tone-guard-distress", "kind": "rejection", "title": "p1-duplex tone guard (toneF0Hz 540) treats a high-pitched child as not-a-voice: a distress line over her at f0 600 Hz is talked over and the safeguard turn commits 4,500 ms after the child stops vs 500 ms at 260 Hz (synthetic rig; tests/ship5-review-duplex-safety.test.mjs)", "at": "2026-10-06" },
+    { "id": "ms-ship5-review-duplex-safeguard-latency", "kind": "measurement", "title": "Duplex live rig, synthetic, n=1 per arm, 2026-10-06: distress over her line, safeguard commit after child stop = 500 ms at f0 260/480/530 Hz; 4,500 ms at f0 545/600/700 Hz; she pauses mid-line at <=530 Hz and keeps talking until 260 ms after the line at >=545 Hz", "at": "2026-10-06" },
+    { "id": "ms-ship5-review-safeguard-line-continuer", "kind": "measurement", "title": "Duplex live rig, synthetic, 2026-10-06: any child sound over her safeguarding line (a 300 ms 'हम्म' included) stops it 20 ms after onset, non-resumable; the cut helplines come back only through the next server safeguard turn", "at": "2026-10-06" }
+  ],
+  "edges": [
+    { "src": "rj-ship5-duplex-tone-guard-distress", "rel": "measured_by", "dst": "ms-ship5-review-duplex-safeguard-latency" },
+    { "src": "rj-ship5-filter-safeguard-no-calm-face", "rel": "blocks", "dst": "owner-ship-five-2026-10-05" },
+    { "src": "rj-ship5-stagecraft-model-key", "rel": "blocks", "dst": "owner-ship-five-2026-10-05" },
+    { "src": "rj-ship5-board-fallback-ungated", "rel": "blocks", "dst": "owner-ship-five-2026-10-05" },
+    { "src": "rj-ship5-duplex-tone-guard-distress", "rel": "blocks", "dst": "owner-ship-five-2026-10-05" }
+  ]
+}
